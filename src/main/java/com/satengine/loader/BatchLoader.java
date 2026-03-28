@@ -6,6 +6,8 @@ import com.satengine.domain.question.Question;
 import com.satengine.domain.question.QuestionAnswer;
 import com.satengine.domain.question.QuestionAnswerRepository;
 import com.satengine.domain.question.QuestionRepository;
+import com.satengine.domain.question.QuestionReview;
+import com.satengine.domain.question.QuestionReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
@@ -20,12 +22,14 @@ import java.util.Optional;
 
 /**
  * BatchLoader reads a JSON array of question objects and upserts them into
- * the database, inserting correct answers into question_answers separately.
+ * the database, inserting correct answers into question_answers separately,
+ * and agent review results into question_reviews.
  *
  * Activate via CLI flag:
  *   java -jar sat-engine.jar --load-batch /path/to/batch.json
  *
- * Questions where reviewed != true are skipped.
+ * Questions where reviewed != true are skipped unless --force is passed.
+ * Questions where rejected == true are always skipped.
  */
 @Slf4j
 @Component
@@ -34,6 +38,7 @@ public class BatchLoader implements ApplicationRunner {
 
     private final QuestionRepository questionRepository;
     private final QuestionAnswerRepository questionAnswerRepository;
+    private final QuestionReviewRepository questionReviewRepository;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -49,11 +54,15 @@ public class BatchLoader implements ApplicationRunner {
         }
 
         String filePath = values.get(0);
-        loadBatch(filePath);
+        boolean force = args.containsOption("force");
+        if (force) {
+            log.warn("--force flag set: loading unreviewed questions (rejected ones still skipped)");
+        }
+        loadBatch(filePath, force);
     }
 
     @Transactional
-    public void loadBatch(String jsonFilePath) throws Exception {
+    public void loadBatch(String jsonFilePath, boolean force) throws Exception {
         File file = new File(jsonFilePath);
         if (!file.exists()) {
             throw new IllegalArgumentException("File not found: " + jsonFilePath);
@@ -68,15 +77,24 @@ public class BatchLoader implements ApplicationRunner {
         int skipped = 0;
 
         for (JsonNode node : root) {
-            boolean reviewed = node.path("reviewed").asBoolean(false);
-            if (!reviewed) {
+            String externalId = node.path("externalId").asText(null);
+            if (externalId == null || externalId.isBlank()) {
+                log.warn("Skipping question with missing externalId");
                 skipped++;
                 continue;
             }
 
-            String externalId = node.path("externalId").asText(null);
-            if (externalId == null || externalId.isBlank()) {
-                log.warn("Skipping question with missing externalId");
+            // Always skip rejected questions
+            boolean rejected = node.path("rejected").asBoolean(false);
+            if (rejected) {
+                log.debug("Skipping rejected question: {}", externalId);
+                skipped++;
+                continue;
+            }
+
+            // Skip unreviewed unless --force
+            boolean reviewed = node.path("reviewed").asBoolean(false);
+            if (!reviewed && !force) {
                 skipped++;
                 continue;
             }
@@ -129,7 +147,7 @@ public class BatchLoader implements ApplicationRunner {
 
             Question saved = questionRepository.save(question);
 
-            // Upsert correct answer — separate table, separate concern
+            // Upsert correct answer
             String correctAnswer = textOrNull(node, "correctAnswer");
             if (correctAnswer != null && !correctAnswer.isBlank()) {
                 QuestionAnswer qa = questionAnswerRepository
@@ -141,11 +159,35 @@ public class BatchLoader implements ApplicationRunner {
                 questionAnswerRepository.save(qa);
             }
 
+            // Upsert agent review if present
+            JsonNode agentReview = node.path("agentReview");
+            if (!agentReview.isMissingNode() && !agentReview.isNull()) {
+                QuestionReview qr = questionReviewRepository
+                        .findByQuestionId(saved.getId())
+                        .orElseGet(() -> QuestionReview.builder()
+                                .question(saved)
+                                .build());
+                qr.setPass(agentReview.path("pass").asBoolean(false));
+                JsonNode conf = agentReview.path("confidence");
+                if (!conf.isMissingNode() && !conf.isNull()) {
+                    try { qr.setConfidence(new BigDecimal(conf.asText())); } catch (Exception ignored) {}
+                }
+                qr.setSolvedAnswer(textOrNull(agentReview, "solvedAnswer"));
+                qr.setIssues(jsonStringOrNull(agentReview, "issues"));
+                qr.setNotes(textOrNull(agentReview, "notes"));
+                qr.setModel(textOrNull(agentReview, "model"));
+                String checkedAt = textOrNull(agentReview, "checkedAt");
+                if (checkedAt != null) {
+                    try { qr.setCheckedAt(OffsetDateTime.parse(checkedAt)); } catch (Exception ignored) {}
+                }
+                questionReviewRepository.save(qr);
+            }
+
             loaded++;
         }
 
-        System.out.printf("Loaded %d questions (%d skipped — not reviewed)%n", loaded, skipped);
-        log.info("Batch load complete: {} loaded, {} skipped (not reviewed)", loaded, skipped);
+        System.out.printf("Loaded %d questions (%d skipped)%n", loaded, skipped);
+        log.info("Batch load complete: {} loaded, {} skipped", loaded, skipped);
     }
 
     // -------------------------------------------------------------------------
@@ -172,11 +214,9 @@ public class BatchLoader implements ApplicationRunner {
     private String jsonStringOrNull(JsonNode node, String field) {
         JsonNode child = node.path(field);
         if (child.isMissingNode() || child.isNull()) return null;
-        // Already an object/array → serialize back to string for JSONB storage
         if (child.isObject() || child.isArray()) {
             return child.toString();
         }
-        // String value — return as-is (already a JSON-encoded string)
         String text = child.asText(null);
         return (text == null || text.isBlank()) ? null : text;
     }

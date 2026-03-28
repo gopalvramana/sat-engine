@@ -2,6 +2,8 @@ package com.satengine.domain.question;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -63,6 +65,7 @@ public class Question {
     @Column(name = "explanation_short", columnDefinition = "TEXT")
     private String explanationShort;
 
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "explanation_steps", columnDefinition = "jsonb")
     private String explanationSteps;
 
@@ -72,12 +75,15 @@ public class Question {
     @Column(name = "trap_explanation", columnDefinition = "TEXT")
     private String trapExplanation;
 
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "core_concept", columnDefinition = "jsonb")
     private String coreConcept;
 
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "prerequisites", columnDefinition = "jsonb")
     private String prerequisites;
 
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "animation", columnDefinition = "jsonb")
     private String animation;
 
@@ -91,6 +97,7 @@ public class Question {
     @Column(name = "passage_source", columnDefinition = "TEXT")
     private String passageSource;
 
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "diagram", columnDefinition = "jsonb")
     private String diagram;
 
@@ -115,9 +122,9 @@ public class Question {
     @Column(name = "created_at", updatable = false)
     private OffsetDateTime createdAt;
 
-    // embedding is managed outside the ORM for MVP — vector(1536) not mapped via Hibernate
-    @Column(name = "embedding", insertable = false, updatable = false)
-    private String embedding;
+    // embedding is stored as vector(1536) in DB — managed via native SQL when similarity search is implemented
+    @Transient
+    private float[] embedding;
 
     @PrePersist
     protected void onCreate() {
