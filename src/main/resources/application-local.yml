@@ -1,0 +1,9 @@
+# Local development overrides
+# Use a .env file in the project root with the following variables:
+#
+#   DB_URL=jdbc:postgresql://localhost:5432/satengine
+#   DB_USERNAME=postgres
+#   DB_PASSWORD=yourpassword
+#
+# The application loads .env automatically via dotenv-java (see SatEngineApplication).
+# Activate this profile with: --spring.profiles.active=local
