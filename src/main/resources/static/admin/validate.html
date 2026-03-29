@@ -228,7 +228,7 @@ async function apiPatch(path, body) {
 // ── Stats ────────────────────────────────────────────────────────────────
 function updateStats() {
   const total    = allQuestions.length;
-  const pending  = allQuestions.filter(q => q.status === 'enriched').length;
+  const pending  = allQuestions.filter(q => q.status === 'enriched' || q.status === 'generated' || q.status === 'reviewed').length;
   const approved = allQuestions.filter(q => q.status === 'approved').length;
   const rejected = allQuestions.filter(q => q.status === 'rejected').length;
 
@@ -276,7 +276,7 @@ function buildDomainFilter() {
 function visibleQuestions() {
   return allQuestions.filter(q => {
     if (activeDomain && q.domain !== activeDomain) return false;
-    if (activeFilter === 'pending')  return q.status === 'enriched';
+    if (activeFilter === 'pending')  return ['generated','reviewed','enriched'].includes(q.status);
     if (activeFilter === 'approved') return q.status === 'approved';
     if (activeFilter === 'rejected') return q.status === 'rejected';
     return true;
@@ -646,12 +646,12 @@ function renderDiagram(diagram, host) {
 // ── Boot ──────────────────────────────────────────────────────────────────
 (async () => {
   try {
-    const resp = await fetch('/api/admin/questions?status=enriched');
+    const resp = await fetch('/api/admin/questions');
     if (!resp.ok) throw new Error(`HTTP ${resp.status} — is the Spring Boot server running?`);
     allQuestions = await resp.json();
     updateStats();
     buildDomainFilter();
-    setFilter('pending', document.querySelector('.filter-btn[data-filter="pending"]'));
+    setFilter('all', document.querySelector('.filter-btn[data-filter="all"]'));
   } catch (err) {
     questionArea.innerHTML = `<div class="empty-panel">
       <div style="font-size:2.5rem">⚠️</div>

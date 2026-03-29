@@ -18,9 +18,10 @@ public class AdminQuestionService {
     private final QuestionReviewRepository questionReviewRepository;
 
     public List<AdminQuestionResponse> getByStatus(String status) {
-        return questionRepository.findByStatus(status).stream()
-                .map(this::toResponse)
-                .toList();
+        List<Question> questions = "all".equalsIgnoreCase(status)
+                ? questionRepository.findAll()
+                : questionRepository.findByStatus(status);
+        return questions.stream().map(this::toResponse).toList();
     }
 
     @Transactional

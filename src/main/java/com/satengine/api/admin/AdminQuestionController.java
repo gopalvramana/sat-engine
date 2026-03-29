@@ -16,10 +16,11 @@ public class AdminQuestionController {
 
     private final AdminQuestionService adminService;
 
-    /** GET /api/admin/questions?status=enriched */
+    /** GET /api/admin/questions          → all questions
+     *  GET /api/admin/questions?status=enriched  → filter by status */
     @GetMapping
     public List<AdminQuestionResponse> list(
-            @RequestParam(defaultValue = "enriched") String status) {
+            @RequestParam(defaultValue = "all") String status) {
         return adminService.getByStatus(status);
     }
 
