@@ -18,7 +18,7 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
      */
     @Query(value = """
             SELECT * FROM questions
-            WHERE reviewed = true
+            WHERE status = 'approved'
             AND pool IN ('both', :pool)
             AND (:section IS NULL OR section = :section)
             AND id NOT IN (:excludeIds)
@@ -32,11 +32,11 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
     );
 
     /**
-     * Find a random reviewed question with no exclusions (first question of a session).
+     * Find a random approved question with no exclusions (first question of a session).
      */
     @Query(value = """
             SELECT * FROM questions
-            WHERE reviewed = true
+            WHERE status = 'approved'
             AND pool IN ('both', :pool)
             AND (:section IS NULL OR section = :section)
             ORDER BY RANDOM()
@@ -46,6 +46,15 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
             @Param("pool") String pool,
             @Param("section") String section
     );
+
+    List<Question> findByStatus(String status);
+
+    @Query(value = """
+        SELECT COALESCE(
+          MAX(CAST(SUBSTRING(external_id FROM LENGTH(:prefix)+1 FOR 3) AS INTEGER)), 0
+        ) FROM questions WHERE external_id LIKE :pattern
+        """, nativeQuery = true)
+    int findMaxSeqForPrefix(@Param("prefix") String prefix, @Param("pattern") String pattern);
 
     List<Question> findBySection(String section);
 

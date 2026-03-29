@@ -1,5 +1,6 @@
 package com.satengine.domain.question;
 
+import com.satengine.pipeline.QuestionStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -109,12 +110,9 @@ public class Question {
     @Builder.Default
     private String source = "ai_generated";
 
-    @Column(name = "reviewed")
+    @Column(name = "status", nullable = false, length = 20)
     @Builder.Default
-    private Boolean reviewed = false;
-
-    @Column(name = "review_notes", columnDefinition = "TEXT")
-    private String reviewNotes;
+    private String status = QuestionStatus.GENERATED.lower();
 
     @Column(name = "generated_at")
     private OffsetDateTime generatedAt;

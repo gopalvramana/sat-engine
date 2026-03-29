@@ -125,8 +125,7 @@ public class BatchLoader implements ApplicationRunner {
             question.setPassageSource(textOrNull(node, "passageSource"));
             question.setCalculatorOk(node.path("calculatorOk").asBoolean(true));
             question.setSource(node.path("source").asText("ai_generated"));
-            question.setReviewed(true);
-            question.setReviewNotes(textOrNull(node, "reviewNotes"));
+            question.setStatus("approved");
 
             // Parse generatedAt if present
             String generatedAt = textOrNull(node, "generatedAt");

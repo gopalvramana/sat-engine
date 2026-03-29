@@ -7,4 +7,6 @@ import java.util.UUID;
 
 public interface QuestionReviewRepository extends JpaRepository<QuestionReview, UUID> {
     Optional<QuestionReview> findByQuestionId(UUID questionId);
+
+    Optional<QuestionReview> findByQuestion(Question question);
 }
