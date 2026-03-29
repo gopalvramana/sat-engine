@@ -95,7 +95,7 @@ Key fields in `questions`:
 - `correct_answer` varchar(20)
 - `explanation` text (LaTeX supported)
 - `diagram_id` UUID FK nullable → diagrams
-- `is_reviewed` boolean DEFAULT false
+- `status` VARCHAR(20) DEFAULT 'generated' — lifecycle: generated → reviewed → enriched → approved / rejected (see Question Status Lifecycle in 06-question-bank.md)
 
 **Status:** ✅ DECIDED
 
@@ -219,8 +219,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
-  thymeleaf:
-    cache: true
+  # No Thymeleaf — pure REST API, React frontend
 
 server:
   port: ${PORT:8080}

@@ -13,12 +13,12 @@
 | **Build** | Maven | Standard | Familiar, reliable, standard in Java ecosystem. | Gradle |
 | **ORM** | Spring Data JPA + Hibernate | Included | Standard Spring Boot approach. No extra learning required. | jOOQ, JDBI, MyBatis |
 | **Migrations** | Flyway | Bundled | Version-controlled schema. Integrated with Spring Boot. Simple. | Liquibase, manual SQL |
-| **Frontend** | Thymeleaf + HTMX | Server-side | Same Spring Boot project. No npm. No build step. No CORS. No separate deployment. | React + Vite, Angular, Vue |
+| **Frontend** | React + Vite | Latest | Clean separation of concerns. Component-based UI. KaTeX + SVG + Chart.js integrate naturally in React. | Thymeleaf + HTMX (rejected — frontend complexity warrants proper React) |
 | **CSS** | Tailwind CSS | CDN — no build | No build step needed. Utility-first. Responsive by default. | Bootstrap, custom CSS, Material UI |
 | **Math Rendering** | KaTeX | 0.16.9 CDN | 3–5x faster than MathJax. Industry standard (Khan Academy uses it). Auto-render handles all LaTeX automatically. | MathJax, custom renderer |
 | **Charts** | Chart.js | 4.4.0 CDN | Simple JSON config API. CDN ready. No build step. Handles all SAT graph types. | D3.js, Recharts, Highcharts |
-| **AI Provider** | Anthropic Claude | Haiku 4.5 primary | Best explanation quality for validation phase. Spring AI abstraction means easy provider switching later. | OpenAI GPT-4o, Gemini, open source |
-| **AI Framework** | Spring AI | Latest | Native Spring Boot integration. Provider-agnostic. Same code works with any model. | LangChain4j, raw HTTP calls |
+| **AI Provider** | Anthropic Claude | Haiku 4.5 primary | Best explanation quality for validation phase. Anthropic is the only AI provider. | OpenAI GPT-4o, Gemini, open source |
+| **AI Framework** | Anthropic Java SDK | Latest | Direct SDK — no abstraction overhead. Anthropic is the only AI provider. Provider-agnostic abstraction adds complexity for no benefit at this stage. | Spring AI (rejected — unnecessary abstraction), LangChain4j, raw HTTP |
 | **Database** | PostgreSQL | 16 via pgvector image | JSONB for diagram configs. PGVector for future AI embeddings. Most capable open source DB. | MySQL, MongoDB, SQLite |
 | **DB Hosting** | Supabase | Free → Pro | 500MB free covers ~4,000 students. $25/month Pro for scale. No server management. | RDS, self-hosted, PlanetScale |
 | **App Hosting** | Railway | Hobby → Pro | Deploy from GitHub push. Auto-builds Maven. Auto SSL. Zero DevOps. $5–20/month. | AWS, Heroku, DigitalOcean, Render |
@@ -26,6 +26,7 @@
 | **Email** | SendGrid | Free tier | 100 emails/day free. Reliable delivery. Simple API. | Mailchimp, SES, Postmark |
 | **Payments** | Stripe | Standard | Best developer experience. Webhooks reliable. Used by thousands of SaaS products. | Razorpay (add later for India), PayPal |
 | **Domain/DNS** | Cloudflare | Free tier | Free DDoS protection. CDN for static assets. Free SSL. Analytics included. | Namecheap DNS, Route53 |
+| **Question Pipeline** | Java (GenerateStage, AgentReviewStage, EnrichStage) | Bundled in sat-engine JAR | Same codebase, direct JPA access, no file I/O, Spring @Transactional. | Python generate_questions.py + Node.js agent-review.js (retired) |
 
 ---
 
@@ -43,8 +44,10 @@
 
 ## Key Architecture Principles
 
-### No npm. No build step.
-Tailwind from CDN. KaTeX from CDN. Chart.js from CDN. One Spring Boot project. One deployment. Zero frontend infrastructure.
+### Frontend — React + Vite
+React app lives in a separate project (`sat-engine-ui/`). Spring Boot serves pure JSON REST API. React handles all rendering including KaTeX math, programmatic SVG, and Chart.js diagrams.
+
+KaTeX, Chart.js, and Tailwind are loaded from CDN in the admin validate.html page. The React student app uses npm packages.
 
 ### IO-bound not CPU-bound
 Most server time is spent waiting for Claude API responses. This means a small Railway instance handles hundreds of concurrent users comfortably. Don't over-provision.

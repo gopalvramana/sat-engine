@@ -25,7 +25,7 @@ These never block each other. By the time the app is built, the question bank is
 
 | Week | Development Focus | Question Target | End State |
 |------|------------------|----------------|-----------|
-| Week 1 | ✅ Done — Spring Boot scaffold, Flyway V1+V2, BatchLoader, DB on Supabase | 43 generated, 0 approved | Running API, DB ready |
+| Week 1 | ✅ Done — Spring Boot scaffold, Flyway V1+V2+V3, Java pipeline (GenerateStage / AgentReviewStage / EnrichStage), Admin API, validate.html served from Spring Boot | 0 approved | Running API, DB ready, full pipeline ready |
 | Week 2 | React app (Vite), topic browser UI, question display with KaTeX + SVG + Chart.js | 100 approved | Can browse topics and read questions |
 | Week 3 | Practice session API (start, submit answer, immediate feedback), session flow in React | 150 approved | Can answer questions and see if correct |
 | Week 4 | AI Learning Panel (3 tabs: Solution / Core Concept / Prerequisites) wired to Claude API | 200 approved | Full practice loop with AI explanations |
@@ -105,11 +105,11 @@ GET  /api/progress/me            → questions answered, correct rate per domain
 
 ### Monday–Friday evenings
 ```
-7:00 PM  python3 generate_questions.py --count 20  (15 min, unattended)
-7:15 PM  node scripts/agent-review.js data/batches/latest.json  (runs overnight if needed)
-7:30 PM  Review batch in validate.html — fix answer mismatches, approve/reject  (30 min)
-7:45 PM  Download reviewed JSON → java -jar sat-engine.jar --load-batch ...
-8:00 PM  Done — ~15 approved questions added to DB
+7:00 PM  java -jar sat-engine.jar --job=generate --count=20  (15 min unattended)
+7:15 PM  java -jar sat-engine.jar --job=agent-review          (runs in background)
+7:30 PM  java -jar sat-engine.jar --job=enrich                (runs in background)
+7:45 PM  Open http://localhost:8080/admin/validate.html → review enriched questions (20 min)
+8:00 PM  Done — ~15 approved questions live in DB
 ```
 
 **Total weekly effort:** ~9–11 hours. Sustainable alongside full-time consulting.
@@ -134,7 +134,7 @@ GET  /api/progress/me            → questions answered, correct rate per domain
 
 ## ADR-038 — Parallel Tracks Decision
 
-**Decision:** Questions and development run completely independently. Questions stored in JSON files, reviewed via validate.html, loaded into DB via BatchLoader. No manual SQL.
+**Decision:** Questions and development run completely independently. Questions generated, reviewed, and enriched entirely via Java pipeline stages (--job=generate|agent-review|enrich). Written directly to DB. Human review via validate.html served at /admin/validate.html by Spring Boot. No JSON files, no BatchLoader, no manual SQL.
 
 **Rejected:** Sequential approach (all questions first, then build), outsourcing question creation.
 

@@ -61,18 +61,50 @@ Acely's #1 Reddit complaint is AI slop — mathematically impossible questions. 
 
 ## ADR-030 — Question Generation Workflow
 
-**Decision:** Python script `generate_questions.py` handles all generation.
+**Decision:** All question generation, review, and enrichment runs as Java pipeline stages inside the sat-engine JAR. No separate Python or Node.js scripts.
+
+**Pipeline stages:**
+
+| Stage | Command | What it does | Status produced |
+|-------|---------|-------------|-----------------|
+| Generate | `--job=generate --count=20` | Calls Claude Haiku, writes directly to DB | `generated` |
+| Agent Review | `--job=agent-review` | Runs 9 checks per question via Claude Opus | `reviewed` |
+| Enrich | `--job=enrich` | Adds trapCategory, coreConcept, prerequisites, animation | `enriched` |
+| Human Review | Open validate.html | Approve / reject / fix answer key | `approved` or `rejected` |
 
 **Daily evening routine (45–60 minutes):**
-1. 7:00 PM — Run: `python3 generate_questions.py --count 20` (15 min unattended)
-2. 7:15 PM — Open `review_questions.html`, load batch file, review visually (30 min)
-3. 8:00 PM — Done. ~16 reviewed questions added to bank.
+1. 7:00 PM — `java -jar sat-engine.jar --job=generate --count=20` (15 min unattended)
+2. 7:15 PM — `java -jar sat-engine.jar --job=agent-review` (runs in background)
+3. 7:30 PM — `java -jar sat-engine.jar --job=enrich` (runs in background)
+4. 7:45 PM — Open `http://localhost:8080/admin/validate.html` → review enriched questions → approve/reject (20 min)
+5. 8:00 PM — Done. ~15 approved questions added to DB.
 
-**Weekly output:** ~80 reviewed questions (20/day × 5 days × 80% pass rate)
+**Weekly output:** ~80 approved questions (20/day × 5 days × 80% pass rate)
 
-**Time to 500 questions:** 6–7 weeks of evenings
+**Status:** ✅ DECIDED — Pipeline built and running
 
-**Status:** ✅ DECIDED — Script built and running
+---
+
+## Question Status Lifecycle
+
+Every question moves through these statuses in order:
+
+```
+generated → reviewed → enriched → approved
+                                 ↘ rejected
+```
+
+| Status | Set by | Meaning |
+|--------|--------|---------|
+| `generated` | `--job=generate` | Raw question written to DB, not yet verified |
+| `reviewed` | `--job=agent-review` | Agent has run 9-check review, issues logged |
+| `enriched` | `--job=enrich` | Pedagogical fields added (trapCategory, coreConcept, prerequisites) |
+| `approved` | Human in validate.html | Ready to serve to students |
+| `rejected` | Human in validate.html | Disqualified — never served to students |
+
+**Feedback loop:** A rejected or failing question can be pushed back to an earlier status and re-run through that stage:
+- Push back to `generated` → re-run `--job=agent-review`
+- Push back to `reviewed` → re-run `--job=enrich`
 
 ---
 
@@ -107,15 +139,15 @@ Acely's #1 Reddit complaint is AI slop — mathematically impossible questions. 
 | 6 | Hard | 50 | 10% |
 | 7 | Very hard | 25 | 5% |
 
-The generation script handles weighted random selection automatically — distribution builds up naturally without manual tracking.
+The generate pipeline stage handles weighted random selection automatically — distribution builds up naturally without manual tracking.
 
 **Status:** ✅ DECIDED
 
 ---
 
-## ADR-032 — Question JSON Format
+## ADR-032 — DB Question Schema
 
-Every generated question is stored in this format (maps directly to DB schema for easy import):
+Every generated question is written directly to PostgreSQL with this structure:
 
 ```json
 {
@@ -133,16 +165,23 @@ Every generated question is stored in this format (maps directly to DB schema fo
   "correctAnswer": "C",
   "sprMin": null,
   "sprMax": null,
-  "explanation": "Subtract 7 from both sides: \\(3x = 15\\). Divide by 3: \\(x = 5\\).",
   "explanationShort": "Isolate x in two steps.",
+  "explanationSteps": [
+    { "title": "Subtract 7", "content": "Subtract 7 from both sides.", "math": "3x = 15" },
+    { "title": "Divide by 3", "content": "Divide both sides by 3.", "math": "x = 5" }
+  ],
+  "trapCategory": "calculation_error",
+  "trapExplanation": "Students who divide first get x = 15/3 before subtracting, choosing option B (4).",
+  "coreConcept": { "title": "Linear Equations", "summary": "...", "keyFormula": "ax + b = c" },
+  "prerequisites": [{ "topic": "Arithmetic operations", "why": "Need to subtract and divide" }],
+  "animation": { "eligible": false },
+  "pool": "both",
   "passageText": null,
-  "passageSource": null,
   "diagram": null,
   "calculatorOk": true,
   "source": "ai_generated",
-  "reviewed": false,
-  "reviewNotes": "",
-  "generatedAt": "2026-03-23T20:30:00"
+  "status": "approved",
+  "generatedAt": "2026-03-28T20:30:00Z"
 }
 ```
 
@@ -168,25 +207,30 @@ Every generated question is stored in this format (maps directly to DB schema fo
 
 ---
 
-## Generation Script — Quick Reference
+## Pipeline Quick Reference
 
 ```bash
-# Generate 20 random questions (all types, all difficulties)
-python3 generate_questions.py --count 20
+# Generate questions
+java -jar sat-engine.jar --job=generate --count=20
+java -jar sat-engine.jar --job=generate --count=10 --section=math
+java -jar sat-engine.jar --job=generate --count=10 --section=math --difficulty=4
 
-# Generate 50 Math only
-python3 generate_questions.py --count 50 --section math
+# Agent review (runs on all status=generated questions)
+java -jar sat-engine.jar --job=agent-review
 
-# Generate 30 R&W only
-python3 generate_questions.py --count 30 --section reading_writing
+# Re-review only failed questions
+java -jar sat-engine.jar --job=agent-review --only-failed
 
-# Custom output location
-python3 generate_questions.py --count 20 --output questions/my_batch.json
+# Enrich (runs on all status=reviewed questions)
+java -jar sat-engine.jar --job=enrich
+
+# Normal API server (no pipeline — starts web server)
+java -jar sat-engine.jar
 ```
 
-**Output location:** `questions/batch_YYYYMMDD_HHMMSS.json`
-
-**Review tool:** Open `review_questions.html` in Chrome → Load batch file → Review visually → Download reviewed file
+**Review UI:** `http://localhost:8080/admin/validate.html`
+Questions with `status=enriched` appear automatically in the review queue.
+Each action (Approve / Reject / Fix answer) calls the API immediately — no file downloads needed.
 
 ---
 
@@ -194,14 +238,14 @@ python3 generate_questions.py --count 20 --output questions/my_batch.json
 
 Track this weekly:
 
-| Domain | Code | Target | Generated | Reviewed | Passed | Status |
-|--------|------|--------|-----------|----------|--------|--------|
-| Algebra | ALG | 105 | | | | |
-| Advanced Math | ADV | 105 | | | | |
-| Problem Solving | PS | 45 | | | | |
-| Geometry/Trig | GEO | 45 | | | | |
-| Information/Ideas | INF | 52 | | | | |
-| Craft/Structure | CRF | 56 | | | | |
-| Expression Ideas | EXP | 40 | | | | |
-| Standard English | ENG | 52 | | | | |
-| **TOTAL** | | **500** | | | | |
+| Domain | Code | Target | Generated | Reviewed | Enriched | Approved | Status |
+|--------|------|--------|-----------|----------|----------|----------|--------|
+| Algebra | ALG | 105 | | | | | |
+| Advanced Math | ADV | 105 | | | | | |
+| Problem Solving | PS | 45 | | | | | |
+| Geometry/Trig | GEO | 45 | | | | | |
+| Information/Ideas | INF | 52 | | | | | |
+| Craft/Structure | CRF | 56 | | | | | |
+| Expression Ideas | EXP | 40 | | | | | |
+| Standard English | ENG | 52 | | | | | |
+| **TOTAL** | | **500** | | | | | |
