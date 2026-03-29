@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Question Review — SAT Engine Admin</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+        crossorigin="anonymous">
+  <script defer
+          src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+          crossorigin="anonymous"></script>
+  <script defer
+          src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+          crossorigin="anonymous"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"
+          crossorigin="anonymous"></script>
+
+  <style>
+    /* ── Layout ────────────────────────────────────────────────────── */
+    .v-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      grid-template-rows: auto 1fr;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .v-header  { grid-column: 1 / -1; }
+    .v-sidebar { overflow-y: auto; border-right: 1px solid #e2e8f0; background: #f8fafc; }
+    .v-main    { overflow-y: auto; }
+
+    /* ── Sidebar stats ─────────────────────────────────────────────── */
+    .stat-row { display:flex; justify-content:space-between; align-items:center; padding: 0.5rem 1rem; font-size:0.8rem; border-bottom:1px solid #e2e8f0; }
+    .stat-row .label { color:#64748b; }
+    .stat-row .value { font-weight:700; color:#1e293b; }
+
+    .filter-btn {
+      display:block; width:100%; text-align:left;
+      padding: 0.45rem 1rem; font-size:0.78rem; cursor:pointer;
+      border-bottom:1px solid #f1f5f9; color:#475569; background:transparent;
+      transition: background 0.1s;
+    }
+    .filter-btn:hover  { background:#eff6ff; }
+    .filter-btn.active { background:#dbeafe; color:#1d4ed8; font-weight:600; border-left:3px solid #2563eb; padding-left:calc(1rem - 3px); }
+
+    /* ── Question card ─────────────────────────────────────────────── */
+    .q-card {
+      background: #fff; border: 1px solid #e2e8f0;
+      border-radius: 0.75rem; padding: 1.25rem 1.5rem; margin-bottom: 1.25rem;
+    }
+    .q-card.is-approved { border-left: 3px solid #22c55e; }
+    .q-card.is-rejected { border-left: 3px solid #ef4444; opacity: 0.7; }
+
+    .choice-label {
+      display:flex; align-items:flex-start; gap:0.75rem;
+      border:1.5px solid #e2e8f0; border-radius:0.5rem;
+      padding:0.5rem 0.75rem; cursor:default;
+    }
+    .choice-label.is-correct-answer { border-color:#4ade80; background:#f0fdf4; }
+    .choice-letter-badge {
+      display:inline-flex; align-items:center; justify-content:center;
+      width:1.5rem; height:1.5rem; border-radius:50%;
+      font-size:0.75rem; font-weight:700;
+      background:#e2e8f0; color:#475569; flex-shrink:0;
+    }
+    .choice-label.is-correct-answer .choice-letter-badge { background:#4ade80; color:#14532d; }
+
+    .explanation-box {
+      background:#f8fafc; border-left:3px solid #94a3b8;
+      border-radius:0 0.5rem 0.5rem 0; padding:0.85rem 1rem;
+      font-size:0.85rem; line-height:1.7; color:#334155;
+    }
+    .empty-panel {
+      display:flex; flex-direction:column; align-items:center;
+      justify-content:center; height:60vh; color:#94a3b8; text-align:center;
+    }
+    .exp-toggle { cursor:pointer; user-select:none; font-size:0.78rem; color:#2563eb; font-weight:500; }
+    .exp-toggle:hover { text-decoration:underline; }
+
+    .pool-btn {
+      font-size:0.72rem; font-weight:600; padding:3px 10px;
+      border-radius:999px; border:1.5px solid #e2e8f0;
+      color:#475569; background:#f8fafc; cursor:pointer; transition:all 0.15s;
+    }
+    .pool-btn:hover { background:#f1f5f9; }
+    .pool-btn.active-test     { background:#7c3aed; color:#fff; border-color:#6d28d9; }
+    .pool-btn.active-practice { background:#0284c7; color:#fff; border-color:#0369a1; }
+    .pool-btn.active-both     { background:#475569; color:#fff; border-color:#334155; }
+
+    .field-panel { border-radius:0.5rem; padding:0.75rem 1rem; font-size:0.82rem; margin-top:0.5rem; }
+    .field-panel.trap    { background:#fefce8; border-left:3px solid #fbbf24; }
+    .field-panel.concept { background:#eff6ff; border-left:3px solid #3b82f6; }
+    .field-panel.prereqs { background:#f0fdf4; border-left:3px solid #4ade80; }
+    .field-panel .panel-label { font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:#64748b; margin-bottom:0.35rem; }
+
+    .step-card { background:#fff; border:1px solid #e2e8f0; border-radius:0.4rem; padding:0.5rem 0.75rem; margin-bottom:0.4rem; font-size:0.82rem; }
+    .step-card .step-title { font-weight:600; color:#1e293b; margin-bottom:0.2rem; }
+    .step-card .step-math  { display:block; margin-top:0.5rem; font-size:0.92em; background:#f8fafc; border-radius:0.3rem; padding:0.4rem 0.6rem; overflow-x:auto; }
+
+    .btn-approve {
+      font-size:0.72rem; font-weight:600; padding:3px 10px;
+      border-radius:999px; border:1.5px solid #22c55e;
+      color:#15803d; background:#f0fdf4; cursor:pointer; transition:all 0.15s;
+    }
+    .btn-approve:hover  { background:#dcfce7; }
+    .btn-approve.active { background:#22c55e; color:#fff; border-color:#16a34a; }
+    .btn-reject {
+      font-size:0.72rem; font-weight:600; padding:3px 10px;
+      border-radius:999px; border:1.5px solid #f87171;
+      color:#b91c1c; background:#fff1f2; cursor:pointer; transition:all 0.15s;
+    }
+    .btn-reject:hover  { background:#fee2e2; }
+    .btn-reject.active { background:#ef4444; color:#fff; border-color:#dc2626; }
+
+    .agent-badge {
+      display:inline-flex; align-items:center; gap:0.4rem;
+      font-size:0.7rem; font-weight:600; padding:2px 8px;
+      border-radius:999px; border:1.5px solid;
+    }
+    .agent-badge.fail { background:#fff1f2; color:#b91c1c; border-color:#fca5a5; }
+    .agent-badge.pass { background:#f0fdf4; color:#15803d; border-color:#86efac; }
+
+    .diff-easy   { background:#dcfce7; color:#15803d; }
+    .diff-medium { background:#fef9c3; color:#854d0e; }
+    .diff-hard   { background:#fee2e2; color:#b91c1c; }
+
+    .badge-pending  { padding:2px 8px; border-radius:999px; background:#f1f5f9; color:#64748b; font-weight:600; }
+    .badge-reviewed { padding:2px 8px; border-radius:999px; background:#dcfce7; color:#15803d; font-weight:600; }
+
+    /* Toast */
+    #toast {
+      position:fixed; bottom:1.5rem; right:1.5rem; z-index:50;
+      background:#1e293b; color:#fff; font-size:0.82rem; font-weight:500;
+      padding:0.6rem 1.2rem; border-radius:0.5rem;
+      opacity:0; transition:opacity 0.25s; pointer-events:none;
+    }
+    #toast.show { opacity:1; }
+  </style>
+</head>
+<body class="bg-slate-50">
+
+<div class="v-layout">
+
+  <!-- ── Header ──────────────────────────────────────────────────────── -->
+  <header class="v-header bg-white border-b border-slate-200 shadow-sm">
+    <div class="px-5 py-3 flex items-center justify-between">
+      <div>
+        <h1 class="text-lg font-bold text-slate-900">Question Review</h1>
+        <p id="header-sub" class="text-xs text-slate-400 mt-0.5">Loading review queue…</p>
+      </div>
+      <div class="flex items-center gap-4">
+        <span id="queue-badge" class="text-xs bg-amber-100 text-amber-800 font-semibold px-2 py-0.5 rounded-full hidden"></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Sidebar ──────────────────────────────────────────────────────── -->
+  <aside class="v-sidebar">
+    <div class="px-3 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wide border-b border-slate-200">Review Queue</div>
+
+    <!-- Stats -->
+    <div id="stats-panel">
+      <div class="stat-row"><span class="label">Total</span><span id="stat-total" class="value">—</span></div>
+      <div class="stat-row"><span class="label">⏳ Pending</span><span id="stat-pending" class="value text-amber-600">—</span></div>
+      <div class="stat-row"><span class="label">✅ Approved</span><span id="stat-approved" class="value text-green-600">—</span></div>
+      <div class="stat-row"><span class="label">❌ Rejected</span><span id="stat-rejected" class="value text-red-500">—</span></div>
+    </div>
+
+    <!-- Show filter -->
+    <div class="px-3 py-1.5 text-xs font-semibold text-slate-400 uppercase tracking-wide border-b border-t border-slate-200 mt-1">Show</div>
+    <button class="filter-btn active" data-filter="pending" onclick="setFilter('pending',this)">⏳ Pending only</button>
+    <button class="filter-btn" data-filter="all"     onclick="setFilter('all',this)">All questions</button>
+    <button class="filter-btn" data-filter="approved" onclick="setFilter('approved',this)">✅ Approved</button>
+    <button class="filter-btn" data-filter="rejected" onclick="setFilter('rejected',this)">❌ Rejected</button>
+
+    <!-- Domain filter -->
+    <div id="domain-filter-wrap" class="hidden">
+      <div class="px-3 py-1.5 text-xs font-semibold text-slate-400 uppercase tracking-wide border-b border-t border-slate-200 mt-1">Domain</div>
+      <div id="domain-filter-list"></div>
+    </div>
+  </aside>
+
+  <!-- ── Main ──────────────────────────────────────────────────────────── -->
+  <main class="v-main px-6 py-5">
+    <div id="question-area">
+      <div class="empty-panel"><div style="font-size:2.5rem">⏳</div><p class="mt-3">Loading questions…</p></div>
+    </div>
+  </main>
+
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+// ── State ─────────────────────────────────────────────────────────────────
+let allQuestions  = [];   // full list from API
+let activeFilter  = 'pending';
+let activeDomain  = null;
+
+const questionArea = document.getElementById('question-area');
+const headerSub    = document.getElementById('header-sub');
+const queueBadge   = document.getElementById('queue-badge');
+
+// ── Toast ─────────────────────────────────────────────────────────────────
+function showToast(msg, isError = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = isError ? '#dc2626' : '#1e293b';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ── API helpers ───────────────────────────────────────────────────────────
+async function apiPatch(path, body) {
+  const r = await fetch(path, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+}
+
+// ── Stats ────────────────────────────────────────────────────────────────
+function updateStats() {
+  const total    = allQuestions.length;
+  const pending  = allQuestions.filter(q => q.status === 'enriched').length;
+  const approved = allQuestions.filter(q => q.status === 'approved').length;
+  const rejected = allQuestions.filter(q => q.status === 'rejected').length;
+
+  document.getElementById('stat-total').textContent    = total;
+  document.getElementById('stat-pending').textContent  = pending;
+  document.getElementById('stat-approved').textContent = approved;
+  document.getElementById('stat-rejected').textContent = rejected;
+
+  if (pending > 0) {
+    queueBadge.textContent = `${pending} pending`;
+    queueBadge.classList.remove('hidden');
+  } else {
+    queueBadge.classList.add('hidden');
+  }
+
+  headerSub.textContent = `${total} questions in queue · ${approved} approved · ${rejected} rejected`;
+}
+
+// ── Filter ────────────────────────────────────────────────────────────────
+function setFilter(filter, el) {
+  activeFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  renderVisible();
+}
+
+function setDomain(domain) {
+  activeDomain = domain === 'null' ? null : domain;
+  document.querySelectorAll('.domain-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.domain === String(domain));
+  });
+  renderVisible();
+}
+
+function buildDomainFilter() {
+  const domains = [...new Set(allQuestions.map(q => q.domain))].sort();
+  const wrap = document.getElementById('domain-filter-wrap');
+  const list = document.getElementById('domain-filter-list');
+  if (domains.length === 0) { wrap.classList.add('hidden'); return; }
+  wrap.classList.remove('hidden');
+  list.innerHTML = `<button class="filter-btn domain-btn active" data-domain="null" onclick="setDomain('null')">All domains</button>`
+    + domains.map(d => `<button class="filter-btn domain-btn" data-domain="${d}" onclick="setDomain('${d}')">${domainLabel(d)}</button>`).join('');
+}
+
+function visibleQuestions() {
+  return allQuestions.filter(q => {
+    if (activeDomain && q.domain !== activeDomain) return false;
+    if (activeFilter === 'pending')  return q.status === 'enriched';
+    if (activeFilter === 'approved') return q.status === 'approved';
+    if (activeFilter === 'rejected') return q.status === 'rejected';
+    return true;
+  });
+}
+
+// ── Render ────────────────────────────────────────────────────────────────
+function renderVisible() {
+  const list = visibleQuestions();
+  if (list.length === 0) {
+    questionArea.innerHTML = `<div class="empty-panel"><div style="font-size:2.5rem">🎉</div><p class="mt-3">Nothing to show for this filter.</p></div>`;
+    return;
+  }
+
+  questionArea.innerHTML = list.map((q, i) => buildQuestionCard(q, i)).join('');
+
+  // Render diagrams
+  list.forEach((q, i) => {
+    if (!q.diagram) return;
+    const host = document.getElementById(`diag-${i}`);
+    if (host) renderDiagram(q.diagram, host);
+  });
+
+  renderKaTeXIn(questionArea);
+  wireCardEvents(list);
+}
+
+function wireCardEvents(list) {
+  // Explanation toggles
+  questionArea.querySelectorAll('.exp-toggle').forEach(btn => {
+    const panel = document.getElementById(btn.dataset.target);
+    btn.addEventListener('click', () => {
+      const hidden = panel.classList.toggle('hidden');
+      btn.textContent = hidden ? 'Show explanation ▾' : 'Hide explanation ▴';
+      if (!hidden) renderKaTeXIn(panel);
+    });
+  });
+
+  // Approve buttons
+  questionArea.querySelectorAll('.btn-approve').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.dataset.id;
+      const q  = allQuestions.find(x => x.id === id);
+      if (!q) return;
+      const wasApproved = q.status === 'approved';
+      q.status = wasApproved ? 'enriched' : 'approved'; // toggle
+      try {
+        if (!wasApproved) {
+          await apiPatch(`/api/admin/questions/${id}/approve`);
+          showToast(`✅ ${q.externalId} approved`);
+        } else {
+          await apiPatch(`/api/admin/questions/${id}/pending`);
+          showToast(`${q.externalId} moved back to pending`);
+        }
+      } catch (e) {
+        q.status = wasApproved ? 'approved' : 'enriched';
+        showToast(`Error: ${e.message}`, true);
+      }
+      updateStats();
+      refreshCard(id, list);
+    });
+  });
+
+  // Reject buttons
+  questionArea.querySelectorAll('.btn-reject').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.dataset.id;
+      const q  = allQuestions.find(x => x.id === id);
+      if (!q) return;
+      const prev = q.status;
+      q.status = prev === 'rejected' ? 'enriched' : 'rejected';
+      try {
+        if (prev !== 'rejected') {
+          await apiPatch(`/api/admin/questions/${id}/reject`);
+          showToast(`❌ ${q.externalId} rejected`);
+        } else {
+          await apiPatch(`/api/admin/questions/${id}/pending`);
+          q.status = 'enriched';
+          showToast(`${q.externalId} moved back to pending`);
+        }
+      } catch (e) {
+        q.status = prev;
+        showToast(`Error: ${e.message}`, true);
+      }
+      updateStats();
+      refreshCard(id, list);
+    });
+  });
+
+  // Fix-answer buttons
+  questionArea.querySelectorAll('.btn-fix-answer').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id     = btn.dataset.id;
+      const answer = btn.dataset.answer;
+      const q      = allQuestions.find(x => x.id === id);
+      if (!q) return;
+      const prev = q.correctAnswer;
+      q.correctAnswer = answer;
+      q.status = 'approved';
+      try {
+        await apiPatch(`/api/admin/questions/${id}/answer`, { correctAnswer: answer });
+        showToast(`🔧 ${q.externalId} fixed → ${answer} and approved`);
+      } catch (e) {
+        q.correctAnswer = prev;
+        q.status = 'enriched';
+        showToast(`Error: ${e.message}`, true);
+      }
+      updateStats();
+      refreshCard(id, list);
+    });
+  });
+
+  // Pool buttons
+  questionArea.querySelectorAll('.pool-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id   = btn.dataset.id;
+      const pool = btn.dataset.pool;
+      const q    = allQuestions.find(x => x.id === id);
+      if (!q) return;
+      const prev = q.pool;
+      q.pool = pool;
+      try {
+        await apiPatch(`/api/admin/questions/${id}/pool`, { pool });
+        showToast(`Pool → ${pool}`);
+      } catch (e) {
+        q.pool = prev;
+        showToast(`Error: ${e.message}`, true);
+      }
+      // Just update button visuals without full re-render
+      document.querySelectorAll(`.pool-btn[data-id="${id}"]`).forEach(b => {
+        b.classList.remove('active-test','active-practice','active-both');
+        if (b.dataset.pool === pool) b.classList.add(`active-${pool}`);
+      });
+    });
+  });
+}
+
+function refreshCard(id, list) {
+  const idx  = list.findIndex(q => q.id === id);
+  const q    = allQuestions.find(x => x.id === id);
+  if (idx === -1 || !q) return;
+
+  const cards = questionArea.querySelectorAll('.q-card');
+  if (!cards[idx]) return;
+
+  const newHtml = buildQuestionCard(q, idx);
+  cards[idx].outerHTML = newHtml;
+
+  const newCards = questionArea.querySelectorAll('.q-card');
+  const newCard  = newCards[idx];
+  if (newCard) {
+    if (q.diagram) {
+      const host = newCard.querySelector(`#diag-${idx}`);
+      if (host) renderDiagram(q.diagram, host);
+    }
+    renderKaTeXIn(newCard);
+    wireCardEvents(list); // re-wire all (simple approach)
+  }
+}
+
+// ── Card builder ──────────────────────────────────────────────────────────
+function buildQuestionCard(q, idx) {
+  const diff   = q.difficulty || 1;
+  const cls    = diff <= 2 ? 'easy' : diff <= 4 ? 'medium' : 'hard';
+  const isMCQ  = q.questionType !== 'spr';
+  const status = q.status;
+
+  const revBadge = status === 'approved'
+    ? `<span class="badge-reviewed text-xs">✓ Approved</span>`
+    : status === 'rejected'
+      ? `<span class="text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-semibold">✗ Rejected</span>`
+      : `<span class="badge-pending text-xs">Pending</span>`;
+
+  const diagHtml = q.diagram
+    ? `<div class="diagram-host my-3" id="diag-${idx}"></div>` : '';
+
+  const passageHtml = q.passageText
+    ? `<div class="passage-box mb-3 text-sm">${q.passageText}</div>` : '';
+
+  let optionsHtml = '';
+  if (isMCQ) {
+    const correct = (q.correctAnswer || '').toUpperCase();
+    const opts = [
+      { letter:'A', text:q.optionA }, { letter:'B', text:q.optionB },
+      { letter:'C', text:q.optionC }, { letter:'D', text:q.optionD }
+    ].filter(o => o.text);
+    optionsHtml = `<div class="flex flex-col gap-1.5 mt-3">${
+      opts.map(o => `
+        <div class="choice-label ${o.letter===correct?'is-correct-answer':''}">
+          <span class="choice-letter-badge">${o.letter}</span>
+          <span class="text-sm flex-1">${processQuestionText(o.text)}</span>
+          ${o.letter===correct ? '<span class="text-xs text-green-600 font-semibold ml-auto">✓</span>' : ''}
+        </div>`).join('')
+    }</div>`;
+  } else {
+    optionsHtml = `<div class="mt-3 flex items-center gap-2 text-sm text-slate-600">
+      <span class="font-semibold">Answer:</span>
+      <span class="font-mono bg-green-50 border border-green-200 px-3 py-1 rounded text-green-800">${q.correctAnswer||'?'}</span>
+    </div>`;
+  }
+
+  const expId = `exp-${idx}`;
+  let explanationHtml = '';
+  let steps = [];
+  try {
+    steps = typeof q.explanationSteps === 'string'
+      ? JSON.parse(q.explanationSteps || '[]')
+      : (q.explanationSteps || []);
+  } catch (e) { steps = []; }
+
+  if (steps.length) {
+    const stepsHtml = steps.map((s, si) => `
+      <div class="step-card">
+        <div class="step-title">Step ${si+1}: ${s.title||''}</div>
+        <div>${processQuestionText(s.content||'')}</div>
+        ${s.math?`<div class="step-math">\\(${s.math}\\)</div>`:''}
+      </div>`).join('');
+    explanationHtml = `<div class="mt-3">
+      <span class="exp-toggle" data-target="${expId}">Show explanation ▾</span>
+      <div id="${expId}" class="hidden mt-2">${stepsHtml}</div>
+    </div>`;
+  }
+
+  let cc = {};
+  try {
+    cc = typeof q.coreConcept === 'string' ? (JSON.parse(q.coreConcept || 'null') || {}) : (q.coreConcept || {});
+  } catch (e) { cc = {}; }
+
+  let prereqs = [];
+  try {
+    prereqs = typeof q.prerequisites === 'string' ? (JSON.parse(q.prerequisites || '[]') || []) : (q.prerequisites || []);
+  } catch (e) { prereqs = []; }
+
+  const trapHtml = q.trapCategory ? `
+    <div class="field-panel trap">
+      <div class="panel-label">Trap — ${q.trapCategory.replace(/_/g,' ')}</div>
+      <div>${processQuestionText(q.trapExplanation||'')}</div>
+    </div>` : '';
+
+  const conceptHtml = cc.title ? `
+    <div class="field-panel concept">
+      <div class="panel-label">Core Concept</div>
+      <div class="font-semibold text-slate-800 mb-1">${cc.title}</div>
+      <div>${processQuestionText(cc.summary||'')}</div>
+      ${cc.keyFormula?`<div class="step-math mt-1">\\(${cc.keyFormula}\\)</div>`:''}
+    </div>` : '';
+
+  const prereqHtml = prereqs.length ? `
+    <div class="field-panel prereqs">
+      <div class="panel-label">Prerequisites</div>
+      ${prereqs.map(p=>`<div class="mb-1"><span class="font-semibold">${p.topic}</span> — ${p.why}</div>`).join('')}
+    </div>` : '';
+
+  const pool = q.pool || 'both';
+  const poolHtml = `
+    <div class="flex items-center gap-1.5 mt-3 pt-3 border-t border-slate-100">
+      <span class="text-xs text-slate-400 font-semibold mr-1">Pool:</span>
+      ${['test','practice','both'].map(p => `
+        <button class="pool-btn ${pool===p?'active-'+p:''}" data-id="${q.id}" data-pool="${p}">${p.charAt(0).toUpperCase()+p.slice(1)}</button>`
+      ).join('')}
+    </div>`;
+
+  const agentBadge = buildAgentBadge(q, idx);
+  const diagBadge = q.diagram
+    ? `<span class="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded">${q.diagram.diagramType==='chartjs'?'Chart.js':'SVG'}</span>` : '';
+
+  const cardCls = status === 'approved' ? 'is-approved' : status === 'rejected' ? 'is-rejected' : '';
+
+  return `<div class="q-card ${cardCls}">
+    <div class="flex items-center gap-2 flex-wrap mb-3">
+      <span class="font-mono text-xs font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded">${q.externalId}</span>
+      <span class="diff-${cls} text-xs font-semibold px-2 py-0.5 rounded-full">${sectionLabel(q.section)} · ${domainLabel(q.domain)} · ${q.difficulty}/7</span>
+      <span class="text-xs text-slate-400">${(q.questionType||'mcq').toUpperCase()}</span>
+      ${diagBadge}
+      ${agentBadge}
+      <span class="ml-auto flex items-center gap-2">
+        ${revBadge}
+        <button class="btn-approve ${status==='approved'?'active':''}" data-id="${q.id}">✓ Approve</button>
+        <button class="btn-reject  ${status==='rejected'?'active':''}" data-id="${q.id}">✗ Reject</button>
+      </span>
+    </div>
+    ${passageHtml}
+    ${diagHtml}
+    <div class="question-stem text-sm leading-relaxed">${processQuestionText(q.questionStem)}</div>
+    ${optionsHtml}
+    ${explanationHtml}
+    ${trapHtml}
+    ${conceptHtml}
+    ${prereqHtml}
+    ${poolHtml}
+  </div>`;
+}
+
+function buildAgentBadge(q, idx) {
+  const ar = q.agentReview;
+  if (!ar) return '';
+  const passed   = ar.pass;
+  const solved   = ar.solvedAnswer || null;
+  const correct  = (q.correctAnswer || '').toUpperCase();
+  const mismatch = solved && /^[A-D]$/.test(solved) && solved !== correct;
+
+  let issues = [];
+  try {
+    issues = typeof ar.issues === 'string' ? (JSON.parse(ar.issues || '[]') || []) : (ar.issues || []);
+  } catch (e) { issues = []; }
+  const criticals = issues.filter(i => i.severity === 'critical').length;
+
+  const parts = [];
+  if (mismatch) parts.push(`solved ${solved} ≠ key ${correct}`);
+  if (criticals) parts.push(`${criticals} critical`);
+
+  const fixBtn = mismatch
+    ? `<button class="btn-fix-answer"
+         data-id="${q.id}" data-answer="${solved}"
+         style="margin-left:6px;font-size:0.65rem;font-weight:700;padding:1px 7px;
+                border-radius:999px;border:1.5px solid #2563eb;color:#1d4ed8;
+                background:#eff6ff;cursor:pointer;">Fix → ${solved}</button>` : '';
+
+  return `<span class="agent-badge ${passed?'pass':'fail'}">
+    ${passed ? '✅ Agent passed' : '❌ Agent failed'}
+    ${parts.length ? '· ' + parts.join(' · ') : ''}
+  </span>${fixBtn}`;
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────
+function sectionLabel(s) {
+  return s === 'math' ? 'Math' : s === 'reading_writing' ? 'R&W' : s || '?';
+}
+function domainLabel(d) {
+  const MAP = {
+    algebra:'Algebra', advanced_math:'Adv Math', problem_solving_data:'Problem Solving',
+    geometry_trigonometry:'Geometry', information_ideas:'Info & Ideas',
+    craft_structure:'Craft & Structure', expression_ideas:'Expression',
+    standard_english:'Standard English'
+  };
+  return MAP[d] || d || '?';
+}
+function processQuestionText(text) {
+  if (!text) return '';
+  return String(text)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/&lt;table/gi,'<table').replace(/&lt;\/table&gt;/gi,'</table>')
+    .replace(/&lt;thead/gi,'<thead').replace(/&lt;\/thead&gt;/gi,'</thead>')
+    .replace(/&lt;tbody/gi,'<tbody').replace(/&lt;\/tbody&gt;/gi,'</tbody>')
+    .replace(/&lt;tr/gi,'<tr').replace(/&lt;\/tr&gt;/gi,'</tr>')
+    .replace(/&lt;th/gi,'<th').replace(/&lt;\/th&gt;/gi,'</th>')
+    .replace(/&lt;td/gi,'<td').replace(/&lt;\/td&gt;/gi,'</td>');
+}
+function renderKaTeXIn(el) {
+  if (window.renderMathInElement) {
+    renderMathInElement(el, {
+      delimiters: [
+        {left:'\\(',right:'\\)',display:false},
+        {left:'\\[',right:'\\]',display:true},
+        {left:'$$',right:'$$',display:true},
+        {left:'$',right:'$',display:false}
+      ],
+      throwOnError: false
+    });
+  }
+}
+function renderDiagram(diagram, host) {
+  if (!diagram || !host) return;
+  host.innerHTML = `<div class="text-xs text-slate-400 p-2">[${diagram.diagramType||'diagram'}]</div>`;
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────────
+(async () => {
+  try {
+    const resp = await fetch('/api/admin/questions?status=enriched');
+    if (!resp.ok) throw new Error(`HTTP ${resp.status} — is the Spring Boot server running?`);
+    allQuestions = await resp.json();
+    updateStats();
+    buildDomainFilter();
+    setFilter('pending', document.querySelector('.filter-btn[data-filter="pending"]'));
+  } catch (err) {
+    questionArea.innerHTML = `<div class="empty-panel">
+      <div style="font-size:2.5rem">⚠️</div>
+      <p class="mt-3 text-red-500 font-semibold">Failed to load questions</p>
+      <p class="text-sm mt-1 text-slate-400">${err.message}</p>
+    </div>`;
+    headerSub.textContent = 'Could not reach API';
+  }
+})();
+</script>
+</body>
+</html>
