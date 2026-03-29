@@ -20,11 +20,17 @@ public class ClaudeClient {
 
     @PostConstruct
     public void init() {
+        // Resolution order: Spring property → env var → system property (dotenv sets this)
         if (apiKey == null || apiKey.isBlank()) {
             apiKey = System.getenv("ANTHROPIC_API_KEY");
         }
         if (apiKey == null || apiKey.isBlank()) {
-            throw new IllegalStateException("ANTHROPIC_API_KEY is not set");
+            apiKey = System.getProperty("ANTHROPIC_API_KEY");
+        }
+        if (apiKey == null || apiKey.isBlank()) {
+            // Not required for --load-batch or API-only mode — defer error to first actual call
+            log.warn("ANTHROPIC_API_KEY is not set — pipeline jobs will fail if invoked");
+            return;
         }
         client = AnthropicOkHttpClient.builder()
                 .apiKey(apiKey)
