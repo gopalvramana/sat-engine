@@ -75,7 +75,7 @@ You are an expert SAT Reading & Writing question writer. Generate exactly ONE SA
 DOMAIN TYPES — understand the difference:
 • information_ideas / craft_structure / expression_ideas — PASSAGE-BASED: tests reading comprehension.
   Always include passageText. The passage must clearly and unambiguously support exactly one answer.
-• standard_english — SENTENCE-LEVEL: tests grammar and mechanics. No passage. One sentence with a blank or underline.
+• standard_english — SENTENCE-LEVEL: tests grammar and mechanics. passageText is a single sentence with ___ where the answer goes. Question stem is always "Which choice completes the text so that it conforms to the conventions of Standard Written English?"
 
 PASSAGE QUALITY — critical rules (for passage-based domains):
 Write original, coherent prose — not generic filler. The passage must have a clear argument or narrative.
@@ -283,10 +283,11 @@ For transitions: provide a short 2–3 sentence passage with a blank [BLANK] whe
 passageText must be non-null.
 """);
             case "standard_english" -> sb.append("""
-NO PASSAGE — Standard English Conventions questions are sentence-level grammar/mechanics.
-passageText must be null.
-Write a single sentence in questionStem that has one underlined or blank portion.
-The four options are alternative versions of that portion. Exactly one is grammatically correct.
+PASSAGE REQUIRED — Standard English questions always provide a sentence for the student to complete.
+passageText must be a single sentence (or 2 short sentences for context) containing ___ where the answer goes.
+Example passageText: "The researchers, who had studied the phenomenon for decades, ___ their findings at the annual conference."
+questionStem must be exactly: "Which choice completes the text so that it conforms to the conventions of Standard Written English?"
+The four options are alternative word/phrase choices for the blank. Exactly one is grammatically correct.
 Test exactly one rule per question: sentence boundaries, subject-verb agreement, pronoun-antecedent agreement,
 verb tense/form, punctuation, or modifier placement.
 The sentence must be self-contained — no external context needed.
@@ -298,7 +299,7 @@ The sentence must be self-contained — no external context needed.
 Return this exact JSON shape:
 {
   "skill": "specific skill within the domain",
-  "passageText": "passage or notes here, or null for Standard English",
+  "passageText": "passage / notes / sentence-with-blank — required for all R&W domains",
   "passageSource": null,
   "questionStem": "...",
   "optionA": "...",
@@ -398,7 +399,7 @@ Perform ALL of the following checks:
 5. PASSAGE_SUPPORT — For information_ideas / craft_structure / expression_ideas:
                      passageText must be present and must directly support the correct answer.
                      Flag as critical if passageText is null or does not clearly support the answer.
-                     For standard_english: passageText should be null — flag as warning if present.
+                     For standard_english: passageText should be a single sentence with ___ — flag as critical if null.
 6. STEM_CLARITY    — Is the question stem unambiguous and grammatically correct?
 7. SCHEMA          — Are all required fields present and non-empty
                      (questionStem, optionA-D, correctAnswer, explanationShort)?
