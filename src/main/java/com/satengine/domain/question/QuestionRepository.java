@@ -49,6 +49,10 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
 
     List<Question> findByStatus(String status);
 
+    /** Approved questions that were never enriched (coreConcept is null). */
+    @Query("SELECT q FROM Question q WHERE q.status = 'approved' AND q.coreConcept IS NULL")
+    List<Question> findApprovedUnenriched();
+
     @Query(value = """
         SELECT COALESCE(
           MAX(CAST(SUBSTRING(external_id FROM LENGTH(:prefix)+1 FOR 3) AS INTEGER)), 0

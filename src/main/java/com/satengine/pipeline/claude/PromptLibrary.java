@@ -90,9 +90,82 @@ Nothing before or after the JSON.""";
         if (hasDiagram) {
             sb.append("\nInclude a diagram of type: ").append(diagramType).append(".\n");
             if ("svg_programmatic".equals(diagramType)) {
-                sb.append("Provide svgConfig with shape, dimensions, and labeled elements.\n");
+                sb.append("""
+Provide svgConfig.  The supported shape values and their key fields are:
+
+  triangle / right_triangle — vertices:{A:{x,y},B:{x,y},C:{x,y}}, sides:[{from,to,label}],
+    angles:[{at,label}], angleMarkers:[{at,type:"right"|"arc"|"double_arc"}],
+    equalSides:[[...]], rightAngleAt:"A"
+
+  circle — cx,cy,radius, sectors:[{fromAngle,toAngle,fillColor,label,centralAngle}],
+    radii:[{angle,label}], arcs:[{fromAngle,toAngle,label}],
+    chords:[{fromAngle,toAngle,label}], tangents:[{angle,length,label}],
+    inscribedAngles:[{vertex,from,to,label}], center:{show,label}, points:[{angle,label}],
+    innerRadius (number) — draws annulus/ring; use labels:{outerRadius,innerRadius} for dimension labels
+    inscribedPolygon:{sides,rotationDeg,vertexLabels:[],sideLabels:[]} — polygon inside circle
+    circumscribedPolygon:{sides,rotationDeg,vertexLabels:[]} — polygon around circle
+
+  angle_figure — angles:[{vx,vy,ray1Angle,ray2Angle,rayLength,label,
+    point1Label,point2Label,vertexLabel,rightAngle,arcCount}],
+    extraRays:[{vx,vy,angle,length,label}]
+    Use this for pure angle-relationship problems (supplementary, vertical, etc.)
+
+  two_triangles — triangle1:{vertices:{A,B,C}}, triangle2:{vertices:{D,E,F}},
+    congruentSides:[["AB","DE"]], congruentAngles:[["A","D"]],
+    similarity:"AA"|"SAS"|"SSS"|"1:2", scaleFactor:2
+
+  coordinate_plane — xMin,xMax,yMin,yMax
+    subtype: "function_graph"  — functions:[{type,params,color,label,labelAt:{x,y}}]
+      function types: linear(m,b), quadratic(a,b,c), cubic(a,b,c,d), absolute(a,h,k),
+        square_root(a,h,k), exponential(a,b,c), reciprocal(a,h,k), constant(c)
+    subtype: "system_of_equations" — functions:[...], intersections:[{x,y,label}]
+    subtype: "piecewise" — pieces:[{type,params,domainMin,domainMax,
+        leftEndpoint:"open"|"closed"|"none", rightEndpoint:"open"|"closed"|"none", color}]
+      Use for SAT questions where f(x) is defined differently on separate intervals.
+    subtype: "inequality" — inequalities:[{type,params,operator:"gt"|"gte"|"lt"|"lte",
+        shadeAbove:true|false, fillColor, borderColor, lineStyle:"solid"|"dashed"}]
+      Use to shade the region satisfying an inequality (e.g. y > 2x+1).
+    regions:[{function1:{type,params}, function2:{type,params},
+        xMin,xMax, fillColor, color1, color2, label}]
+      Add regions[] to shade the area BETWEEN two curves on any subtype.
+    points:[{x,y,label,color}], segments:[{from:{x,y},to:{x,y},color,style}]
+
+  normal_curve — mean, stdDev, xMin?, xMax?,
+    shadedRegions:[{from,to,fillColor,label}],
+    markers:[{x,label,color,dashed}], title?
+    Use for statistics questions about normal distributions, z-scores, percentiles.
+
+  regular_polygon — sides(3–12), sideLabel?, vertexLabels:[], showDiagonals?,
+    shading?, label?, rotationDeg?
+    Use for geometry questions about regular hexagons, pentagons, octagons, etc.
+
+  venn_diagram — sets:[{label,color?,value?,regionLabel?},{label,color?,value?,regionLabel?}],
+    intersection:{label?,value?,color?}, title?,
+    universal:{label?,value?}  (draws enclosing rectangle = sample space)
+    Use for probability set questions: P(A∩B), P(A∪B), P(A only), counting problems.
+
+  rectangle / parallelogram / trapezoid — vertices:{A,B,C,D:{x,y}},
+    sides:[{from,to,label}], angles:[{at,label}], showHeight, heightLabel
+
+  parallel_transversal — angle label pairs, transversal line
+
+  triangle_with_altitude — triangle with a perpendicular height line
+
+  number_line — min, max, step, points:[{value,label,style}]
+
+  3d_shape — type: "rectangular_prism"|"cube"|"cylinder"|"cone"|"pyramid"|
+    "sphere"|"triangular_prism"|"frustum"
+    labels:{length,width,height,radius,base,topRadius,bottomRadius,depth}
+
+  composite — shapes:[{shape:"rectangle",offsetX,offsetY,...},
+    {shape:"triangle",offsetX,offsetY,...}],
+    dimensions:[{x,y,label}], arrows:[{x1,y1,x2,y2,label}]
+    Use when a question involves a combined figure (e.g. rectangle + semicircle).
+
+Set width/height in pixels (typical: 240×200 for simple shapes, 320×240 for complex).
+""");
             } else {
-                sb.append("Provide chartConfig with chartType, labels[], and datasets[].\n");
+                sb.append("Provide chartConfig with chartType, labels[], datasets[], and optional fields:\n  stacked:true  — for stacked bar charts (datasets[] still used)\n  Each dataset: {label, values:[], color}\n  Multiple datasets in bar chart = grouped bars (side by side) by default.\n  Set stacked:true for stacked bars (e.g. showing parts of a whole).\n");
             }
         } else {
             sb.append("\nNo diagram needed for this question.\n");

@@ -34,10 +34,30 @@ public class EnrichStage {
             "calculation_error", "concept_gap", "overcomplicated"
     );
 
+    /**
+     * Normal run: enriches questions with status=reviewed → advances to enriched.
+     */
     public void run() {
-        List<Question> queue = questionRepository.findByStatus(QuestionStatus.REVIEWED.lower());
+        run(false);
+    }
+
+    /**
+     * @param includeApproved  when true, also enriches approved questions that
+     *                         were never enriched (coreConcept IS NULL).
+     *                         Those questions keep their approved status.
+     */
+    public void run(boolean includeApproved) {
+        List<Question> queue = new java.util.ArrayList<>(
+                questionRepository.findByStatus(QuestionStatus.REVIEWED.lower()));
+
+        if (includeApproved) {
+            List<Question> unenriched = questionRepository.findApprovedUnenriched();
+            log.info("--include-approved: {} approved questions without enrichment data", unenriched.size());
+            queue.addAll(unenriched);
+        }
+
         if (queue.isEmpty()) {
-            log.info("No questions with status=reviewed to enrich.");
+            log.info("No questions to enrich.");
             return;
         }
 
@@ -52,7 +72,7 @@ public class EnrichStage {
             String label = padEnd(q.getExternalId(), 20);
             try {
                 JsonNode fields = enrichQuestion(q);
-                applyFields(q, fields);
+                applyFields(q, fields, "approved".equals(q.getStatus()));
                 log.info("[{}/{}] {} done", i + 1, queue.size(), label);
                 enriched++;
             } catch (Exception e) {
@@ -87,6 +107,11 @@ public class EnrichStage {
 
     @Transactional
     void applyFields(Question q, JsonNode fields) throws Exception {
+        applyFields(q, fields, false);
+    }
+
+    @Transactional
+    void applyFields(Question q, JsonNode fields, boolean keepApproved) throws Exception {
         if (!fields.path("explanationSteps").isMissingNode()) {
             q.setExplanationSteps(objectMapper.writeValueAsString(fields.path("explanationSteps")));
         }
@@ -104,7 +129,10 @@ public class EnrichStage {
             q.setAnimation(objectMapper.writeValueAsString(fields.path("animation")));
         }
         q.setPool(fields.path("pool").asText("both"));
-        q.setStatus(QuestionStatus.ENRICHED.lower());
+        // Keep approved status if already approved; otherwise advance to enriched
+        if (!keepApproved) {
+            q.setStatus(QuestionStatus.ENRICHED.lower());
+        }
 
         questionRepository.save(q);
     }

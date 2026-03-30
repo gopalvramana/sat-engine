@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:postgresql://localhost:5432/satengine
+    username: roms_user
+    password: roms_pass
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -21,3 +21,9 @@ server:
 
 anthropic:
   api-key: ${ANTHROPIC_API_KEY:}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    url: /api-docs/openapi.yaml
+    disable-swagger-default-url: true
