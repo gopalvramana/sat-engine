@@ -415,9 +415,12 @@ function buildView(q) {
     }
   }
 
-  /* ── Trap panel ── */
+  /* ── Section flag — R&W gets simplified right panel ── */
+  const isMath = q.section === 'math';
+
+  /* ── Trap panel (Math only) ── */
   let trapHtml = '';
-  if (q.trapCategory) {
+  if (isMath && q.trapCategory) {
     const catLabel = q.trapCategory.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
     trapHtml = `
       <div class="trap-panel mt-3 mb-3">
@@ -436,36 +439,40 @@ function buildView(q) {
       </div>`;
   }
 
-  /* ── Core Concept tab ── */
-  let cc = {};
-  try { cc = typeof q.coreConcept === 'string'
-    ? (JSON.parse(q.coreConcept || 'null') || {}) : (q.coreConcept || {}); } catch (e) {}
+  /* ── Core Concept tab (Math only) ── */
+  let conceptHtml = '';
+  if (isMath) {
+    let cc = {};
+    try { cc = typeof q.coreConcept === 'string'
+      ? (JSON.parse(q.coreConcept || 'null') || {}) : (q.coreConcept || {}); } catch (e) {}
+    conceptHtml = cc.title ? `
+      <div class="rounded-xl p-4 mb-4" style="background:#eff6ff; border:1.5px solid #bfdbfe;">
+        <p class="text-sm font-bold text-blue-800 mb-2">${escHtml(cc.title)}</p>
+        <p class="text-sm text-blue-700 leading-relaxed mb-3">${processText(cc.summary || '')}</p>
+        ${cc.keyFormula
+          ? `<div class="bg-white border border-blue-100 rounded-lg p-3 font-mono text-sm text-blue-900">
+               \\(${cc.keyFormula}\\)
+             </div>` : ''}
+      </div>` : `<p class="text-sm text-slate-400 italic">No core concept data. Run enrich job.</p>`;
+  }
 
-  const conceptHtml = cc.title ? `
-    <div class="rounded-xl p-4 mb-4" style="background:#eff6ff; border:1.5px solid #bfdbfe;">
-      <p class="text-sm font-bold text-blue-800 mb-2">${escHtml(cc.title)}</p>
-      <p class="text-sm text-blue-700 leading-relaxed mb-3">${processText(cc.summary || '')}</p>
-      ${cc.keyFormula
-        ? `<div class="bg-white border border-blue-100 rounded-lg p-3 font-mono text-sm text-blue-900">
-             \\(${cc.keyFormula}\\)
-           </div>` : ''}
-    </div>` : `<p class="text-sm text-slate-400 italic">No core concept data. Run enrich job.</p>`;
-
-  /* ── Prerequisites tab ── */
-  let prereqs = [];
-  try { prereqs = typeof q.prerequisites === 'string'
-    ? (JSON.parse(q.prerequisites || '[]') || []) : (q.prerequisites || []); } catch (e) {}
-
-  const prereqsHtml = prereqs.length
-    ? prereqs.map(p => `
-        <div class="prereq-card mb-3">
-          <div style="width:9px;height:9px;border-radius:50%;background:#3b82f6;flex-shrink:0;margin-top:3px;"></div>
-          <div>
-            <p class="text-sm font-semibold text-slate-800">${escHtml(p.topic || '')}</p>
-            <p class="text-xs text-slate-500 mt-0.5 leading-relaxed">${escHtml(p.why || '')}</p>
-          </div>
-        </div>`).join('')
-    : `<p class="text-sm text-slate-400 italic">No prerequisites data. Run enrich job.</p>`;
+  /* ── Prerequisites tab (Math only) ── */
+  let prereqsHtml = '';
+  if (isMath) {
+    let prereqs = [];
+    try { prereqs = typeof q.prerequisites === 'string'
+      ? (JSON.parse(q.prerequisites || '[]') || []) : (q.prerequisites || []); } catch (e) {}
+    prereqsHtml = prereqs.length
+      ? prereqs.map(p => `
+          <div class="prereq-card mb-3">
+            <div style="width:9px;height:9px;border-radius:50%;background:#3b82f6;flex-shrink:0;margin-top:3px;"></div>
+            <div>
+              <p class="text-sm font-semibold text-slate-800">${escHtml(p.topic || '')}</p>
+              <p class="text-xs text-slate-500 mt-0.5 leading-relaxed">${escHtml(p.why || '')}</p>
+            </div>
+          </div>`).join('')
+      : `<p class="text-sm text-slate-400 italic">No prerequisites data. Run enrich job.</p>`;
+  }
 
   /* ── Status badges ── */
   const statusBadge = status === 'approved'
@@ -474,7 +481,7 @@ function buildView(q) {
       ? `<span class="text-xs font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-600">✗ Rejected</span>`
       : `<span class="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">Pending</span>`;
 
-  const enrichBadge = !q.coreConcept && status === 'approved'
+  const enrichBadge = isMath && !q.coreConcept && status === 'approved'
     ? `<span class="text-xs bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded"
             title="Run: --job=enrich --include-approved">⚠ Needs enrich</span>` : '';
 
@@ -533,6 +540,7 @@ function buildView(q) {
 
       <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden mb-3"
            style="box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+        ${isMath ? `
         <div class="border-b border-slate-200 px-1">
           <div class="flex overflow-x-auto">
             <button class="tab-btn ${activeTab === 'explanation' ? 'active' : ''}"
@@ -542,11 +550,12 @@ function buildView(q) {
             <button class="tab-btn ${activeTab === 'prereqs' ? 'active' : ''}"
                     data-tab="prereqs" onclick="switchTab('prereqs')">Prerequisites</button>
           </div>
-        </div>
+        </div>` : ''}
         <div class="p-5">
           <div id="tab-explanation"
-               class="tab-pane ${activeTab === 'explanation' ? 'is-active' : ''}">
+               class="tab-pane ${isMath ? (activeTab === 'explanation' ? 'is-active' : '') : 'is-active'}">
           </div>
+          ${isMath ? `
           <div id="tab-concept"
                class="tab-pane ${activeTab === 'concept' ? 'is-active' : ''}">
             ${conceptHtml}
@@ -554,7 +563,7 @@ function buildView(q) {
           <div id="tab-prereqs"
                class="tab-pane ${activeTab === 'prereqs' ? 'is-active' : ''}">
             ${prereqsHtml}
-          </div>
+          </div>` : ''}
         </div>
       </div>
 
