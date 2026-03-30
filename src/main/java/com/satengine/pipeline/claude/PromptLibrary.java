@@ -8,10 +8,10 @@ public final class PromptLibrary {
 
     private PromptLibrary() {}
 
-    // ─── Generate ─────────────────────────────────────────────────────────────
+    // ─── Generate — Math ──────────────────────────────────────────────────────
 
-    public static final String GENERATE_SYSTEM = """
-You are an expert SAT question writer. Generate exactly ONE SAT question matching the specifications given.
+    public static final String GENERATE_SYSTEM_MATH = """
+You are an expert SAT Math question writer. Generate exactly ONE SAT question matching the specifications given.
 
 MATH NOTATION — critical rules:
 All math MUST use LaTeX notation.
@@ -67,10 +67,51 @@ POOL — always set to "both" (the content team will reclassify later)
 Return ONLY valid JSON. No markdown. No explanation. Start with { end with }
 Nothing before or after the JSON.""";
 
+    // ─── Generate — Reading & Writing ─────────────────────────────────────────
+
+    public static final String GENERATE_SYSTEM_RW = """
+You are an expert SAT Reading & Writing question writer. Generate exactly ONE SAT question matching the specifications given.
+
+PASSAGE — critical rules:
+Most R&W questions require a short passage (2–5 sentences). Write original, coherent prose.
+The passage must unambiguously support exactly one correct answer — not merely suggest it.
+passageText must be plain prose, no LaTeX, no markdown.
+
+CORRECT ANSWER — critical rules:
+Exactly one option must be correct. The other three must be wrong for clear, articulable reasons.
+"Best answer" means best — not just plausible. If two options both seem to work, rewrite the passage or options until only one is clearly correct.
+Test only what the skill says: vocabulary in context, transitions, evidence, grammar, etc.
+
+EXPLANATION — critical rules:
+explanationShort must explain in 2–3 confident sentences:
+  1. Why the correct answer is right (reference the passage or sentence directly).
+  2. Why the most tempting wrong answer fails.
+Write as a teacher — confident, no hedging.
+NEVER write: "Wait,", "Actually,", "Hmm,", or any stream-of-consciousness phrasing.
+
+STANDARD ENGLISH CONVENTIONS — critical rules (for grammar/mechanics questions):
+The question must test one specific rule: subject-verb agreement, pronoun agreement, verb tense,
+punctuation, sentence boundaries, or modifiers.
+The sentence must have exactly one grammatically correct option.
+
+POOL — always set to "both"
+
+Return ONLY valid JSON. No markdown. No explanation. Start with { end with }
+Nothing before or after the JSON.""";
+
+    /** Returns the correct system prompt for the given section. */
+    public static String getGenerateSystem(String section) {
+        return "reading_writing".equals(section) ? GENERATE_SYSTEM_RW : GENERATE_SYSTEM_MATH;
+    }
+
     public static String buildGenerateUserPrompt(
             String section, String domain, String skill,
             int difficulty, String questionType,
             boolean hasDiagram, String diagramType) {
+
+        if ("reading_writing".equals(section)) {
+            return buildGenerateUserPromptRW(domain, skill, difficulty);
+        }
 
         StringBuilder sb = new StringBuilder();
         sb.append("Generate one SAT question with these exact specifications:\n\n");
@@ -201,11 +242,52 @@ Return this exact JSON shape (all fields required unless marked optional):
         return sb.toString();
     }
 
+    private static String buildGenerateUserPromptRW(String domain, String skill, int difficulty) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Generate one SAT Reading & Writing question with these exact specifications:\n\n");
+        sb.append("section: reading_writing\n");
+        sb.append("domain: ").append(domain).append("\n");
+        if (skill != null && !skill.isBlank()) sb.append("skill: ").append(skill).append("\n");
+        sb.append("difficulty: ").append(difficulty).append(" (scale 1=easy … 7=hard)\n");
+        sb.append("questionType: mcq\n\n");
+        sb.append("Provide optionA, optionB, optionC, optionD and correctAnswer (A/B/C/D).\n");
+        sb.append("Make exactly one option correct. The other three must be wrong for clear, articulable reasons.\n\n");
+        sb.append("""
+Return this exact JSON shape (all fields required unless marked optional):
+{
+  "skill": "specific skill within the domain",
+  "passageText": "2-5 sentence original passage (null if not needed for this skill)",
+  "passageSource": null,
+  "questionStem": "...",
+  "optionA": "...",
+  "optionB": "...",
+  "optionC": "...",
+  "optionD": "...",
+  "correctAnswer": "A",
+  "explanationShort": "2-3 sentences: why correct answer is right and why the best distractor fails.",
+  "pool": "both",
+  "diagram": null
+}""");
+        return sb.toString();
+    }
+
     // ─── Agent Review ─────────────────────────────────────────────────────────
 
+    /** Returns the correct review prompt for the given section. */
+    public static String buildReviewPrompt(String questionJson, String section) {
+        return "reading_writing".equals(section)
+            ? buildReviewPromptRW(questionJson)
+            : buildReviewPromptMath(questionJson);
+    }
+
+    /** Backwards-compatible overload — assumes math. */
     public static String buildReviewPrompt(String questionJson) {
+        return buildReviewPromptMath(questionJson);
+    }
+
+    private static String buildReviewPromptMath(String questionJson) {
         return """
-You are a rigorous SAT question reviewer with expertise in math and reading/writing.
+You are a rigorous SAT Math question reviewer.
 Review the following question and return ONLY a JSON object — no explanation, no markdown fences.
 
 QUESTION JSON:
@@ -251,6 +333,53 @@ Rules:
 - solvedAnswer MUST be exactly one letter (A, B, C, or D) for MCQ, or a numeric value for SPR.
   Never put reasoning or phrases like "None of the options" in solvedAnswer.
   If you believe no option is correct, set solvedAnswer to the closest letter and flag it as critical MATH issue.
+- Return ONLY the JSON object. No other text.""";
+    }
+
+    private static String buildReviewPromptRW(String questionJson) {
+        return """
+You are a rigorous SAT Reading & Writing question reviewer.
+Review the following question and return ONLY a JSON object — no explanation, no markdown fences.
+
+QUESTION JSON:
+""" + questionJson + """
+
+Perform ALL of the following checks:
+
+1. CORRECT_ANSWER  — Read the passage and question carefully. Is the stated correctAnswer
+                     actually the best answer? Show your reasoning in the "notes" field.
+2. ANSWER_KEY      — Does the correctAnswer letter ('A','B','C','D') map to the option
+                     that contains the correct text?
+3. DISTRACTORS     — Are all four options distinct (no duplicates, no near-duplicates)?
+4. SINGLE_BEST     — Is exactly ONE option defensible? Could a strong student argue for
+                     any wrong answer? If so, flag as critical.
+5. PASSAGE_SUPPORT — If passageText is present, does the passage actually support the
+                     correct answer — not just loosely relate to it?
+6. STEM_CLARITY    — Is the question stem unambiguous and grammatically correct?
+7. SCHEMA          — Are all required fields present and non-empty
+                     (questionStem, optionA-D, correctAnswer, explanationShort)?
+
+Return this exact JSON shape:
+{
+  "pass": true,
+  "confidence": 0.92,
+  "solvedAnswer": "B",
+  "issues": [
+    { "check": "CORRECT_ANSWER", "severity": "critical", "detail": "..." }
+  ],
+  "fixes": [
+    { "field": "correctAnswer", "current": "A", "suggested": "B" }
+  ],
+  "notes": "Reasoning: ..."
+}
+
+Rules:
+- A question FAILS (pass: false) if it has ANY issue with severity "critical".
+- Warnings and info issues still allow pass: true.
+- If there are no issues, return issues: [], fixes: [].
+- SCHEMA, CORRECT_ANSWER, and SINGLE_BEST failures are always "critical".
+- solvedAnswer MUST be exactly one letter (A, B, C, or D).
+  If you believe no option is correct, set solvedAnswer to the closest letter and flag as critical.
 - Return ONLY the JSON object. No other text.""";
     }
 

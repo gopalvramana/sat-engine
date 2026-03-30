@@ -65,16 +65,24 @@ public class EnrichStage {
         log.info(" Enrich Stage  questions={}  model={}", queue.size(), ENRICH_MODEL);
         log.info("═".repeat(60));
 
-        int enriched = 0, failed = 0;
+        int enriched = 0, skipped = 0, failed = 0;
 
         for (int i = 0; i < queue.size(); i++) {
             Question q = queue.get(i);
             String label = padEnd(q.getExternalId(), 20);
             try {
-                JsonNode fields = enrichQuestion(q);
-                applyFields(q, fields, "approved".equals(q.getStatus()));
-                log.info("[{}/{}] {} done", i + 1, queue.size(), label);
-                enriched++;
+                if ("reading_writing".equals(q.getSection())) {
+                    // R&W questions don't need Math-specific enrichment fields.
+                    // Just set pool and advance status directly.
+                    advanceRWQuestion(q, "approved".equals(q.getStatus()));
+                    log.info("[{}/{}] {} skipped (R&W — no enrich needed)", i + 1, queue.size(), label);
+                    skipped++;
+                } else {
+                    JsonNode fields = enrichQuestion(q);
+                    applyFields(q, fields, "approved".equals(q.getStatus()));
+                    log.info("[{}/{}] {} done", i + 1, queue.size(), label);
+                    enriched++;
+                }
             } catch (Exception e) {
                 log.error("[{}/{}] {} FAILED: {}", i + 1, queue.size(), label, e.getMessage());
                 failed++;
@@ -87,7 +95,16 @@ public class EnrichStage {
         }
 
         log.info("─".repeat(60));
-        log.info(" Results: {} enriched  {} failed", enriched, failed);
+        log.info(" Results: {} enriched  {} skipped (R&W)  {} failed", enriched, skipped, failed);
+    }
+
+    @Transactional
+    void advanceRWQuestion(Question q, boolean keepApproved) {
+        q.setPool("both");
+        if (!keepApproved) {
+            q.setStatus(QuestionStatus.ENRICHED.lower());
+        }
+        questionRepository.save(q);
     }
 
     private JsonNode enrichQuestion(Question q) throws Exception {

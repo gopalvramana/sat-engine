@@ -137,7 +137,7 @@ public class GenerateStage {
             try {
                 String userPrompt = PromptLibrary.buildGenerateUserPrompt(
                         section, domain, skill, difficulty, qtype, hasDiagram, diagramType);
-                String raw = claudeClient.call(GENERATE_MODEL, MAX_TOKENS, PromptLibrary.GENERATE_SYSTEM, userPrompt, TEMPERATURE);
+                String raw = claudeClient.call(GENERATE_MODEL, MAX_TOKENS, PromptLibrary.getGenerateSystem(section), userPrompt, TEMPERATURE);
                 String fixed = fixLatexEscapes(extractJson(raw));
                 JsonNode data = objectMapper.readTree(fixed);
 
