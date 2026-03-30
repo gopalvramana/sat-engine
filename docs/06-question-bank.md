@@ -210,10 +210,16 @@ Every generated question is written directly to PostgreSQL with this structure:
 ## Pipeline Quick Reference
 
 ```bash
-# Generate questions
+# Generate questions — random domain/skill
 java -jar sat-engine.jar --job=generate --count=20
 java -jar sat-engine.jar --job=generate --count=10 --section=math
 java -jar sat-engine.jar --job=generate --count=10 --section=math --difficulty=4
+
+# Generate questions — targeted by skill (recommended for coverage building)
+# Full skill list: docs/12-sat-skill-taxonomy.md
+java -jar sat-engine.jar --job=generate --count=3 --domain=algebra --skill=linear_functions
+java -jar sat-engine.jar --job=generate --count=3 --domain=geometry_trigonometry --skill=pythagorean_theorem --difficulty=5
+java -jar sat-engine.jar --job=generate --count=3 --domain=problem_solving_data --skill=probability
 
 # Agent review (runs on all status=generated questions)
 java -jar sat-engine.jar --job=agent-review
