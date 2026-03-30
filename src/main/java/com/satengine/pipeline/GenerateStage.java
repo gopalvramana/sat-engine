@@ -196,13 +196,13 @@ public class GenerateStage {
                 .difficulty((short) difficulty)
                 .questionType(qtype)
                 .questionStem(data.path("questionStem").asText(""))
-                .optionA(nullIfEmpty(data.path("optionA").asText(null)))
-                .optionB(nullIfEmpty(data.path("optionB").asText(null)))
-                .optionC(nullIfEmpty(data.path("optionC").asText(null)))
-                .optionD(nullIfEmpty(data.path("optionD").asText(null)))
+                .optionA(nullIfEmpty(sanitizeSingleLine(data.path("optionA").asText(null))))
+                .optionB(nullIfEmpty(sanitizeSingleLine(data.path("optionB").asText(null))))
+                .optionC(nullIfEmpty(sanitizeSingleLine(data.path("optionC").asText(null))))
+                .optionD(nullIfEmpty(sanitizeSingleLine(data.path("optionD").asText(null))))
                 .sprMin(parseSprBound(data, "sprMin", correctAnswer, true))
                 .sprMax(parseSprBound(data, "sprMax", correctAnswer, false))
-                .explanationShort(data.path("explanationShort").asText(null))
+                .explanationShort(sanitizeSingleLine(data.path("explanationShort").asText(null)))
                 .explanationSteps(toJsonString(data.path("explanationSteps")))
                 .trapCategory(data.path("trapCategory").asText(null))
                 .trapExplanation(data.path("trapExplanation").asText(null))
@@ -398,6 +398,17 @@ public class GenerateStage {
 
     private String nullIfEmpty(String v) {
         return (v == null || v.isBlank() || "null".equals(v)) ? null : v;
+    }
+
+    /**
+     * Strips newlines and trims for fields that must be single-line:
+     * options, explanationShort, passageSource, skill label.
+     * questionStem and passageText keep newlines — they're used for
+     * display-math line breaks and multi-line passages.
+     */
+    private String sanitizeSingleLine(String v) {
+        if (v == null) return null;
+        return v.replace('\n', ' ').replace('\r', ' ').replaceAll(" {2,}", " ").trim();
     }
 
     private BigDecimal parseBigDecimal(JsonNode node, String field) {

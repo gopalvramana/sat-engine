@@ -675,7 +675,9 @@ function escHtml(s) {
 function processText(text) {
   if (!text) return '';
   return String(text)
+    // HTML-escape everything first
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    // Un-escape HTML table tags (Claude emits raw HTML tables inside JSON strings)
     .replace(/&lt;(\/?)table(\s[^>]*)?&gt;/gi, (_,a,b)=>`<${a}table${b||''}>`)
     .replace(/&lt;(\/?)thead(&gt;|[^>]*>)/gi, (_,a)=>`<${a}thead>`)
     .replace(/&lt;(\/?)tbody(&gt;|[^>]*>)/gi, (_,a)=>`<${a}tbody>`)
@@ -683,7 +685,10 @@ function processText(text) {
     .replace(/&lt;th([^>]*)?&gt;/gi, (_,a)=>`<th${a||''}>`)
     .replace(/&lt;\/th&gt;/gi, `</th>`)
     .replace(/&lt;td([^>]*)?&gt;/gi, (_,a)=>`<td${a||''}>`)
-    .replace(/&lt;\/td&gt;/gi, `</td>`);
+    .replace(/&lt;\/td&gt;/gi, `</td>`)
+    // Convert newlines to <br> so display-math line breaks render correctly.
+    // KaTeX handles \n inside \[...\] blocks fine — this only affects surrounding prose.
+    .replace(/\n/g, '<br>');
 }
 
 function renderKaTeXIn(el) {
