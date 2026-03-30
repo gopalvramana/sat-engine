@@ -1,0 +1,686 @@
+openapi: 3.0.3
+info:
+  title: SAT Engine API
+  version: 1.0.0
+  description: |
+    REST API for the SAT Engine — question bank, practice sessions, and admin review.
+
+    **Status legend**
+    - ✅ `implemented` — live, tested
+    - 🔧 `partial` — endpoint exists, some fields/logic missing
+    - 📋 `planned` — designed, not yet built
+
+    **Base URL:** `http://localhost:8080`
+
+tags:
+  - name: Questions
+    description: Public question access (no correct answer exposed)
+  - name: Sessions
+    description: Practice session lifecycle
+  - name: Admin
+    description: Question review and pipeline management (internal)
+  - name: Topics
+    description: Browse by domain / skill — planned for Practice Mode UI
+  - name: Progress
+    description: Per-user mastery tracking — planned for Practice Mode
+
+paths:
+
+  # ─────────────────────────────────────────────────────────────────
+  # QUESTIONS
+  # ─────────────────────────────────────────────────────────────────
+
+  /api/questions:
+    get:
+      tags: [Questions]
+      summary: List approved questions
+      description: |
+        ✅ **Implemented**
+        Returns all questions with `status=approved`.
+        Used by the practice session engine to populate the pool.
+        Correct answer is never included.
+      parameters:
+        - name: section
+          in: query
+          schema: { type: string, enum: [math, reading_writing] }
+          description: Filter by section
+        - name: domain
+          in: query
+          schema: { type: string }
+          description: Filter by domain (e.g. algebra, geometry_trigonometry)
+        - name: pool
+          in: query
+          schema: { type: string, enum: [practice, test, both] }
+          description: Filter by question pool
+      responses:
+        '200':
+          description: List of approved questions
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/QuestionResponse' }
+
+  /api/questions/{id}:
+    get:
+      tags: [Questions]
+      summary: Get a single question by UUID
+      description: ✅ **Implemented**
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Question found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/QuestionResponse' }
+        '404':
+          description: Question not found
+
+  # ─────────────────────────────────────────────────────────────────
+  # SESSIONS
+  # ─────────────────────────────────────────────────────────────────
+
+  /api/sessions:
+    post:
+      tags: [Sessions]
+      summary: Create a new practice session
+      description: |
+        ✅ **Implemented**
+        Creates a session and returns its ID.
+        The client uses the session ID for all subsequent calls.
+
+        **Usage:** Call this when the user clicks "Start Practice" in the UI.
+        Pass `section: "math"` or `section: "reading_writing"` to restrict to one section,
+        or omit for mixed.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateSessionRequest' }
+            example:
+              sessionType: practice
+              section: math
+      responses:
+        '200':
+          description: Session created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SessionResponse' }
+
+  /api/sessions/{id}:
+    get:
+      tags: [Sessions]
+      summary: Get session status
+      description: |
+        ✅ **Implemented**
+        Returns current session state: questions answered, correct count, status.
+
+        **Usage:** Poll after each answer to update the scoreboard / progress bar in the UI.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Session status
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SessionResponse' }
+        '404':
+          description: Session not found
+
+  /api/sessions/{id}/next:
+    get:
+      tags: [Sessions]
+      summary: Get next question for this session
+      description: |
+        ✅ **Implemented**
+        Returns a random approved question from the pool that has not yet been
+        answered in this session. Excludes already-answered question IDs server-side.
+
+        Returns `204 No Content` when all questions in the pool are exhausted.
+
+        **Usage:** Call immediately after session creation and after each answer submission
+        to advance to the next question card.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Next question
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/QuestionResponse' }
+        '204':
+          description: No more questions — session is complete
+        '404':
+          description: Session not found
+
+  /api/sessions/{id}/answers:
+    post:
+      tags: [Sessions]
+      summary: Submit an answer
+      description: |
+        ✅ **Implemented**
+        Submits the student's answer for a question within the session.
+        Server evaluates correctness and returns feedback including the correct answer
+        and full explanation — the ONLY moment the correct answer is sent to the client.
+
+        **Usage:** Call when the student taps an MCQ option or submits an SPR value.
+        Use the returned `explanationSteps` to animate the step-by-step explanation panel.
+
+        Guards:
+        - Throws 400 if the question was already answered in this session
+        - Throws 404 if session or question not found
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SubmitAnswerRequest' }
+            example:
+              questionId: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+              studentAnswer: "B"
+              timeSpentSeconds: 47
+      responses:
+        '200':
+          description: Answer feedback with correct answer and explanation
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AnswerFeedback' }
+        '400':
+          description: Question already answered in this session
+        '404':
+          description: Session or question not found
+
+  /api/sessions/{id}/complete:
+    patch:
+      tags: [Sessions]
+      summary: Mark session as complete
+      description: |
+        📋 **Planned**
+        Explicitly closes the session. Sets `status = completed` and records `endedAt`.
+        After this, `/next` returns 204 and no more answers can be submitted.
+
+        **Usage:** Call when the student clicks "Finish" or when the UI detects
+        all questions are exhausted.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Session marked complete
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SessionResponse' }
+
+  /api/sessions/{id}/summary:
+    get:
+      tags: [Sessions]
+      summary: Get full session summary after completion
+      description: |
+        📋 **Planned**
+        Returns a detailed post-session breakdown: score, time, per-domain accuracy,
+        list of wrong answers with explanations.
+
+        **Usage:** Drives the "Results" screen shown after a session ends.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Session summary
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SessionSummary' }
+
+  /api/sessions/history:
+    get:
+      tags: [Sessions]
+      summary: List past sessions for a user
+      description: |
+        📋 **Planned** (requires auth)
+        Returns all completed sessions for the authenticated user, newest first.
+
+        **Usage:** Drives the "History" tab in the Practice Mode home screen.
+      parameters:
+        - name: limit
+          in: query
+          schema: { type: integer, default: 20 }
+      responses:
+        '200':
+          description: List of past sessions
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/SessionResponse' }
+
+  # ─────────────────────────────────────────────────────────────────
+  # TOPICS  (planned)
+  # ─────────────────────────────────────────────────────────────────
+
+  /api/topics:
+    get:
+      tags: [Topics]
+      summary: List all domains with question counts
+      description: |
+        📋 **Planned**
+        Returns each domain + skill with total question count and difficulty breakdown.
+
+        **Usage:** Drives the "Choose a Topic" screen where students pick what to practise.
+      responses:
+        '200':
+          description: Topic list
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/TopicSummary' }
+
+  /api/topics/{domain}/questions:
+    get:
+      tags: [Topics]
+      summary: Get questions for a specific domain
+      description: |
+        📋 **Planned**
+        Returns approved questions filtered by domain, sorted by difficulty.
+        Supports optional skill sub-filter.
+
+        **Usage:** Feeds domain-specific drill sessions
+        (e.g. "Practice Algebra → Linear Equations").
+      parameters:
+        - name: domain
+          in: path
+          required: true
+          schema: { type: string }
+          example: algebra
+        - name: skill
+          in: query
+          schema: { type: string }
+        - name: difficulty
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 7 }
+      responses:
+        '200':
+          description: Questions for the domain
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/QuestionResponse' }
+
+  # ─────────────────────────────────────────────────────────────────
+  # PROGRESS  (planned)
+  # ─────────────────────────────────────────────────────────────────
+
+  /api/progress:
+    get:
+      tags: [Progress]
+      summary: Get mastery summary per domain and skill
+      description: |
+        📋 **Planned** (requires auth)
+        Returns accuracy % per domain and per skill, computed from all completed sessions.
+
+        **Usage:** Drives the main dashboard progress rings / bar charts.
+      responses:
+        '200':
+          description: Mastery per domain
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/DomainProgress' }
+
+  /api/progress/weak-areas:
+    get:
+      tags: [Progress]
+      summary: Get skills below mastery threshold
+      description: |
+        📋 **Planned** (requires auth)
+        Returns skills where accuracy is below a configurable threshold (default 70%).
+        Sorted by weakest first.
+
+        **Usage:** Powers the "Focus Areas" recommendation on the home screen —
+        "You should practise Geometry Trigonometry next".
+      responses:
+        '200':
+          description: Weak skill areas
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/SkillProgress' }
+
+  # ─────────────────────────────────────────────────────────────────
+  # ADMIN
+  # ─────────────────────────────────────────────────────────────────
+
+  /api/admin/questions:
+    get:
+      tags: [Admin]
+      summary: List all questions with review data
+      description: |
+        ✅ **Implemented**
+        Returns all questions across all statuses including correct answer,
+        agent review summary, enrichment fields (coreConcept, prerequisites, trapCategory).
+
+        **Usage:** Powers validate.html — the internal question review UI.
+      parameters:
+        - name: status
+          in: query
+          schema: { type: string, enum: [all, generated, reviewed, enriched, approved, rejected] }
+          description: Filter by status (default all)
+      responses:
+        '200':
+          description: Admin question list
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/AdminQuestionResponse' }
+
+  /api/admin/questions/{id}/approve:
+    patch:
+      tags: [Admin]
+      summary: Approve a question
+      description: |
+        ✅ **Implemented**
+        Sets `status = approved`. Question becomes available in the practice pool.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Approved }
+
+  /api/admin/questions/{id}/reject:
+    patch:
+      tags: [Admin]
+      summary: Reject a question
+      description: |
+        ✅ **Implemented**
+        Sets `status = rejected`. Question is excluded from all pools.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Rejected }
+
+  /api/admin/questions/{id}/pending:
+    patch:
+      tags: [Admin]
+      summary: Revert question to pending (enriched)
+      description: |
+        ✅ **Implemented**
+        Reverts status back to `enriched` — used to un-approve a question for re-review.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Reverted to pending }
+
+  /api/admin/questions/{id}/answer:
+    patch:
+      tags: [Admin]
+      summary: Fix the correct answer and auto-approve
+      description: |
+        ✅ **Implemented**
+        Updates `correctAnswer` in `question_answers` table and sets `status = approved`.
+
+        **Usage:** Used in validate.html when the agent marked a wrong answer —
+        reviewer picks the correct option from the Fix dropdown.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                correctAnswer: { type: string, example: "C" }
+      responses:
+        '200': { description: Answer fixed and approved }
+
+  /api/admin/questions/{id}/pool:
+    patch:
+      tags: [Admin]
+      summary: Assign question to a pool
+      description: |
+        ✅ **Implemented**
+        Sets `pool` to `practice`, `test`, or `both`.
+
+        **Usage:** Reviewer uses this to designate which questions are
+        for free practice vs gated test mode.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pool: { type: string, enum: [practice, test, both] }
+      responses:
+        '200': { description: Pool updated }
+
+# ─────────────────────────────────────────────────────────────────
+# SCHEMAS
+# ─────────────────────────────────────────────────────────────────
+
+components:
+  schemas:
+
+    QuestionResponse:
+      type: object
+      description: Public question — correct answer omitted
+      properties:
+        id:               { type: string, format: uuid }
+        externalId:       { type: string, example: "MATH-ALG-001" }
+        section:          { type: string, enum: [math, reading_writing] }
+        domain:           { type: string, example: algebra }
+        skill:            { type: string, example: "Linear equations in one variable" }
+        difficulty:       { type: integer, minimum: 1, maximum: 7 }
+        questionType:     { type: string, enum: [mcq, spr] }
+        questionStem:     { type: string }
+        optionA:          { type: string }
+        optionB:          { type: string }
+        optionC:          { type: string }
+        optionD:          { type: string }
+        sprMin:           { type: number, description: "SPR minimum accepted value" }
+        sprMax:           { type: number, description: "SPR maximum accepted value" }
+        explanationShort: { type: string }
+        explanationSteps: { type: string, description: "JSON array of step objects" }
+        trapCategory:     { type: string, example: sign_error }
+        trapExplanation:  { type: string }
+        coreConceptJson:  { type: string, description: "JSON object {title, summary, keyFormula}" }
+        prerequisitesJson: { type: string, description: "JSON array [{topic, why}]" }
+        animationJson:    { type: string, description: "JSON animation config" }
+        diagramJson:      { type: string, description: "JSON diagram config for renderer" }
+        pool:             { type: string, enum: [practice, test, both] }
+        passageText:      { type: string }
+        passageSource:    { type: string }
+        calculatorOk:     { type: boolean }
+
+    CreateSessionRequest:
+      type: object
+      required: [sessionType]
+      properties:
+        sessionType:
+          type: string
+          enum: [practice, test]
+          description: practice = open pool; test = timed, test-pool only
+        section:
+          type: string
+          enum: [math, reading_writing]
+          description: Omit for mixed-section session
+
+    SessionResponse:
+      type: object
+      properties:
+        id:                { type: string, format: uuid }
+        sessionType:       { type: string, enum: [practice, test] }
+        section:           { type: string, nullable: true }
+        status:            { type: string, enum: [active, completed, abandoned] }
+        startedAt:         { type: string, format: date-time }
+        questionsAnswered: { type: integer }
+        correctCount:      { type: integer }
+
+    SubmitAnswerRequest:
+      type: object
+      required: [questionId, studentAnswer]
+      properties:
+        questionId:
+          type: string
+          format: uuid
+        studentAnswer:
+          type: string
+          description: "MCQ: A/B/C/D — SPR: numeric string"
+        timeSpentSeconds:
+          type: integer
+          description: Time the student spent on this question
+
+    AnswerFeedback:
+      type: object
+      description: Returned after answer submission — only moment correct answer is revealed
+      properties:
+        questionId:       { type: string, format: uuid }
+        isCorrect:        { type: boolean }
+        correctAnswer:    { type: string, example: "B" }
+        explanationShort: { type: string }
+        explanationSteps: { type: string, description: "JSON array of step objects" }
+
+    SessionSummary:
+      type: object
+      description: 📋 Planned — full post-session breakdown
+      properties:
+        sessionId:         { type: string, format: uuid }
+        totalQuestions:    { type: integer }
+        correctCount:      { type: integer }
+        scorePercent:      { type: number }
+        totalTimeSeconds:  { type: integer }
+        completedAt:       { type: string, format: date-time }
+        byDomain:
+          type: array
+          items:
+            type: object
+            properties:
+              domain:        { type: string }
+              attempted:     { type: integer }
+              correct:       { type: integer }
+              accuracyPct:   { type: number }
+        wrongAnswers:
+          type: array
+          items:
+            type: object
+            properties:
+              question:       { $ref: '#/components/schemas/QuestionResponse' }
+              studentAnswer:  { type: string }
+              correctAnswer:  { type: string }
+
+    TopicSummary:
+      type: object
+      description: 📋 Planned
+      properties:
+        domain:           { type: string }
+        displayName:      { type: string }
+        questionCount:    { type: integer }
+        skills:
+          type: array
+          items:
+            type: object
+            properties:
+              skill:         { type: string }
+              questionCount: { type: integer }
+              difficultyBreakdown:
+                type: object
+                additionalProperties: { type: integer }
+
+    DomainProgress:
+      type: object
+      description: 📋 Planned
+      properties:
+        domain:         { type: string }
+        attempted:      { type: integer }
+        correct:        { type: integer }
+        accuracyPct:    { type: number }
+        skills:
+          type: array
+          items: { $ref: '#/components/schemas/SkillProgress' }
+
+    SkillProgress:
+      type: object
+      description: 📋 Planned
+      properties:
+        skill:       { type: string }
+        domain:      { type: string }
+        attempted:   { type: integer }
+        correct:     { type: integer }
+        accuracyPct: { type: number }
+        mastered:    { type: boolean, description: "true if accuracyPct >= 70" }
+
+    AdminQuestionResponse:
+      type: object
+      description: Full question data for internal review UI
+      properties:
+        id:               { type: string, format: uuid }
+        externalId:       { type: string }
+        status:           { type: string, enum: [generated, reviewed, enriched, approved, rejected] }
+        section:          { type: string }
+        domain:           { type: string }
+        skill:            { type: string }
+        difficulty:       { type: integer }
+        questionType:     { type: string }
+        questionStem:     { type: string }
+        optionA:          { type: string }
+        optionB:          { type: string }
+        optionC:          { type: string }
+        optionD:          { type: string }
+        correctAnswer:    { type: string, description: "Included only in admin response" }
+        explanationShort: { type: string }
+        explanationSteps: { type: object, description: "Raw JSONB" }
+        trapCategory:     { type: string }
+        trapExplanation:  { type: string }
+        coreConcept:      { type: object, description: "Raw JSONB" }
+        prerequisites:    { type: object, description: "Raw JSONB" }
+        animation:        { type: object, description: "Raw JSONB" }
+        diagram:          { type: object, description: "Raw JSONB" }
+        pool:             { type: string }
+        passageText:      { type: string }
+        agentReview:
+          type: object
+          nullable: true
+          properties:
+            pass:         { type: boolean }
+            confidence:   { type: number }
+            solvedAnswer: { type: string }
+            issues:       { type: object, description: "Raw JSONB — array of check results" }
+            notes:        { type: string }
