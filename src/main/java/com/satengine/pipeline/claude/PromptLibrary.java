@@ -72,27 +72,32 @@ Nothing before or after the JSON.""";
     public static final String GENERATE_SYSTEM_RW = """
 You are an expert SAT Reading & Writing question writer. Generate exactly ONE SAT question matching the specifications given.
 
-PASSAGE — critical rules:
-Most R&W questions require a short passage (2–5 sentences). Write original, coherent prose.
-The passage must unambiguously support exactly one correct answer — not merely suggest it.
-passageText must be plain prose, no LaTeX, no markdown.
+DOMAIN TYPES — understand the difference:
+• information_ideas / craft_structure / expression_ideas — PASSAGE-BASED: tests reading comprehension.
+  Always include passageText. The passage must clearly and unambiguously support exactly one answer.
+• standard_english — SENTENCE-LEVEL: tests grammar and mechanics. No passage. One sentence with a blank or underline.
 
-CORRECT ANSWER — critical rules:
+PASSAGE QUALITY — critical rules (for passage-based domains):
+Write original, coherent prose — not generic filler. The passage must have a clear argument or narrative.
+The correct answer must be supported by the passage directly — not merely suggested.
+If two options both seem defensible, rewrite the passage or options until exactly one is correct.
+passageText must be plain prose. No LaTeX, no markdown, no bullet points (except for rhetorical_synthesis notes).
+
+SENTENCE-LEVEL QUALITY — critical rules (for standard_english):
+Test exactly one grammar rule per question. The sentence must be self-contained.
+Exactly one option must be grammatically correct. The other three must violate the rule being tested.
+
+CORRECT ANSWER — critical rules (all domains):
 Exactly one option must be correct. The other three must be wrong for clear, articulable reasons.
-"Best answer" means best — not just plausible. If two options both seem to work, rewrite the passage or options until only one is clearly correct.
-Test only what the skill says: vocabulary in context, transitions, evidence, grammar, etc.
+"Best answer" means unambiguously best — not just plausible.
+Test only what the skill specifies.
 
 EXPLANATION — critical rules:
 explanationShort must explain in 2–3 confident sentences:
-  1. Why the correct answer is right (reference the passage or sentence directly).
+  1. Why the correct answer is right (quote or reference the passage/sentence directly).
   2. Why the most tempting wrong answer fails.
 Write as a teacher — confident, no hedging.
 NEVER write: "Wait,", "Actually,", "Hmm,", or any stream-of-consciousness phrasing.
-
-STANDARD ENGLISH CONVENTIONS — critical rules (for grammar/mechanics questions):
-The question must test one specific rule: subject-verb agreement, pronoun agreement, verb tense,
-punctuation, sentence boundaries, or modifiers.
-The sentence must have exactly one grammatically correct option.
 
 POOL — always set to "both"
 
@@ -252,11 +257,48 @@ Return this exact JSON shape (all fields required unless marked optional):
         sb.append("questionType: mcq\n\n");
         sb.append("Provide optionA, optionB, optionC, optionD and correctAnswer (A/B/C/D).\n");
         sb.append("Make exactly one option correct. The other three must be wrong for clear, articulable reasons.\n\n");
+
+        // Domain-specific passage instructions
+        switch (domain == null ? "" : domain) {
+            case "information_ideas" -> sb.append("""
+PASSAGE REQUIRED — this domain always tests comprehension of a text.
+Write an original 3–6 sentence passage on any academic topic (science, history, social science, humanities).
+The passage must clearly and unambiguously support the correct answer.
+The question tests one of: central idea, key detail, textual evidence, quantitative evidence, inference, or cross-text connection.
+passageText must be non-null.
+""");
+            case "craft_structure" -> sb.append("""
+PASSAGE REQUIRED — this domain always tests how and why an author wrote a text.
+Write an original 3–5 sentence passage with clear rhetorical choices (word choice, structure, tone, purpose).
+The question tests one of: vocabulary in context, text structure/purpose, or author's perspective/rhetorical choice.
+The correct vocabulary answer must be the word that best fits the passage's specific context and tone — not just any synonym.
+passageText must be non-null.
+""");
+            case "expression_ideas" -> sb.append("""
+PASSAGE / NOTES REQUIRED — this domain always provides source material.
+For rhetorical_synthesis: provide 3–5 bullet-point notes as passageText (format: "• Note one\\n• Note two\\n...").
+  The question asks the student to select which sentence best synthesizes the notes for a specific purpose.
+For transitions: provide a short 2–3 sentence passage with a blank [BLANK] where the transition word/phrase goes.
+  The options are competing transition words/phrases. Exactly one fits the logical relationship.
+passageText must be non-null.
+""");
+            case "standard_english" -> sb.append("""
+NO PASSAGE — Standard English Conventions questions are sentence-level grammar/mechanics.
+passageText must be null.
+Write a single sentence in questionStem that has one underlined or blank portion.
+The four options are alternative versions of that portion. Exactly one is grammatically correct.
+Test exactly one rule per question: sentence boundaries, subject-verb agreement, pronoun-antecedent agreement,
+verb tense/form, punctuation, or modifier placement.
+The sentence must be self-contained — no external context needed.
+""");
+            default -> sb.append("Include a passage if the skill requires reading comprehension; set passageText to null for sentence-level grammar questions.\n");
+        }
+
         sb.append("""
-Return this exact JSON shape (all fields required unless marked optional):
+Return this exact JSON shape:
 {
   "skill": "specific skill within the domain",
-  "passageText": "2-5 sentence original passage (null if not needed for this skill)",
+  "passageText": "passage or notes here, or null for Standard English",
   "passageSource": null,
   "questionStem": "...",
   "optionA": "...",
@@ -264,7 +306,7 @@ Return this exact JSON shape (all fields required unless marked optional):
   "optionC": "...",
   "optionD": "...",
   "correctAnswer": "A",
-  "explanationShort": "2-3 sentences: why correct answer is right and why the best distractor fails.",
+  "explanationShort": "2-3 sentences: why the correct answer is right and why the best distractor fails.",
   "pool": "both",
   "diagram": null
 }""");
@@ -346,15 +388,17 @@ QUESTION JSON:
 
 Perform ALL of the following checks:
 
-1. CORRECT_ANSWER  — Read the passage and question carefully. Is the stated correctAnswer
-                     actually the best answer? Show your reasoning in the "notes" field.
+1. CORRECT_ANSWER  — Read the passage/sentence and question carefully. Is the stated
+                     correctAnswer actually the best answer? Show your reasoning in "notes".
 2. ANSWER_KEY      — Does the correctAnswer letter ('A','B','C','D') map to the option
                      that contains the correct text?
 3. DISTRACTORS     — Are all four options distinct (no duplicates, no near-duplicates)?
 4. SINGLE_BEST     — Is exactly ONE option defensible? Could a strong student argue for
                      any wrong answer? If so, flag as critical.
-5. PASSAGE_SUPPORT — If passageText is present, does the passage actually support the
-                     correct answer — not just loosely relate to it?
+5. PASSAGE_SUPPORT — For information_ideas / craft_structure / expression_ideas:
+                     passageText must be present and must directly support the correct answer.
+                     Flag as critical if passageText is null or does not clearly support the answer.
+                     For standard_english: passageText should be null — flag as warning if present.
 6. STEM_CLARITY    — Is the question stem unambiguous and grammatically correct?
 7. SCHEMA          — Are all required fields present and non-empty
                      (questionStem, optionA-D, correctAnswer, explanationShort)?
