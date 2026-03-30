@@ -52,8 +52,10 @@ public class GenerateStage {
     );
     private static final int[] DIFFICULTY_WEIGHTS = {0, 5, 15, 20, 25, 20, 10, 5}; // index = difficulty 1-7
     private static final Map<String, Double> DIAGRAM_PROBS = Map.of(
-            "geometry_trigonometry", 0.70, "problem_solving_data", 0.60,
-            "algebra", 0.20, "advanced_math", 0.15
+            "geometry_trigonometry", 1.00,  // every geometry question needs a figure
+            "problem_solving_data",  0.70,  // most data questions need a chart/graph
+            "algebra",               0.25,  // coordinate planes, function graphs
+            "advanced_math",         0.20   // function graphs, occasionally
     );
     private static final List<String> ARTIFACT_PHRASES = List.of(
             "wait,", "wait —", "wait—", "let me recalculate", "let me re-read",
@@ -66,9 +68,16 @@ public class GenerateStage {
 
     // ─── Public entry point ────────────────────────────────────────────────
 
-    public void run(int count, String sectionArg, Integer difficultyArg) {
+    /**
+     * @param sectionArg   "math" | "reading_writing" | null (random)
+     * @param domainArg    taxonomy domain key, e.g. "algebra" | null (weighted random)
+     * @param skillKeyArg  canonical slug from sat_taxonomy.json, e.g. "linear_functions" | null
+     * @param difficultyArg 1-7 | null (weighted random)
+     */
+    public void run(int count, String sectionArg, String domainArg, String skillKeyArg, Integer difficultyArg) {
         log.info("═".repeat(60));
-        log.info(" Generate Stage  count={} section={} difficulty={}", count, sectionArg, difficultyArg);
+        log.info(" Generate Stage  count={} section={} domain={} skill={} difficulty={}",
+                count, sectionArg, domainArg, skillKeyArg, difficultyArg);
         log.info("═".repeat(60));
 
         int success = 0, failed = 0;
@@ -76,12 +85,13 @@ public class GenerateStage {
         Map<String, Integer> seqCache = new java.util.HashMap<>();
 
         for (int i = 1; i <= count; i++) {
-            String section    = pickSection(sectionArg);
-            String domain     = pickDomain(section);
-            int    difficulty = difficultyArg != null ? difficultyArg : pickDifficulty();
-            String qtype      = pickQuestionType(section);
+            String  section    = pickSection(sectionArg);
+            // Use the explicitly requested domain, or fall back to weighted random
+            String  domain     = (domainArg != null && !domainArg.isBlank()) ? domainArg : pickDomain(section);
+            int     difficulty = difficultyArg != null ? difficultyArg : pickDifficulty();
+            String  qtype      = pickQuestionType(section);
             boolean hasDiagram   = pickHasDiagram(section, domain);
-            String  diagramType  = hasDiagram ? pickDiagramType() : null;
+            String  diagramType  = hasDiagram ? pickDiagramType(domain) : null;
 
             String sectionCode = SECTION_CODES.get(section);
             String domainCode  = DOMAIN_CODES.get(domain);
@@ -102,13 +112,13 @@ public class GenerateStage {
                 continue;
             }
 
-            JsonNode generated = generateWithRetry(section, domain, null, difficulty, qtype, hasDiagram, diagramType, i, count, externalId);
+            JsonNode generated = generateWithRetry(section, domain, skillKeyArg, difficulty, qtype, hasDiagram, diagramType, i, count, externalId);
             if (generated == null) {
                 failed++;
                 continue;
             }
 
-            saveQuestion(generated, externalId, section, domain, difficulty, qtype);
+            saveQuestion(generated, externalId, section, domain, skillKeyArg, difficulty, qtype);
             seqCache.put(domain, seq + 1);
             success++;
         }
@@ -139,6 +149,19 @@ public class GenerateStage {
                     log.warn("[{}/{}] {} Artifacts persist after {} retries — accepting anyway", i, total, externalId, MAX_RETRIES);
                 }
 
+                String diagramFormatError = hasDiagram ? validateDiagramFormat(data) : null;
+                if (diagramFormatError != null) {
+                    if (attempt <= MAX_RETRIES) {
+                        log.warn("[{}/{}] {} Bad diagram format: {} (attempt {}) — retrying...", i, total, externalId, diagramFormatError, attempt);
+                        continue;
+                    }
+                    log.warn("[{}/{}] {} Diagram format invalid after retries — nulling diagram to prevent render errors", i, total, externalId);
+                    // Strip the bad diagram rather than save garbage
+                    if (data instanceof com.fasterxml.jackson.databind.node.ObjectNode on) {
+                        on.putNull("diagram");
+                    }
+                }
+
                 String diagramStr = hasDiagram ? (diagramType != null ? diagramType : "diagram") : "no diagram";
                 log.info("[{}/{}] {} {} diff:{} {} {}", i, total, externalId, domain, difficulty, qtype, diagramStr);
                 return data;
@@ -155,14 +178,21 @@ public class GenerateStage {
     }
 
     @Transactional
-    public void saveQuestion(JsonNode data, String externalId, String section, String domain, int difficulty, String qtype) {
+    public void saveQuestion(JsonNode data, String externalId, String section, String domain,
+                             String skillKey, int difficulty, String qtype) {
         String correctAnswer = data.path("correctAnswer").asText(null);
+
+        // skill_key: prefer the explicit arg; fall back to whatever the model returned
+        String resolvedSkillKey = (skillKey != null && !skillKey.isBlank())
+                ? skillKey
+                : nullIfEmpty(data.path("skillKey").asText(null));
 
         Question q = Question.builder()
                 .externalId(externalId)
                 .section(section)
                 .domain(domain)
                 .skill(data.path("skill").asText(null))
+                .skillKey(resolvedSkillKey)
                 .difficulty((short) difficulty)
                 .questionType(qtype)
                 .questionStem(data.path("questionStem").asText(""))
@@ -170,8 +200,8 @@ public class GenerateStage {
                 .optionB(nullIfEmpty(data.path("optionB").asText(null)))
                 .optionC(nullIfEmpty(data.path("optionC").asText(null)))
                 .optionD(nullIfEmpty(data.path("optionD").asText(null)))
-                .sprMin(parseBigDecimal(data, "sprMin"))
-                .sprMax(parseBigDecimal(data, "sprMax"))
+                .sprMin(parseSprBound(data, "sprMin", correctAnswer, true))
+                .sprMax(parseSprBound(data, "sprMax", correctAnswer, false))
                 .explanationShort(data.path("explanationShort").asText(null))
                 .explanationSteps(toJsonString(data.path("explanationSteps")))
                 .trapCategory(data.path("trapCategory").asText(null))
@@ -248,6 +278,41 @@ public class GenerateStage {
         return out.toString();
     }
 
+    /**
+     * Validates the diagram uses the named-shape format the renderer expects.
+     * Returns null if valid, or an error description if invalid.
+     *
+     * VALID:   svgConfig has a top-level "shape" field  (e.g. "triangle", "circle")
+     *          OR diagram is null / chartjs
+     * INVALID: svgConfig has raw "shapes" array or "elements" array without a named "shape"
+     *          (Claude occasionally invents a raw pixel format — the renderer can't handle it reliably)
+     */
+    private String validateDiagramFormat(JsonNode data) {
+        JsonNode diagram = data.path("diagram");
+        if (diagram.isNull() || diagram.isMissingNode()) return null;
+
+        String dtype = diagram.path("diagramType").asText(diagram.path("type").asText(""));
+        String domain = data.path("domain").asText("");
+
+        // Geometry must never use Chart.js — it produces scatter plots of triangles which is wrong
+        if ("chartjs".equals(dtype) && "geometry_trigonometry".equals(domain)) {
+            return "chartjs forbidden for geometry_trigonometry domain — use svg_programmatic";
+        }
+        if ("chartjs".equals(dtype)) return null; // chartjs valid for data/stats domains
+
+        JsonNode cfg = diagram.path("svgConfig");
+        if (cfg.isNull() || cfg.isMissingNode()) return "svgConfig missing";
+
+        // Must have a named "shape" field
+        if (cfg.path("shape").isMissingNode() || cfg.path("shape").asText("").isBlank()) {
+            // Raw formats: "shapes" array or "elements" array without a named shape
+            if (!cfg.path("shapes").isMissingNode())   return "raw 'shapes' array used — must use named shape";
+            if (!cfg.path("elements").isMissingNode())  return "raw 'elements' array used — must use named shape";
+            return "svgConfig missing 'shape' field";
+        }
+        return null; // valid
+    }
+
     private boolean hasArtifacts(JsonNode data) {
         StringBuilder text = new StringBuilder();
         JsonNode steps = data.path("explanationSteps");
@@ -298,8 +363,26 @@ public class GenerateStage {
         return random.nextDouble() < prob;
     }
 
-    private String pickDiagramType() {
-        return random.nextInt(100) < 60 ? "svg_programmatic" : "chartjs";
+    /**
+     * Geometry/trigonometry → always SVG (shapes, angles, triangles — never Chart.js)
+     * Algebra / advanced_math → SVG for coordinate planes, function graphs; rarely Chart.js
+     * Problem solving / data → mostly Chart.js (bar, histogram, scatter, box plot)
+     * Reading/writing → SVG only (passage diagrams, tables)
+     */
+    private String pickDiagramType(String domain) {
+        return switch (domain == null ? "" : domain) {
+            case "geometry_trigonometry" -> "svg_programmatic";          // 100% SVG
+            case "algebra"              -> random.nextInt(100) < 80
+                                            ? "svg_programmatic"         // 80% SVG coordinate planes
+                                            : "chartjs";
+            case "advanced_math"        -> random.nextInt(100) < 85
+                                            ? "svg_programmatic"         // 85% SVG function graphs
+                                            : "chartjs";
+            case "problem_solving_data" -> random.nextInt(100) < 20
+                                            ? "svg_programmatic"         // 20% SVG, 80% Chart.js
+                                            : "chartjs";
+            default                     -> "svg_programmatic";
+        };
     }
 
     private String weightedChoice(Map<String, Integer> weights) {
@@ -321,6 +404,30 @@ public class GenerateStage {
         JsonNode n = node.path(field);
         if (n.isNull() || n.isMissingNode()) return null;
         try { return new BigDecimal(n.asText()); } catch (Exception e) { return null; }
+    }
+
+    /**
+     * Parse sprMin/sprMax and guarantee the correct answer falls within [min, max].
+     * If Claude returned a range that excludes the answer (e.g. min=0, max=999 but answer=-12),
+     * clamp the bound so the answer is always valid.
+     */
+    private BigDecimal parseSprBound(JsonNode node, String field, String answer, boolean isMin) {
+        BigDecimal bound = parseBigDecimal(node, field);
+        if (answer == null || answer.isBlank()) return bound;
+        BigDecimal answerVal;
+        try { answerVal = new BigDecimal(answer.trim()); } catch (Exception e) { return bound; }
+
+        if (isMin) {
+            BigDecimal defaultMin = new BigDecimal("-9999");
+            if (bound == null) return defaultMin;
+            // If answer < min, expand min to cover the answer with a little headroom
+            return bound.compareTo(answerVal) > 0 ? answerVal.subtract(BigDecimal.ONE) : bound;
+        } else {
+            BigDecimal defaultMax = new BigDecimal("9999");
+            if (bound == null) return defaultMax;
+            // If answer > max, expand max
+            return bound.compareTo(answerVal) < 0 ? answerVal.add(BigDecimal.ONE) : bound;
+        }
     }
 
     private String toJsonString(JsonNode node) {

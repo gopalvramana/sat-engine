@@ -15,9 +15,16 @@ import java.util.List;
  * Usage:
  *   java -jar sat-engine.jar --job=generate --count=20
  *   java -jar sat-engine.jar --job=generate --count=10 --section=math --difficulty=4
+ *   java -jar sat-engine.jar --job=generate --count=3 --domain=algebra --skill=linear_functions
+ *   java -jar sat-engine.jar --job=generate --count=3 --section=math --domain=geometry_trigonometry --skill=pythagorean_theorem --difficulty=5
  *   java -jar sat-engine.jar --job=agent-review
  *   java -jar sat-engine.jar --job=agent-review --only-failed
  *   java -jar sat-engine.jar --job=enrich
+ *   java -jar sat-engine.jar --job=enrich --include-approved   (re-enriches approved questions missing data)
+ *
+ * --domain  overrides random domain selection; must match a key in DOMAIN_CODES
+ * --skill   canonical skill key from sat_taxonomy.json (e.g. linear_functions, pythagorean_theorem)
+ *           saved to skill_key column; also included in the generation prompt
  *
  * Normal API server startup (no --job flag): all stages are skipped.
  */
@@ -46,7 +53,7 @@ public class PipelineRunner implements ApplicationRunner {
         switch (job) {
             case "generate" -> runGenerate(args);
             case "agent-review" -> runAgentReview(args);
-            case "enrich" -> enrichStage.run();
+            case "enrich" -> enrichStage.run(args.containsOption("include-approved"));
             default -> log.warn("Unknown --job value: '{}'. Valid: generate, agent-review, enrich", job);
         }
 
@@ -55,10 +62,12 @@ public class PipelineRunner implements ApplicationRunner {
     }
 
     private void runGenerate(ApplicationArguments args) {
-        int count = intArg(args, "count", 10);
-        String section = stringArg(args, "section", null);
+        int     count      = intArg(args, "count", 10);
+        String  section    = stringArg(args, "section", null);
+        String  domain     = stringArg(args, "domain", null);
+        String  skill      = stringArg(args, "skill", null);
         Integer difficulty = args.containsOption("difficulty") ? intArg(args, "difficulty", 4) : null;
-        generateStage.run(count, section, difficulty);
+        generateStage.run(count, section, domain, skill, difficulty);
     }
 
     private void runAgentReview(ApplicationArguments args) {

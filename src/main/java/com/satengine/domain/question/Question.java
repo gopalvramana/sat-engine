@@ -36,6 +36,10 @@ public class Question {
     @Column(name = "skill", length = 100)
     private String skill;
 
+    /** Canonical slug from sat_taxonomy.json — e.g. "linear_eq_one_var", "pythagorean_theorem" */
+    @Column(name = "skill_key", length = 60)
+    private String skillKey;
+
     @Column(name = "difficulty", nullable = false)
     private Short difficulty;
 

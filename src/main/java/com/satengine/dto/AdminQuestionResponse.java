@@ -2,6 +2,7 @@ package com.satengine.dto;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import lombok.*;
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Data @Builder @NoArgsConstructor @AllArgsConstructor
@@ -12,6 +13,8 @@ public class AdminQuestionResponse {
     private String section;
     private String domain;
     private String skill;
+    /** Canonical slug from sat_taxonomy.json — exact match for coverage tracking */
+    private String skillKey;
     private short  difficulty;
     private String questionType;
     private String questionStem;
@@ -20,6 +23,8 @@ public class AdminQuestionResponse {
     private String optionC;
     private String optionD;
     private String correctAnswer;      // from question_answers
+    private BigDecimal sprMin;
+    private BigDecimal sprMax;
     private String explanationShort;
     @JsonRawValue private String explanationSteps;  // raw JSONB → pass through as JSON
     private String trapCategory;

@@ -93,6 +93,7 @@ public class AdminQuestionService {
                 .section(q.getSection())
                 .domain(q.getDomain())
                 .skill(q.getSkill())
+                .skillKey(q.getSkillKey())
                 .difficulty(q.getDifficulty())
                 .explanationShort(q.getExplanationShort())
                 .explanationSteps(q.getExplanationSteps())
@@ -111,6 +112,8 @@ public class AdminQuestionService {
                 .optionC(q.getOptionC())
                 .optionD(q.getOptionD())
                 .correctAnswer(correctAnswer)
+                .sprMin(q.getSprMin())
+                .sprMax(q.getSprMax())
                 .agentReview(review)
                 .build();
     }
