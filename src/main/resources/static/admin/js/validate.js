@@ -432,7 +432,7 @@ function buildView(q) {
             <span class="alt-step-title">${processText(s.title || '')}</span>
           </div>
           <p class="alt-step-content">${processText(s.content || '')}</p>
-          ${s.math ? `<div class="alt-step-math">${processText(s.math)}</div>` : ''}
+          ${s.math ? `<div class="alt-step-math">\\(${s.math}\\)</div>` : ''}
         </div>`).join('');
       altApproachHtml = `
         <details class="alt-approach-panel mt-3 mb-3">
