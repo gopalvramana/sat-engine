@@ -523,7 +523,7 @@ function buildView(q) {
 
         ${q.diagram
           ? `<div id="diagram-host" class="rounded-xl my-4 p-2"
-                  style="background:#f8fbff; border:1px solid #e2e8f0; min-height:80px;"></div>` : ''}
+                  style="background:#f8fbff; border:1px solid #e2e8f0; min-height:80px; display:flex; justify-content:center; align-items:center;"></div>` : ''}
 
         ${choicesHtml}
 
