@@ -10,16 +10,86 @@ Each skill has a matching row in the Coverage view at `http://localhost:8080/adm
 
 ## How to use
 
+Run these four steps in order for every skill session:
+
+### Step 1 — Generate
+
 ```bash
 java -jar sat-engine.jar \
-  --job=generate --count=3 \
+  --job=generate \
+  --count=5 \
   --domain=<domain key> \
   --skill=<skill key> \
   --difficulty=4
 ```
 
-Each question generated this way is saved with `skill_key = <skill key>` in the DB.
-The Coverage view tracks how many approved questions exist per skill.
+Writes raw questions to DB with `status = generated` and `skill_key = <skill key>`.
+
+### Step 2 — Agent Review
+
+```bash
+java -jar sat-engine.jar --job=agent-review
+```
+
+Runs 9 automated checks on every `status = generated` question.
+Advances passing questions to `status = reviewed`.
+Failed questions are flagged — visible in validate.html under the Agent Review tab.
+
+### Step 3 — Enrich  *(Math only — skipped automatically for R&W)*
+
+```bash
+java -jar sat-engine.jar --job=enrich
+```
+
+Adds `trapCategory`, `coreConcept`, `prerequisites`, `animation` fields.
+Advances questions to `status = enriched`.
+R&W questions skip this step entirely — the job detects `section = reading_writing` and advances them directly.
+
+### Step 4 — Human Review
+
+Open `http://localhost:8080/admin/validate.html`
+
+Review each `enriched` question (Math) or `reviewed` question (R&W).
+Approve or reject. Only `approved` questions are served to students.
+
+---
+
+### Full example — one skill session
+
+```bash
+# Generate 5 questions for a specific skill
+java -jar sat-engine.jar --job=generate --count=5 --domain=algebra --skill=linear_functions --difficulty=4
+
+# Agent review (runs on all pending generated questions)
+java -jar sat-engine.jar --job=agent-review
+
+# Enrich (Math only — safe to run for R&W, it skips automatically)
+java -jar sat-engine.jar --job=enrich
+
+# Then open validate.html and review
+```
+
+Total time unattended: ~10–15 minutes. Human review: ~10 minutes.
+Each approved question increments the skill's count in the Coverage view.
+
+---
+
+### Difficulty spread per skill (recommended)
+
+Run the generate step 5 times with different difficulties to get a balanced skill set:
+
+```bash
+D=algebra; S=linear_functions
+java -jar sat-engine.jar --job=generate --count=1 --domain=$D --skill=$S --difficulty=2
+java -jar sat-engine.jar --job=generate --count=1 --domain=$D --skill=$S --difficulty=3
+java -jar sat-engine.jar --job=generate --count=1 --domain=$D --skill=$S --difficulty=4
+java -jar sat-engine.jar --job=generate --count=1 --domain=$D --skill=$S --difficulty=5
+java -jar sat-engine.jar --job=generate --count=1 --domain=$D --skill=$S --difficulty=6
+
+# Then run review + enrich once for all 5
+java -jar sat-engine.jar --job=agent-review
+java -jar sat-engine.jar --job=enrich
+```
 
 ---
 
