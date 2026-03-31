@@ -24,6 +24,9 @@ Greek: \\theta \\pi \\alpha
 NEVER use Unicode superscripts like ² ³
 NEVER use Unicode subscripts like ₁ ₂
 Always use LaTeX.
+Option fields (optionA–optionD) MUST also use LaTeX delimiters for any math.
+NEVER write bare LaTeX like \\frac{2}{5} as an option — always wrap: \\(\\frac{2}{5}\\)
+A standalone expression as an option must be written as \\( expression \\).
 
 TABLES — critical rules:
 If a question includes a data table, format it using HTML, not markdown pipes.
