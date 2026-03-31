@@ -274,17 +274,19 @@ function renderExplanationTab(steps) {
 /* ═══════════════════════════════════════════════════════════════
    MAIN RENDER
 ═══════════════════════════════════════════════════════════════ */
-function renderQuestion() {
+// qOverride: when provided, render this specific question in-place without
+// re-filtering — used after approve/reject so the question stays visible.
+function renderQuestion(qOverride) {
   const list = visibleQuestions();
 
-  if (!list.length) {
+  if (!qOverride && !list.length) {
     document.getElementById('question-area').innerHTML =
       `<div class="empty-panel"><div style="font-size:2.5rem">🎉</div>
        <p class="mt-3">Nothing here for this filter.</p></div>`;
     return;
   }
 
-  const q = list[currentIdx];
+  const q = qOverride || list[currentIdx];
   document.getElementById('question-area').innerHTML =
     `<div class="qv-body">${buildView(q)}</div>`;
 
@@ -605,7 +607,7 @@ function wireEvents(q) {
       q.status = wasApproved ? 'approved' : 'enriched';
       showToast(`Error: ${e.message}`, true);
     }
-    updateStats(); buildSidebar(); renderQuestion();
+    updateStats(); buildSidebar(); renderQuestion(q);  // keep same question visible
   });
 
   document.getElementById('btn-reject')?.addEventListener('click', async () => {
@@ -618,7 +620,7 @@ function wireEvents(q) {
       q.status = prev;
       showToast(`Error: ${e.message}`, true);
     }
-    updateStats(); buildSidebar(); renderQuestion();
+    updateStats(); buildSidebar(); renderQuestion(q);  // keep same question visible
   });
 
   document.getElementById('btn-fix')?.addEventListener('click', async () => {
