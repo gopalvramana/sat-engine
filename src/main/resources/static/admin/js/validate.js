@@ -695,8 +695,8 @@ function processText(text) {
       // Only replace \n NOT followed by a letter — avoids breaking \neq, \nabla, \not etc.
       return seg.t
         .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-        .replace(/\\n(?![a-zA-Z])/g, ' ')  // literal \n that is NOT a LaTeX command
-        .replace(/\n/g, ' ');               // actual newline
+        .replace(/\\n(?![a-zA-Z]{2,})/g, ' ')  // literal \n — skip only if 2+ letters follow (real command e.g. \neq \nabla)
+        .replace(/\n/g, ' ');                   // actual newline
     }
     // Prose — full processing: HTML-escape, un-escape table tags, newlines → <br>
     return seg.t
@@ -709,8 +709,8 @@ function processText(text) {
       .replace(/&lt;\/th&gt;/gi, `</th>`)
       .replace(/&lt;td([^>]*)?&gt;/gi, (_,a)=>`<td${a||''}>`)
       .replace(/&lt;\/td&gt;/gi, `</td>`)
-      .replace(/\\n(?![a-zA-Z])/g, '<br>')  // literal \n not part of a LaTeX command
-      .replace(/\n/g, '<br>');              // actual newline
+      .replace(/\\n(?![a-zA-Z]{2,})/g, '<br>')  // literal \n — skip only if 2+ letters follow
+      .replace(/\n/g, '<br>');                  // actual newline
   }).join('');
 }
 
