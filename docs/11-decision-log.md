@@ -65,6 +65,37 @@
 | 039 | Launch scope | No mobile, ACT, AP, admin UI, study plan, advanced analytics at launch. | Roadmap | ✅ |
 | 040 | Documentation tools | Notion (product + business). GitHub docs/ (technical ADRs). | Tools | ✅ |
 | 041 | ADR format | Standard template: Decision, Rejected, Reason, Status for every choice. | Tools | ✅ |
+| 042 | Trap Analysis → Alternative Approach | Remove Trap Analysis panel; replace with collapsible "Alternative Approach" showing a second method to solve each Math question | Pipeline / UI | ✅ |
+| 043 | renderer.js deployment | Copy real file into static resources — do not use symlink. Maven does not follow symlinks when packaging JARs. | Infrastructure | ✅ |
+| 044 | Math figure library (student-facing) | Evaluate Mafs (React) or JSXGraph when switching to React frontend. Current custom SVG renderer stays for admin pipeline. | Architecture | ⬜ PENDING — POC at React switch |
+| 045 | Student-facing MVP stack | Build practice.html in current zero-build stack (plain JS + renderer.js + KaTeX + Chart.js) reusing existing renderer. Switch to React only when student UX complexity justifies it (200+ questions, real users, dashboards). | Architecture | 🔄 |
+| 046 | Production readiness of current stack | Spring Boot + PostgreSQL + KaTeX + Chart.js are all production-grade. No stack replacement needed at scale — add load balancer, read replica, CDN as usage grows. | Infrastructure | ✅ |
+
+---
+
+## One-Time Data Fixes Applied
+
+Flyway migrations that corrected bad data from earlier pipeline runs.
+These are done and do not need to be repeated.
+
+| Migration | What it fixed | Root cause |
+|-----------|--------------|------------|
+| V9 | Rejected RW-ALG-001 (miscategorised as algebra) | `pickSection()` was random when `--domain` given without `--section` |
+| V10 | Rejected RW-ALG-002 to RW-ALG-005 (same root cause) | Same as above — fixed in `GenerateStage.sectionForDomain()` |
+| V11 | MATH-ALG-017 option B: 9.67 → 9 | AI arithmetic error |
+| V12 | MATH-ADV-006 option D: wrong distractor | Unrealistic distractor |
+| V14 | MATH-PS-006 options: wrapped bare `\frac{}` in `\( \)` | AI omitted LaTeX delimiters in option fields — prompt hardened in V14 |
+
+---
+
+## Weekend TODOs (2026-04-05/06)
+
+| # | Task | Notes |
+|---|------|-------|
+| 1 | **Normalize `\n` in DB** | `fixLatexEscapes()` bug stored literal `\n` (two chars) instead of actual newlines in text fields. Write a Java-based Flyway migration (V15) to replace all `\n` (backslash+n) in `question_stem`, `option_*`, `explanation_short`, `explanation_steps` with actual newline char. Then simplify `processText()` — remove the lookahead hack entirely. |
+| 2 | **Build `practice.html`** | Student-facing practice page. Zero-build stack (plain JS). Reuse `renderer.js` + KaTeX + Chart.js. One question at a time, accept answer, show explanation. Reads from `/api/questions` (approved pool). |
+| 3 | **Re-enrich math questions for `alternativeApproach`** | Run SQL to reset approved math questions to `reviewed`, then `--job=enrich`. Re-approve in validate.html. |
+| 4 | **AI pipeline production hardening** | Add rate-limit retry logic (exponential backoff) to `ClaudeClient`. Add per-job timeout. Log token usage per question. These are needed before running large batches. |
 
 ---
 
@@ -79,6 +110,7 @@ These need to be made before or during Month 2:
 | — | Domain name selection | Month 1, Week 2 |
 | — | Stripe account setup (personal or company) | Month 2, Week 7 |
 | — | SendGrid account setup | Month 2, Week 8 |
+| — | Mafs vs JSXGraph POC | At React frontend switch (trigger: 200+ questions, real student users) |
 
 ---
 
