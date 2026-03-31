@@ -85,7 +85,10 @@ public class GenerateStage {
         Map<String, Integer> seqCache = new java.util.HashMap<>();
 
         for (int i = 1; i <= count; i++) {
-            String  section    = pickSection(sectionArg);
+            // If domain is explicitly specified, infer section from it — never random-pick
+            String  section    = (domainArg != null && !domainArg.isBlank())
+                                     ? sectionForDomain(domainArg)
+                                     : pickSection(sectionArg);
             // Use the explicitly requested domain, or fall back to weighted random
             String  domain     = (domainArg != null && !domainArg.isBlank()) ? domainArg : pickDomain(section);
             int     difficulty = difficultyArg != null ? difficultyArg : pickDifficulty();
@@ -332,6 +335,11 @@ public class GenerateStage {
     private String pickSection(String arg) {
         if (arg != null && !arg.isBlank()) return arg;
         return random.nextBoolean() ? "math" : "reading_writing";
+    }
+
+    /** Deterministically maps a domain key to its section — no randomness. */
+    private String sectionForDomain(String domain) {
+        return MATH_DOMAIN_WEIGHTS.containsKey(domain) ? "math" : "reading_writing";
     }
 
     private String pickDomain(String section) {
