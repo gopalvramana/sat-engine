@@ -58,7 +58,8 @@ Approve or reject. Only `approved` questions are served to students.
 
 ```bash
 # Generate 5 questions for a specific skill
-java -jar sat-engine.jar --job=generate --count=5 --domain=algebra --skill=linear_functions --difficulty=4
+# Do NOT pass --difficulty here — let the pipeline pick randomly for a natural spread
+java -jar sat-engine.jar --job=generate --count=5 --domain=algebra --skill=linear_functions
 
 # Agent review (runs on all pending generated questions)
 java -jar sat-engine.jar --job=agent-review
@@ -72,21 +73,19 @@ java -jar sat-engine.jar --job=enrich
 Total time unattended: ~10–15 minutes. Human review: ~10 minutes.
 Each approved question increments the skill's count in the Coverage view.
 
+> **Note on difficulty:** Omit `--difficulty` when generating a skill set so the pipeline
+> spreads across difficulty levels naturally. Only use `--difficulty` when deliberately
+> backfilling a specific level (e.g. a skill that ended up with all medium questions).
+
 ---
 
-### Difficulty spread per skill (recommended)
+### Difficulty backfill for a specific skill
 
-Run the generate step 5 times with different difficulties to get a balanced skill set:
+Use `--difficulty` only when a skill needs a specific level added after initial generation:
 
 ```bash
-D=algebra; S=linear_functions
-java -jar sat-engine.jar --job=generate --count=1 --domain=$D --skill=$S --difficulty=2
-java -jar sat-engine.jar --job=generate --count=1 --domain=$D --skill=$S --difficulty=3
-java -jar sat-engine.jar --job=generate --count=1 --domain=$D --skill=$S --difficulty=4
-java -jar sat-engine.jar --job=generate --count=1 --domain=$D --skill=$S --difficulty=5
-java -jar sat-engine.jar --job=generate --count=1 --domain=$D --skill=$S --difficulty=6
-
-# Then run review + enrich once for all 5
+# e.g. linear_functions has 4 approved questions but none at difficulty 6 — add one hard question
+java -jar sat-engine.jar --job=generate --count=1 --domain=algebra --skill=linear_functions --difficulty=6
 java -jar sat-engine.jar --job=agent-review
 java -jar sat-engine.jar --job=enrich
 ```
