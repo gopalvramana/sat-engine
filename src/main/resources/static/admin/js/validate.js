@@ -418,25 +418,32 @@ function buildView(q) {
   /* ── Section flag — R&W gets simplified right panel ── */
   const isMath = q.section === 'math';
 
-  /* ── Trap panel (Math only) ── */
-  let trapHtml = '';
-  if (isMath && q.trapCategory) {
-    const catLabel = q.trapCategory.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-    trapHtml = `
-      <div class="trap-panel mt-3 mb-3">
-        <div class="flex items-start gap-2">
-          <span style="font-size:1.15rem; flex-shrink:0;">⚠️</span>
-          <div class="flex-1">
-            <div class="flex items-center gap-2 mb-1 flex-wrap">
-              <p class="text-sm font-bold text-amber-800">Trap Analysis</p>
-              <span class="text-xs bg-amber-200 text-amber-800 font-semibold px-2 py-0.5 rounded-full">
-                ${catLabel}
-              </span>
-            </div>
-            <p class="text-sm text-amber-700 leading-relaxed">${processText(q.trapExplanation || '')}</p>
+  /* ── Alternative Approach panel (Math only) ── */
+  let altApproachHtml = '';
+  if (isMath && q.alternativeApproach) {
+    const alt = typeof q.alternativeApproach === 'string'
+      ? JSON.parse(q.alternativeApproach)
+      : q.alternativeApproach;
+    if (alt && alt.title && Array.isArray(alt.steps) && alt.steps.length > 0) {
+      const stepsHtml = alt.steps.map((s, i) => `
+        <div class="alt-step">
+          <div class="alt-step-header">
+            <span class="alt-step-num">${i + 1}</span>
+            <span class="alt-step-title">${processText(s.title || '')}</span>
           </div>
-        </div>
-      </div>`;
+          <p class="alt-step-content">${processText(s.content || '')}</p>
+          ${s.math ? `<div class="alt-step-math">${processText(s.math)}</div>` : ''}
+        </div>`).join('');
+      altApproachHtml = `
+        <details class="alt-approach-panel mt-3 mb-3">
+          <summary class="alt-approach-summary">
+            <span class="alt-approach-icon">&#8644;</span>
+            <span class="alt-approach-label">Alternative Approach</span>
+            <span class="alt-approach-method">${processText(alt.title)}</span>
+          </summary>
+          <div class="alt-approach-body">${stepsHtml}</div>
+        </details>`;
+    }
   }
 
   /* ── Core Concept tab (Math only) ── */
@@ -567,7 +574,7 @@ function buildView(q) {
         </div>
       </div>
 
-      ${trapHtml}
+      ${altApproachHtml}
 
       <div class="admin-bar">
         <span class="text-xs font-semibold text-slate-400">Pool:</span>

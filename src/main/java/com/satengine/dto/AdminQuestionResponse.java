@@ -32,6 +32,7 @@ public class AdminQuestionResponse {
     @JsonRawValue private String coreConcept;
     @JsonRawValue private String prerequisites;
     @JsonRawValue private String animation;
+    @JsonRawValue private String alternativeApproach;
     @JsonRawValue private String diagram;
     private String pool;
     private String passageText;

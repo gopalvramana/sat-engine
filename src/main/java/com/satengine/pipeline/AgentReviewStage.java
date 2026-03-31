@@ -165,8 +165,6 @@ public class AgentReviewStage {
             try { n.set("explanationSteps", objectMapper.readTree(q.getExplanationSteps())); }
             catch (Exception ignored) {}
         }
-        n.put("trapCategory",    q.getTrapCategory());
-        n.put("trapExplanation", q.getTrapExplanation());
         if (q.getCoreConcept() != null) {
             try { n.set("coreConcept", objectMapper.readTree(q.getCoreConcept())); }
             catch (Exception ignored) {}

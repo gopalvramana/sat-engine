@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Set;
 
 @Slf4j
 @Service
@@ -28,11 +27,6 @@ public class EnrichStage {
 
     private static final String ENRICH_MODEL = "claude-opus-4-6";
     private static final int    MAX_TOKENS   = 2000;
-
-    private static final Set<String> VALID_TRAP_CATEGORIES = Set.of(
-            "formula_confusion", "sign_error", "trap_answer", "misread",
-            "calculation_error", "concept_gap", "overcomplicated"
-    );
 
     /**
      * Normal run: enriches questions with status=reviewed → advances to enriched.
@@ -132,9 +126,9 @@ public class EnrichStage {
         if (!fields.path("explanationSteps").isMissingNode()) {
             q.setExplanationSteps(objectMapper.writeValueAsString(fields.path("explanationSteps")));
         }
-        String trap = fields.path("trapCategory").asText(null);
-        q.setTrapCategory(VALID_TRAP_CATEGORIES.contains(trap) ? trap : "concept_gap");
-        q.setTrapExplanation(fields.path("trapExplanation").asText(null));
+        if (!fields.path("alternativeApproach").isMissingNode() && !fields.path("alternativeApproach").isNull()) {
+            q.setAlternativeApproach(objectMapper.writeValueAsString(fields.path("alternativeApproach")));
+        }
 
         if (!fields.path("coreConcept").isMissingNode()) {
             q.setCoreConcept(objectMapper.writeValueAsString(fields.path("coreConcept")));

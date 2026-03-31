@@ -129,6 +129,7 @@ public class AdminQuestionService {
                 .coreConcept(q.getCoreConcept())
                 .prerequisites(q.getPrerequisites())
                 .animation(q.getAnimation())
+                .alternativeApproach(q.getAlternativeApproach())
                 .diagram(q.getDiagram())
                 .pool(q.getPool())
                 .passageText(q.getPassageText())

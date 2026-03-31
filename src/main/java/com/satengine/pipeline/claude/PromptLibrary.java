@@ -49,10 +49,6 @@ NEVER write: "Wait,", "Let me recalculate", "Actually,", "Hmm,", "Let me re-read
 "Let me use", "Let me rewrite", or any stream-of-consciousness phrasing.
 Every step must be correct and stated with confidence. Do the arithmetic before you write it.
 
-TRAP ANALYSIS — critical rules:
-trapCategory must be exactly one of: formula_confusion | sign_error | trap_answer | misread | calculation_error | concept_gap | overcomplicated
-trapExplanation must be specific to this question — explain which wrong option a student likely chose and why, referencing actual values.
-
 CORE CONCEPT — critical rules:
 coreConcept.title: the name of the mathematical concept this question tests
 coreConcept.summary: 1–2 sentences explaining the concept clearly
@@ -234,8 +230,6 @@ Return this exact JSON shape (all fields required unless marked optional):
   "explanationSteps": [
     { "title": "...", "content": "...", "math": "..." }
   ],
-  "trapCategory": "formula_confusion",
-  "trapExplanation": "...",
   "coreConcept": { "title": "...", "summary": "...", "keyFormula": "..." },
   "prerequisites": [{ "topic": "...", "why": "..." }],
   "animation": { "eligible": false },
@@ -355,9 +349,6 @@ Perform ALL of the following checks:
 8. SCHEMA         — Are all required fields present and non-empty?
                     Required for MCQ: questionStem, optionA, optionB, optionC, optionD,
                     correctAnswer (A/B/C/D), explanationShort.
-9. TRAP_CATEGORY  — Is trapCategory one of the 7 valid values:
-                    formula_confusion | sign_error | trap_answer | misread |
-                    calculation_error | concept_gap | overcomplicated
 
 Return this exact JSON shape:
 {
@@ -377,7 +368,7 @@ Rules:
 - A question FAILS (pass: false) if it has ANY issue with severity "critical".
 - Warnings and info issues still allow pass: true.
 - If there are no issues, return issues: [], fixes: [].
-- SCHEMA and TRAP_CATEGORY failures are always "critical".
+- SCHEMA failures are always "critical".
 - STEPS failures are "critical" if steps are missing, "warning" if low quality.
 - solvedAnswer MUST be exactly one letter (A, B, C, or D).
   Never put reasoning or phrases like "None of the options" in solvedAnswer.
@@ -406,9 +397,6 @@ Perform ALL of the following checks:
 6. SCHEMA         — Are all required fields present and non-empty?
                     Required for SPR: questionStem, sprMin, sprMax, explanationShort.
                     optionA–D and correctAnswer MUST be null — do NOT flag their absence as an error.
-7. TRAP_CATEGORY  — Is trapCategory one of the 7 valid values:
-                    formula_confusion | sign_error | trap_answer | misread |
-                    calculation_error | concept_gap | overcomplicated
 
 Return this exact JSON shape:
 {
@@ -428,7 +416,7 @@ Rules:
 - A question FAILS (pass: false) if it has ANY issue with severity "critical".
 - Warnings and info issues still allow pass: true.
 - If there are no issues, return issues: [], fixes: [].
-- SCHEMA, SPR_RANGE and TRAP_CATEGORY failures are always "critical".
+- SCHEMA and SPR_RANGE failures are always "critical".
 - STEPS failures are "critical" if steps are missing, "warning" if low quality.
 - solvedAnswer MUST be a numeric value (not a letter).
 - Return ONLY the JSON object. No other text.""";
@@ -499,28 +487,28 @@ Generate ALL of these fields:
    { "title": "short step name", "content": "1-2 confident sentences", "math": "LaTeX formula or null" }
    Write as a teacher — confident, no hedging, no "Actually..." or "Wait..."
 
-2. trapCategory: Exactly one of:
-   formula_confusion | sign_error | trap_answer | misread | calculation_error | concept_gap | overcomplicated
+2. alternativeApproach: An object describing a second, different method to solve this question.
+   { "title": "short name for this method (e.g. 'Substitution', 'Graphical Method')",
+     "steps": [ { "title": "...", "content": "...", "math": "..." } ]
+   }
+   The approach must be genuinely different from the primary explanationSteps (e.g. algebraic vs. arithmetic, substitution vs. elimination, visual vs. analytic).
+   If there is no meaningfully different second approach, return null.
 
-3. trapExplanation: 1-2 sentences. Which specific wrong option would a student likely choose and why?
-   Reference actual values from the question.
-
-4. coreConcept: Object with:
+3. coreConcept: Object with:
    { "title": "concept name", "summary": "1-2 sentence explanation", "keyFormula": "LaTeX or null" }
 
-5. prerequisites: Array of 2–4 objects:
+4. prerequisites: Array of 2–4 objects:
    { "topic": "topic name", "why": "one sentence — why needed to solve this question" }
 
-6. animation: { "eligible": true/false }
+5. animation: { "eligible": true/false }
    true only for geometry, coordinate plane, or algebra questions with a clear visual story.
 
-7. pool: Always "both"
+6. pool: Always "both"
 
 Return this exact shape:
 {
   "explanationSteps": [...],
-  "trapCategory": "...",
-  "trapExplanation": "...",
+  "alternativeApproach": { "title": "...", "steps": [...] },
   "coreConcept": { "title": "...", "summary": "...", "keyFormula": "..." },
   "prerequisites": [...],
   "animation": { "eligible": false },

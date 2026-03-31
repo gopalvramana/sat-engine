@@ -92,6 +92,10 @@ public class Question {
     @Column(name = "animation", columnDefinition = "jsonb")
     private String animation;
 
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "alternative_approach", columnDefinition = "jsonb")
+    private String alternativeApproach;
+
     @Column(name = "pool", nullable = false, length = 10)
     @Builder.Default
     private String pool = "both";
