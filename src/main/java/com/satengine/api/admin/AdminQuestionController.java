@@ -68,4 +68,18 @@ public class AdminQuestionController {
         adminService.updatePool(id, pool);
         return ResponseEntity.noContent().build();
     }
+
+    /** PATCH /api/admin/questions/{id}/fields — patch any text field
+     *  Allowed keys: optionA, optionB, optionC, optionD,
+     *                questionStem, explanationShort, trapExplanation, passageText
+     *  Body: { "optionB": "9" } */
+    @PatchMapping("/{id}/fields")
+    public ResponseEntity<Void> patchFields(
+            @PathVariable UUID id,
+            @RequestBody Map<String, String> fields) {
+        if (fields == null || fields.isEmpty())
+            return ResponseEntity.badRequest().build();
+        adminService.patchFields(id, fields);
+        return ResponseEntity.noContent().build();
+    }
 }

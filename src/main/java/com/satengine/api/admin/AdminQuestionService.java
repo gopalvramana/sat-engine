@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -62,6 +64,31 @@ public class AdminQuestionService {
     public void updatePool(UUID id, String pool) {
         Question q = findOrThrow(id);
         q.setPool(pool);
+        questionRepository.save(q);
+    }
+
+    private static final Set<String> PATCHABLE_FIELDS = Set.of(
+            "optionA", "optionB", "optionC", "optionD",
+            "questionStem", "explanationShort", "trapExplanation", "passageText"
+    );
+
+    @Transactional
+    public void patchFields(UUID id, Map<String, String> fields) {
+        Question q = findOrThrow(id);
+        fields.forEach((key, value) -> {
+            if (!PATCHABLE_FIELDS.contains(key))
+                throw new IllegalArgumentException("Field not patchable: " + key);
+            switch (key) {
+                case "optionA"         -> q.setOptionA(value);
+                case "optionB"         -> q.setOptionB(value);
+                case "optionC"         -> q.setOptionC(value);
+                case "optionD"         -> q.setOptionD(value);
+                case "questionStem"    -> q.setQuestionStem(value);
+                case "explanationShort"-> q.setExplanationShort(value);
+                case "trapExplanation" -> q.setTrapExplanation(value);
+                case "passageText"     -> q.setPassageText(value);
+            }
+        });
         questionRepository.save(q);
     }
 
