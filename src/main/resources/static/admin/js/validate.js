@@ -705,7 +705,8 @@ function processText(text) {
       .replace(/&lt;\/th&gt;/gi, `</th>`)
       .replace(/&lt;td([^>]*)?&gt;/gi, (_,a)=>`<td${a||''}>`)
       .replace(/&lt;\/td&gt;/gi, `</td>`)
-      .replace(/\n/g, '<br>');
+      .replace(/\\n/g, '<br>')   // literal \n (two chars) — from fixLatexEscapes bug on older questions
+      .replace(/\n/g,  '<br>'); // actual newline — from correctly parsed questions
   }).join('');
 }
 

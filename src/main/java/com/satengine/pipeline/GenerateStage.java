@@ -264,7 +264,10 @@ public class GenerateStage {
             char ch = raw.charAt(i);
             if (ch == '\\' && i + 1 < n) {
                 char next = raw.charAt(i + 1);
-                if (next == '"' || next == '\\') {
+                if (next == '"' || next == '\\' ||
+                        next == 'n' || next == 't' || next == 'r' ||
+                        next == 'b' || next == 'f') {
+                    // Valid JSON escape sequence — leave untouched
                     out.append(ch);
                     out.append(next);
                     i += 2;
