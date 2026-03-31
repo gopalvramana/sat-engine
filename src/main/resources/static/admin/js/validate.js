@@ -691,8 +691,12 @@ function processText(text) {
 
   return segments.map(seg => {
     if (seg.math) {
-      // Math block — HTML-escape only, keep \n intact so KaTeX can parse the block
-      return seg.t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      // Math block — HTML-escape, then strip literal \n (two chars) and actual newlines.
+      // KaTeX treats \n as an unknown command and fails; replace with space which is safe.
+      return seg.t
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/\\n/g, ' ')   // literal backslash+n (old fixLatexEscapes bug)
+        .replace(/\n/g,  ' ');  // actual newline
     }
     // Prose — full processing: HTML-escape, un-escape table tags, newlines → <br>
     return seg.t
