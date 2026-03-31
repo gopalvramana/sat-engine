@@ -317,18 +317,22 @@ Return this exact JSON shape:
     // ─── Agent Review ─────────────────────────────────────────────────────────
 
     /** Returns the correct review prompt for the given section. */
+    public static String buildReviewPrompt(String questionJson, String section, String questionType) {
+        if ("reading_writing".equals(section)) return buildReviewPromptRW(questionJson);
+        if ("spr".equals(questionType))        return buildReviewPromptMathSPR(questionJson);
+        return buildReviewPromptMathMCQ(questionJson);
+    }
+
     public static String buildReviewPrompt(String questionJson, String section) {
-        return "reading_writing".equals(section)
-            ? buildReviewPromptRW(questionJson)
-            : buildReviewPromptMath(questionJson);
+        return buildReviewPrompt(questionJson, section, "mcq");
     }
 
-    /** Backwards-compatible overload — assumes math. */
+    /** Backwards-compatible overload — assumes math MCQ. */
     public static String buildReviewPrompt(String questionJson) {
-        return buildReviewPromptMath(questionJson);
+        return buildReviewPromptMathMCQ(questionJson);
     }
 
-    private static String buildReviewPromptMath(String questionJson) {
+    private static String buildReviewPromptMathMCQ(String questionJson) {
         return """
 You are a rigorous SAT Math question reviewer.
 Review the following question and return ONLY a JSON object — no explanation, no markdown fences.
@@ -349,6 +353,8 @@ Perform ALL of the following checks:
 6. DIAGRAM_MATCH  — If a diagram is present, does its shape/type match the question stem?
 7. STEM_CLARITY   — Is the question stem unambiguous — exactly one option is defensible?
 8. SCHEMA         — Are all required fields present and non-empty?
+                    Required for MCQ: questionStem, optionA, optionB, optionC, optionD,
+                    correctAnswer (A/B/C/D), explanationShort.
 9. TRAP_CATEGORY  — Is trapCategory one of the 7 valid values:
                     formula_confusion | sign_error | trap_answer | misread |
                     calculation_error | concept_gap | overcomplicated
@@ -373,9 +379,58 @@ Rules:
 - If there are no issues, return issues: [], fixes: [].
 - SCHEMA and TRAP_CATEGORY failures are always "critical".
 - STEPS failures are "critical" if steps are missing, "warning" if low quality.
-- solvedAnswer MUST be exactly one letter (A, B, C, or D) for MCQ, or a numeric value for SPR.
+- solvedAnswer MUST be exactly one letter (A, B, C, or D).
   Never put reasoning or phrases like "None of the options" in solvedAnswer.
   If you believe no option is correct, set solvedAnswer to the closest letter and flag it as critical MATH issue.
+- Return ONLY the JSON object. No other text.""";
+    }
+
+    private static String buildReviewPromptMathSPR(String questionJson) {
+        return """
+You are a rigorous SAT Math question reviewer. This is an SPR (Student Produced Response) question — no answer choices, student enters a numeric answer.
+Review the following question and return ONLY a JSON object — no explanation, no markdown fences.
+
+QUESTION JSON:
+""" + questionJson + """
+
+Perform ALL of the following checks:
+
+1. MATH           — Solve the question yourself. Verify that your answer falls within
+                    the sprMin–sprMax range. Show your working in the "notes" field.
+2. SPR_RANGE      — Is the sprMin–sprMax range correct and reasonable?
+                    A single exact answer should have sprMin == sprMax.
+3. STEPS          — Are explanationSteps present with 2–4 entries? Is each step correct
+                    and free of hedging language?
+4. DIAGRAM_MATCH  — If a diagram is present, does its shape/type match the question stem?
+5. STEM_CLARITY   — Is the question stem unambiguous — exactly one numeric answer is defensible?
+6. SCHEMA         — Are all required fields present and non-empty?
+                    Required for SPR: questionStem, sprMin, sprMax, explanationShort.
+                    optionA–D and correctAnswer MUST be null — do NOT flag their absence as an error.
+7. TRAP_CATEGORY  — Is trapCategory one of the 7 valid values:
+                    formula_confusion | sign_error | trap_answer | misread |
+                    calculation_error | concept_gap | overcomplicated
+
+Return this exact JSON shape:
+{
+  "pass": true,
+  "confidence": 0.92,
+  "solvedAnswer": "320",
+  "issues": [
+    { "check": "MATH", "severity": "critical", "detail": "..." }
+  ],
+  "fixes": [
+    { "field": "sprMin", "current": "300", "suggested": "320" }
+  ],
+  "notes": "Computed: ..."
+}
+
+Rules:
+- A question FAILS (pass: false) if it has ANY issue with severity "critical".
+- Warnings and info issues still allow pass: true.
+- If there are no issues, return issues: [], fixes: [].
+- SCHEMA, SPR_RANGE and TRAP_CATEGORY failures are always "critical".
+- STEPS failures are "critical" if steps are missing, "warning" if low quality.
+- solvedAnswer MUST be a numeric value (not a letter).
 - Return ONLY the JSON object. No other text.""";
     }
 

@@ -80,7 +80,7 @@ public class AgentReviewStage {
     private JsonNode reviewQuestion(Question q) throws Exception {
         // Build slim question JSON (omit heavy diagram config)
         ObjectNode slim = buildSlimNode(q);
-        String prompt = PromptLibrary.buildReviewPrompt(objectMapper.writeValueAsString(slim), q.getSection());
+        String prompt = PromptLibrary.buildReviewPrompt(objectMapper.writeValueAsString(slim), q.getSection(), q.getQuestionType());
         String raw = claudeClient.call(REVIEW_MODEL, MAX_TOKENS, "", prompt);
         String cleaned = raw.replaceAll("(?i)^```json\\s*", "").replaceAll("\\s*```$", "").strip();
         JsonNode result = objectMapper.readTree(cleaned);
