@@ -526,7 +526,7 @@ function buildView(q) {
         </div>
 
         ${q.passageText ? `<div class="passage-box">${processText(q.passageText)}</div>` : ''}
-        <p class="question-stem mb-1">${processText(q.questionStem)}</p>
+        <div class="question-stem mb-1">${processText(q.questionStem)}</div>
 
         ${q.diagram
           ? `<div id="diagram-host" class="rounded-xl my-4 p-2"
@@ -706,18 +706,20 @@ function processText(text) {
         .replace(/\n/g, ' ');                   // actual newline
     }
     // Prose — full processing: HTML-escape, un-escape table tags, newlines → <br>
+    // NOTE: after escaping, all > are &gt; so [^>]* would match everything.
+    // Use exact bare-tag patterns — our generated tables never have attributes.
     return seg.t
       .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-      .replace(/&lt;(\/?)table(\s[^>]*)?&gt;/gi, (_,a,b)=>`<${a}table${b||''}>`)
-      .replace(/&lt;(\/?)thead(&gt;|[^>]*>)/gi, (_,a)=>`<${a}thead>`)
-      .replace(/&lt;(\/?)tbody(&gt;|[^>]*>)/gi, (_,a)=>`<${a}tbody>`)
-      .replace(/&lt;(\/?)tr(&gt;|[^>]*>)/gi,    (_,a)=>`<${a}tr>`)
-      .replace(/&lt;th([^>]*)?&gt;/gi, (_,a)=>`<th${a||''}>`)
-      .replace(/&lt;\/th&gt;/gi, `</th>`)
-      .replace(/&lt;td([^>]*)?&gt;/gi, (_,a)=>`<td${a||''}>`)
-      .replace(/&lt;\/td&gt;/gi, `</td>`)
-      .replace(/\\n(?![a-zA-Z]{2,})/g, '<br>')  // literal \n — skip only if 2+ letters follow
-      .replace(/\n/g, '<br>');                  // actual newline
+      .replace(/&lt;(\/?)table&gt;/gi,  (_, a) => `<${a}table>`)
+      .replace(/&lt;(\/?)thead&gt;/gi,  (_, a) => `<${a}thead>`)
+      .replace(/&lt;(\/?)tbody&gt;/gi,  (_, a) => `<${a}tbody>`)
+      .replace(/&lt;(\/?)tr&gt;/gi,     (_, a) => `<${a}tr>`)
+      .replace(/&lt;th&gt;/gi,          `<th>`)
+      .replace(/&lt;\/th&gt;/gi,        `</th>`)
+      .replace(/&lt;td&gt;/gi,          `<td>`)
+      .replace(/&lt;\/td&gt;/gi,        `</td>`)
+      .replace(/\\n/g, '<br>')   // literal \n → <br> (no lookahead — prose has no LaTeX commands)
+      .replace(/\n/g, '<br>');   // actual newline
   }).join('');
 }
 
