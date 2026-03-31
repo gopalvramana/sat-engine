@@ -691,12 +691,12 @@ function processText(text) {
 
   return segments.map(seg => {
     if (seg.math) {
-      // Math block — HTML-escape, then strip literal \n (two chars) and actual newlines.
-      // KaTeX treats \n as an unknown command and fails; replace with space which is safe.
+      // Math block — HTML-escape, then strip standalone \n (not part of a LaTeX command).
+      // Only replace \n NOT followed by a letter — avoids breaking \neq, \nabla, \not etc.
       return seg.t
         .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-        .replace(/\\n/g, ' ')   // literal backslash+n (old fixLatexEscapes bug)
-        .replace(/\n/g,  ' ');  // actual newline
+        .replace(/\\n(?![a-zA-Z])/g, ' ')  // literal \n that is NOT a LaTeX command
+        .replace(/\n/g, ' ');               // actual newline
     }
     // Prose — full processing: HTML-escape, un-escape table tags, newlines → <br>
     return seg.t
@@ -709,8 +709,8 @@ function processText(text) {
       .replace(/&lt;\/th&gt;/gi, `</th>`)
       .replace(/&lt;td([^>]*)?&gt;/gi, (_,a)=>`<td${a||''}>`)
       .replace(/&lt;\/td&gt;/gi, `</td>`)
-      .replace(/\\n/g, '<br>')   // literal \n (two chars) — from fixLatexEscapes bug on older questions
-      .replace(/\n/g,  '<br>'); // actual newline — from correctly parsed questions
+      .replace(/\\n(?![a-zA-Z])/g, '<br>')  // literal \n not part of a LaTeX command
+      .replace(/\n/g, '<br>');              // actual newline
   }).join('');
 }
 
