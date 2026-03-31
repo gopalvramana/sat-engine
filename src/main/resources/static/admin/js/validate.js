@@ -674,21 +674,39 @@ function escHtml(s) {
 
 function processText(text) {
   if (!text) return '';
-  return String(text)
-    // HTML-escape everything first
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    // Un-escape HTML table tags (Claude emits raw HTML tables inside JSON strings)
-    .replace(/&lt;(\/?)table(\s[^>]*)?&gt;/gi, (_,a,b)=>`<${a}table${b||''}>`)
-    .replace(/&lt;(\/?)thead(&gt;|[^>]*>)/gi, (_,a)=>`<${a}thead>`)
-    .replace(/&lt;(\/?)tbody(&gt;|[^>]*>)/gi, (_,a)=>`<${a}tbody>`)
-    .replace(/&lt;(\/?)tr(&gt;|[^>]*>)/gi,    (_,a)=>`<${a}tr>`)
-    .replace(/&lt;th([^>]*)?&gt;/gi, (_,a)=>`<th${a||''}>`)
-    .replace(/&lt;\/th&gt;/gi, `</th>`)
-    .replace(/&lt;td([^>]*)?&gt;/gi, (_,a)=>`<td${a||''}>`)
-    .replace(/&lt;\/td&gt;/gi, `</td>`)
-    // Convert newlines to <br> so display-math line breaks render correctly.
-    // KaTeX handles \n inside \[...\] blocks fine — this only affects surrounding prose.
-    .replace(/\n/g, '<br>');
+  const raw = String(text);
+
+  // Split into math blocks and prose segments.
+  // \n → <br> must only happen in prose — inserting <br> inside \[...\] or \(...\)
+  // breaks the text node that KaTeX scans, preventing math from rendering.
+  const mathRe = /(\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\))/g;
+  const segments = [];
+  let last = 0, m;
+  while ((m = mathRe.exec(raw)) !== null) {
+    if (m.index > last) segments.push({ math: false, t: raw.slice(last, m.index) });
+    segments.push({ math: true, t: m[0] });
+    last = m.index + m[0].length;
+  }
+  if (last < raw.length) segments.push({ math: false, t: raw.slice(last) });
+
+  return segments.map(seg => {
+    if (seg.math) {
+      // Math block — HTML-escape only, keep \n intact so KaTeX can parse the block
+      return seg.t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+    // Prose — full processing: HTML-escape, un-escape table tags, newlines → <br>
+    return seg.t
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/&lt;(\/?)table(\s[^>]*)?&gt;/gi, (_,a,b)=>`<${a}table${b||''}>`)
+      .replace(/&lt;(\/?)thead(&gt;|[^>]*>)/gi, (_,a)=>`<${a}thead>`)
+      .replace(/&lt;(\/?)tbody(&gt;|[^>]*>)/gi, (_,a)=>`<${a}tbody>`)
+      .replace(/&lt;(\/?)tr(&gt;|[^>]*>)/gi,    (_,a)=>`<${a}tr>`)
+      .replace(/&lt;th([^>]*)?&gt;/gi, (_,a)=>`<th${a||''}>`)
+      .replace(/&lt;\/th&gt;/gi, `</th>`)
+      .replace(/&lt;td([^>]*)?&gt;/gi, (_,a)=>`<td${a||''}>`)
+      .replace(/&lt;\/td&gt;/gi, `</td>`)
+      .replace(/\n/g, '<br>');
+  }).join('');
 }
 
 function renderKaTeXIn(el) {
