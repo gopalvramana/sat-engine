@@ -58,10 +58,14 @@ public class GenerateStage {
             "advanced_math",         0.20   // function graphs, occasionally
     );
     private static final List<String> ARTIFACT_PHRASES = List.of(
-            "wait,", "wait —", "wait—", "let me recalculate", "let me re-read",
+            "wait,", "wait —", "wait—", "let's recheck", "let me recheck",
+            "let me recalculate", "let me re-read", "let me re-examine",
             "let me verify", "let me rewrite", "let me use", "let me try",
-            "let me reconsider", "hmm,", "hmm.", "actually,", "actually—",
-            "rechecking", "doesn't yield", "doesn't work", "i need to reconsider"
+            "let me reconsider", "let me recompute", "let me re-examine",
+            "hmm,", "hmm.", "actually,", "actually—", "actually ",
+            "rechecking", "re-checking", "doesn't yield", "doesn't work",
+            "i need to reconsider", "more likely", "intended answer",
+            "clean answer", "let me rethink"
     );
 
     private final Random random = new Random();
@@ -318,16 +322,28 @@ public class GenerateStage {
 
     private boolean hasArtifacts(JsonNode data) {
         StringBuilder text = new StringBuilder();
+        // Check all text fields that could contain AI reasoning leakage
+        text.append(data.path("explanationShort").asText("").toLowerCase()).append(" ");
+        text.append(data.path("trapExplanation").asText("").toLowerCase()).append(" ");
         JsonNode steps = data.path("explanationSteps");
         if (steps.isArray()) {
             for (JsonNode step : steps) {
                 text.append(step.path("content").asText("").toLowerCase()).append(" ");
                 text.append(step.path("title").asText("").toLowerCase()).append(" ");
+                text.append(step.path("math").asText("").toLowerCase()).append(" ");
             }
         }
-        text.append(data.path("trapExplanation").asText("").toLowerCase()).append(" ");
         JsonNode cc = data.path("coreConcept");
-        if (!cc.isMissingNode()) text.append(cc.path("summary").asText("").toLowerCase());
+        if (!cc.isMissingNode()) {
+            text.append(cc.path("summary").asText("").toLowerCase()).append(" ");
+            text.append(cc.path("title").asText("").toLowerCase()).append(" ");
+        }
+        JsonNode prereqs = data.path("prerequisites");
+        if (prereqs.isArray()) {
+            for (JsonNode p : prereqs) {
+                text.append(p.path("why").asText("").toLowerCase()).append(" ");
+            }
+        }
         String t = text.toString();
         return ARTIFACT_PHRASES.stream().anyMatch(t::contains);
     }
