@@ -134,6 +134,24 @@ Nothing before or after the JSON.""";
 
         if (hasDiagram) {
             sb.append("\nInclude a diagram of type: ").append(diagramType).append(".\n");
+            sb.append("""
+
+DIAGRAM TYPE RULES — critical:
+Use svg_programmatic (coordinate_plane subtype) for ALL of these:
+  - Any graph of a mathematical function: linear, quadratic, absolute value, etc.
+  - System of equations / line intersections
+  - Inequalities shaded on a coordinate plane
+  - Piecewise functions
+  - Any diagram where the visual IS the mathematical relationship
+
+Use chartjs ONLY for statistical / data charts:
+  - Scatter plots of real-world data (e.g. hours studied vs. test score)
+  - Bar charts, histograms, line charts of tabular data
+  - Pie charts, box plots, dot plots
+  NEVER use chartjs scatter to draw mathematical equations or function graphs.
+  chartjs scatter connects a small number of hand-picked points — it looks like dots, not lines.
+
+""");
             if ("svg_programmatic".equals(diagramType)) {
                 sb.append("""
 Provide svgConfig.  The supported shape values and their key fields are:
@@ -210,7 +228,15 @@ Provide svgConfig.  The supported shape values and their key fields are:
 Set width/height in pixels (typical: 240×200 for simple shapes, 320×240 for complex).
 """);
             } else {
-                sb.append("Provide chartConfig with chartType, labels[], datasets[], and optional fields:\n  stacked:true  — for stacked bar charts (datasets[] still used)\n  Each dataset: {label, values:[], color}\n  Multiple datasets in bar chart = grouped bars (side by side) by default.\n  Set stacked:true for stacked bars (e.g. showing parts of a whole).\n");
+                sb.append("""
+Provide chartConfig for a STATISTICAL DATA chart (not a math function graph).
+chartType: "bar" | "histogram" | "line" | "scatter" | "pie" | "boxplot" | "dotplot"
+Each dataset: { label, values:[], color } for bar/line/histogram.
+For scatter (data points only): datasets:[{ label, points:[{x,y}], color }]
+stacked:true — for stacked bar charts.
+Multiple datasets in bar chart = grouped bars by default.
+REMINDER: if the question involves a mathematical function or equation graph, use svg_programmatic instead.
+""");
             }
         } else {
             sb.append("\nNo diagram needed for this question.\n");
