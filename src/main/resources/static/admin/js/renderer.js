@@ -116,7 +116,7 @@ function tickMark(x1, y1, x2, y2, count = 1) {
 
 /**
  * Evaluate a math function at x, returning y or null for undefined.
- * Supported types: linear, quadratic, cubic, absolute, square_root,
+ * Supported types: linear, quadratic, cubic, quartic, absolute, square_root,
  *                  exponential, reciprocal, constant
  */
 function evaluateFunction(funcConfig, x) {
@@ -127,6 +127,7 @@ function evaluateFunction(funcConfig, x) {
       case 'linear':      return (p.m ?? 1) * x + (p.b ?? 0);
       case 'quadratic':   return (p.a ?? 1) * x * x + (p.b ?? 0) * x + (p.c ?? 0);
       case 'cubic':       return (p.a ?? 1) * x * x * x + (p.b ?? 0) * x * x + (p.c ?? 0) * x + (p.d ?? 0);
+      case 'quartic':     return (p.a ?? 1) * x**4 + (p.b ?? 0) * x**3 + (p.c ?? 0) * x**2 + (p.d ?? 0) * x + (p.e ?? 0);
       case 'absolute':    return (p.a ?? 1) * Math.abs(x - (p.h ?? 0)) + (p.k ?? 0);
       case 'square_root': {
         const inner = (p.a ?? 1) * (x - (p.h ?? 0));
@@ -434,7 +435,7 @@ function validateConfig(cfg) {
     'parallelogram','trapezoid','two_triangles','3d_shape','venn_diagram',
     'normal_curve','regular_polygon'];
   const CHART_TYPES  = ['bar','histogram','line','scatter','pie','boxplot','dotplot'];
-  const FN_TYPES     = ['linear','quadratic','cubic','absolute','square_root',
+  const FN_TYPES     = ['linear','quadratic','cubic','quartic','absolute','square_root',
                         'exponential','reciprocal','constant'];
   const CP_SUBTYPES  = ['basic','function_graph','system_of_equations','inequality','piecewise'];
 
@@ -3121,9 +3122,24 @@ function renderDiagram(diagramConfig, hostEl) {
       hostEl.innerHTML = `<p class="text-red-500 text-xs p-2">Missing chartConfig</p>`;
       return;
     }
-    // Normalize datasets
+    // Normalize field names — Claude sometimes uses Chart.js native names instead of renderer names.
+    // "labels" at top level → "categories"  (bar x-axis category labels)
+    // dataset "backgroundColor" (string or array) → "color" / "colors"
     const normalCfg = Object.assign({}, cfg);
-    if (normalCfg.datasets) normalCfg.datasets = normalCfg.datasets.map(normalizeDataset);
+    if (!normalCfg.categories && normalCfg.labels && Array.isArray(normalCfg.labels)) {
+      normalCfg.categories = normalCfg.labels;
+    }
+    if (normalCfg.datasets) {
+      normalCfg.datasets = normalCfg.datasets.map(ds => {
+        const out = Object.assign({}, ds);
+        if (out.backgroundColor !== undefined && out.color === undefined && out.colors === undefined) {
+          if (Array.isArray(out.backgroundColor)) out.colors = out.backgroundColor;
+          else                                     out.color  = out.backgroundColor;
+        }
+        return out;
+      });
+      normalCfg.datasets = normalCfg.datasets.map(normalizeDataset);
+    }
 
     const id = 'chart-' + Math.random().toString(36).slice(2);
     const canvas = document.createElement('canvas');

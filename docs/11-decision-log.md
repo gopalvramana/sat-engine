@@ -70,6 +70,8 @@
 | 044 | Math figure library (student-facing) | Evaluate Mafs (React) or JSXGraph when switching to React frontend. Current custom SVG renderer stays for admin pipeline. | Architecture | ⬜ PENDING — POC at React switch |
 | 045 | Student-facing MVP stack | Build practice.html in current zero-build stack (plain JS + renderer.js + KaTeX + Chart.js) reusing existing renderer. Switch to React only when student UX complexity justifies it (200+ questions, real users, dashboards). | Architecture | 🔄 |
 | 046 | Production readiness of current stack | Spring Boot + PostgreSQL + KaTeX + Chart.js are all production-grade. No stack replacement needed at scale — add load balancer, read replica, CDN as usage grows. | Infrastructure | ✅ |
+| 047 | Question diversity at generation time | Inject the 10 most-recent questions (externalId + stem + scenarioTag) for the same domain+skill into the generation prompt. Claude must avoid reusing the same real-world scenario. New `scenario_tag` column (snake_case, e.g. `projectile_motion`) tracks scenarios. | Content / AI | ✅ |
+| 048 | Auto skill balancing | When `--skill` is omitted, GenerateStage queries `COUNT(*) GROUP BY skill_key` for the domain, finds the minimum count, and picks randomly among all tied skills. This gives round-robin coverage across all 66+ taxonomy skills without manual intervention. | Content / AI | ✅ |
 
 ---
 
@@ -85,6 +87,7 @@ These are done and do not need to be repeated.
 | V11 | MATH-ALG-017 option B: 9.67 → 9 | AI arithmetic error |
 | V12 | MATH-ADV-006 option D: wrong distractor | Unrealistic distractor |
 | V14 | MATH-PS-006 options: wrapped bare `\frac{}` in `\( \)` | AI omitted LaTeX delimiters in option fields — prompt hardened in V14 |
+| V22 | MATH-PS-001 scatter plot data points replaced | Old data had slope ~7.3 pts/hr (14.6 pts/2 hrs) matching option C; new data has slope ~4.5 pts/hr (9.1 pts/2 hrs) correctly matching marked answer A (8–10 pts/2 hrs) |
 
 ---
 
@@ -111,6 +114,32 @@ These need to be made before or during Month 2:
 | — | Stripe account setup (personal or company) | Month 2, Week 7 |
 | — | SendGrid account setup | Month 2, Week 8 |
 | — | Mafs vs JSXGraph POC | At React frontend switch (trigger: 200+ questions, real student users) |
+
+---
+
+---
+
+**ADR-047 — Question Diversity via Scenario Context Injection**
+
+**Decision:** Before each generation call, fetch the 10 most-recently generated questions for the same domain+skill from the DB. Format them as `EXTERNAL_ID [scenario_tag]: stem…` and inject into the Claude user message as a "DIVERSITY RULES" block. Claude is instructed to choose a completely different real-world scenario. A new `scenario_tag` column (VARCHAR 60, snake_case) is returned by Claude and stored, enabling future deduplication queries.
+
+**Rejected:** Post-hoc deduplication (reject and retry if duplicate detected); vector similarity check via pgvector.
+
+**Reason:** Context injection is zero-latency (no extra API call, no retry cost). It shifts the diversity burden to Claude's generation step — the most efficient place to prevent duplicates. pgvector similarity is reserved for a future "near-duplicate audit" job on the full corpus.
+
+**Status:** ✅ DECIDED
+
+---
+
+**ADR-048 — Auto Skill Balancing via Least-Covered Skill Selection**
+
+**Decision:** When `--skill` is not provided on the CLI, `GenerateStage.pickLeastCoveredSkill(domain)` queries `COUNT(*) GROUP BY skill_key` for the domain, finds the minimum count, collects all skills tied at that minimum, and picks one at random. This is loaded from `sat_taxonomy.json` at startup via `@PostConstruct`. Manual `--skill` overrides the auto-selection.
+
+**Rejected:** Strict round-robin (requires persistent state or ordering); random skill selection (would leave many skills uncovered at low counts).
+
+**Reason:** Least-covered selection is stateless (uses live DB counts), self-healing (if a skill falls behind it gets picked next), and handles ties fairly. No external scheduler or state file needed.
+
+**Status:** ✅ DECIDED
 
 ---
 

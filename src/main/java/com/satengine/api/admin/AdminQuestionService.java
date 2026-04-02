@@ -121,6 +121,7 @@ public class AdminQuestionService {
                 .domain(q.getDomain())
                 .skill(q.getSkill())
                 .skillKey(q.getSkillKey())
+                .scenarioTag(q.getScenarioTag())
                 .difficulty(q.getDifficulty())
                 .explanationShort(q.getExplanationShort())
                 .explanationSteps(q.getExplanationSteps())

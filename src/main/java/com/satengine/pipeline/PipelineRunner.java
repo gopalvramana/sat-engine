@@ -12,19 +12,46 @@ import java.util.List;
 /**
  * CLI entry point for pipeline stages.
  *
- * Usage:
- *   java -jar sat-engine.jar --job=generate --count=20
- *   java -jar sat-engine.jar --job=generate --count=10 --section=math --difficulty=4
- *   java -jar sat-engine.jar --job=generate --count=3 --domain=algebra --skill=linear_functions
- *   java -jar sat-engine.jar --job=generate --count=3 --section=math --domain=geometry_trigonometry --skill=pythagorean_theorem --difficulty=5
- *   java -jar sat-engine.jar --job=agent-review
- *   java -jar sat-engine.jar --job=agent-review --only-failed
- *   java -jar sat-engine.jar --job=enrich
- *   java -jar sat-engine.jar --job=enrich --include-approved   (re-enriches approved questions missing data)
+ * ── GENERATE ──────────────────────────────────────────────────────────────
+ *   # Fully automatic — domain picked randomly, skill auto-balanced per domain
+ *   java -jar sat-engine.jar --job=generate --count=10
  *
- * --domain  overrides random domain selection; must match a key in DOMAIN_CODES
- * --skill   canonical skill key from sat_taxonomy.json (e.g. linear_functions, pythagorean_theorem)
- *           saved to skill_key column; also included in the generation prompt
+ *   # Pin section only
+ *   java -jar sat-engine.jar --job=generate --count=10 --section=math
+ *   java -jar sat-engine.jar --job=generate --count=10 --section=reading_writing
+ *
+ *   # Pin domain (skill still auto-balanced within that domain)
+ *   java -jar sat-engine.jar --job=generate --count=10 --domain=algebra
+ *   java -jar sat-engine.jar --job=generate --count=5  --domain=algebra --difficulty=4
+ *
+ *   # Pin domain + explicit skill (overrides auto-balance)
+ *   java -jar sat-engine.jar --job=generate --count=3 --domain=algebra --skill=linear_functions
+ *   java -jar sat-engine.jar --job=generate --count=3 --domain=geometry_trigonometry --skill=pythagorean_theorem --difficulty=5
+ *
+ * ── AGENT REVIEW ──────────────────────────────────────────────────────────
+ *   # Review all enriched (pending) questions
+ *   java -jar sat-engine.jar --job=agent-review
+ *
+ *   # Re-review only questions that previously failed
+ *   java -jar sat-engine.jar --job=agent-review --only-failed
+ *
+ * ── ENRICH ────────────────────────────────────────────────────────────────
+ *   # Enrich unenriched questions (approved with null coreConcept)
+ *   java -jar sat-engine.jar --job=enrich
+ *
+ *   # Re-enrich already-approved questions (e.g. after prompt improvement)
+ *   java -jar sat-engine.jar --job=enrich --include-approved
+ *
+ * ── FLAGS ─────────────────────────────────────────────────────────────────
+ * --count       Number of questions to generate (default: 10)
+ * --section     math | reading_writing  (default: random)
+ * --domain      Key from sat_taxonomy.json, e.g. algebra, geometry_trigonometry
+ *               (default: random within section)
+ * --skill       Canonical skill key, e.g. linear_functions, pythagorean_theorem
+ *               When omitted, GenerateStage auto-picks the least-covered skill
+ *               within the domain for even distribution across all 66+ skills.
+ *               Skill is injected into the generation prompt and saved to skill_key.
+ * --difficulty  1–7 integer (default: random 2–6)
  *
  * Normal API server startup (no --job flag): all stages are skipped.
  */

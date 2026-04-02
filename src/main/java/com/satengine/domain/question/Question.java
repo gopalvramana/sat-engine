@@ -40,6 +40,11 @@ public class Question {
     @Column(name = "skill_key", length = 60)
     private String skillKey;
 
+    /** Real-world scenario type — e.g. "projectile_motion", "rectangle_area", "revenue_model".
+     *  Injected at generation time to prevent duplicate scenarios within the same skill. */
+    @Column(name = "scenario_tag", length = 60)
+    private String scenarioTag;
+
     @Column(name = "difficulty", nullable = false)
     private Short difficulty;
 

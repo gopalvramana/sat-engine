@@ -78,53 +78,146 @@
 .diff-dot.filled { background: #d97706; }
 .diff-dot.empty  { background: #e2e8f0; }
 
-/* ── Tab bar ─────────────────────────────────────────────── */
-.tab-btn {
-  border: none; border-bottom: 2.5px solid transparent; background: none;
-  cursor: pointer; font-family: 'Inter', sans-serif;
-  padding: 0.85rem 1.25rem; font-size: 0.875rem; font-weight: 600;
-  white-space: nowrap; transition: color 0.15s, border-color 0.15s;
+/* ── Explanation panel (all steps visible) ──────────────── */
+.expl-panel {
+  background: #fff; border: 1.5px solid #e2e8f0; border-radius: 1rem;
+  overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.04);
 }
-.tab-btn.active           { border-color: #2563eb; color: #2563eb; }
-.tab-btn:not(.active)     { color: #64748b; }
-.tab-btn:not(.active):hover { color: #334155; }
-.tab-pane           { display: none; }
-.tab-pane.is-active { display: block; }
-
-/* ── Step card ────────────────────────────────────────────── */
-.step-card {
-  background: #fff; border: 1.5px solid #bfdbfe;
-  border-left: 4px solid #2563eb; border-radius: 14px;
-  padding: 18px 18px 14px;
-  box-shadow: 0 4px 18px rgba(37,99,235,0.07), 0 1px 3px rgba(0,0,0,0.04);
+.expl-panel-header {
+  font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.07em; color: #64748b;
+  padding: 0.5rem 1rem; border-bottom: 1px solid #f1f5f9;
+  background: #f8fafc;
 }
-.step-num {
+.expl-steps-list { padding: 0.25rem 0; }
+.expl-step {
+  display: flex; gap: 0.75rem; align-items: flex-start;
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid #f8fafc;
+}
+.expl-step:last-child { border-bottom: none; }
+.expl-step-num {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 26px; height: 26px; border-radius: 50%;
-  background: #2563eb; color: #fff; font-size: 11px; font-weight: 700;
-  box-shadow: 0 0 0 3px #dbeafe; margin-bottom: 10px;
+  width: 1.35rem; height: 1.35rem; border-radius: 50%;
+  background: #2563eb; color: #fff; font-size: 0.67rem; font-weight: 700;
+  flex-shrink: 0; margin-top: 1px;
 }
-.step-title { font-size: 0.97rem; font-weight: 700; color: #1e3a5f; margin-bottom: 4px; }
-.step-desc  { font-size: 0.85rem; color: #64748b; line-height: 1.65; margin-bottom: 10px; }
-.step-math  {
-  font-family: 'Georgia', serif; white-space: pre-line; font-size: 0.87rem;
-  line-height: 1.8; background: #eff6ff; border: 1px solid #bfdbfe;
-  border-radius: 9px; padding: 11px 15px; color: #1e40af; font-weight: 500;
+.expl-step-body { flex: 1; min-width: 0; }
+.expl-step-title {
+  font-size: 0.82rem; font-weight: 700; color: #1e293b; margin-bottom: 0.2rem;
+}
+.expl-step-content {
+  font-size: 0.82rem; color: #475569; line-height: 1.6;
+}
+.expl-step-math {
+  font-size: 0.82rem; color: #1e40af; margin-top: 0.35rem;
+  background: #eff6ff; border: 1px solid #bfdbfe;
+  border-radius: 0.4rem; padding: 0.3rem 0.6rem;
+  display: inline-block;
 }
 
-/* ── Step progress dots ────────────────────────────────────── */
-.step-dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  cursor: pointer; transition: all 0.25s;
+/* ── Core Concept strip ──────────────────────────────────── */
+.concept-strip {
+  background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 0.75rem;
+  padding: 0.65rem 0.9rem;
+}
+.concept-strip-top {
+  display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap;
+  margin-bottom: 0.2rem;
+}
+.concept-strip-tag {
+  font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.05em; color: #3b82f6; flex-shrink: 0;
+}
+.concept-strip-title {
+  font-size: 0.82rem; font-weight: 700; color: #1e3a8a;
+}
+.concept-strip-summary {
+  font-size: 0.78rem; color: #1d4ed8; line-height: 1.5; margin-bottom: 0.3rem;
+}
+.concept-strip-formula {
+  display: inline-block; background: #fff; border: 1px solid #bfdbfe;
+  border-radius: 0.35rem; padding: 0.2rem 0.5rem;
+  font-size: 0.8rem; color: #1e40af;
 }
 
-/* ── Ctrl buttons (step nav) ──────────────────────────────── */
-.ctrl-btn { transition: all 0.15s; font-family: 'Inter', sans-serif; cursor: pointer; border: none; }
-.ctrl-btn:disabled { opacity: 0.28; cursor: default; pointer-events: none; }
+/* ── Prerequisites chips ─────────────────────────────────── */
+.prereq-chips-row {
+  display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;
+}
+.prereq-chips-label {
+  font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.05em; color: #94a3b8; flex-shrink: 0;
+}
+.prereq-chip {
+  position: relative; font-size: 0.74rem; font-weight: 500;
+  padding: 0.2rem 0.65rem; border-radius: 9999px;
+  background: #f1f5f9; border: 1.5px solid #e2e8f0; color: #475569;
+  cursor: default; white-space: nowrap; transition: all 0.12s;
+}
+.prereq-chip:hover { background: #e0e7ff; border-color: #a5b4fc; color: #3730a3; }
+.prereq-chip[data-tip]:hover::after {
+  content: attr(data-tip);
+  position: absolute; bottom: calc(100% + 6px); left: 50%;
+  transform: translateX(-50%);
+  background: #1e293b; color: #fff; font-size: 0.72rem; font-weight: 400;
+  padding: 0.35rem 0.6rem; border-radius: 0.4rem;
+  white-space: normal; max-width: 220px; text-align: center;
+  z-index: 100; pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15); line-height: 1.4;
+}
+.prereq-chip[data-tip]:hover::before {
+  content: '';
+  position: absolute; bottom: calc(100% + 2px); left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent; border-top-color: #1e293b;
+  z-index: 100; pointer-events: none;
+}
 
-/* ── Verdict panels ───────────────────────────────────────── */
-.verdict-pass { background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 1rem; padding: 1rem 1.25rem; }
-.verdict-fail { background: #fef2f2; border: 1.5px solid #fca5a5; border-radius: 1rem; padding: 1rem 1.25rem; }
+/* ── Verdict panel (collapsible) ──────────────────────────── */
+.verdict-details {
+  border-radius: 0.875rem; overflow: hidden;
+}
+.verdict-details.verdict-pass { background: #f0fdf4; border: 1.5px solid #86efac; }
+.verdict-details.verdict-fail { background: #fef2f2; border: 1.5px solid #fca5a5; }
+
+.verdict-summary {
+  display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;
+  padding: 0.75rem 1rem; cursor: pointer; list-style: none; user-select: none;
+}
+.verdict-summary::-webkit-details-marker { display: none; }
+.verdict-details[open] .verdict-summary {
+  border-bottom: 1px solid;
+}
+.verdict-details.verdict-pass[open] .verdict-summary { border-color: #bbf7d0; }
+.verdict-details.verdict-fail[open] .verdict-summary { border-color: #fecaca; }
+
+/* chevron via ::before on summary */
+.verdict-summary::before {
+  content: '▶';
+  font-size: 0.55rem; color: #94a3b8;
+  flex-shrink: 0; transition: transform 0.15s;
+  margin-right: -0.1rem;
+}
+.verdict-details[open] .verdict-summary::before { transform: rotate(90deg); }
+
+.verdict-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 1.5rem; height: 1.5rem; border-radius: 50%; flex-shrink: 0;
+}
+.verdict-icon-pass { background: #22c55e; }
+.verdict-icon-fail { background: #ef4444; }
+.verdict-label {
+  font-size: 0.85rem; font-weight: 700; flex-shrink: 0;
+}
+.verdict-details.verdict-pass .verdict-label { color: #15803d; }
+.verdict-details.verdict-fail .verdict-label { color: #b91c1c; }
+.verdict-meta {
+  font-size: 0.75rem; font-weight: 500;
+}
+.verdict-details.verdict-pass .verdict-meta { color: #16a34a; }
+.verdict-details.verdict-fail .verdict-meta { color: #ef4444; }
+.verdict-body { padding: 0.65rem 1rem 0.75rem; }
 /* ── Alternative Approach panel ─────────────────────────────── */
 .alt-approach-panel { background: #f0f9ff; border: 1.5px solid #7dd3fc; border-radius: 1rem; padding: 0; }
 .alt-approach-summary {
@@ -152,13 +245,6 @@
 .issue-chip.critical { background: #fee2e2; color: #b91c1c; }
 .issue-chip.warning  { background: #fef3c7; color: #92400e; }
 
-/* ── Prereq cards ─────────────────────────────────────────── */
-.prereq-card {
-  background: #fff; border: 1.5px solid #e2e8f0; border-radius: 0.75rem;
-  padding: 0.9rem; display: flex; align-items: flex-start; gap: 0.75rem;
-  transition: border-color 0.15s;
-}
-.prereq-card:hover { border-color: #93c5fd; }
 
 /* ── Admin action bar ─────────────────────────────────────── */
 .admin-bar {
@@ -317,6 +403,7 @@ th { background: #f1f5f9; font-weight: 600; }
 .cov-skill-desc  { font-size: 0.7rem; color: #94a3b8; line-height: 1.4; }
 .cov-skill-count { font-size: 0.72rem; font-weight: 700; min-width: 1.4rem; text-align: right; flex-shrink: 0; padding-top: 2px; }
 .cov-skill-dot   { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
 
 /* ── Empty state ─────────────────────────────────────────── */
 .empty-panel {

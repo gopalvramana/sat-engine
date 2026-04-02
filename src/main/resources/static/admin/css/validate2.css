@@ -1,0 +1,143 @@
+/* ═══════════════════════════════════════════════════════════════
+   validate2.css — Compact View overrides + accordion styles
+   Loaded after validate.css — no base styles duplicated here.
+═══════════════════════════════════════════════════════════════ */
+
+/* ── Accordion Group (wraps Solution + Concept + Alt Approach) ── */
+.accordion-group {
+  background: #fff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+/* ── Each collapsible panel inside the group ── */
+.accordion-item {
+  border-bottom: 1px solid #f1f5f9;
+}
+.accordion-item:last-child {
+  border-bottom: none;
+}
+
+/* ── Summary row (always visible header) ── */
+.accordion-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.68rem 1rem;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+  background: #f8fafc;
+  transition: background 0.12s;
+}
+.accordion-summary::-webkit-details-marker { display: none; }
+.accordion-summary:hover { background: #f1f5f9; }
+
+/* Open state: blue tint header + divider */
+.accordion-item[open] > .accordion-summary {
+  background: #eff6ff;
+  border-bottom: 1px solid #dbeafe;
+}
+
+/* Icon (emoji) */
+.accordion-icon {
+  font-size: 0.9rem;
+  flex-shrink: 0;
+  width: 1.2rem;
+  text-align: center;
+  line-height: 1;
+}
+
+/* Label ("SOLUTION", "CORE CONCEPT", "ALTERNATIVE APPROACH") */
+.accordion-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  flex-shrink: 0;
+}
+.accordion-item[open] > .accordion-summary .accordion-label {
+  color: #1d4ed8;
+}
+
+/* Badge pill (step count or concept title or method name) */
+.accordion-badge {
+  font-size: 0.71rem;
+  font-weight: 500;
+  color: #64748b;
+  background: #e2e8f0;
+  padding: 0.1rem 0.55rem;
+  border-radius: 9999px;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.accordion-badge-concept {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+.accordion-badge-alt {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+/* Chevron arrow (right-aligned, rotates when open) */
+.accordion-chevron {
+  margin-left: auto;
+  font-size: 0.5rem;
+  color: #94a3b8;
+  flex-shrink: 0;
+  transition: transform 0.18s ease;
+}
+.accordion-item[open] > .accordion-summary .accordion-chevron {
+  transform: rotate(90deg);
+}
+
+/* ── Body (shown only when open) ── */
+.accordion-body {
+  padding: 0.8rem 1rem 1rem;
+  background: #fff;
+}
+
+/* Empty / fallback text */
+.accordion-empty {
+  font-size: 0.85rem;
+  color: #64748b;
+  line-height: 1.6;
+  font-style: italic;
+}
+
+/* Core concept body text */
+.accordion-concept-text {
+  font-size: 0.82rem;
+  color: #1d4ed8;
+  line-height: 1.6;
+  margin-bottom: 0.55rem;
+}
+
+/* Core concept formula box */
+.accordion-concept-formula {
+  display: inline-block;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 0.4rem;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.82rem;
+  color: #1e40af;
+}
+
+/* Alt approach steps container inside accordion */
+.accordion-alt-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+/* ── Prereq chips: tighter in compact view ── */
+.prereq-chips-row {
+  gap: 0.35rem;
+}

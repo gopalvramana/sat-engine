@@ -295,7 +295,6 @@ function renderQuestion(qOverride) {
     if (host) renderDiagram(q.diagram, host);
   }
 
-  renderExplanationTab(getSteps());
   renderKaTeXIn(document.getElementById('question-area'));
   wireEvents(q);
 }
@@ -307,7 +306,10 @@ function buildView(q) {
   const diff   = q.difficulty || 1;
   const status = q.status;
   const isMCQ  = (q.questionType || 'mcq').toLowerCase() !== 'spr';
-  const correct = (q.correctAnswer || '').toUpperCase();
+  // For SPR, correctAnswer may be null (no question_answers row). Fall back to sprMin.
+  const correct = isMCQ
+    ? (q.correctAnswer || '').toUpperCase()
+    : (q.correctAnswer || (q.sprMin != null ? String(q.sprMin) : ''));
 
   const dots = Array.from({ length: 7 }, (_, i) =>
     `<span class="diff-dot ${i < diff ? 'filled' : 'empty'}"></span>`
@@ -358,62 +360,53 @@ function buildView(q) {
     const mismatch = solved && /^[A-D]$/.test(solved) && solved !== correct;
     const conf     = ar.confidence != null ? Math.round(ar.confidence * 100) : null;
 
+    const metaStr = [
+      conf != null ? `${conf}% conf` : '',
+      solved       ? `Solved: ${solved}` : '',
+    ].filter(Boolean).join(' · ');
+
     if (ar.pass) {
       verdictHtml = `
-        <div class="verdict-pass mb-3">
-          <div class="flex items-center gap-2.5">
-            <div class="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
-                 style="background:#22c55e;">
-              <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-                <path d="M2.5 6.5l3 3 5-6" stroke="white" stroke-width="2"
+        <details class="verdict-details verdict-pass mb-3" ${warns.length ? 'open' : ''}>
+          <summary class="verdict-summary">
+            <span class="verdict-icon verdict-icon-pass">
+              <svg width="11" height="11" viewBox="0 0 13 13" fill="none">
+                <path d="M2.5 6.5l3 3 5-6" stroke="white" stroke-width="2.2"
                       stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
-            </div>
-            <div>
-              <p class="text-sm font-bold text-green-700">Agent passed</p>
-              <p class="text-xs text-green-600">
-                ${conf != null ? `Confidence: ${conf}%` : ''}
-                ${solved ? ` · Solved: ${solved}` : ''}
-                ${warns.length ? ` · ${warns.length} warning(s)` : ''}
-              </p>
-            </div>
-          </div>
-          ${warns.length ? `<div class="mt-2 space-y-0.5 pt-2 border-t border-green-200">
+            </span>
+            <span class="verdict-label">Agent passed</span>
+            <span class="verdict-meta">${metaStr}${warns.length ? ` · ${warns.length} warn` : ''}</span>
+          </summary>
+          ${warns.length ? `<div class="verdict-body">
             ${warns.map(i => `<div class="issue-item">
               <span class="issue-chip warning">WARN</span>
               <span class="text-slate-600">[${i.check}] ${escHtml(i.detail || '')}</span>
             </div>`).join('')}
           </div>` : ''}
-        </div>`;
+        </details>`;
     } else {
       const fixBtn = mismatch
-        ? `<button class="btn-fix" id="btn-fix" data-answer="${solved}">Fix answer → ${solved}</button>` : '';
+        ? `<button class="btn-fix" id="btn-fix" data-answer="${solved}">Fix → ${solved}</button>` : '';
       verdictHtml = `
-        <div class="verdict-fail mb-3">
-          <div class="flex items-center gap-2.5 mb-2">
-            <div class="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
-                 style="background:#ef4444;">
-              <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+        <details class="verdict-details verdict-fail mb-3" open>
+          <summary class="verdict-summary">
+            <span class="verdict-icon verdict-icon-fail">
+              <svg width="9" height="9" viewBox="0 0 11 11" fill="none">
                 <path d="M2 2l7 7M9 2L2 9" stroke="white" stroke-width="2" stroke-linecap="round"/>
               </svg>
-            </div>
-            <div class="flex-1">
-              <p class="text-sm font-bold text-red-700">Agent failed</p>
-              <p class="text-xs text-red-500">
-                ${conf != null ? `Confidence: ${conf}%` : ''}
-                ${solved ? ` · Solved: ${solved}` : ''}
-                ${crits.length ? ` · ${crits.length} critical` : ''}
-              </p>
-            </div>
+            </span>
+            <span class="verdict-label">Agent failed</span>
+            <span class="verdict-meta">${metaStr}${crits.length ? ` · ${crits.length} critical` : ''}</span>
             ${fixBtn}
-          </div>
-          ${issues.length ? `<div class="space-y-0.5 pt-2 border-t border-red-200">
+          </summary>
+          ${issues.length ? `<div class="verdict-body">
             ${issues.map(i => `<div class="issue-item">
               <span class="issue-chip ${i.severity}">${i.severity}</span>
               <span class="text-slate-600 text-xs">[${i.check}] ${escHtml(i.detail || '')}</span>
             </div>`).join('')}
           </div>` : ''}
-        </div>`;
+        </details>`;
     }
   }
 
@@ -448,39 +441,65 @@ function buildView(q) {
     }
   }
 
-  /* ── Core Concept tab (Math only) ── */
-  let conceptHtml = '';
+  /* ── Explanation steps (all visible, no navigator) ── */
+  let steps = [];
+  try {
+    steps = typeof q.explanationSteps === 'string'
+      ? JSON.parse(q.explanationSteps || '[]')
+      : (q.explanationSteps || []);
+  } catch (e) { steps = []; }
+
+  let explHtml = '<div class="expl-panel mb-3">';
+  explHtml += '<div class="expl-panel-header">Solution</div>';
+  if (steps.length) {
+    explHtml += '<div class="expl-steps-list">' + steps.map((s, i) => `
+      <div class="expl-step">
+        <div class="expl-step-num">${i + 1}</div>
+        <div class="expl-step-body">
+          <div class="expl-step-title">${escHtml(s.title || '')}</div>
+          ${s.content ? `<div class="expl-step-content">${processText(s.content)}</div>` : ''}
+          ${s.math ? `<div class="expl-step-math">\\(${s.math}\\)</div>` : ''}
+        </div>
+      </div>`).join('') + '</div>';
+  } else {
+    explHtml += `<div class="p-4 text-sm text-slate-600 leading-relaxed">${
+      q.explanationShort ? processText(q.explanationShort) : '<em class="text-slate-400">No explanation available.</em>'
+    }</div>`;
+  }
+  explHtml += '</div>';
+
+  /* ── Core Concept strip (Math only) ── */
+  let conceptStripHtml = '';
   if (isMath) {
     let cc = {};
     try { cc = typeof q.coreConcept === 'string'
       ? (JSON.parse(q.coreConcept || 'null') || {}) : (q.coreConcept || {}); } catch (e) {}
-    conceptHtml = cc.title ? `
-      <div class="rounded-xl p-4 mb-4" style="background:#eff6ff; border:1.5px solid #bfdbfe;">
-        <p class="text-sm font-bold text-blue-800 mb-2">${escHtml(cc.title)}</p>
-        <p class="text-sm text-blue-700 leading-relaxed mb-3">${processText(cc.summary || '')}</p>
-        ${cc.keyFormula
-          ? `<div class="bg-white border border-blue-100 rounded-lg p-3 font-mono text-sm text-blue-900">
-               \\(${cc.keyFormula}\\)
-             </div>` : ''}
-      </div>` : `<p class="text-sm text-slate-400 italic">No core concept data. Run enrich job.</p>`;
+    if (cc.title) {
+      conceptStripHtml = `
+        <div class="concept-strip mb-2">
+          <div class="concept-strip-top">
+            <span class="concept-strip-tag">Core Concept</span>
+            <span class="concept-strip-title">${escHtml(cc.title)}</span>
+          </div>
+          ${cc.summary ? `<div class="concept-strip-summary">${processText(cc.summary)}</div>` : ''}
+          ${cc.keyFormula ? `<div class="concept-strip-formula">\\(${cc.keyFormula}\\)</div>` : ''}
+        </div>`;
+    }
   }
 
-  /* ── Prerequisites tab (Math only) ── */
-  let prereqsHtml = '';
+  /* ── Prerequisites chips (Math only) ── */
+  let prereqChipsHtml = '';
   if (isMath) {
     let prereqs = [];
     try { prereqs = typeof q.prerequisites === 'string'
       ? (JSON.parse(q.prerequisites || '[]') || []) : (q.prerequisites || []); } catch (e) {}
-    prereqsHtml = prereqs.length
-      ? prereqs.map(p => `
-          <div class="prereq-card mb-3">
-            <div style="width:9px;height:9px;border-radius:50%;background:#3b82f6;flex-shrink:0;margin-top:3px;"></div>
-            <div>
-              <p class="text-sm font-semibold text-slate-800">${escHtml(p.topic || '')}</p>
-              <p class="text-xs text-slate-500 mt-0.5 leading-relaxed">${escHtml(p.why || '')}</p>
-            </div>
-          </div>`).join('')
-      : `<p class="text-sm text-slate-400 italic">No prerequisites data. Run enrich job.</p>`;
+    if (prereqs.length) {
+      prereqChipsHtml = `
+        <div class="prereq-chips-row mb-3">
+          <span class="prereq-chips-label">Prerequisites</span>
+          ${prereqs.map(p => `<span class="prereq-chip" data-tip="${escHtml(p.why || '')}">${escHtml(p.topic || '')}</span>`).join('')}
+        </div>`;
+    }
   }
 
   /* ── Status badges ── */
@@ -546,36 +565,9 @@ function buildView(q) {
 
     <div class="qv-right">
       ${verdictHtml}
-
-      <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden mb-3"
-           style="box-shadow:0 2px 8px rgba(0,0,0,0.04);">
-        ${isMath ? `
-        <div class="border-b border-slate-200 px-1">
-          <div class="flex overflow-x-auto">
-            <button class="tab-btn ${activeTab === 'explanation' ? 'active' : ''}"
-                    data-tab="explanation" onclick="switchTab('explanation')">Explanation</button>
-            <button class="tab-btn ${activeTab === 'concept' ? 'active' : ''}"
-                    data-tab="concept" onclick="switchTab('concept')">Core Concept</button>
-            <button class="tab-btn ${activeTab === 'prereqs' ? 'active' : ''}"
-                    data-tab="prereqs" onclick="switchTab('prereqs')">Prerequisites</button>
-          </div>
-        </div>` : ''}
-        <div class="p-5">
-          <div id="tab-explanation"
-               class="tab-pane ${isMath ? (activeTab === 'explanation' ? 'is-active' : '') : 'is-active'}">
-          </div>
-          ${isMath ? `
-          <div id="tab-concept"
-               class="tab-pane ${activeTab === 'concept' ? 'is-active' : ''}">
-            ${conceptHtml}
-          </div>
-          <div id="tab-prereqs"
-               class="tab-pane ${activeTab === 'prereqs' ? 'is-active' : ''}">
-            ${prereqsHtml}
-          </div>` : ''}
-        </div>
-      </div>
-
+      ${explHtml}
+      ${conceptStripHtml}
+      ${prereqChipsHtml}
       ${altApproachHtml}
 
       <div class="admin-bar">
@@ -874,7 +866,7 @@ function toggleView() {
 
   if (viewMode === 'coverage') {
     btn.textContent   = '← Back to Review';
-    btn.style.cssText = 'border-color:#6366f1;color:#4f46e5;';
+    btn.style.cssText = 'border-color:#6366f1;color:#4f46e5;background:#ede9fe;';
     nav.style.display = 'none';
     renderCoverage();
   } else {

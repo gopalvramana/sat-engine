@@ -35,11 +35,37 @@ Use this exact format inside the JSON string value:
 NEVER use markdown pipe tables (| col | col |) — they do not render in HTML.
 NEVER use \\n inside an HTML table; write the entire table on one line.
 
+TABLE SELF-CHECK (mandatory before returning JSON):
+Scan your questionStem for any | pipe characters. If found, you have accidentally used a markdown
+table. Stop and replace it with the HTML <table> format shown above before returning.
+
+TABLE DATA COMPUTATION — critical rules (when the answer requires calculating from table data):
+After writing the table and answer choices, MANUALLY compute the answer from the table values and
+confirm it equals the correctAnswer choice within ±0.05.
+For weighted mean / average: compute Σ(midpoint × frequency) / Σ(frequency) yourself, step by step.
+For open-ended intervals (e.g. "21+" or "100+"), choose a midpoint, state it explicitly in the
+first explanationStep, and use that exact midpoint in your calculation.
+If your computed value does not match any option exactly, REDESIGN the table data until it does —
+never round to a wrong answer and hope the student won't notice.
+Each wrong option must correspond to a distinct, nameable student mistake (wrong midpoint, wrong
+formula, off-by-one frequency, etc.). No two options should produce the same computed value.
+
 MATH VERIFICATION — critical rules:
 Before writing the questionStem, work through the problem yourself and confirm the answer is correct.
 Choose numbers that give clean, whole-number or simple-fraction answers.
 The equations, values, and data in questionStem MUST be consistent with the correctAnswer.
+For table-based questions: after building the table, compute the answer from YOUR OWN table values
+and verify it matches correctAnswer. Do NOT assume the answer is correct because you intended it to be.
 NEVER adjust the explanation to match a broken question — fix the question first.
+
+DIAGRAM DATA VERIFICATION — critical rules (applies when diagram is present):
+Every value in the diagram (bar heights, scatter points, function params, table cells) must be
+arithmetically consistent with the correct answer.
+After generating diagram data, MANUALLY compute the answer from those values and confirm it
+matches correctAnswer before writing the options.
+No single bar value, axis value, or data point should accidentally equal the correct answer's
+intermediate value by coincidence — each wrong option must correspond to a distinct mistake.
+If the diagram is a bar/scatter chart, verify: sum of relevant bars / total = stated percentage or ratio.
 
 EXPLANATION — critical rules:
 Write explanationSteps as 2–4 structured steps. Each step has:
@@ -112,6 +138,15 @@ Nothing before or after the JSON.""";
             String section, String domain, String skill,
             int difficulty, String questionType,
             boolean hasDiagram, String diagramType) {
+        return buildGenerateUserPrompt(section, domain, skill, difficulty, questionType,
+                hasDiagram, diagramType, null);
+    }
+
+    public static String buildGenerateUserPrompt(
+            String section, String domain, String skill,
+            int difficulty, String questionType,
+            boolean hasDiagram, String diagramType,
+            String diversityContext) {
 
         if ("reading_writing".equals(section)) {
             return buildGenerateUserPromptRW(domain, skill, difficulty);
@@ -130,6 +165,8 @@ Nothing before or after the JSON.""";
             sb.append("Make exactly one option correct. The other three should be plausible distractors.\n");
         } else {
             sb.append("\nFor SPR: provide sprMin and sprMax (numeric range for accepted answers). No options needed.\n");
+            sb.append("Set correctAnswer to the numeric answer as a string (e.g. \"48\" or \"3.5\") — NOT a letter.\n");
+            sb.append("Set optionA, optionB, optionC, optionD to null.\n");
         }
 
         if (hasDiagram) {
@@ -154,7 +191,17 @@ Use chartjs ONLY for statistical / data charts:
 """);
             if ("svg_programmatic".equals(diagramType)) {
                 sb.append("""
-Provide svgConfig.  The supported shape values and their key fields are:
+The diagram field MUST use this exact two-level structure — no exceptions:
+  "diagram": {
+    "diagramType": "svg_programmatic",   ← always "svg_programmatic", never "type"
+    "svgConfig": {                        ← all shape fields go INSIDE svgConfig
+      "shape": "triangle",
+      "width": 300, "height": 270,
+      ...
+    }
+  }
+
+Supported shape values and their key fields:
 
   triangle / right_triangle — vertices:{A:{x,y},B:{x,y},C:{x,y}}, sides:[{from,to,label}],
     angles:[{at,label}], angleMarkers:[{at,type:"right"|"arc"|"double_arc"}],
@@ -179,7 +226,8 @@ Provide svgConfig.  The supported shape values and their key fields are:
 
   coordinate_plane — xMin,xMax,yMin,yMax
     subtype: "function_graph"  — functions:[{type,params,color,label,labelAt:{x,y}}]
-      function types: linear(m,b), quadratic(a,b,c), cubic(a,b,c,d), absolute(a,h,k),
+      function types: linear(m,b), quadratic(a,b,c), cubic(a,b,c,d),
+        quartic(a,b,c,d,e)  [ax⁴+bx³+cx²+dx+e], absolute(a,h,k),
         square_root(a,h,k), exponential(a,b,c), reciprocal(a,h,k), constant(c)
     subtype: "system_of_equations" — functions:[...], intersections:[{x,y,label}]
     subtype: "piecewise" — pieces:[{type,params,domainMin,domainMax,
@@ -229,10 +277,28 @@ Set width/height in pixels (typical: 240×200 for simple shapes, 320×240 for co
 """);
             } else {
                 sb.append("""
-Provide chartConfig for a STATISTICAL DATA chart (not a math function graph).
-chartType: "bar" | "histogram" | "line" | "scatter" | "pie" | "boxplot" | "dotplot"
-Each dataset: { label, values:[], color } for bar/line/histogram.
-For scatter (data points only): datasets:[{ label, points:[{x,y}], color }]
+The diagram field MUST use this exact two-level structure — no exceptions:
+  "diagram": {
+    "diagramType": "chartjs",          ← always "chartjs", never "type"
+    "chartConfig": {                   ← all chart fields go INSIDE chartConfig
+      "chartType": "bar",              ← "bar"|"histogram"|"line"|"scatter"|"pie"|"boxplot"|"dotplot"
+      "title": "Chart Title",
+      "categories": ["A","B","C"],     ← bar/line x-axis labels — NOT "labels"
+      "xAxis": { "label": "X label" },
+      "yAxis": { "min": 0, "max": 100, "stepSize": 20, "label": "Y label" },
+      "datasets": [
+        { "label": "Series name", "data": [10, 20, 30], "color": "#2563eb" }
+      ]
+    }
+  }
+
+FIELD NAMES — use EXACTLY these names inside chartConfig (do NOT use Chart.js native names):
+  x-axis labels    : "categories": ["A","B","C"]   — NOT "labels"
+  single color     : "color": "#hex"  per dataset   — NOT "backgroundColor"
+  per-bar colors   : "colors": ["#hex",...]          — NOT "backgroundColor"
+
+Each dataset for bar/line/histogram: { "label", "data":[], "color":"#hex" }
+For scatter: datasets:[{ "label", "points":[{"x","y"}], "color" }]
 stacked:true — for stacked bar charts.
 Multiple datasets in bar chart = grouped bars by default.
 REMINDER: if the question involves a mathematical function or equation graph, use svg_programmatic instead.
@@ -242,11 +308,17 @@ REMINDER: if the question involves a mathematical function or equation graph, us
             sb.append("\nNo diagram needed for this question.\n");
         }
 
+        // Inject existing-question diversity context if provided
+        if (diversityContext != null && !diversityContext.isBlank()) {
+            sb.append("\n").append(diversityContext).append("\n");
+        }
+
         sb.append("""
 
 Return this exact JSON shape (all fields required unless marked optional):
 {
   "skill": "specific skill within the domain",
+  "scenarioTag": "snake_case label for the real-world scenario used (e.g. projectile_motion, rectangle_area, revenue_model, consecutive_integers, rate_distance_time, mixture_problem, age_problem, coin_problem, work_rate, percent_change)",
   "questionStem": "...",
   "optionA": "...",
   "optionB": "...",
@@ -267,6 +339,53 @@ Return this exact JSON shape (all fields required unless marked optional):
   "passageSource": null,
   "diagram": null
 }""");
+        return sb.toString();
+    }
+
+    /**
+     * Builds the diversity context block injected into the generate user prompt.
+     * Lists existing scenario tags + question stems for the same domain/skill so
+     * Claude can avoid duplicate real-world setups.
+     *
+     * @param rows  rows from QuestionRepository.findRecentForDiversityContext:
+     *              each Object[] is { external_id (String), question_stem (String), scenario_tag (String) }
+     * @param domain  domain key, used for labelling only
+     * @param skillKey  skill key, used for labelling only
+     */
+    public static String buildDiversityContext(java.util.List<Object[]> rows, String domain, String skillKey) {
+        if (rows == null || rows.isEmpty()) return "";
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n--- EXISTING QUESTIONS FOR THIS SKILL (do not duplicate) ---\n");
+        sb.append("Domain: ").append(domain);
+        if (skillKey != null && !skillKey.isBlank()) sb.append(" | Skill: ").append(skillKey);
+        sb.append("\n\n");
+
+        for (Object[] row : rows) {
+            String id          = row[0] != null ? row[0].toString() : "?";
+            String stem        = row[1] != null ? row[1].toString() : "";
+            String scenarioTag = row[2] != null ? row[2].toString() : "";
+
+            // Truncate stem to 120 chars to keep token cost low
+            String stemShort = stem.length() > 120 ? stem.substring(0, 117) + "..." : stem;
+            // Strip LaTeX for readability in the prompt
+            stemShort = stemShort.replaceAll("\\\\[a-zA-Z]+\\{[^}]*}", "").replaceAll("[\\\\()]", "").trim();
+
+            sb.append("  ").append(id);
+            if (!scenarioTag.isBlank()) sb.append(" [").append(scenarioTag).append("]");
+            sb.append(": ").append(stemShort).append("\n");
+        }
+
+        sb.append("""
+
+DIVERSITY RULES — strictly enforced:
+- Choose a DIFFERENT real-world scenario from every entry above.
+- Use different variable names, numbers, and context.
+- Avoid these scenario types if already present above: projectile_motion, rectangle_area, revenue_model, etc.
+- If the list above shows 2+ word problems, consider a pure-algebra or graphical question instead.
+- Set "scenarioTag" in your response to a concise snake_case label for the scenario you chose.
+--- END EXISTING QUESTIONS ---
+""");
         return sb.toString();
     }
 
@@ -515,6 +634,9 @@ Generate ALL of these fields:
 1. explanationSteps: Array of 2–4 structured steps. Each step:
    { "title": "short step name", "content": "1-2 confident sentences", "math": "LaTeX formula or null" }
    Write as a teacher — confident, no hedging, no "Actually..." or "Wait..."
+   FORMULA RULE: If a step references a named formula (e.g. "quadratic formula", "slope-intercept form",
+   "distance formula", "Pythagorean theorem", "completing the square"), the formula itself MUST appear
+   in that step's "math" field. Never mention a formula by name without showing it.
 
 2. alternativeApproach: An object describing a second, different method to solve this question.
    { "title": "short name for this method (e.g. 'Substitution', 'Graphical Method')",
@@ -522,6 +644,7 @@ Generate ALL of these fields:
    }
    The approach must be genuinely different from the primary explanationSteps (e.g. algebraic vs. arithmetic, substitution vs. elimination, visual vs. analytic).
    If there is no meaningfully different second approach, return null.
+   FORMULA RULE (same as above): any step that names a formula must show it in "math".
 
 3. coreConcept: Object with:
    { "title": "concept name", "summary": "1-2 sentence explanation", "keyFormula": "LaTeX or null" }

@@ -9,16 +9,17 @@ import com.satengine.domain.question.QuestionAnswerRepository;
 import com.satengine.domain.question.QuestionRepository;
 import com.satengine.pipeline.claude.ClaudeClient;
 import com.satengine.pipeline.claude.PromptLibrary;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -70,6 +71,67 @@ public class GenerateStage {
 
     private final Random random = new Random();
 
+    /** domain key → ordered list of skill keys, loaded from sat_taxonomy.json at startup */
+    private final Map<String, List<String>> taxonomySkills = new HashMap<>();
+
+    @PostConstruct
+    void loadTaxonomy() {
+        try {
+            JsonNode root = objectMapper.readTree(
+                    new ClassPathResource("taxonomy/sat_taxonomy.json").getInputStream());
+            for (JsonNode section : root.path("sections")) {
+                for (JsonNode domain : section.path("domains")) {
+                    String domainKey = domain.path("key").asText();
+                    List<String> skills = new ArrayList<>();
+                    for (JsonNode skill : domain.path("skills")) {
+                        skills.add(skill.path("key").asText());
+                    }
+                    taxonomySkills.put(domainKey, skills);
+                }
+            }
+            int total = taxonomySkills.values().stream().mapToInt(List::size).sum();
+            log.info("Taxonomy loaded: {} domains, {} total skills", taxonomySkills.size(), total);
+        } catch (Exception e) {
+            log.error("Failed to load sat_taxonomy.json — skill balancing disabled: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * Picks the skill key with the fewest existing questions for this domain.
+     * If all skills are equally covered (or taxonomy not loaded), picks randomly.
+     * Falls back to null (let Claude decide) if domain has no skills in taxonomy.
+     */
+    private String pickLeastCoveredSkill(String domain) {
+        List<String> allSkills = taxonomySkills.get(domain);
+        if (allSkills == null || allSkills.isEmpty()) return null;
+
+        // Build a count map from DB (skill_key → count)
+        Map<String, Long> counts = new HashMap<>();
+        try {
+            questionRepository.countBySkillKeyForDomain(domain)
+                    .forEach(row -> counts.put(
+                            row[0] != null ? row[0].toString() : "",
+                            row[1] != null ? ((Number) row[1]).longValue() : 0L));
+        } catch (Exception e) {
+            log.warn("Could not query skill counts for domain={}: {}", domain, e.getMessage());
+        }
+
+        // Find the minimum count across all skills (skills not in DB yet default to 0)
+        long minCount = allSkills.stream()
+                .mapToLong(s -> counts.getOrDefault(s, 0L))
+                .min().orElse(0L);
+
+        // Collect all skills tied at the minimum count, then pick randomly among them
+        List<String> candidates = allSkills.stream()
+                .filter(s -> counts.getOrDefault(s, 0L) == minCount)
+                .collect(Collectors.toList());
+
+        String chosen = candidates.get(random.nextInt(candidates.size()));
+        log.debug("Skill balance domain={}: picked '{}' (count={}, {} candidates at min)",
+                domain, chosen, minCount, candidates.size());
+        return chosen;
+    }
+
     // ─── Public entry point ────────────────────────────────────────────────
 
     /**
@@ -119,13 +181,21 @@ public class GenerateStage {
                 continue;
             }
 
-            JsonNode generated = generateWithRetry(section, domain, skillKeyArg, difficulty, qtype, hasDiagram, diagramType, i, count, externalId);
+            // If no skill specified, auto-pick the least-covered skill for even distribution
+            String resolvedSkill = (skillKeyArg != null && !skillKeyArg.isBlank())
+                    ? skillKeyArg
+                    : pickLeastCoveredSkill(domain);
+
+            // Build diversity context from existing questions in same domain+skill
+            String diversityContext = buildDiversityContext(domain, resolvedSkill);
+
+            JsonNode generated = generateWithRetry(section, domain, resolvedSkill, difficulty, qtype, hasDiagram, diagramType, diversityContext, i, count, externalId);
             if (generated == null) {
                 failed++;
                 continue;
             }
 
-            saveQuestion(generated, externalId, section, domain, skillKeyArg, difficulty, qtype);
+            saveQuestion(generated, externalId, section, domain, resolvedSkill, difficulty, qtype);
             seqCache.put(domain, seq + 1);
             success++;
         }
@@ -136,14 +206,27 @@ public class GenerateStage {
 
     // ─── Core generation logic ─────────────────────────────────────────────
 
+    private String buildDiversityContext(String domain, String skillKey) {
+        try {
+            java.util.List<Object[]> rows = questionRepository.findRecentForDiversityContext(
+                    domain, skillKey, 10);
+            return PromptLibrary.buildDiversityContext(rows, domain, skillKey);
+        } catch (Exception e) {
+            log.warn("Could not build diversity context for domain={} skill={}: {}", domain, skillKey, e.getMessage());
+            return "";
+        }
+    }
+
     private JsonNode generateWithRetry(String section, String domain, String skill,
                                         int difficulty, String qtype,
                                         boolean hasDiagram, String diagramType,
+                                        String diversityContext,
                                         int i, int total, String externalId) {
         for (int attempt = 1; attempt <= MAX_RETRIES + 1; attempt++) {
             try {
                 String userPrompt = PromptLibrary.buildGenerateUserPrompt(
-                        section, domain, skill, difficulty, qtype, hasDiagram, diagramType);
+                        section, domain, skill, difficulty, qtype, hasDiagram, diagramType,
+                        diversityContext);
                 String raw = claudeClient.call(GENERATE_MODEL, MAX_TOKENS, PromptLibrary.getGenerateSystem(section), userPrompt, TEMPERATURE);
                 String fixed = fixLatexEscapes(extractJson(raw));
                 JsonNode data = objectMapper.readTree(fixed);
@@ -200,6 +283,7 @@ public class GenerateStage {
                 .domain(domain)
                 .skill(data.path("skill").asText(null))
                 .skillKey(resolvedSkillKey)
+                .scenarioTag(nullIfEmpty(data.path("scenarioTag").asText(null)))
                 .difficulty((short) difficulty)
                 .questionType(qtype)
                 .questionStem(data.path("questionStem").asText(""))

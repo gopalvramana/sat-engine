@@ -71,4 +71,37 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
     List<Question> findBySectionAndDifficulty(String section, Short difficulty);
 
     List<Question> findByDomainAndDifficulty(String domain, Short difficulty);
+
+    /**
+     * Returns up to N most-recent questions for the given domain+skillKey,
+     * used to build the "existing questions" diversity context before generation.
+     * Returns only fields needed for the prompt (externalId, questionStem, scenarioTag).
+     */
+    @Query(value = """
+        SELECT external_id, question_stem, scenario_tag
+        FROM questions
+        WHERE domain = :domain
+          AND (:skillKey IS NULL OR skill_key = :skillKey)
+        ORDER BY generated_at DESC
+        LIMIT :limit
+        """, nativeQuery = true)
+    List<Object[]> findRecentForDiversityContext(
+            @Param("domain")    String domain,
+            @Param("skillKey")  String skillKey,
+            @Param("limit")     int limit
+    );
+
+    /**
+     * Returns question counts per skill_key for a domain.
+     * Used by GenerateStage to pick the least-covered skill for even distribution.
+     * Each Object[] is { skill_key (String), count (Long) }.
+     */
+    @Query(value = """
+        SELECT skill_key, COUNT(*) AS cnt
+        FROM questions
+        WHERE domain = :domain
+          AND skill_key IS NOT NULL
+        GROUP BY skill_key
+        """, nativeQuery = true)
+    List<Object[]> countBySkillKeyForDomain(@Param("domain") String domain);
 }

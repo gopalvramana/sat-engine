@@ -157,6 +157,13 @@ public class AgentReviewStage {
         if (q.getOptionC() != null) n.put("optionC", q.getOptionC());
         if (q.getOptionD() != null) n.put("optionD", q.getOptionD());
 
+        // SPR fields — must be included so the reviewer can validate SPR_RANGE and SCHEMA
+        if (q.getSprMin() != null) n.put("sprMin", q.getSprMin().doubleValue());
+        if (q.getSprMax() != null) n.put("sprMax", q.getSprMax().doubleValue());
+
+        // explanationShort — required field for both MCQ and SPR schema checks
+        if (q.getExplanationShort() != null) n.put("explanationShort", q.getExplanationShort());
+
         // Attach correct answer
         questionAnswerRepository.findByQuestionId(q.getId())
                 .ifPresent(qa -> n.put("correctAnswer", qa.getCorrectAnswer()));

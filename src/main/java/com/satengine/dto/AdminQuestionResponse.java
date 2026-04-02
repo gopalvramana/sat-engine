@@ -15,6 +15,8 @@ public class AdminQuestionResponse {
     private String skill;
     /** Canonical slug from sat_taxonomy.json — exact match for coverage tracking */
     private String skillKey;
+    /** Real-world scenario type — e.g. projectile_motion, rectangle_area */
+    private String scenarioTag;
     private short  difficulty;
     private String questionType;
     private String questionStem;
