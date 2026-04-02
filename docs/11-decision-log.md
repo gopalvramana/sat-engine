@@ -95,10 +95,12 @@ These are done and do not need to be repeated.
 
 | # | Task | Notes |
 |---|------|-------|
-| 1 | **Normalize `\n` in DB** | `fixLatexEscapes()` bug stored literal `\n` (two chars) instead of actual newlines in text fields. Write a Java-based Flyway migration (V15) to replace all `\n` (backslash+n) in `question_stem`, `option_*`, `explanation_short`, `explanation_steps` with actual newline char. Then simplify `processText()` — remove the lookahead hack entirely. |
+| 1 | **Normalize `\n` in DB** | `fixLatexEscapes()` bug stored literal `\n` (two chars) instead of actual newlines in text fields. Write a Java-based Flyway migration to replace all `\n` (backslash+n) in `question_stem`, `option_*`, `explanation_short`, `explanation_steps` with actual newline char. Then simplify `processText()` — remove the lookahead hack entirely. |
 | 2 | **Build `practice.html`** | Student-facing practice page. Zero-build stack (plain JS). Reuse `renderer.js` + KaTeX + Chart.js. One question at a time, accept answer, show explanation. Reads from `/api/questions` (approved pool). |
 | 3 | **Re-enrich math questions for `alternativeApproach`** | Run SQL to reset approved math questions to `reviewed`, then `--job=enrich`. Re-approve in validate.html. |
 | 4 | **AI pipeline production hardening** | Add rate-limit retry logic (exponential backoff) to `ClaudeClient`. Add per-job timeout. Log token usage per question. These are needed before running large batches. |
+| 5 | **Review and design all required APIs** | Before building the React app, audit every API the student-facing frontend will need: serve questions (filtered, no answer leakage), submit answer + get feedback, session start/next/complete, progress/score summary. Ensure `/api/questions` withholds `correctAnswer`, `explanationSteps`, `trapExplanation` until after submission. Add any missing endpoints to the Spring Boot backend. |
+| 6 | **React app** | Build the student-facing practice app in React. Prerequisite: practice.html prototype (TODO #2) and API review (TODO #5) must be complete first. Reuse renderer.js and KaTeX via script tags or wrap in React components. Key screens: domain/skill picker, question view (MCQ + SPR), answer feedback with explanation, session summary. |
 
 ---
 
