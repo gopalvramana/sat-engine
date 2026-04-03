@@ -112,6 +112,18 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
     );
 
     /**
+     * Returns all non-rejected question stems for a domain.
+     * Used by GenerateStage to detect near-duplicate stems before saving.
+     */
+    @Query(value = """
+        SELECT question_stem
+        FROM questions
+        WHERE domain = :domain
+          AND status != 'rejected'
+        """, nativeQuery = true)
+    List<String> findAllStemsForDomain(@Param("domain") String domain);
+
+    /**
      * Returns question counts per skill_key for a domain.
      * Used by GenerateStage to pick the least-covered skill for even distribution.
      * Each Object[] is { skill_key (String), count (Long) }.

@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -58,6 +59,9 @@ public class GenerateStage {
             "algebra",               0.25,  // coordinate planes, function graphs
             "advanced_math",         0.20   // function graphs, occasionally
     );
+    /** Jaccard word-overlap threshold above which a generated stem is considered a duplicate. */
+    private static final double DUPLICATE_THRESHOLD = 0.85;
+
     private static final List<String> ARTIFACT_PHRASES = List.of(
             "wait,", "wait —", "wait—", "let's recheck", "let me recheck",
             "let me recalculate", "let me re-read", "let me re-examine",
@@ -252,6 +256,17 @@ public class GenerateStage {
                     }
                 }
 
+                // Hard duplicate check — reject and retry if stem is too similar to an existing one
+                String generatedStem = data.path("questionStem").asText("");
+                if (!generatedStem.isBlank() && isDuplicateStem(generatedStem, domain)) {
+                    if (attempt <= MAX_RETRIES) {
+                        log.warn("[{}/{}] {} Duplicate stem detected (attempt {}) — retrying...", i, total, externalId, attempt);
+                        continue;
+                    }
+                    log.warn("[{}/{}] {} Duplicate persists after {} retries — skipping", i, total, externalId, MAX_RETRIES);
+                    return null;
+                }
+
                 String diagramStr = hasDiagram ? (diagramType != null ? diagramType : "diagram") : "no diagram";
                 log.info("[{}/{}] {} {} diff:{} {} {}", i, total, externalId, domain, difficulty, qtype, diagramStr);
                 return data;
@@ -322,6 +337,59 @@ public class GenerateStage {
     }
 
     // ─── Helpers ──────────────────────────────────────────────────────────
+
+    /**
+     * Returns true if {@code newStem} is a near-duplicate of any existing non-rejected
+     * question in the same domain, using Jaccard word-set similarity.
+     * Fails open (returns false) if the DB query fails, so generation is never
+     * blocked by an infrastructure error.
+     */
+    private boolean isDuplicateStem(String newStem, String domain) {
+        try {
+            List<String> existingStems = questionRepository.findAllStemsForDomain(domain);
+            Set<String> newWords = wordSet(normalizeStem(newStem));
+            if (newWords.isEmpty()) return false;
+
+            for (String existing : existingStems) {
+                Set<String> existingWords = wordSet(normalizeStem(existing));
+                double similarity = jaccardSimilarity(newWords, existingWords);
+                if (similarity >= DUPLICATE_THRESHOLD) {
+                    log.warn("  Duplicate detected (jaccard={:.2f}) against: \"{}\"",
+                            similarity,
+                            existing.length() > 80 ? existing.substring(0, 77) + "..." : existing);
+                    return true;
+                }
+            }
+            return false;
+        } catch (Exception e) {
+            log.warn("Duplicate stem check failed — skipping check: {}", e.getMessage());
+            return false; // fail open
+        }
+    }
+
+    /** Lowercases, strips LaTeX and punctuation, collapses whitespace. */
+    private String normalizeStem(String stem) {
+        if (stem == null) return "";
+        return stem
+                .toLowerCase()
+                .replaceAll("\\\\[a-zA-Z]+", " ")   // \frac, \sqrt, \cdot …
+                .replaceAll("[\\\\()\\[\\]{}^_$]", " ") // LaTeX delimiters
+                .replaceAll("[^a-z0-9 ]", " ")          // strip remaining punctuation
+                .replaceAll("\\s+", " ")
+                .trim();
+    }
+
+    private Set<String> wordSet(String text) {
+        if (text == null || text.isBlank()) return Set.of();
+        return new HashSet<>(Arrays.asList(text.split(" ")));
+    }
+
+    private double jaccardSimilarity(Set<String> a, Set<String> b) {
+        if (a.isEmpty() || b.isEmpty()) return 0.0;
+        long intersection = a.stream().filter(b::contains).count();
+        long union = Stream.concat(a.stream(), b.stream()).distinct().count();
+        return (double) intersection / union;
+    }
 
     private String extractJson(String raw) {
         raw = raw.strip();
