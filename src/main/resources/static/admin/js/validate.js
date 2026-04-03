@@ -1,18 +1,21 @@
 /* ═══════════════════════════════════════════════════════════════
-   STATE
+   validate2.js — Compact / Accordion view
+   Same logic as validate.js; only buildView() uses an accordion
+   group so Solution, Core Concept and Alt Approach show one
+   at a time.  Agent verdict and prereq chips stay always-visible.
 ═══════════════════════════════════════════════════════════════ */
+
+/* ── STATE ── */
 let allQuestions  = [];
 let activeFilter  = 'all';
-let activeSection = 'all';   // 'all' | 'math' | 'rw'
-let activeDomain  = null;    // domain string or null = all
+let activeSection = 'all';
+let activeDomain  = null;
 let searchQuery   = '';
-let currentIdx    = 0;       // position within visibleQuestions()
-let stepIdx       = 0;       // current explanation step
+let currentIdx    = 0;
+let stepIdx       = 0;
 let activeTab     = 'explanation';
 
-/* ═══════════════════════════════════════════════════════════════
-   TOAST
-═══════════════════════════════════════════════════════════════ */
+/* ── TOAST ── */
 function showToast(msg, isError = false) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -21,9 +24,7 @@ function showToast(msg, isError = false) {
   setTimeout(() => t.classList.remove('show'), 2400);
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   API
-═══════════════════════════════════════════════════════════════ */
+/* ── API ── */
 async function apiPatch(path, body) {
   const r = await fetch(path, {
     method: 'PATCH',
@@ -33,9 +34,7 @@ async function apiPatch(path, body) {
   if (!r.ok) throw new Error(`HTTP ${r.status}`);
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   STATS
-═══════════════════════════════════════════════════════════════ */
+/* ── STATS ── */
 function updateStats() {
   const total    = allQuestions.length;
   const pending  = allQuestions.filter(q => ['generated','reviewed','enriched'].includes(q.status)).length;
@@ -55,9 +54,7 @@ function updateStats() {
     `${total} questions · ${approved} approved · ${rejected} rejected`;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   FILTER + VISIBLE LIST
-═══════════════════════════════════════════════════════════════ */
+/* ── FILTER + VISIBLE LIST ── */
 function setFilter(filter, el) {
   activeFilter  = filter;
   activeDomain  = null;
@@ -96,9 +93,7 @@ function visibleQuestions() {
   });
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   QUEUE FILTER HANDLERS
-═══════════════════════════════════════════════════════════════ */
+/* ── QUEUE FILTER HANDLERS ── */
 function setSection(s) {
   activeSection = s;
   activeDomain  = null;
@@ -125,9 +120,7 @@ function setSearch(val) {
   renderQuestion();
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   SIDEBAR + NAVIGATION
-═══════════════════════════════════════════════════════════════ */
+/* ── SIDEBAR + NAVIGATION ── */
 function buildSidebar() {
   const base = statusFiltered().filter(q => {
     if (activeSection === 'math') return q.section === 'math';
@@ -186,96 +179,24 @@ function navigate(dir) {
   renderQuestion();
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   TABS
-═══════════════════════════════════════════════════════════════ */
-function switchTab(name) {
-  activeTab = name;
-  document.querySelectorAll('.tab-btn').forEach(b =>
-    b.classList.toggle('active', b.dataset.tab === name));
-  document.querySelectorAll('.tab-pane').forEach(p =>
-    p.classList.toggle('is-active', p.id === 'tab-' + name));
-  renderKaTeXIn(document.getElementById('tab-' + name));
+/* ── ACCORDION INIT ─────────────────────────────────────────
+   When one accordion item opens, close all siblings in the
+   same .accordion-group so only one panel is visible at once.
+─────────────────────────────────────────────────────────── */
+function initAccordion() {
+  const group = document.querySelector('.accordion-group');
+  if (!group) return;
+  const items = Array.from(group.querySelectorAll('details.accordion-item'));
+  items.forEach(item => {
+    item.addEventListener('toggle', () => {
+      if (item.open) {
+        items.forEach(other => { if (other !== item && other.open) other.open = false; });
+      }
+    });
+  });
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   EXPLANATION STEP NAVIGATOR
-═══════════════════════════════════════════════════════════════ */
-function getSteps() {
-  const q = visibleQuestions()[currentIdx];
-  if (!q) return [];
-  try {
-    return typeof q.explanationSteps === 'string'
-      ? JSON.parse(q.explanationSteps || '[]')
-      : (q.explanationSteps || []);
-  } catch (e) { return []; }
-}
-
-function setStep(idx) {
-  const steps = getSteps();
-  stepIdx = Math.max(0, Math.min(steps.length - 1, idx));
-  renderExplanationTab(steps);
-}
-
-function renderExplanationTab(steps) {
-  const el = document.getElementById('tab-explanation');
-  if (!el) return;
-
-  if (!steps || !steps.length) {
-    const q = visibleQuestions()[currentIdx];
-    el.innerHTML = q && q.explanationShort
-      ? `<p class="text-sm text-slate-600 leading-relaxed">${processText(q.explanationShort)}</p>`
-      : `<p class="text-sm text-slate-400 italic">No explanation available.</p>`;
-    renderKaTeXIn(el);
-    return;
-  }
-
-  const s     = steps[stepIdx];
-  const total = steps.length;
-
-  const dotsHtml = steps.map((_, i) => `
-    <div onclick="setStep(${i})"
-         class="step-dot"
-         style="background:${i < stepIdx ? '#86efac' : i === stepIdx ? '#2563eb' : '#e2e8f0'};
-                ${i === stepIdx ? 'transform:scale(1.5);box-shadow:0 0 0 3px #bfdbfe;' : ''}">
-    </div>`).join('');
-
-  el.innerHTML = `
-    <div class="step-card mb-4">
-      <div class="step-num">${stepIdx + 1}</div>
-      <div class="step-title">${escHtml(s.title || '')}</div>
-      <div class="step-desc">${processText(s.content || '')}</div>
-      ${s.math ? `<div class="step-math">\\(${s.math}\\)</div>` : ''}
-    </div>
-
-    <div class="flex items-center justify-between">
-      <button class="ctrl-btn flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold
-                     bg-white text-slate-500 hover:bg-slate-50"
-              style="border:1.5px solid #e2e8f0;"
-              onclick="setStep(${stepIdx - 1})" ${stepIdx === 0 ? 'disabled' : ''}>
-        ← Prev
-      </button>
-
-      <div class="flex flex-col items-center gap-1.5">
-        <div class="flex items-center gap-1.5">${dotsHtml}</div>
-        <p class="text-xs text-slate-400">Step ${stepIdx + 1} of ${total}</p>
-      </div>
-
-      <button class="ctrl-btn flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold
-                     bg-blue-600 text-white hover:bg-blue-700"
-              onclick="setStep(${stepIdx + 1})" ${stepIdx === total - 1 ? 'disabled' : ''}>
-        Next →
-      </button>
-    </div>`;
-
-  renderKaTeXIn(el);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   MAIN RENDER
-═══════════════════════════════════════════════════════════════ */
-// qOverride: when provided, render this specific question in-place without
-// re-filtering — used after approve/reject so the question stays visible.
+/* ── MAIN RENDER ── */
 function renderQuestion(qOverride) {
   const list = visibleQuestions();
 
@@ -296,11 +217,20 @@ function renderQuestion(qOverride) {
   }
 
   renderKaTeXIn(document.getElementById('question-area'));
+  initAccordion();  // wire accordion toggle behaviour after DOM is built
   wireEvents(q);
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   VIEW BUILDER
+   VIEW BUILDER — COMPACT (ACCORDION) VERSION
+   Right panel layout:
+     1. Agent verdict  (collapsible details, auto-open on fail)
+     2. Prereq chips   (always-visible pill row)
+     3. Accordion group:
+          a. Solution        (open by default)
+          b. Core Concept    (closed, title visible in summary)
+          c. Alt Approach    (closed, method visible in summary)
+     4. Admin action bar
 ═══════════════════════════════════════════════════════════════ */
 function buildView(q) {
   const diff   = q.difficulty || 1;
@@ -310,6 +240,7 @@ function buildView(q) {
   const correct = isMCQ
     ? (q.correctAnswer || '').toUpperCase()
     : (q.correctAnswer || (q.sprMin != null ? String(q.sprMin) : ''));
+  const isMath  = q.section === 'math';
 
   const dots = Array.from({ length: 7 }, (_, i) =>
     `<span class="diff-dot ${i < diff ? 'filled' : 'empty'}"></span>`
@@ -347,7 +278,7 @@ function buildView(q) {
     </div>`;
   }
 
-  /* ── Agent verdict ── */
+  /* ── Agent verdict (collapsible, auto-open on fail / warnings) ── */
   let ar = q.agentReview;
   let verdictHtml = '';
   if (ar) {
@@ -410,84 +341,7 @@ function buildView(q) {
     }
   }
 
-  /* ── Section flag — R&W gets simplified right panel ── */
-  const isMath = q.section === 'math';
-
-  /* ── Alternative Approach panel (Math only) ── */
-  let altApproachHtml = '';
-  if (isMath && q.alternativeApproach) {
-    const alt = typeof q.alternativeApproach === 'string'
-      ? JSON.parse(q.alternativeApproach)
-      : q.alternativeApproach;
-    if (alt && alt.title && Array.isArray(alt.steps) && alt.steps.length > 0) {
-      const stepsHtml = alt.steps.map((s, i) => `
-        <div class="alt-step">
-          <div class="alt-step-header">
-            <span class="alt-step-num">${i + 1}</span>
-            <span class="alt-step-title">${processText(s.title || '')}</span>
-          </div>
-          <p class="alt-step-content">${processText(s.content || '')}</p>
-          ${s.math ? `<div class="alt-step-math">\\(${s.math}\\)</div>` : ''}
-        </div>`).join('');
-      altApproachHtml = `
-        <details class="alt-approach-panel mt-3 mb-3">
-          <summary class="alt-approach-summary">
-            <span class="alt-approach-icon">&#8644;</span>
-            <span class="alt-approach-label">Alternative Approach</span>
-            <span class="alt-approach-method">${processText(alt.title)}</span>
-          </summary>
-          <div class="alt-approach-body">${stepsHtml}</div>
-        </details>`;
-    }
-  }
-
-  /* ── Explanation steps (all visible, no navigator) ── */
-  let steps = [];
-  try {
-    steps = typeof q.explanationSteps === 'string'
-      ? JSON.parse(q.explanationSteps || '[]')
-      : (q.explanationSteps || []);
-  } catch (e) { steps = []; }
-
-  let explHtml = '<div class="expl-panel mb-3">';
-  explHtml += '<div class="expl-panel-header">Solution</div>';
-  if (steps.length) {
-    explHtml += '<div class="expl-steps-list">' + steps.map((s, i) => `
-      <div class="expl-step">
-        <div class="expl-step-num">${i + 1}</div>
-        <div class="expl-step-body">
-          <div class="expl-step-title">${escHtml(s.title || '')}</div>
-          ${s.content ? `<div class="expl-step-content">${processText(s.content)}</div>` : ''}
-          ${s.math ? `<div class="expl-step-math">\\(${s.math}\\)</div>` : ''}
-        </div>
-      </div>`).join('') + '</div>';
-  } else {
-    explHtml += `<div class="p-4 text-sm text-slate-600 leading-relaxed">${
-      q.explanationShort ? processText(q.explanationShort) : '<em class="text-slate-400">No explanation available.</em>'
-    }</div>`;
-  }
-  explHtml += '</div>';
-
-  /* ── Core Concept strip (Math only) ── */
-  let conceptStripHtml = '';
-  if (isMath) {
-    let cc = {};
-    try { cc = typeof q.coreConcept === 'string'
-      ? (JSON.parse(q.coreConcept || 'null') || {}) : (q.coreConcept || {}); } catch (e) {}
-    if (cc.title) {
-      conceptStripHtml = `
-        <div class="concept-strip mb-2">
-          <div class="concept-strip-top">
-            <span class="concept-strip-tag">Core Concept</span>
-            <span class="concept-strip-title">${escHtml(cc.title)}</span>
-          </div>
-          ${cc.summary ? `<div class="concept-strip-summary">${processText(cc.summary)}</div>` : ''}
-          ${cc.keyFormula ? `<div class="concept-strip-formula">\\(${cc.keyFormula}\\)</div>` : ''}
-        </div>`;
-    }
-  }
-
-  /* ── Prerequisites chips (Math only) ── */
+  /* ── Prerequisites chips (always-visible, above accordion) ── */
   let prereqChipsHtml = '';
   if (isMath) {
     let prereqs = [];
@@ -501,6 +355,103 @@ function buildView(q) {
         </div>`;
     }
   }
+
+  /* ── ACCORDION ITEM 1: Solution ─────────────────────────── */
+  let steps = [];
+  try {
+    steps = typeof q.explanationSteps === 'string'
+      ? JSON.parse(q.explanationSteps || '[]')
+      : (q.explanationSteps || []);
+  } catch (e) { steps = []; }
+
+  let explBodyHtml = '';
+  if (steps.length) {
+    explBodyHtml = '<div class="expl-steps-list">' + steps.map((s, i) => `
+      <div class="expl-step">
+        <div class="expl-step-num">${i + 1}</div>
+        <div class="expl-step-body">
+          <div class="expl-step-title">${escHtml(s.title || '')}</div>
+          ${s.content ? `<div class="expl-step-content">${processText(s.content)}</div>` : ''}
+          ${s.math ? `<div class="expl-step-math">\\(${s.math}\\)</div>` : ''}
+        </div>
+      </div>`).join('') + '</div>';
+  } else {
+    explBodyHtml = `<div class="accordion-empty">${
+      q.explanationShort ? processText(q.explanationShort) : '<em>No explanation available.</em>'
+    }</div>`;
+  }
+
+  const explItem = `
+    <details class="accordion-item">
+      <summary class="accordion-summary">
+        <span class="accordion-icon">📋</span>
+        <span class="accordion-label">Solution</span>
+        ${steps.length ? `<span class="accordion-badge">${steps.length} steps</span>` : ''}
+        <span class="accordion-chevron">▶</span>
+      </summary>
+      <div class="accordion-body">${explBodyHtml}</div>
+    </details>`;
+
+  /* ── ACCORDION ITEM 2: Core Concept (Math only) ─────────── */
+  let conceptItem = '';
+  if (isMath) {
+    let cc = {};
+    try { cc = typeof q.coreConcept === 'string'
+      ? (JSON.parse(q.coreConcept || 'null') || {}) : (q.coreConcept || {}); } catch (e) {}
+    if (cc.title) {
+      conceptItem = `
+        <details class="accordion-item">
+          <summary class="accordion-summary">
+            <span class="accordion-icon">💡</span>
+            <span class="accordion-label">Core Concept</span>
+            <span class="accordion-badge accordion-badge-concept">${escHtml(cc.title)}</span>
+            <span class="accordion-chevron">▶</span>
+          </summary>
+          <div class="accordion-body">
+            ${cc.summary ? `<p class="accordion-concept-text">${processText(cc.summary)}</p>` : ''}
+            ${cc.keyFormula ? `<div class="accordion-concept-formula">\\(${cc.keyFormula}\\)</div>` : ''}
+          </div>
+        </details>`;
+    }
+  }
+
+  /* ── ACCORDION ITEM 3: Alternative Approach (Math only) ─── */
+  let altItem = '';
+  if (isMath && q.alternativeApproach) {
+    let alt = {};
+    try {
+      alt = typeof q.alternativeApproach === 'string'
+        ? JSON.parse(q.alternativeApproach)
+        : q.alternativeApproach;
+    } catch (e) {}
+    if (alt && alt.title && Array.isArray(alt.steps) && alt.steps.length > 0) {
+      const stepsHtml = alt.steps.map((s, i) => `
+        <div class="alt-step">
+          <div class="alt-step-header">
+            <span class="alt-step-num">${i + 1}</span>
+            <span class="alt-step-title">${processText(s.title || '')}</span>
+          </div>
+          <p class="alt-step-content">${processText(s.content || '')}</p>
+          ${s.math ? `<div class="alt-step-math">\\(${s.math}\\)</div>` : ''}
+        </div>`).join('');
+      altItem = `
+        <details class="accordion-item">
+          <summary class="accordion-summary">
+            <span class="accordion-icon">&#8644;</span>
+            <span class="accordion-label">Alternative Approach</span>
+            <span class="accordion-badge accordion-badge-alt">${processText(alt.title)}</span>
+            <span class="accordion-chevron">▶</span>
+          </summary>
+          <div class="accordion-body">
+            <div class="accordion-alt-steps">${stepsHtml}</div>
+          </div>
+        </details>`;
+    }
+  }
+
+  /* ── Accordion group (only render if at least one item exists) ── */
+  const accordionItems = [explItem, conceptItem, altItem].filter(Boolean).join('');
+  const accordionGroup = `<div class="accordion-group mb-3">${accordionItems}</div>`;
 
   /* ── Status badges ── */
   const statusBadge = status === 'approved'
@@ -565,10 +516,8 @@ function buildView(q) {
 
     <div class="qv-right">
       ${verdictHtml}
-      ${explHtml}
-      ${conceptStripHtml}
       ${prereqChipsHtml}
-      ${altApproachHtml}
+      ${accordionGroup}
 
       <div class="admin-bar">
         <span class="text-xs font-semibold text-slate-400">Pool:</span>
@@ -584,9 +533,7 @@ function buildView(q) {
     </div>`;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   EVENT WIRING (admin buttons)
-═══════════════════════════════════════════════════════════════ */
+/* ── EVENT WIRING (admin buttons) ── */
 function wireEvents(q) {
 
   document.getElementById('btn-approve')?.addEventListener('click', async () => {
@@ -599,7 +546,7 @@ function wireEvents(q) {
       q.status = wasApproved ? 'approved' : 'enriched';
       showToast(`Error: ${e.message}`, true);
     }
-    updateStats(); buildSidebar(); renderQuestion(q);  // keep same question visible
+    updateStats(); buildSidebar(); renderQuestion(q);
   });
 
   document.getElementById('btn-reject')?.addEventListener('click', async () => {
@@ -612,7 +559,7 @@ function wireEvents(q) {
       q.status = prev;
       showToast(`Error: ${e.message}`, true);
     }
-    updateStats(); buildSidebar(); renderQuestion(q);  // keep same question visible
+    updateStats(); buildSidebar(); renderQuestion(q);
   });
 
   document.getElementById('btn-fix')?.addEventListener('click', async () => {
@@ -650,9 +597,7 @@ function wireEvents(q) {
   });
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   HELPERS
-═══════════════════════════════════════════════════════════════ */
+/* ── HELPERS ── */
 function sectionLabel(s) {
   return s === 'math' ? 'Math' : s === 'reading_writing' ? 'R&W' : s || '?';
 }
@@ -676,10 +621,6 @@ function escHtml(s) {
 function processText(text) {
   if (!text) return '';
   const raw = String(text);
-
-  // Split into math blocks and prose segments.
-  // \n → <br> must only happen in prose — inserting <br> inside \[...\] or \(...\)
-  // breaks the text node that KaTeX scans, preventing math from rendering.
   const mathRe = /(\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\)|\$(?!\d)(?:[^$\\]|\\.)*\$)/g;
   const segments = [];
   let last = 0, m;
@@ -692,18 +633,13 @@ function processText(text) {
 
   return segments.map(seg => {
     if (seg.math) {
-      // Math block — HTML-escape, then strip standalone \n (not part of a LaTeX command).
-      // If stored as $...$ format, convert to \(...\) since KaTeX no longer has $ as a delimiter.
       let t = seg.t;
       if (t.charAt(0) === '$') t = '\\(' + t.slice(1, -1) + '\\)';
       return t
         .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-        .replace(/\\n(?![a-zA-Z]{2,})/g, ' ')  // literal \n — skip only if 2+ letters follow (real command e.g. \neq \nabla)
-        .replace(/\n/g, ' ');                   // actual newline
+        .replace(/\\n(?![a-zA-Z]{2,})/g, ' ')
+        .replace(/\n/g, ' ');
     }
-    // Prose — full processing: HTML-escape, un-escape table tags, newlines → <br>
-    // NOTE: after escaping, all > are &gt; so [^>]* would match everything.
-    // Use exact bare-tag patterns — our generated tables never have attributes.
     return seg.t
       .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
       .replace(/&lt;(\/?)table&gt;/gi,  (_, a) => `<${a}table>`)
@@ -714,9 +650,10 @@ function processText(text) {
       .replace(/&lt;\/th&gt;/gi,        `</th>`)
       .replace(/&lt;td&gt;/gi,          `<td>`)
       .replace(/&lt;\/td&gt;/gi,        `</td>`)
-      .replace(/\\n/g, '<br>')   // literal \n → <br> (no lookahead — prose has no LaTeX commands)
-      .replace(/\n/g, '<br>')    // actual newline
-      .replace(/\$/g, '&#36;') // escape $ so KaTeX never mistakes currency for a math delimiter
+      .replace(/\\n/g, '<br>')
+      .replace(/\n/g, '<br>')
+      // Escape bare $ so KaTeX never mistakes currency for a math delimiter
+      .replace(/\$/g, '&#36;')
       // Markdown bold/italic (Claude occasionally outputs these despite instructions)
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
@@ -736,13 +673,7 @@ function renderKaTeXIn(el) {
   }
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   COVERAGE VIEW
-═══════════════════════════════════════════════════════════════ */
-
-// Official SAT skill taxonomy — mirrors sat_taxonomy.json exactly.
-// Coverage matching uses EXACT skill_key slug (q.skillKey === sk.key).
-// Older questions without skill_key are counted at domain level but show as 0 per skill.
+/* ── COVERAGE VIEW (identical to v1) ── */
 const SAT_TAXONOMY = [
   {
     section: 'math', sectionLabel: 'Math',
@@ -862,7 +793,7 @@ const SAT_TAXONOMY = [
   }
 ];
 
-let viewMode = 'review'; // 'review' | 'coverage'
+let viewMode = 'review';
 
 function toggleView() {
   viewMode = viewMode === 'review' ? 'coverage' : 'review';
@@ -882,9 +813,6 @@ function toggleView() {
   }
 }
 
-// Exact match on skill_key slug — no fuzzy matching.
-// Questions generated before skill_key was tracked (skillKey == null) count only
-// toward the domain total bar, not toward any individual skill row.
 function skillCount(domainKey, skillKey) {
   return allQuestions.filter(q =>
     q.domain === domainKey && q.skillKey === skillKey
@@ -955,9 +883,7 @@ function renderCoverage() {
   area.innerHTML = html;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   BOOT
-═══════════════════════════════════════════════════════════════ */
+/* ── BOOT ── */
 (async () => {
   try {
     const resp = await fetch('/api/admin/questions');

@@ -22,6 +22,7 @@
           crossorigin="anonymous"></script>
 
   <link rel="stylesheet" href="css/validate.css?v=5">
+  <link rel="stylesheet" href="css/validate2.css?v=1">
   <script src="js/renderer.js?v=2"></script>
 </head>
 <body class="bg-slate-100">
@@ -32,14 +33,12 @@
   <header class="v-header bg-white border-b border-slate-200"
           style="box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
     <div class="px-5 py-3 flex items-center justify-between">
-      <div>
-        <p class="text-xs text-slate-400 leading-tight">SAT Engine Admin</p>
-        <p class="text-sm font-bold text-slate-900 leading-tight">Question Review</p>
+      <div class="flex items-center gap-3">
+        <div>
+          <p class="text-xs text-slate-400 leading-tight">SAT Engine Admin</p>
+          <p class="text-sm font-bold text-slate-900 leading-tight">Question Review</p>
+        </div>
       </div>
-      <a href="validate2.html"
-         class="text-xs font-medium text-slate-400 hover:text-indigo-600 transition-colors ml-3">
-        Compact View →
-      </a>
       <div id="nav-controls" class="flex items-center gap-2">
         <button id="btn-prev" class="nav-btn" onclick="navigate(-1)" disabled>← Prev</button>
         <span id="nav-counter" class="text-xs font-semibold text-slate-500 min-w-[64px] text-center">— / —</span>
@@ -113,6 +112,6 @@
 
 <div id="toast"></div>
 
-<script src="js/validate.js?v=9"></script>
+<script src="js/validate.js?v=2"></script>
 </body>
 </html>
