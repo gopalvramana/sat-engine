@@ -53,16 +53,16 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
     @Query("SELECT q FROM Question q WHERE q.status = 'approved' AND q.coreConcept IS NULL")
     List<Question> findApprovedUnenriched();
 
-    /** All approved questions — including already-enriched ones (for re-enrich runs). */
-    @Query("SELECT q FROM Question q WHERE q.status = 'approved'")
+    /** Approved or enriched questions — for re-enrich runs. */
+    @Query("SELECT q FROM Question q WHERE q.status IN ('approved', 'enriched')")
     List<Question> findAllApproved();
 
-    /** Approved questions filtered by section (re-enrich). */
-    @Query("SELECT q FROM Question q WHERE q.status = 'approved' AND q.section = :section")
+    /** Approved or enriched questions filtered by section (re-enrich). */
+    @Query("SELECT q FROM Question q WHERE q.status IN ('approved', 'enriched') AND q.section = :section")
     List<Question> findAllApprovedBySection(@Param("section") String section);
 
-    /** Approved questions filtered by domain (re-enrich). */
-    @Query("SELECT q FROM Question q WHERE q.status = 'approved' AND q.domain = :domain")
+    /** Approved or enriched questions filtered by domain (re-enrich). */
+    @Query("SELECT q FROM Question q WHERE q.status IN ('approved', 'enriched') AND q.domain = :domain")
     List<Question> findAllApprovedByDomain(@Param("domain") String domain);
 
     /** Reviewed questions filtered by section. */
