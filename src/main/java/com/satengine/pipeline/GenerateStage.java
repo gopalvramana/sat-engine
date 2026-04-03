@@ -419,6 +419,17 @@ public class GenerateStage {
      * Port of fix_latex_escapes from generate_questions.py.
      * Claude writes single backslashes in LaTeX that are invalid in JSON.
      * This doubles every bare backslash that is not \\", \\\\, or \\uXXXX.
+     *
+     * Special case: \t, \n, \r, \b, \f are valid JSON escapes BUT also start
+     * many LaTeX commands (\text, \theta, \neq, \nabla, \beta, \bar, \frac, etc.).
+     * Disambiguation rule: if the character after the escape letter is [a-zA-Z],
+     * it's a LaTeX command and must be doubled. Otherwise it's a real JSON escape.
+     *
+     * Examples:
+     *   \text{cm}  → next after 't' is 'e' (letter) → double → \\text{cm}  ✓
+     *   \t + space → next after 't' is ' ' (non-letter) → real tab → leave ✓
+     *   \frac{1}{2}→ next after 'f' is 'r' (letter) → double → \\frac{1}{2} ✓
+     *   \n + space → next after 'n' is ' ' (non-letter) → real newline → leave ✓
      */
     String fixLatexEscapes(String raw) {
         StringBuilder out = new StringBuilder(raw.length() + 64);
@@ -427,10 +438,19 @@ public class GenerateStage {
             char ch = raw.charAt(i);
             if (ch == '\\' && i + 1 < n) {
                 char next = raw.charAt(i + 1);
-                if (next == '"' || next == '\\' ||
-                        next == 'n' || next == 't' || next == 'r' ||
-                        next == 'b' || next == 'f') {
-                    // Valid JSON escape sequence — leave untouched
+                if (next == '"' || next == '\\') {
+                    // Unambiguously valid JSON escapes — leave untouched
+                    out.append(ch);
+                    out.append(next);
+                    i += 2;
+                } else if ((next == 'n' || next == 't' || next == 'r' || next == 'b' || next == 'f')
+                        && (i + 2 < n && Character.isLetter(raw.charAt(i + 2)))) {
+                    // Looks like a JSON escape but followed by a letter → LaTeX command
+                    // e.g. \text, \theta, \neq, \nabla, \beta, \bar, \frac
+                    out.append("\\\\");
+                    i += 1;
+                } else if (next == 'n' || next == 't' || next == 'r' || next == 'b' || next == 'f') {
+                    // Real JSON whitespace escape (\n, \t, \r, \b, \f) — leave untouched
                     out.append(ch);
                     out.append(next);
                     i += 2;
