@@ -773,15 +773,20 @@ Rules:
             "  incomplete_setup | wrong_method | unit_error | algebra_manipulation\n\n" +
 
             "ALTERNATIVE APPROACH RULES:\n" +
-            "- Must be genuinely different (algebraic vs. arithmetic, substitution vs. elimination, visual vs. analytic)\n" +
-            "- Apply the same step count and word count limits as explanationSteps\n" +
+            "- Must be genuinely different — a real methodological difference, not a rephrasing:\n" +
+            "  VALID: formula-based vs. visual/geometric, substitution vs. elimination, algebraic vs. numeric\n" +
+            "  INVALID: same method with slightly different arithmetic order, same formula rewritten\n" +
             ("geometry_trigonometry".equals(domain)
-                ? "- geometry_trigonometry ALWAYS has an alternative — visual/geometric vs. formula-based is always valid.\n" +
-                  "  Examples: distance formula vs. drawing a right triangle; law of cosines vs. decomposing into two right triangles;\n" +
-                  "  coordinate proof vs. classical geometry. You MUST provide an alternativeApproach — null is NOT allowed.\n"
-                : "- If genuinely no different approach exists, return null. But exhaust options first:\n" +
-                  "  algebraic vs. numeric substitution, forward vs. backward solving, formula vs. first-principles.\n") +
-            "\n" +
+                ? "- For geometry, check these before returning null:\n" +
+                  "  · distance/midpoint: distance formula vs. Pythagorean theorem on a drawn right triangle\n" +
+                  "  · triangle sides/angles: law of cosines vs. decomposing into two right triangles\n" +
+                  "  · coordinate geometry: algebraic (slope/equation) vs. classical geometric (angle/congruence) reasoning\n" +
+                  "  · area: formula-based vs. coordinate/shoelace method\n" +
+                  "  If none of these apply AND a different approach would just be a restatement, return null.\n"
+                : "- Check these before returning null:\n" +
+                  "  algebraic vs. numeric substitution, forward vs. backward solving, formula vs. first-principles\n" +
+                  "  If no genuinely different method exists, return null.\n") +
+            "- Apply the same step count and word count limits as explanationSteps\n\n" +
 
             "FIELDS TO GENERATE:\n" +
             "1. explanationSteps: array of max " + maxSteps + " steps — each: { \"title\", \"content\", \"math\", optionally \"diagram\" }\n" +
