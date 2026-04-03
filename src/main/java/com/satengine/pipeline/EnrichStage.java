@@ -26,7 +26,7 @@ public class EnrichStage {
     private final ObjectMapper             objectMapper;
 
     private static final String ENRICH_MODEL = "claude-opus-4-6";
-    private static final int    MAX_TOKENS   = 2000;
+    private static final int    MAX_TOKENS   = 3500;
 
     /**
      * Normal run: enriches questions with status=reviewed → advances to enriched.
@@ -103,7 +103,12 @@ public class EnrichStage {
 
     private JsonNode enrichQuestion(Question q) throws Exception {
         ObjectNode slim = buildSlimNode(q);
-        String prompt = PromptLibrary.buildEnrichPrompt(objectMapper.writeValueAsString(slim));
+        String prompt = PromptLibrary.buildEnrichPrompt(
+                objectMapper.writeValueAsString(slim),
+                q.getSection(),
+                q.getDomain(),
+                q.getDifficulty(),
+                q.getQuestionType());
         String raw = claudeClient.call(ENRICH_MODEL, MAX_TOKENS, "", prompt);
         String cleaned = raw.replaceAll("(?i)^```json\\s*", "").replaceAll("\\s*```$", "").strip();
         JsonNode result = objectMapper.readTree(cleaned);
@@ -138,6 +143,10 @@ public class EnrichStage {
         }
         if (!fields.path("animation").isMissingNode()) {
             q.setAnimation(objectMapper.writeValueAsString(fields.path("animation")));
+        }
+        JsonNode wrongAnswers = fields.path("wrongAnswerExplanations");
+        if (!wrongAnswers.isMissingNode() && !wrongAnswers.isNull()) {
+            q.setWrongAnswerExplanations(objectMapper.writeValueAsString(wrongAnswers));
         }
         q.setPool(fields.path("pool").asText("both"));
         // Keep approved status if already approved; otherwise advance to enriched

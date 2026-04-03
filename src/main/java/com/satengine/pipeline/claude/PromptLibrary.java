@@ -621,50 +621,157 @@ Rules:
 
     // ─── Enrich ───────────────────────────────────────────────────────────────
 
-    public static String buildEnrichPrompt(String questionJson) {
-        return """
-You are an expert SAT educator. Given this SAT question, generate the missing pedagogical fields.
-Return ONLY a JSON object — no explanation, no markdown fences.
+    /**
+     * Builds the enrichment prompt with difficulty-calibrated guardrails baked in.
+     *
+     * @param questionJson  slim question JSON (stem, options, answer, difficulty, domain, etc.)
+     * @param section       "math" or "reading_writing"
+     * @param domain        e.g. "algebra", "geometry_trigonometry"
+     * @param difficulty    1–7
+     * @param questionType  "mcq" or "spr"
+     */
+    public static String buildEnrichPrompt(
+            String questionJson,
+            String section,
+            String domain,
+            int    difficulty,
+            String questionType) {
 
-QUESTION:
-""" + questionJson + """
+        // ── Difficulty-calibrated limits ──────────────────────────────────────
+        int maxSteps   = difficulty <= 2 ? 2 : difficulty <= 4 ? 3 : difficulty <= 6 ? 4 : 5;
+        int maxWords   = difficulty <= 2 ? 25 : difficulty <= 4 ? 45 : difficulty <= 6 ? 65 : 80;
+        int maxPrereqs = difficulty <= 2 ? 1  : difficulty <= 4 ? 2  : 3;
+        boolean isMcq  = "mcq".equalsIgnoreCase(questionType);
 
-Generate ALL of these fields:
+        // ── Difficulty language calibration ───────────────────────────────────
+        String diffCalibration;
+        if (difficulty <= 2) {
+            diffCalibration =
+                "  This is a VERY EASY question. Use plain language. Every step spells out the operation explicitly.\n" +
+                "  Do not assume prior knowledge. Keep content short and reassuring.\n" +
+                "  If you find yourself writing more than 2 steps, you are over-explaining — stop.";
+        } else if (difficulty <= 4) {
+            diffCalibration =
+                "  This is an AVERAGE difficulty question. Use standard SAT-level language.\n" +
+                "  Moderate detail — explain the logic but don't over-narrate basic algebra.";
+        } else if (difficulty <= 6) {
+            diffCalibration =
+                "  This is a HARD question. Be concise — assume the student knows fundamentals.\n" +
+                "  Focus on the non-obvious insight or the key decision point that trips students up.";
+        } else {
+            diffCalibration =
+                "  This is a VERY HARD question. Assume solid foundational knowledge.\n" +
+                "  Focus on the elegant approach or the single non-obvious leap.\n" +
+                "  One well-chosen insight beats three obvious steps.";
+        }
 
-1. explanationSteps: Array of 2–4 structured steps. Each step:
-   { "title": "short step name", "content": "1-2 confident sentences", "math": "LaTeX formula or null" }
-   Write as a teacher — confident, no hedging, no "Actually..." or "Wait..."
-   FORMULA RULE: If a step references a named formula (e.g. "quadratic formula", "slope-intercept form",
-   "distance formula", "Pythagorean theorem", "completing the square"), the formula itself MUST appear
-   in that step's "math" field. Never mention a formula by name without showing it.
+        // ── Diagram instruction based on domain ────────────────────────────────
+        String diagramInstruction;
+        if ("geometry_trigonometry".equals(domain)) {
+            diagramInstruction =
+                "DIAGRAM RULE: Geometry questions MUST include a diagram in at least one step.\n" +
+                "  Add a \"diagram\" field to the relevant step using the same JSON schema as the question-level diagram field.\n" +
+                "  Suggested size: width=280, height=280.";
+        } else if ("algebra".equals(domain) || "advanced_math".equals(domain)) {
+            diagramInstruction =
+                "DIAGRAM RULE: If the solution involves graphing, coordinate geometry, or a visual transformation,\n" +
+                "  include a \"diagram\" field on the setup step (type: coordinatePlane or similar).\n" +
+                "  If the solution is purely algebraic, omit diagram fields entirely.";
+        } else {
+            diagramInstruction =
+                "DIAGRAM RULE: Do not include diagram fields for this domain.";
+        }
 
-2. alternativeApproach: An object describing a second, different method to solve this question.
-   { "title": "short name for this method (e.g. 'Substitution', 'Graphical Method')",
-     "steps": [ { "title": "...", "content": "...", "math": "..." } ]
-   }
-   The approach must be genuinely different from the primary explanationSteps (e.g. algebraic vs. arithmetic, substitution vs. elimination, visual vs. analytic).
-   If there is no meaningfully different second approach, return null.
-   FORMULA RULE (same as above): any step that names a formula must show it in "math".
+        // ── Wrong answer explanations (MCQ only) ──────────────────────────────
+        String wrongAnswerField = isMcq
+            ? "\n7. wrongAnswerExplanations: One sentence per option — the specific mistake that leads a student there.\n" +
+              "   { \"A\": \"...\", \"B\": \"...\", \"C\": \"...\", \"D\": \"...\" }\n" +
+              "   - For the CORRECT option key: write exactly \"Correct.\"\n" +
+              "   - For each wrong option: name the exact error mechanism.\n" +
+              "     BAD: \"This is incorrect.\"  BAD: \"Student may have made a computational error.\"\n" +
+              "     GOOD: \"Results from applying the theorem with x=−2 instead of x=2 — sign confusion from (x−2).\"\n" +
+              "     GOOD: \"Arithmetic slip: computed 5×4=16 instead of 20 in the second term.\""
+            : "";
 
-3. coreConcept: Object with:
-   { "title": "concept name", "summary": "1-2 sentence explanation", "keyFormula": "LaTeX or null" }
+        String wrongAnswerSchemaLine = isMcq
+            ? "  \"wrongAnswerExplanations\": { \"A\": \"...\", \"B\": \"...\", \"C\": \"...\", \"D\": \"...\" }"
+            : "  \"wrongAnswerExplanations\": null";
 
-4. prerequisites: Array of 2–4 objects:
-   { "topic": "topic name", "why": "one sentence — why needed to solve this question" }
+        // ── Build the full prompt ──────────────────────────────────────────────
+        return
+            "You are an expert SAT educator and pedagogy specialist.\n" +
+            "Your job: generate explanation content for a student who JUST GOT THIS QUESTION WRONG.\n\n" +
 
-5. animation: { "eligible": true/false }
-   true only for geometry, coordinate plane, or algebra questions with a clear visual story.
+            "AUDIENCE: A student who answered incorrectly.\n" +
+            "GOAL: After reading your explanation the student should:\n" +
+            "  1. Understand exactly what mistake they likely made\n" +
+            "  2. Know the correct approach step by step\n" +
+            "  3. Recognise this question type and strategy in future\n\n" +
 
-6. pool: Always "both"
+            "QUESTION:\n" + questionJson + "\n\n" +
 
-Return this exact shape:
-{
-  "explanationSteps": [...],
-  "alternativeApproach": { "title": "...", "steps": [...] },
-  "coreConcept": { "title": "...", "summary": "...", "keyFormula": "..." },
-  "prerequisites": [...],
-  "animation": { "eligible": false },
-  "pool": "both"
-}""";
+            "═══════════════════════════════════════════════════════\n" +
+            "HARD LIMITS — maximums, not targets:\n" +
+            "  explanationSteps : MAX " + maxSteps + " steps  (difficulty " + difficulty + "/7)\n" +
+            "  Words per content : MAX " + maxWords + " words per step\n" +
+            "  prerequisites    : MAX " + maxPrereqs + " topics\n" +
+            "  Exceeding any limit = you are over-explaining. Combine steps, cut words.\n" +
+            "═══════════════════════════════════════════════════════\n\n" +
+
+            "STEP WRITING RULES:\n" +
+            "- Each step = exactly ONE logical operation. Never combine two operations in one step.\n" +
+            "- Step title = imperative action verb: \"Apply\", \"Factor\", \"Substitute\", \"Verify\", \"Set up\", \"Identify\"\n" +
+            "- Step content: explain WHY this step is necessary NOW, not just what to do\n" +
+            "- Active voice only: \"Substitute x=2\" — not \"x=2 is substituted\"\n" +
+            "- Start content with: \"When you see...\", \"Notice that...\", \"The key insight is...\", \"The trap here is...\"\n" +
+            "- FORMULA RULE: if a step names a formula (Pythagorean theorem, quadratic formula, slope-intercept form, etc.)\n" +
+            "  its LaTeX MUST appear in that step's \"math\" field. Never name a formula without showing it.\n" +
+            "- OBVIOUS TEST: if a step states something a difficulty-" + difficulty + " student already knows, remove it or merge it.\n" +
+            "- At step limit with steps remaining? Combine the two simplest. Never exceed " + maxSteps + ".\n\n" +
+
+            "LANGUAGE CALIBRATION (difficulty " + difficulty + "/7):\n" +
+            diffCalibration + "\n\n" +
+
+            "PREREQUISITE RULES:\n" +
+            "- List only concepts this student at difficulty " + difficulty + " might genuinely not know\n" +
+            (difficulty >= 4
+                ? "- Do NOT list: arithmetic, basic fractions, order of operations, basic algebra — student knows these\n"
+                : "- Keep it to the single most important concept they need\n") +
+            "- Each \"why\" must be specific to THIS question, not generic\n\n" +
+
+            diagramInstruction + "\n\n" +
+
+            "TRAP EXPLANATION RULES:\n" +
+            "- Name the specific, memorable mistake — not a generic description\n" +
+            "  GOOD: \"The trap is thinking you need polynomial long division. The Remainder Theorem makes this 10 seconds.\"\n" +
+            "  BAD: \"Students may make computational errors.\"\n" +
+            "- trapCategory must be exactly one of:\n" +
+            "  sign_error | wrong_formula | misread_question | arithmetic | off_by_one |\n" +
+            "  incomplete_setup | wrong_method | unit_error | algebra_manipulation\n\n" +
+
+            "ALTERNATIVE APPROACH RULES:\n" +
+            "- Must be genuinely different (algebraic vs. arithmetic, substitution vs. elimination, visual vs. analytic)\n" +
+            "- Apply the same step count and word count limits as explanationSteps\n" +
+            "- If no meaningfully different approach exists, return null\n\n" +
+
+            "FIELDS TO GENERATE:\n" +
+            "1. explanationSteps: array of max " + maxSteps + " steps — each: { \"title\", \"content\", \"math\", optionally \"diagram\" }\n" +
+            "2. alternativeApproach: { \"title\", \"steps\" } or null\n" +
+            "3. coreConcept: { \"title\", \"summary\" (1-2 sentences), \"keyFormula\" (LaTeX or null) }\n" +
+            "4. prerequisites: array of max " + maxPrereqs + " objects — each: { \"topic\", \"why\" }\n" +
+            "5. animation: { \"eligible\": true/false } — true only for geometry/coordinate/transformation problems\n" +
+            "6. pool: always \"both\"\n" +
+            wrongAnswerField + "\n\n" +
+
+            "Return ONLY this exact JSON shape — no markdown fences, no extra text:\n" +
+            "{\n" +
+            "  \"explanationSteps\": [...],\n" +
+            "  \"alternativeApproach\": { \"title\": \"...\", \"steps\": [...] },\n" +
+            "  \"coreConcept\": { \"title\": \"...\", \"summary\": \"...\", \"keyFormula\": \"...\" },\n" +
+            "  \"prerequisites\": [...],\n" +
+            "  \"animation\": { \"eligible\": false },\n" +
+            "  \"pool\": \"both\",\n" +
+            wrongAnswerSchemaLine + "\n" +
+            "}";
     }
 }

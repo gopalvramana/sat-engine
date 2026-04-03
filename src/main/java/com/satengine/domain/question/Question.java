@@ -101,6 +101,10 @@ public class Question {
     @Column(name = "alternative_approach", columnDefinition = "jsonb")
     private String alternativeApproach;
 
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "wrong_answer_explanations", columnDefinition = "jsonb")
+    private String wrongAnswerExplanations;
+
     @Column(name = "pool", nullable = false, length = 10)
     @Builder.Default
     private String pool = "both";
