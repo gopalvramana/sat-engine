@@ -653,7 +653,10 @@ function processText(text) {
       .replace(/\\n/g, '<br>')
       .replace(/\n/g, '<br>')
       // Escape bare $ so KaTeX never mistakes currency for a math delimiter
-      .replace(/\$/g, '&#36;');
+      .replace(/\$/g, '&#36;')
+      // Markdown bold/italic (Claude occasionally outputs these despite instructions)
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
   }).join('');
 }
 

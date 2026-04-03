@@ -716,7 +716,10 @@ function processText(text) {
       .replace(/&lt;\/td&gt;/gi,        `</td>`)
       .replace(/\\n/g, '<br>')   // literal \n → <br> (no lookahead — prose has no LaTeX commands)
       .replace(/\n/g, '<br>')    // actual newline
-      .replace(/\$/g, '&#36;'); // escape $ so KaTeX never mistakes currency for a math delimiter
+      .replace(/\$/g, '&#36;') // escape $ so KaTeX never mistakes currency for a math delimiter
+      // Markdown bold/italic (Claude occasionally outputs these despite instructions)
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
   }).join('');
 }
 
