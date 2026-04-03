@@ -773,9 +773,13 @@ function renderKaTeXIn(el) {
 function processText(text) {
   if (!text) return '';
   const raw = String(text);
-  // Also matches $...$ LaTeX math (when $ is NOT followed by a digit — that's currency).
-  // Uses (?:[^$\\]|\\.)* to allow \$ (escaped dollar) inside, e.g. $\$165$.
-  const mathRe = /(\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\)|\$(?!\d)(?:[^$\\]|\\.)*\$)/g;
+  // Matches LaTeX math in three forms:
+  //   \[...\]  display math
+  //   \(...\)  inline math
+  //   $DIGIT+NON-SPACE*$  digit-starting math token e.g. $71°$ $3x$ — no spaces inside so
+  //                        currency prose like "$12 per pound" is never matched (has a space)
+  //   $NON-DIGIT...$  letter/symbol-starting math e.g. $x+1$ $\frac{1}{2}$
+  const mathRe = /(\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\)|\$\d+[^$\s]*\$|\$(?!\d)(?:[^$\\]|\\.)*\$)/g;
   const segments = [];
   let last = 0, m;
   while ((m = mathRe.exec(raw)) !== null) {

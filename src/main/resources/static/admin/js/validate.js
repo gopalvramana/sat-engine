@@ -621,7 +621,8 @@ function escHtml(s) {
 function processText(text) {
   if (!text) return '';
   const raw = String(text);
-  const mathRe = /(\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\)|\$(?!\d)(?:[^$\\]|\\.)*\$)/g;
+  // \$\d+[^$\s]*\$ — digit-starting math token e.g. $71°$; no spaces so currency ($12 per pound) is never matched
+  const mathRe = /(\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\)|\$\d+[^$\s]*\$|\$(?!\d)(?:[^$\\]|\\.)*\$)/g;
   const segments = [];
   let last = 0, m;
   while ((m = mathRe.exec(raw)) !== null) {
