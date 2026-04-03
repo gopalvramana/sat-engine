@@ -711,11 +711,24 @@ Rules:
             "QUESTION:\n" + questionJson + "\n\n" +
 
             "═══════════════════════════════════════════════════════\n" +
-            "HARD LIMITS — maximums, not targets:\n" +
+            "HARD LIMITS — these are rules, not suggestions:\n" +
             "  explanationSteps : MAX " + maxSteps + " steps  (difficulty " + difficulty + "/7)\n" +
             "  Words per content : MAX " + maxWords + " words per step\n" +
             "  prerequisites    : MAX " + maxPrereqs + " topics\n" +
-            "  Exceeding any limit = you are over-explaining. Combine steps, cut words.\n" +
+            "  Exceeding any limit = you are over-explaining. Combine steps, cut words.\n\n" +
+            "  FORMULA LAW (enforced by validator — violation fails the whole enrichment):\n" +
+            "  If ANY step content names a formula, that formula's LaTeX MUST be in the\n" +
+            "  step's \"math\" field. This applies to EVERY named formula, no exceptions:\n" +
+            "    quadratic formula     → math: \"x = \\\\frac{-b \\\\pm \\\\sqrt{b^2-4ac}}{2a}\"\n" +
+            "    Pythagorean theorem   → math: \"a^2 + b^2 = c^2\"\n" +
+            "    slope-intercept form  → math: \"y = mx + b\"\n" +
+            "    distance formula      → math: \"d = \\\\sqrt{(x_2-x_1)^2+(y_2-y_1)^2}\"\n" +
+            "    midpoint formula      → math: \"M = \\\\left(\\\\frac{x_1+x_2}{2}, \\\\frac{y_1+y_2}{2}\\\\right)\"\n" +
+            "    law of sines          → math: \"\\\\frac{a}{\\\\sin A} = \\\\frac{b}{\\\\sin B}\"\n" +
+            "    completing the square → show the completed form in math\n" +
+            "    discriminant          → math: \"b^2 - 4ac\"\n" +
+            "    vertex formula        → math: \"x = -\\\\frac{b}{2a}\"\n" +
+            "  If you mention a formula by name without showing it → FAIL.\n" +
             "═══════════════════════════════════════════════════════\n\n" +
 
             "STEP WRITING RULES:\n" +
@@ -724,8 +737,7 @@ Rules:
             "- Step content: explain WHY this step is necessary NOW, not just what to do\n" +
             "- Active voice only: \"Substitute x=2\" — not \"x=2 is substituted\"\n" +
             "- Start content with: \"When you see...\", \"Notice that...\", \"The key insight is...\", \"The trap here is...\"\n" +
-            "- FORMULA RULE: if a step names a formula (Pythagorean theorem, quadratic formula, slope-intercept form, etc.)\n" +
-            "  its LaTeX MUST appear in that step's \"math\" field. Never name a formula without showing it.\n" +
+            "- FORMULA RULE: see HARD LIMITS above — any named formula MUST appear in that step's \"math\" field.\n" +
             "- OBVIOUS TEST: if a step states something a difficulty-" + difficulty + " student already knows, remove it or merge it.\n" +
             "- At step limit with steps remaining? Combine the two simplest. Never exceed " + maxSteps + ".\n\n" +
 

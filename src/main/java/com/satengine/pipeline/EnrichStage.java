@@ -130,12 +130,47 @@ public class EnrichStage {
         String cleaned = raw.replaceAll("(?i)^```json\\s*", "").replaceAll("\\s*```$", "").strip();
         JsonNode result = objectMapper.readTree(cleaned);
 
-        // Validate
+        // ── Structural validation ────────────────────────────────────────────
         JsonNode steps = result.path("explanationSteps");
         if (!steps.isArray() || steps.size() < 2) {
             throw new IllegalStateException("explanationSteps missing or has fewer than 2 steps");
         }
+
+        // ── Formula-law validation ───────────────────────────────────────────
+        // If a step content mentions a named formula, math field must be present.
+        // Covers both explanationSteps and alternativeApproach steps.
+        validateFormulaLaw(steps, "explanationSteps");
+        JsonNode altApproach = result.path("alternativeApproach");
+        if (altApproach.isObject()) {
+            validateFormulaLaw(altApproach.path("steps"), "alternativeApproach.steps");
+        }
+
         return result;
+    }
+
+    /** Named formulas that MUST have a populated math field in the same step. */
+    private static final List<String> FORMULA_KEYWORDS = List.of(
+        "quadratic formula", "pythagorean theorem", "slope-intercept form",
+        "distance formula", "midpoint formula", "law of sines", "law of cosines",
+        "completing the square", "discriminant", "vertex formula",
+        "point-slope form", "standard form", "exponential formula"
+    );
+
+    private void validateFormulaLaw(JsonNode stepsNode, String location) {
+        if (!stepsNode.isArray()) return;
+        for (JsonNode step : stepsNode) {
+            String content = step.path("content").asText("").toLowerCase();
+            String math    = step.path("math").asText("").trim();
+            boolean mathMissing = math.isEmpty() || math.equalsIgnoreCase("null");
+            for (String keyword : FORMULA_KEYWORDS) {
+                if (content.contains(keyword) && mathMissing) {
+                    throw new IllegalStateException(
+                        "Formula law violation in " + location + ": step \"" +
+                        step.path("title").asText("?") +
+                        "\" mentions \"" + keyword + "\" but math field is empty.");
+                }
+            }
+        }
     }
 
     @Transactional
