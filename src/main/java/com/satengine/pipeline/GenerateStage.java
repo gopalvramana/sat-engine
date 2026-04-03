@@ -145,6 +145,16 @@ public class GenerateStage {
      * @param difficultyArg 1-7 | null (weighted random)
      */
     public void run(int count, String sectionArg, String domainArg, String skillKeyArg, Integer difficultyArg) {
+        // Validate domain early — fail fast rather than generate garbage IDs
+        if (domainArg != null && !domainArg.isBlank() && !DOMAIN_CODES.containsKey(domainArg)) {
+            log.error("Unknown --domain value: '{}'. Valid domains: {}", domainArg, DOMAIN_CODES.keySet());
+            throw new IllegalArgumentException("Unknown domain: '" + domainArg + "'. Valid: " + DOMAIN_CODES.keySet());
+        }
+        if (sectionArg != null && !sectionArg.isBlank() && !SECTION_CODES.containsKey(sectionArg)) {
+            log.error("Unknown --section value: '{}'. Valid sections: {}", sectionArg, SECTION_CODES.keySet());
+            throw new IllegalArgumentException("Unknown section: '" + sectionArg + "'. Valid: " + SECTION_CODES.keySet());
+        }
+
         log.info("═".repeat(60));
         log.info(" Generate Stage  count={} section={} domain={} skill={} difficulty={}",
                 count, sectionArg, domainArg, skillKeyArg, difficultyArg);

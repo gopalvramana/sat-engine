@@ -52,7 +52,20 @@ public class EnrichStage {
      * @param section          optional filter — "math" | "reading_writing" | null = all
      * @param domain           optional filter — e.g. "algebra" | null = all
      */
+    private static final java.util.Set<String> VALID_DOMAINS  = java.util.Set.of(
+            "algebra", "advanced_math", "problem_solving_data", "geometry_trigonometry",
+            "information_ideas", "craft_structure", "expression_ideas", "standard_english");
+    private static final java.util.Set<String> VALID_SECTIONS = java.util.Set.of("math", "reading_writing");
+
     public void run(boolean includeApproved, String section, String domain) {
+        if (domain  != null && !domain.isBlank()  && !VALID_DOMAINS.contains(domain)) {
+            log.error("Unknown --domain value: '{}'. Valid: {}", domain, VALID_DOMAINS);
+            throw new IllegalArgumentException("Unknown domain: '" + domain + "'. Valid: " + VALID_DOMAINS);
+        }
+        if (section != null && !section.isBlank() && !VALID_SECTIONS.contains(section)) {
+            log.error("Unknown --section value: '{}'. Valid: {}", section, VALID_SECTIONS);
+            throw new IllegalArgumentException("Unknown section: '" + section + "'. Valid: " + VALID_SECTIONS);
+        }
         List<Question> queue = new java.util.ArrayList<>();
 
         // Reviewed questions (normal pipeline)
