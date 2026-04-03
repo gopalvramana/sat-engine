@@ -36,6 +36,18 @@ public class EnrichStage {
     }
 
     /**
+     * Enrich a single question by its external ID (e.g. MATH-GEO-010), regardless of status.
+     */
+    public void runById(String externalId) {
+        Question q = questionRepository.findByExternalId(externalId)
+                .orElseThrow(() -> new IllegalArgumentException("Question not found: " + externalId));
+        log.info("═".repeat(60));
+        log.info(" Enrich Stage  single={}  model={}", externalId, ENRICH_MODEL);
+        log.info("═".repeat(60));
+        enrichOne(q, 1, 1);
+    }
+
+    /**
      * @param includeApproved  when true, re-enriches approved questions (all, not just unenriched)
      * @param section          optional filter — "math" | "reading_writing" | null = all
      * @param domain           optional filter — e.g. "algebra" | null = all
@@ -79,27 +91,8 @@ public class EnrichStage {
         int enriched = 0, skipped = 0, failed = 0;
 
         for (int i = 0; i < queue.size(); i++) {
-            Question q = queue.get(i);
-            String label = padEnd(q.getExternalId(), 20);
-            try {
-                if ("reading_writing".equals(q.getSection())) {
-                    // R&W questions don't need Math-specific enrichment fields.
-                    // Just set pool and advance status directly.
-                    advanceRWQuestion(q, "approved".equals(q.getStatus()));
-                    log.info("[{}/{}] {} skipped (R&W — no enrich needed)", i + 1, queue.size(), label);
-                    skipped++;
-                } else {
-                    JsonNode fields = enrichQuestion(q);
-                    applyFields(q, fields, "approved".equals(q.getStatus()));
-                    log.info("[{}/{}] {} done", i + 1, queue.size(), label);
-                    enriched++;
-                }
-            } catch (Exception e) {
-                log.error("[{}/{}] {} FAILED: {}", i + 1, queue.size(), label, e.getMessage());
-                failed++;
-            }
-
-            // Rate-limit buffer between questions
+            int[] result = enrichOne(queue.get(i), i + 1, queue.size());
+            enriched += result[0]; skipped += result[1]; failed += result[2];
             if (i < queue.size() - 1) {
                 try { Thread.sleep(500); } catch (InterruptedException ignored) {}
             }
@@ -107,6 +100,26 @@ public class EnrichStage {
 
         log.info("─".repeat(60));
         log.info(" Results: {} enriched  {} skipped (R&W)  {} failed", enriched, skipped, failed);
+    }
+
+    /** Enriches a single question. Returns int[]{enriched, skipped, failed} counts. */
+    private int[] enrichOne(Question q, int i, int total) {
+        String label = padEnd(q.getExternalId(), 20);
+        try {
+            if ("reading_writing".equals(q.getSection())) {
+                advanceRWQuestion(q, "approved".equals(q.getStatus()));
+                log.info("[{}/{}] {} skipped (R&W — no enrich needed)", i, total, label);
+                return new int[]{0, 1, 0};
+            } else {
+                JsonNode fields = enrichQuestion(q);
+                applyFields(q, fields, "approved".equals(q.getStatus()) || "enriched".equals(q.getStatus()));
+                log.info("[{}/{}] {} done", i, total, label);
+                return new int[]{1, 0, 0};
+            }
+        } catch (Exception e) {
+            log.error("[{}/{}] {} FAILED: {}", i, total, label, e.getMessage());
+            return new int[]{0, 0, 1};
+        }
     }
 
     @Transactional

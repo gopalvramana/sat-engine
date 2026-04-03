@@ -48,6 +48,9 @@ import java.util.List;
  *   # Re-enrich one section only
  *   java -jar sat-engine.jar --job=enrich --include-approved --section=math
  *
+ *   # Enrich a single question by ID (any status)
+ *   java -jar sat-engine.jar --job=enrich --id=MATH-GEO-010
+ *
  * ── FLAGS ─────────────────────────────────────────────────────────────────
  * --count       Number of questions to generate (default: 10)
  * --section     math | reading_writing  (default: random)
@@ -104,6 +107,11 @@ public class PipelineRunner implements ApplicationRunner {
     }
 
     private void runEnrich(ApplicationArguments args) {
+        String id = stringArg(args, "id", null);
+        if (id != null) {
+            enrichStage.runById(id);
+            return;
+        }
         boolean includeApproved = args.containsOption("include-approved");
         String  section         = stringArg(args, "section", null);
         String  domain          = stringArg(args, "domain",  null);
