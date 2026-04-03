@@ -621,7 +621,7 @@ function escHtml(s) {
 function processText(text) {
   if (!text) return '';
   const raw = String(text);
-  const mathRe = /(\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\))/g;
+  const mathRe = /(\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\)|\$(?!\d)(?:[^$\\]|\\.)*\$)/g;
   const segments = [];
   let last = 0, m;
   while ((m = mathRe.exec(raw)) !== null) {
@@ -633,7 +633,9 @@ function processText(text) {
 
   return segments.map(seg => {
     if (seg.math) {
-      return seg.t
+      let t = seg.t;
+      if (t.charAt(0) === '$') t = '\\(' + t.slice(1, -1) + '\\)';
+      return t
         .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
         .replace(/\\n(?![a-zA-Z]{2,})/g, ' ')
         .replace(/\n/g, ' ');

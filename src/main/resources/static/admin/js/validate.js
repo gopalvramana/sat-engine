@@ -680,7 +680,7 @@ function processText(text) {
   // Split into math blocks and prose segments.
   // \n → <br> must only happen in prose — inserting <br> inside \[...\] or \(...\)
   // breaks the text node that KaTeX scans, preventing math from rendering.
-  const mathRe = /(\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\))/g;
+  const mathRe = /(\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\)|\$(?!\d)(?:[^$\\]|\\.)*\$)/g;
   const segments = [];
   let last = 0, m;
   while ((m = mathRe.exec(raw)) !== null) {
@@ -693,8 +693,10 @@ function processText(text) {
   return segments.map(seg => {
     if (seg.math) {
       // Math block — HTML-escape, then strip standalone \n (not part of a LaTeX command).
-      // Only replace \n NOT followed by a letter — avoids breaking \neq, \nabla, \not etc.
-      return seg.t
+      // If stored as $...$ format, convert to \(...\) since KaTeX no longer has $ as a delimiter.
+      let t = seg.t;
+      if (t.charAt(0) === '$') t = '\\(' + t.slice(1, -1) + '\\)';
+      return t
         .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
         .replace(/\\n(?![a-zA-Z]{2,})/g, ' ')  // literal \n — skip only if 2+ letters follow (real command e.g. \neq \nabla)
         .replace(/\n/g, ' ');                   // actual newline
