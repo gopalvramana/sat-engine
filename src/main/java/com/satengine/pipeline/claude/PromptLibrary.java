@@ -732,6 +732,16 @@ Rules:
             "LANGUAGE CALIBRATION (difficulty " + difficulty + "/7):\n" +
             diffCalibration + "\n\n" +
 
+            "FORMATTING RULES:\n" +
+            "- Plain text only in all content fields. No markdown: no **bold**, no *italic*, no `code`, no # headers.\n" +
+            "- Numbers and answers go in plain text: write \"2\" not \"**2**\"\n\n" +
+
+            "VISUAL REFERENCE RULE:\n" +
+            "- NEVER mention visual concepts (graph, curve, intersect, coordinate plane, plot, slope, line) in step\n" +
+            "  content UNLESS you have included a \"diagram\" field in that same step.\n" +
+            "- If a question is about intersections or graphing but you cannot produce a diagram,\n" +
+            "  rewrite the explanation using purely algebraic/numerical language instead.\n\n" +
+
             "PREREQUISITE RULES:\n" +
             "- List only concepts this student at difficulty " + difficulty + " might genuinely not know\n" +
             (difficulty >= 4
