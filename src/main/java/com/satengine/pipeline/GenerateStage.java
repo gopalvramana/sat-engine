@@ -212,8 +212,9 @@ public class GenerateStage {
 
     private String buildDiversityContext(String domain, String skillKey) {
         try {
-            java.util.List<Object[]> rows = questionRepository.findRecentForDiversityContext(
-                    domain, skillKey, 10);
+            // Fetch ALL non-rejected questions in the domain (no skill filter, no limit)
+            // so Claude sees every existing stem and can't accidentally duplicate any of them.
+            List<Object[]> rows = questionRepository.findAllForDiversityContext(domain);
             return PromptLibrary.buildDiversityContext(rows, domain, skillKey);
         } catch (Exception e) {
             log.warn("Could not build diversity context for domain={} skill={}: {}", domain, skillKey, e.getMessage());

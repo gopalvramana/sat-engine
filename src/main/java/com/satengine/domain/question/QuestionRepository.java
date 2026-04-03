@@ -97,19 +97,19 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
      * used to build the "existing questions" diversity context before generation.
      * Returns only fields needed for the prompt (externalId, questionStem, scenarioTag).
      */
+    /**
+     * Returns ALL non-rejected questions in a domain for the diversity context.
+     * No skill filter and no limit — Claude must see every existing stem to avoid duplicates.
+     * Each Object[] is { external_id (String), question_stem (String), scenario_tag (String) }.
+     */
     @Query(value = """
         SELECT external_id, question_stem, scenario_tag
         FROM questions
         WHERE domain = :domain
-          AND (:skillKey IS NULL OR skill_key = :skillKey)
+          AND status != 'rejected'
         ORDER BY generated_at DESC
-        LIMIT :limit
         """, nativeQuery = true)
-    List<Object[]> findRecentForDiversityContext(
-            @Param("domain")    String domain,
-            @Param("skillKey")  String skillKey,
-            @Param("limit")     int limit
-    );
+    List<Object[]> findAllForDiversityContext(@Param("domain") String domain);
 
     /**
      * Returns all non-rejected question stems for a domain.
