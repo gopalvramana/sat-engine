@@ -3,7 +3,10 @@ package com.satengine;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.github.cdimascio.dotenv.DotenvException;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import java.util.Arrays;
 
 @SpringBootApplication
 public class SatEngineApplication {
@@ -23,6 +26,15 @@ public class SatEngineApplication {
             // .env not present or malformed — rely on environment variables
         }
 
-        SpringApplication.run(SatEngineApplication.class, args);
+        SpringApplication app = new SpringApplication(SatEngineApplication.class);
+
+        // Pipeline jobs don't need a web server — skip Tomcat entirely to avoid
+        // port conflicts and reduce startup time.
+        boolean isPipelineJob = Arrays.stream(args).anyMatch(a -> a.startsWith("--job="));
+        if (isPipelineJob) {
+            app.setWebApplicationType(WebApplicationType.NONE);
+        }
+
+        app.run(args);
     }
 }
