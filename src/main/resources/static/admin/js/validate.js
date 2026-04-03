@@ -713,7 +713,8 @@ function processText(text) {
       .replace(/&lt;td&gt;/gi,          `<td>`)
       .replace(/&lt;\/td&gt;/gi,        `</td>`)
       .replace(/\\n/g, '<br>')   // literal \n → <br> (no lookahead — prose has no LaTeX commands)
-      .replace(/\n/g, '<br>');   // actual newline
+      .replace(/\n/g, '<br>')    // actual newline
+      .replace(/\$/g, '&#36;'); // escape $ so KaTeX never mistakes currency for a math delimiter
   }).join('');
 }
 
@@ -721,10 +722,9 @@ function renderKaTeXIn(el) {
   if (window.renderMathInElement && el) {
     renderMathInElement(el, {
       delimiters: [
+        // Only \(...\) and \[...\] — never $ or $$ which collide with currency text
         { left: '\\(', right: '\\)', display: false },
         { left: '\\[', right: '\\]', display: true  },
-        { left: '$$',  right: '$$',  display: true  },
-        { left: '$',   right: '$',   display: false }
       ],
       throwOnError: false
     });
