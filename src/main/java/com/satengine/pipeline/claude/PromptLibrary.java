@@ -638,9 +638,10 @@ Rules:
             String questionType) {
 
         // ── Difficulty-calibrated limits ──────────────────────────────────────
-        int maxSteps   = difficulty <= 2 ? 2 : difficulty <= 4 ? 3 : difficulty <= 6 ? 4 : 5;
-        int maxWords   = difficulty <= 2 ? 25 : difficulty <= 4 ? 45 : difficulty <= 6 ? 65 : 80;
-        int maxPrereqs = difficulty <= 2 ? 1  : difficulty <= 4 ? 2  : 3;
+        int maxSteps    = difficulty <= 2 ? 2 : difficulty <= 4 ? 3 : difficulty <= 6 ? 4 : 5;
+        int maxAltSteps = Math.max(maxSteps, 2); // alternative approach always gets at least 2 steps
+        int maxWords    = difficulty <= 2 ? 25 : difficulty <= 4 ? 45 : difficulty <= 6 ? 65 : 80;
+        int maxPrereqs  = difficulty <= 2 ? 1  : difficulty <= 4 ? 2  : 3;
         boolean isMcq  = "mcq".equalsIgnoreCase(questionType);
 
         // ── Difficulty language calibration ───────────────────────────────────
@@ -774,11 +775,17 @@ Rules:
             "ALTERNATIVE APPROACH RULES:\n" +
             "- Must be genuinely different (algebraic vs. arithmetic, substitution vs. elimination, visual vs. analytic)\n" +
             "- Apply the same step count and word count limits as explanationSteps\n" +
-            "- If no meaningfully different approach exists, return null\n\n" +
+            ("geometry_trigonometry".equals(domain)
+                ? "- geometry_trigonometry ALWAYS has an alternative — visual/geometric vs. formula-based is always valid.\n" +
+                  "  Examples: distance formula vs. drawing a right triangle; law of cosines vs. decomposing into two right triangles;\n" +
+                  "  coordinate proof vs. classical geometry. You MUST provide an alternativeApproach — null is NOT allowed.\n"
+                : "- If genuinely no different approach exists, return null. But exhaust options first:\n" +
+                  "  algebraic vs. numeric substitution, forward vs. backward solving, formula vs. first-principles.\n") +
+            "\n" +
 
             "FIELDS TO GENERATE:\n" +
             "1. explanationSteps: array of max " + maxSteps + " steps — each: { \"title\", \"content\", \"math\", optionally \"diagram\" }\n" +
-            "2. alternativeApproach: { \"title\", \"steps\" } or null\n" +
+            "2. alternativeApproach: { \"title\", \"steps\" } — steps array max " + maxAltSteps + " steps (or null if genuinely no alternative exists)\n" +
             "3. coreConcept: { \"title\", \"summary\" (1-2 sentences), \"keyFormula\" (LaTeX or null) }\n" +
             "4. prerequisites: array of max " + maxPrereqs + " objects — each: { \"topic\", \"why\" }\n" +
             "5. animation: { \"eligible\": true/false } — true only for geometry/coordinate/transformation problems\n" +
