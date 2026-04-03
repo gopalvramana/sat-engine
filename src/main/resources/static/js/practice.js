@@ -761,9 +761,9 @@ function renderKaTeXIn(el) {
   if (!el || !window.renderMathInElement) return;
   renderMathInElement(el, {
     delimiters: [
+      // Only \(...\) and \[...\] — never $$ which collides with currency text
       { left: '\\(', right: '\\)', display: false },
       { left: '\\[', right: '\\]', display: true  },
-      { left: '$$',  right: '$$',  display: true  },
     ],
     throwOnError: false
   });
@@ -800,6 +800,8 @@ function processText(text) {
       .replace(/&lt;td&gt;/gi, '<td>').replace(/&lt;\/td&gt;/gi, '</td>')
       .replace(/\\n/g, '<br>')
       .replace(/\n/g, '<br>')
+      // Escape bare $ so KaTeX never mistakes currency for a math delimiter
+      .replace(/\$/g, '&#36;')
       // Markdown bold/italic (Claude occasionally outputs these despite instructions)
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
