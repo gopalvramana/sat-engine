@@ -32,22 +32,39 @@ public class EnrichStage {
      * Normal run: enriches questions with status=reviewed → advances to enriched.
      */
     public void run() {
-        run(false);
+        run(false, null, null);
     }
 
     /**
-     * @param includeApproved  when true, also enriches approved questions that
-     *                         were never enriched (coreConcept IS NULL).
-     *                         Those questions keep their approved status.
+     * @param includeApproved  when true, re-enriches approved questions (all, not just unenriched)
+     * @param section          optional filter — "math" | "reading_writing" | null = all
+     * @param domain           optional filter — e.g. "algebra" | null = all
      */
-    public void run(boolean includeApproved) {
-        List<Question> queue = new java.util.ArrayList<>(
-                questionRepository.findByStatus(QuestionStatus.REVIEWED.lower()));
+    public void run(boolean includeApproved, String section, String domain) {
+        List<Question> queue = new java.util.ArrayList<>();
 
+        // Reviewed questions (normal pipeline)
+        if (domain != null) {
+            queue.addAll(questionRepository.findReviewedByDomain(domain));
+        } else if (section != null) {
+            queue.addAll(questionRepository.findReviewedBySection(section));
+        } else {
+            queue.addAll(questionRepository.findByStatus(QuestionStatus.REVIEWED.lower()));
+        }
+
+        // Approved questions (re-enrich run)
         if (includeApproved) {
-            List<Question> unenriched = questionRepository.findApprovedUnenriched();
-            log.info("--include-approved: {} approved questions without enrichment data", unenriched.size());
-            queue.addAll(unenriched);
+            List<Question> approved;
+            if (domain != null) {
+                approved = questionRepository.findAllApprovedByDomain(domain);
+            } else if (section != null) {
+                approved = questionRepository.findAllApprovedBySection(section);
+            } else {
+                approved = questionRepository.findAllApproved();
+            }
+            log.info("--include-approved: {} approved questions match filter (domain={}, section={})",
+                    approved.size(), domain, section);
+            queue.addAll(approved);
         }
 
         if (queue.isEmpty()) {

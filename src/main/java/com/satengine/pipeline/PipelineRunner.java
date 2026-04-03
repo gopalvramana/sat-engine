@@ -36,11 +36,17 @@ import java.util.List;
  *   java -jar sat-engine.jar --job=agent-review --only-failed
  *
  * ── ENRICH ────────────────────────────────────────────────────────────────
- *   # Enrich unenriched questions (approved with null coreConcept)
+ *   # Enrich reviewed questions (normal flow)
  *   java -jar sat-engine.jar --job=enrich
  *
- *   # Re-enrich already-approved questions (e.g. after prompt improvement)
+ *   # Re-enrich all approved questions (after prompt improvement)
  *   java -jar sat-engine.jar --job=enrich --include-approved
+ *
+ *   # Re-enrich one domain only (test new prompt before full run)
+ *   java -jar sat-engine.jar --job=enrich --include-approved --domain=algebra
+ *
+ *   # Re-enrich one section only
+ *   java -jar sat-engine.jar --job=enrich --include-approved --section=math
  *
  * ── FLAGS ─────────────────────────────────────────────────────────────────
  * --count       Number of questions to generate (default: 10)
@@ -80,7 +86,7 @@ public class PipelineRunner implements ApplicationRunner {
         switch (job) {
             case "generate" -> runGenerate(args);
             case "agent-review" -> runAgentReview(args);
-            case "enrich" -> enrichStage.run(args.containsOption("include-approved"));
+            case "enrich" -> runEnrich(args);
             default -> log.warn("Unknown --job value: '{}'. Valid: generate, agent-review, enrich", job);
         }
 
@@ -95,6 +101,13 @@ public class PipelineRunner implements ApplicationRunner {
         String  skill      = stringArg(args, "skill", null);
         Integer difficulty = args.containsOption("difficulty") ? intArg(args, "difficulty", 4) : null;
         generateStage.run(count, section, domain, skill, difficulty);
+    }
+
+    private void runEnrich(ApplicationArguments args) {
+        boolean includeApproved = args.containsOption("include-approved");
+        String  section         = stringArg(args, "section", null);
+        String  domain          = stringArg(args, "domain",  null);
+        enrichStage.run(includeApproved, section, domain);
     }
 
     private void runAgentReview(ApplicationArguments args) {
