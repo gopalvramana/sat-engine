@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Animation Sync Test</title>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script src="/admin/js/renderer.js?v=5"></script>
+  <link rel="stylesheet" href="/css/practice.css?v=2">
+  <style>
+    body { font-family: system-ui; padding: 24px; background: #f1f5f9; }
+    .card { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+    h2 { margin: 0 0 8px; font-size: 1rem; color: #1e293b; }
+    .status { padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; display: inline-block; margin-bottom: 12px; }
+    .ok  { background: #dcfce7; color: #166534; }
+    .err { background: #fee2e2; color: #991b1b; }
+    .warn { background: #fef9c3; color: #854d0e; }
+    #log { font-family: monospace; font-size: 0.78rem; background: #0f172a; color: #94a3b8; padding: 12px; border-radius: 8px; height: 160px; overflow-y: auto; }
+    #log .ok-line  { color: #4ade80; }
+    #log .err-line { color: #f87171; }
+    #log .info     { color: #60a5fa; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h2>Animation Sync Diagnostic</h2>
+  <div id="s-renderer" class="status err">❌ renderer.js not loaded</div>
+  <div id="s-api"      class="status warn">⏳ fetching question...</div>
+  <div id="s-anim"     class="status warn">⏳ animation not rendered yet</div>
+  <div id="s-sync"     class="status warn">⏳ sync not tested yet</div>
+</div>
+
+<div class="card">
+  <h2>Animation Player</h2>
+  <div id="anim-mount"></div>
+</div>
+
+<div class="card">
+  <h2>Step Navigator (clicking Next → should advance the animation above)</h2>
+  <div id="step-nav-mount"></div>
+</div>
+
+<div class="card">
+  <h2>Log</h2>
+  <div id="log"></div>
+</div>
+
+<script>
+function log(msg, type) {
+  const d = document.getElementById('log');
+  const line = document.createElement('div');
+  line.className = type === 'ok' ? 'ok-line' : type === 'err' ? 'err-line' : 'info';
+  line.textContent = new Date().toLocaleTimeString() + '  ' + msg;
+  d.appendChild(line);
+  d.scrollTop = d.scrollHeight;
+}
+
+function setStatus(id, ok, msg) {
+  const el = document.getElementById(id);
+  el.className = 'status ' + (ok === true ? 'ok' : ok === false ? 'err' : 'warn');
+  el.textContent = (ok === true ? '✅ ' : ok === false ? '❌ ' : '⏳ ') + msg;
+}
+
+// 1. Check renderer.js
+if (typeof renderAnimation === 'function' && typeof animGoTo === 'function') {
+  setStatus('s-renderer', true, 'renderer.js loaded — renderAnimation + animGoTo found');
+  log('renderAnimation: ' + typeof renderAnimation, 'ok');
+  log('animGoTo: ' + typeof animGoTo, 'ok');
+} else {
+  setStatus('s-renderer', false, 'renderer.js MISSING — renderAnimation not found');
+  log('renderAnimation: ' + typeof renderAnimation, 'err');
+  log('animGoTo: ' + typeof animGoTo, 'err');
+}
+
+// 2. Fetch a geometry question with animation
+async function run() {
+  let q;
+  try {
+    const res = await fetch('/api/admin/questions?status=all&domain=geometry');
+    const all = await res.json();
+    const eligible = all.filter(q =>
+      q.animation && typeof q.animation === 'object'
+        ? (q.animation.eligible && q.animation.frames && q.animation.frames.length > 0)
+        : false
+    );
+    log('Total geometry questions: ' + all.length, 'info');
+    log('Eligible with frames: ' + eligible.length, eligible.length > 0 ? 'ok' : 'err');
+
+    if (eligible.length === 0) {
+      setStatus('s-api', false, 'No eligible geometry questions with animation frames found');
+      return;
+    }
+
+    q = eligible[0];
+    const a = q.animation;
+    log('Using: ' + q.externalId + ' — ' + a.frames.length + ' frames', 'ok');
+    setStatus('s-api', true, 'Got ' + q.externalId + ' (' + a.frames.length + ' frames, eligible=' + a.eligible + ')');
+
+    // 3. Render animation in synced mode
+    const mountEl = document.getElementById('anim-mount');
+    const animUid = renderAnimation(a, mountEl, { synced: true });
+    if (animUid) {
+      window._animNavMap = window._animNavMap || {};
+      window._animNavMap['snav-sol'] = animUid;
+      setStatus('s-anim', true, 'Animation rendered — uid=' + animUid);
+      log('animUid: ' + animUid, 'ok');
+      log('_animNavMap[snav-sol]: ' + window._animNavMap['snav-sol'], 'ok');
+    } else {
+      setStatus('s-anim', false, 'renderAnimation returned null');
+      log('renderAnimation returned: ' + animUid, 'err');
+      return;
+    }
+
+    // 4. Build step navigator
+    const steps = JSON.parse(q.explanationSteps || '[]');
+    log('Solution steps: ' + steps.length, 'info');
+
+    const stepsHtml = buildTestNav(steps);
+    document.getElementById('step-nav-mount').innerHTML = stepsHtml;
+    setStatus('s-sync', null, 'Click "Next →" — animation frame should advance above');
+
+  } catch(e) {
+    setStatus('s-api', false, 'Error: ' + e.message);
+    log('ERROR: ' + e.message, 'err');
+  }
+}
+
+// Inline step navigator for testing
+function buildTestNav(steps) {
+  if (!steps.length) return '<p style="color:#64748b;font-size:0.85rem">No steps.</p>';
+  const stepsHtml = steps.map((s, i) => `
+    <div data-step="${i}" style="${i > 0 ? 'display:none' : ''}; padding:12px; border:1px solid #e2e8f0; border-radius:8px; margin-bottom:8px;">
+      ${s.title ? '<strong style="font-size:0.9rem">' + s.title + '</strong><br>' : ''}
+      ${s.content ? '<span style="font-size:0.85rem;color:#475569">' + s.content + '</span>' : ''}
+    </div>
+  `).join('');
+
+  return `
+    <div data-nav-id="snav-sol" data-current="0" data-total="${steps.length}">
+      ${stepsHtml}
+      <div style="display:flex;align-items:center;gap:12px;margin-top:8px;">
+        <button onclick="testNav(-1)" id="btn-prev" disabled
+          style="padding:6px 14px;border:1px solid #cbd5e1;border-radius:6px;cursor:pointer;background:#fff;">← Prev</button>
+        <span id="nav-counter" style="font-size:0.8rem;color:#64748b">Step 1 of ${steps.length}</span>
+        <button onclick="testNav(1)" id="btn-next"
+          style="padding:6px 14px;border:1px solid #334155;border-radius:6px;cursor:pointer;background:#334155;color:#fff;">Next →</button>
+      </div>
+    </div>`;
+}
+
+function testNav(dir) {
+  const nav = document.querySelector('[data-nav-id="snav-sol"]');
+  if (!nav) { log('ERROR: nav not found', 'err'); return; }
+  const total   = parseInt(nav.dataset.total);
+  const current = parseInt(nav.dataset.current);
+  const next    = current + dir;
+  if (next < 0 || next >= total) return;
+
+  nav.querySelector('[data-step="' + current + '"]').style.display = 'none';
+  nav.querySelector('[data-step="' + next    + '"]').style.display = '';
+  nav.dataset.current = next;
+  document.getElementById('nav-counter').textContent = 'Step ' + (next+1) + ' of ' + total;
+  document.getElementById('btn-prev').disabled = next === 0;
+  document.getElementById('btn-next').disabled = next === total - 1;
+
+  log('stepNav → step ' + next, 'info');
+
+  // Sync animation
+  const uid = window._animNavMap && window._animNavMap['snav-sol'];
+  log('_animNavMap[snav-sol] = ' + uid, uid ? 'ok' : 'err');
+  if (uid && typeof animGoTo === 'function') {
+    animGoTo(uid, next);
+    log('animGoTo(' + uid + ', ' + next + ') called ✅', 'ok');
+    setStatus('s-sync', true, 'Sync working! Step ' + (next+1) + ' → Frame ' + (next+1));
+  } else {
+    log('animGoTo not called — uid=' + uid + ' animGoTo=' + typeof animGoTo, 'err');
+    setStatus('s-sync', false, 'Sync BROKEN — check log');
+  }
+}
+
+run();
+</script>
+</body>
+</html>

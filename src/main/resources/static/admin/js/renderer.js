@@ -3180,3 +3180,434 @@ function renderKaTeXIn(el) {
     throwOnError: false
   });
 }
+
+// ══════════════════════════════════════════════════════════════
+// ANIMATION PLAYER  (step-by-step SVG geometry animation)
+// ══════════════════════════════════════════════════════════════
+
+(function injectAnimCSS() {
+  if (document.getElementById('anim-player-css')) return;
+  const style = document.createElement('style');
+  style.id = 'anim-player-css';
+  style.textContent = `
+    .anim-player {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.75rem;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .anim-player.anim-player-synced {
+      padding-bottom: 0.4rem;
+      margin-bottom: 0.75rem;
+    }
+    .anim-player-synced .anim-caption {
+      font-size: 0.72rem;
+      background: #f1f5f9;
+      border-top: 1px solid #e2e8f0;
+      border-radius: 0 0 0.5rem 0.5rem;
+      padding: 0.3rem 0.75rem;
+      margin: 0.2rem 0 0.4rem;
+      color: #475569;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      min-height: 1.5em;
+    }
+    .anim-cap-step {
+      font-weight: 700;
+      color: #2563eb;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .anim-dots-synced {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin: 0 0 0.35rem;
+    }
+    .anim-svg-wrap {
+      margin: 0 auto;
+      position: relative;
+      display: block;
+    }
+    .anim-svg-wrap svg { display: block; overflow: visible; }
+    .anim-overlays {
+      position: absolute;
+      top: 0; left: 0;
+      pointer-events: none;
+    }
+    .anim-caption {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #475569;
+      text-align: center;
+      min-height: 1.3em;
+      margin: 0.5rem 0 0.35rem;
+      letter-spacing: 0.01em;
+    }
+    .anim-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+    .anim-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 1.8rem; height: 1.8rem;
+      border-radius: 50%;
+      border: 1.5px solid #cbd5e1;
+      background: #fff;
+      color: #334155;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .anim-btn:hover:not(:disabled) { background: #f1f5f9; border-color: #94a3b8; }
+    .anim-btn:disabled { opacity: 0.35; cursor: default; }
+    .anim-dots { display: flex; gap: 5px; align-items: center; }
+    .anim-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #cbd5e1;
+      transition: background 0.2s, transform 0.2s;
+      cursor: pointer;
+    }
+    .anim-dot.active { background: #3b82f6; transform: scale(1.3); }
+    @keyframes anim-draw-path {
+      from { stroke-dashoffset: 3000; }
+      to   { stroke-dashoffset: 0; }
+    }
+    @keyframes anim-fade-in {
+      from { opacity: 0; transform: translateY(4px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .anim-draw {
+      stroke-dasharray: 3000;
+      stroke-dashoffset: 3000;
+      animation: anim-draw-path 0.55s ease-out forwards;
+    }
+    .anim-fade {
+      opacity: 0;
+      animation: anim-fade-in 0.4s ease-out 0.15s forwards;
+    }
+    .anim-overlay-label {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      font-family: 'Inter', sans-serif;
+      pointer-events: none;
+    }
+    .anim-overlay-label.anim-fade {
+      opacity: 0;
+      animation: anim-fade-in 0.4s ease-out 0.15s forwards;
+    }
+  `;
+  document.head.appendChild(style);
+})();
+
+/** Global registry of active animation players. */
+window._animPlayers = window._animPlayers || {};
+
+/**
+ * Render an animation player into `container`.
+ * @param {object}  cfg          — parsed animation JSON (must have .frames array)
+ * @param {Element} container    — DOM element to render into
+ * @param {object}  [opts]       — options
+ * @param {boolean} [opts.synced] — true = no controls, skip katex overlays (steps shown below)
+ * @returns {string|null} uid — player ID for external control (animGoTo)
+ */
+function renderAnimation(cfg, container, opts) {
+  opts = opts || {};
+  const synced = !!opts.synced;
+  if (!container) return null;
+  if (!cfg || !Array.isArray(cfg.frames) || cfg.frames.length === 0) {
+    container.innerHTML = '';
+    return null;
+  }
+
+  const w   = cfg.width  || 280;
+  const h   = cfg.height || 260;
+  const uid = 'ap_' + Math.random().toString(36).slice(2, 9);
+
+  const controlsHtml = synced
+      ? `<div class="anim-dots anim-dots-synced" id="${uid}_dots"></div>`
+      : `<div class="anim-controls">
+        <button class="anim-btn" id="${uid}_prev" onclick="animStep('${uid}',-1)">&#8592;</button>
+        <div class="anim-dots" id="${uid}_dots"></div>
+        <button class="anim-btn" id="${uid}_next" onclick="animStep('${uid}',1)">&#8594;</button>
+      </div>`;
+
+  container.innerHTML = `
+    <div class="anim-player${synced ? ' anim-player-synced' : ''}">
+      <div class="anim-svg-wrap" style="width:${w}px;height:${h}px;">
+        <svg id="${uid}_svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}"></svg>
+        <div id="${uid}_ov" class="anim-overlays" style="width:${w}px;height:${h}px;"></div>
+      </div>
+      <div class="anim-caption" id="${uid}_cap"></div>
+      ${controlsHtml}
+    </div>`;
+
+  window._animPlayers[uid] = { cfg, currentIdx: 0, synced };
+  _animRenderFrame(uid, 0, false);
+  return uid;
+}
+
+/** Called by Prev/Next buttons. */
+function animStep(uid, dir) {
+  const state = window._animPlayers[uid];
+  if (!state) return;
+  const next = state.currentIdx + dir;
+  if (next < 0 || next >= state.cfg.frames.length) return;
+  _animRenderFrame(uid, next, true);
+}
+
+function _animRenderFrame(uid, idx, animate) {
+  const state = window._animPlayers[uid];
+  if (!state) return;
+  const { cfg } = state;
+  const frames = cfg.frames;
+  state.currentIdx = idx;
+
+  const svgEl   = document.getElementById(uid + '_svg');
+  const ovEl    = document.getElementById(uid + '_ov');
+  const capEl   = document.getElementById(uid + '_cap');
+  const dotsEl  = document.getElementById(uid + '_dots');
+  const prevBtn = document.getElementById(uid + '_prev');
+  const nextBtn = document.getElementById(uid + '_next');
+  if (!svgEl || !ovEl) return;
+
+  const { synced } = state;
+
+  // Clear
+  svgEl.innerHTML = '';
+  ovEl.innerHTML  = '';
+
+  // Each frame is a self-contained snapshot (includes all previous elements + new ones).
+  // Detect "new" elements by comparing count with the previous frame.
+  const currentElements = frames[idx].elements || [];
+  const prevCount = idx > 0 ? (frames[idx - 1].elements || []).length : 0;
+
+  for (let ei = 0; ei < currentElements.length; ei++) {
+    const isNew = animate && ei >= prevCount;
+    const el = currentElements[ei];
+    // In synced mode: skip katex overlays (formulas shown in step text below)
+    if (synced && el.type === 'katex') continue;
+    _animRenderElement(svgEl, ovEl, el, isNew);
+  }
+
+  // Caption: in synced mode show "Figure N of M: <caption>" as a contextual label below canvas
+  if (capEl) {
+    if (synced) {
+      const frameLabel = `Figure ${idx + 1} of ${frames.length}`;
+      capEl.innerHTML = `<span class="anim-cap-step">${frameLabel}:</span> ${frames[idx].caption || ''}`;
+    } else {
+      capEl.textContent = frames[idx].caption || '';
+    }
+  }
+
+  // Dots: always clickable — in synced mode dots advance animation only (independent of steps)
+  if (dotsEl) {
+    dotsEl.innerHTML = frames.map((_, i) =>
+      `<span class="anim-dot${i === idx ? ' active' : ''}" onclick="animGoTo('${uid}',${i})" title="Figure ${i+1}"></span>`
+    ).join('');
+  }
+  // Prev/Next buttons only in standalone mode
+  if (!synced) {
+    if (prevBtn) prevBtn.disabled = idx === 0;
+    if (nextBtn) nextBtn.disabled = idx === frames.length - 1;
+  }
+
+  // KaTeX in overlays — renderKaTeXIn is always available (defined in renderer.js)
+  // scheduleKaTeX is a page-level helper and may not exist
+  if (typeof renderKaTeXIn === 'function') renderKaTeXIn(ovEl);
+  else if (typeof scheduleKaTeX === 'function') scheduleKaTeX([ovEl]);
+}
+
+function animGoTo(uid, idx) {
+  const state = window._animPlayers[uid];
+  if (!state) return;
+  const clamped = Math.max(0, Math.min(idx, state.cfg.frames.length - 1));
+  _animRenderFrame(uid, clamped, clamped > state.currentIdx);
+}
+
+const _SVG_NS = 'http://www.w3.org/2000/svg';
+
+function _animRenderElement(svgEl, ovEl, el, isNew) {
+  switch (el.type) {
+    case 'polygon': {
+      const pts = (el.points || []).map(p => `${p[0]},${p[1]}`).join(' ');
+      const node = document.createElementNS(_SVG_NS, 'polygon');
+      node.setAttribute('points', pts);
+      node.setAttribute('stroke', el.stroke || '#334155');
+      node.setAttribute('stroke-width', el.strokeWidth || 2);
+      node.setAttribute('fill', el.fill || 'none');
+      node.setAttribute('stroke-linejoin', 'round');
+      if (isNew) node.classList.add('anim-draw');
+      svgEl.appendChild(node);
+      break;
+    }
+    case 'line': {
+      const node = document.createElementNS(_SVG_NS, 'line');
+      node.setAttribute('x1', el.x1); node.setAttribute('y1', el.y1);
+      node.setAttribute('x2', el.x2); node.setAttribute('y2', el.y2);
+      node.setAttribute('stroke', el.stroke || '#334155');
+      node.setAttribute('stroke-width', el.strokeWidth || 2);
+      node.setAttribute('stroke-linecap', 'round');
+      if (el.dashed) node.setAttribute('stroke-dasharray', isNew ? '5,4 3000' : '5,4');
+      if (isNew && !el.dashed) node.classList.add('anim-draw');
+      if (isNew && el.dashed)  node.classList.add('anim-fade');
+      svgEl.appendChild(node);
+      break;
+    }
+    case 'right_angle': {
+      const [vx, vy] = el.vertex;
+      const [l1x, l1y] = el.leg1;
+      const [l2x, l2y] = el.leg2;
+      const size = el.size || 12;
+      const d1x = l1x - vx, d1y = l1y - vy, len1 = Math.hypot(d1x, d1y) || 1;
+      const d2x = l2x - vx, d2y = l2y - vy, len2 = Math.hypot(d2x, d2y) || 1;
+      const u1x = d1x/len1, u1y = d1y/len1;
+      const u2x = d2x/len2, u2y = d2y/len2;
+      const p1x = vx + u1x*size, p1y = vy + u1y*size;
+      const p2x = p1x + u2x*size, p2y = p1y + u2y*size;
+      const p3x = vx + u2x*size, p3y = vy + u2y*size;
+      const node = document.createElementNS(_SVG_NS, 'polyline');
+      node.setAttribute('points', `${p1x},${p1y} ${p2x},${p2y} ${p3x},${p3y}`);
+      node.setAttribute('stroke', el.stroke || '#334155');
+      node.setAttribute('stroke-width', el.strokeWidth || 1.5);
+      node.setAttribute('fill', 'none');
+      if (isNew) node.classList.add('anim-fade');
+      svgEl.appendChild(node);
+      break;
+    }
+    case 'arc': {
+      const { cx, cy, r = 20, startDeg = 0, endDeg = 90 } = el;
+      const s = startDeg * Math.PI / 180;
+      const e = endDeg   * Math.PI / 180;
+      const x1 = cx + r * Math.cos(s), y1 = cy + r * Math.sin(s);
+      const x2 = cx + r * Math.cos(e), y2 = cy + r * Math.sin(e);
+      const large = Math.abs(endDeg - startDeg) > 180 ? 1 : 0;
+      const node = document.createElementNS(_SVG_NS, 'path');
+      node.setAttribute('d', `M${x1},${y1} A${r},${r} 0 ${large},1 ${x2},${y2}`);
+      node.setAttribute('stroke', el.stroke || '#64748b');
+      node.setAttribute('stroke-width', el.strokeWidth || 1.5);
+      node.setAttribute('fill', 'none');
+      if (isNew) node.classList.add('anim-draw');
+      svgEl.appendChild(node);
+      break;
+    }
+    case 'dot': {
+      const node = document.createElementNS(_SVG_NS, 'circle');
+      node.setAttribute('cx', el.x); node.setAttribute('cy', el.y);
+      node.setAttribute('r',  el.r || 4);
+      node.setAttribute('fill', el.fill || '#1e293b');
+      if (isNew) node.classList.add('anim-fade');
+      svgEl.appendChild(node);
+      break;
+    }
+    case 'circle': {
+      const node = document.createElementNS(_SVG_NS, 'circle');
+      node.setAttribute('cx', el.cx); node.setAttribute('cy', el.cy);
+      node.setAttribute('r',  el.r || 50);
+      node.setAttribute('stroke', el.stroke || '#334155');
+      node.setAttribute('stroke-width', el.strokeWidth || 2);
+      node.setAttribute('fill', el.fill || '#f0f9ff');
+      if (isNew) node.classList.add('anim-draw');
+      svgEl.appendChild(node);
+      break;
+    }
+    case 'rect': {
+      const node = document.createElementNS(_SVG_NS, 'rect');
+      node.setAttribute('x', el.x); node.setAttribute('y', el.y);
+      node.setAttribute('width',  el.width  || 100);
+      node.setAttribute('height', el.height || 80);
+      node.setAttribute('stroke', el.stroke || '#334155');
+      node.setAttribute('stroke-width', el.strokeWidth || 2);
+      node.setAttribute('fill', el.fill || '#f0f9ff');
+      if (el.rx) node.setAttribute('rx', el.rx);
+      if (isNew) node.classList.add('anim-draw');
+      svgEl.appendChild(node);
+      break;
+    }
+    case 'sector': {
+      // Filled sector: M cx,cy L x1,y1 A r,r 0 large,1 x2,y2 Z
+      const { cx, cy, r = 60, startDeg = 0, endDeg = 90 } = el;
+      const s = startDeg * Math.PI / 180;
+      const e = endDeg   * Math.PI / 180;
+      const x1 = cx + r * Math.cos(s), y1 = cy + r * Math.sin(s);
+      const x2 = cx + r * Math.cos(e), y2 = cy + r * Math.sin(e);
+      const large = Math.abs(endDeg - startDeg) > 180 ? 1 : 0;
+      const node = document.createElementNS(_SVG_NS, 'path');
+      node.setAttribute('d', `M${cx},${cy} L${x1.toFixed(2)},${y1.toFixed(2)} A${r},${r} 0 ${large},1 ${x2.toFixed(2)},${y2.toFixed(2)} Z`);
+      node.setAttribute('stroke', el.stroke || '#334155');
+      node.setAttribute('stroke-width', el.strokeWidth || 2);
+      node.setAttribute('fill', el.fill || '#dbeafe');
+      if (isNew) node.classList.add('anim-fade');
+      svgEl.appendChild(node);
+      break;
+    }
+    case 'text': {
+      const rawText = el.text || '';
+      // Auto-promote to katex overlay if text contains LaTeX markers
+      const looksLikeLatex = /\\\(|\\\[|\\[a-zA-Z]{2,}|\^[{0-9]|_[{a-zA-Z0-9]/.test(rawText);
+      if (looksLikeLatex) {
+        // Strip outer \(...\) or \[...\] wrappers if present, then wrap correctly
+        let formula = rawText.trim();
+        if (formula.startsWith('\\(') && formula.endsWith('\\)'))
+          formula = formula.slice(2, -2);
+        else if (formula.startsWith('\\[') && formula.endsWith('\\]'))
+          formula = formula.slice(2, -2);
+        const div = document.createElement('div');
+        div.className = 'anim-overlay-label' + (isNew ? ' anim-fade' : '');
+        div.style.left     = el.x + 'px';
+        div.style.top      = el.y + 'px';
+        div.style.fontSize = (el.fontSize || 13) + 'px';
+        div.style.color    = el.color || '#1e293b';
+        if (window.katex) {
+          try {
+            div.innerHTML = window.katex.renderToString(formula,
+              { throwOnError: false, displayMode: false });
+          } catch(e) { div.textContent = formula; }
+        } else {
+          div.innerHTML = `\\(${formula}\\)`;
+        }
+        ovEl.appendChild(div);
+      } else {
+        const node = document.createElementNS(_SVG_NS, 'text');
+        node.setAttribute('x', el.x); node.setAttribute('y', el.y);
+        node.setAttribute('font-size', el.fontSize || 13);
+        node.setAttribute('fill', el.color || '#1e293b');
+        node.setAttribute('font-family', "Inter, 'Helvetica Neue', sans-serif");
+        node.setAttribute('text-anchor', el.anchor || 'middle');
+        node.setAttribute('dominant-baseline', 'central');
+        if (el.bold) node.setAttribute('font-weight', '700');
+        node.textContent = rawText;
+        if (isNew) node.classList.add('anim-fade');
+        svgEl.appendChild(node);
+      }
+      break;
+    }
+    case 'katex': {
+      const div = document.createElement('div');
+      div.className = 'anim-overlay-label' + (isNew ? ' anim-fade' : '');
+      div.style.left     = el.x + 'px';
+      div.style.top      = el.y + 'px';
+      div.style.fontSize = (el.fontSize || 13) + 'px';
+      div.style.color    = el.color || '#1e293b';
+      // Render synchronously with katex.renderToString if available,
+      // else fall back to delimiter syntax for later renderMathInElement pass
+      if (window.katex) {
+        try {
+          div.innerHTML = window.katex.renderToString(el.formula,
+            { throwOnError: false, displayMode: false });
+        } catch(e) {
+          div.textContent = el.formula;
+        }
+      } else {
+        div.innerHTML = `\\(${el.formula}\\)`;
+      }
+      ovEl.appendChild(div);
+      break;
+    }
+  }
+}

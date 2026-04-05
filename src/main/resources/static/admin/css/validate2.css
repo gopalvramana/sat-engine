@@ -141,3 +141,53 @@
 .prereq-chips-row {
   gap: 0.35rem;
 }
+
+/* ── Why each option panel ──────────────────────────────────── */
+.choice-why-list { display: flex; flex-direction: column; gap: 0.4rem; }
+.choice-why-row { border-radius: 0.5rem; padding: 0.5rem 0.65rem; }
+.choice-why-row.correct { background: #f0fdf4; border: 1px solid #bbf7d0; }
+.choice-why-row.wrong   { background: #fef2f2; border: 1px solid #fecaca; }
+.choice-why-header { display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap; }
+.choice-why-icon { display: inline-flex; align-items: center; justify-content: center;
+  width: 1.3rem; height: 1.3rem; border-radius: 50%; font-size: 0.65rem; font-weight: 700; }
+.choice-why-icon.correct { background: #dcfce7; color: #16a34a; }
+.choice-why-icon.wrong   { background: #fee2e2; color: #dc2626; }
+.choice-why-letter { font-size: 0.78rem; font-weight: 700; color: #1e293b; min-width: 0.9rem; }
+.choice-why-text { font-size: 0.8rem; color: #334155; flex: 1; }
+.choice-why-explanation { font-size: 0.77rem; color: #475569; margin-top: 0.25rem;
+  padding-left: 2.2rem; line-height: 1.5; }
+
+/* ── Step Navigator (synced with animation) ── */
+.step-navigator { display: flex; flex-direction: column; }
+.step-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 1.1rem 1.25rem;
+  min-height: 5rem;
+}
+.step-card.hidden { display: none; }
+.step-number {
+  font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.08em; color: #6366f1; margin-bottom: 0.5rem;
+}
+.step-title  { font-size: 0.95rem; font-weight: 700; color: #1e293b; margin: 0 0 0.5rem; line-height: 1.4; }
+.step-content { font-size: 0.88rem; color: #374151; line-height: 1.75; margin: 0 0 0.25rem; }
+.step-math { color: #1d4ed8; margin-top: 0.75rem; text-align: center; overflow-x: auto; }
+.step-nav-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 0.65rem; padding-top: 0.5rem;
+}
+.step-nav-btn {
+  padding: 0.35rem 0.9rem; border-radius: 0.45rem;
+  font-size: 0.78rem; font-weight: 600;
+  background: #e2e8f0; color: #475569; border: none; cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+.step-nav-btn:hover:not(:disabled) { background: #6366f1; color: #fff; }
+.step-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.step-nav-center { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; }
+.step-dots { display: flex; gap: 0.35rem; }
+.step-dot { width: 0.45rem; height: 0.45rem; border-radius: 50%; background: #cbd5e1; transition: background 0.15s, transform 0.15s; }
+.step-dot.active { background: #6366f1; transform: scale(1.35); }
+.step-counter { font-size: 0.7rem; color: #94a3b8; font-weight: 500; }

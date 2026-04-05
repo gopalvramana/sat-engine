@@ -92,6 +92,17 @@ public class AdminQuestionService {
         questionRepository.save(q);
     }
 
+    public String getExternalId(UUID id) {
+        return findOrThrow(id).getExternalId();
+    }
+
+    @Transactional
+    public void updateAnimation(UUID id, String animationJson) {
+        Question q = findOrThrow(id);
+        q.setAnimation(animationJson);
+        questionRepository.save(q);
+    }
+
     private Question findOrThrow(UUID id) {
         return questionRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Question not found: " + id));
@@ -131,6 +142,8 @@ public class AdminQuestionService {
                 .prerequisites(q.getPrerequisites())
                 .animation(q.getAnimation())
                 .alternativeApproach(q.getAlternativeApproach())
+                .wrongAnswerExplanations(q.getWrongAnswerExplanations())
+                .choiceExplanations(q.getChoiceExplanations())
                 .diagram(q.getDiagram())
                 .pool(q.getPool())
                 .passageText(q.getPassageText())

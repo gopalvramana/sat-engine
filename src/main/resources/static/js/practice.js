@@ -329,35 +329,51 @@ function buildFeedbackPanel(q, correct) {
 }
 
 /* ── Step navigator builder ─────────────────────────────────── */
-function buildStepNavigator(navId, steps, renderFn) {
+// animFrames: optional array of animation frames — extends navigator if frames > steps
+function buildStepNavigator(navId, steps, renderFn, animFrames) {
   if (!steps || steps.length === 0) {
     return '<p class="accordion-empty">No steps available.</p>';
   }
+  animFrames = animFrames || [];
+  const total = Math.max(steps.length, animFrames.length);
 
-  const stepsHtml = steps.map((s, i) => `
-    <div class="step-card ${i > 0 ? 'hidden' : ''}" data-step="${i}">
-      ${steps.length > 1 ? `<div class="step-number">Step ${i + 1} of ${steps.length}</div>` : ''}
-      ${renderFn(s, i)}
-    </div>
-  `).join('');
+  const stepsHtml = Array.from({ length: total }, (_, i) => {
+    const s = steps[i];
+    const frame = animFrames[i];
+    if (s) {
+      return `
+        <div class="step-card ${i > 0 ? 'hidden' : ''}" data-step="${i}">
+          ${total > 1 ? `<div class="step-number">Step ${i + 1} of ${total}</div>` : ''}
+          ${renderFn(s, i)}
+        </div>`;
+    } else if (frame) {
+      return `
+        <div class="step-card step-card-anim ${i > 0 ? 'hidden' : ''}" data-step="${i}">
+          <div class="step-number">Figure ${i + 1} of ${animFrames.length}</div>
+          <h3 class="step-title" style="color:#2563eb">${frame.caption || ''}</h3>
+          <p class="step-content" style="color:#64748b;font-style:italic">See the diagram above.</p>
+        </div>`;
+    }
+    return '';
+  }).join('');
 
-  const dotsHtml = steps.map((_, i) =>
+  const dotsHtml = Array.from({ length: total }, (_, i) =>
     `<span class="step-dot ${i === 0 ? 'active' : ''}"></span>`
   ).join('');
 
-  const footer = steps.length > 1 ? `
+  const footer = total > 1 ? `
     <div class="step-nav-footer">
       <button class="step-nav-btn" onclick="stepNav('${navId}', -1)" disabled>← Prev</button>
       <div class="step-nav-center">
         <div class="step-dots">${dotsHtml}</div>
-        <span class="step-counter">1 of ${steps.length}</span>
+        <span class="step-counter">1 of ${total}</span>
       </div>
       <button class="step-nav-btn" onclick="stepNav('${navId}', 1)">Next →</button>
     </div>
   ` : '';
 
   return `
-    <div class="step-navigator" data-nav-id="${navId}" data-current="0" data-total="${steps.length}">
+    <div class="step-navigator" data-nav-id="${navId}" data-current="0" data-total="${total}">
       ${stepsHtml}
       ${footer}
     </div>
@@ -387,10 +403,14 @@ function stepNav(navId, dir) {
 
   nav.dataset.current = next;
   scheduleKaTeX([nav.querySelector(`[data-step="${next}"]`)]);
+  // Sync animation player if registered for this navigator
+  if (window._animNavMap && window._animNavMap[navId]) {
+    if (typeof animGoTo === 'function') animGoTo(window._animNavMap[navId], next);
+  }
 }
 
 /* ── Accordion builder ──────────────────────────────────────── */
-function buildAccordion(q) {
+function buildAccordion(q, studentAnswer) {
   const items = [];
 
   // ── Tab 1: Prerequisites ─────────────────────────────────────
@@ -436,12 +456,34 @@ function buildAccordion(q) {
       ${s.title   ? `<h3 class="step-title">${processText(s.title)}</h3>` : ''}
       ${s.content ? `<p class="step-content">${processText(s.content)}</p>` : ''}
       ${s.math    ? `<div class="step-math">\\[${s.math}\\]</div>` : ''}
-    `);
+    `, animFramesForNav);
   } else {
     solutionBody = `<div class="accordion-empty">${
       q.explanationShort ? processText(q.explanationShort) : 'Solution not available.'
     }</div>`;
   }
+
+  // Check for animation frames — parse early so step navigator can absorb extra frames
+  let animPlayer = '';
+  let animFramesForNav = [];
+  try {
+    const a = q.animation ? (typeof q.animation === 'object' ? q.animation : JSON.parse(q.animation)) : null;
+    if (a && a.eligible && Array.isArray(a.frames) && a.frames.length > 0) {
+      animFramesForNav = a.frames;
+      const mountId = 'pap_' + Math.random().toString(36).slice(2, 8);
+      animPlayer = `<div id="${mountId}" class="anim-mount"></div>`;
+      setTimeout(() => {
+        const mountEl = document.getElementById(mountId);
+        if (mountEl && typeof renderAnimation === 'function') {
+          const animUid = renderAnimation(a, mountEl, { synced: true });
+          if (animUid) {
+            window._animNavMap = window._animNavMap || {};
+            window._animNavMap['snav-sol'] = animUid;
+          }
+        }
+      }, 0);
+    }
+  } catch(e) {}
 
   items.push(`
     <details class="accordion-item" open>
@@ -451,8 +493,55 @@ function buildAccordion(q) {
         ${steps.length ? `<span class="accordion-badge">${steps.length} step${steps.length !== 1 ? 's' : ''}</span>` : ''}
         <span class="accordion-chevron">▶</span>
       </summary>
-      <div class="accordion-body">${solutionBody}</div>
+      <div class="accordion-body">${animPlayer}${solutionBody}</div>
     </details>`);
+
+  // ── Tab 2b: Why each option? (MCQ only) ──────────────────────
+  const isMCQ = (q.questionType || '').toLowerCase() === 'mcq';
+  if (isMCQ && q.choiceExplanations) {
+    try {
+      const ce = typeof q.choiceExplanations === 'object'
+        ? q.choiceExplanations
+        : JSON.parse(q.choiceExplanations);
+      if (ce && typeof ce === 'object') {
+        const correctLetter = (q.correctAnswer || '').toUpperCase();
+        const opts = { A: q.optionA, B: q.optionB, C: q.optionC, D: q.optionD };
+        const rows = Object.entries(opts)
+          .filter(([, text]) => text)
+          .map(([letter, text]) => {
+            const isCorrect  = letter === correctLetter;
+            const isChosen   = studentAnswer && letter === studentAnswer.toUpperCase();
+            const explanation = ce[letter] || '';
+            const rowClass  = isCorrect ? 'choice-why-row correct' : 'choice-why-row wrong';
+            const icon      = isCorrect ? '✓' : '✗';
+            const iconCls   = isCorrect ? 'choice-why-icon correct' : 'choice-why-icon wrong';
+            const badge     = isChosen
+              ? `<span class="choice-why-badge">${isCorrect ? 'Your answer ✓' : 'Your answer'}</span>` : '';
+            return `
+              <div class="${rowClass}">
+                <div class="choice-why-header">
+                  <span class="${iconCls}">${icon}</span>
+                  <span class="choice-why-letter">${letter}</span>
+                  <span class="choice-why-text">${processText(text)}</span>
+                  ${badge}
+                </div>
+                ${explanation ? `<p class="choice-why-explanation">${escHtml(explanation)}</p>` : ''}
+              </div>`;
+          }).join('');
+        items.push(`
+          <details class="accordion-item">
+            <summary class="accordion-summary">
+              <span class="accordion-icon">💬</span>
+              <span class="accordion-label">Why each option?</span>
+              <span class="accordion-chevron">▶</span>
+            </summary>
+            <div class="accordion-body">
+              <div class="choice-why-list">${rows}</div>
+            </div>
+          </details>`);
+      }
+    } catch (e) { /* skip if malformed */ }
+  }
 
   // ── Tab 3: Core Concept ──────────────────────────────────────
   let cc = null;
@@ -657,7 +746,7 @@ function renderReviewCard(idx) {
         ? (mn !== null && mx !== null && mn < mx ? `${mn}–${mx}` : q.correctAnswer)
         : (mn !== null && mn !== 0 ? String(mn) : '?'));
 
-  const accordionHtml = buildAccordion(q);
+  const accordionHtml = buildAccordion(q, answer);
 
   const card = document.createElement('div');
   card.className = `review-card ${correct ? 'review-correct' : 'review-wrong'}`;

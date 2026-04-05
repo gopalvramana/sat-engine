@@ -36,6 +36,7 @@ public class AdminQuestionResponse {
     @JsonRawValue private String animation;
     @JsonRawValue private String alternativeApproach;
     @JsonRawValue private String wrongAnswerExplanations;
+    @JsonRawValue private String choiceExplanations;
     @JsonRawValue private String diagram;
     private String pool;
     private String passageText;

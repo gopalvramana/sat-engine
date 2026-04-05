@@ -2,6 +2,8 @@ package com.satengine.domain.session;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -39,6 +41,7 @@ public class Session {
     @Column(name = "completed_at")
     private OffsetDateTime completedAt;
 
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "score", columnDefinition = "jsonb")
     private String score;
 

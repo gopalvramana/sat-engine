@@ -22,7 +22,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"
           crossorigin="anonymous"></script>
 
-  <script src="/admin/js/renderer.js?v=3"></script>
+  <script src="/admin/js/renderer.js?v=6"></script>
   <link rel="stylesheet" href="/css/practice.css?v=2">
 </head>
 <body class="bg-slate-50 min-h-screen" style="font-family:'Inter',sans-serif;">
@@ -47,7 +47,14 @@
         <div id="progress-bar" class="h-full bg-indigo-500 rounded-full transition-all duration-300" style="width:0%"></div>
       </div>
     </div>
-    <div id="header-right" class="text-xs text-slate-400">Beta</div>
+    <div id="header-right" class="flex items-center gap-3">
+      <a href="/find-my-gap.html"
+         class="text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors"
+         style="background:#f5f3ff;color:#7c3aed;border-color:#ddd6fe;">
+        🔍 Find My Gap
+      </a>
+      <span class="text-xs text-slate-400">Beta</span>
+    </div>
   </div>
 </header>
 
@@ -297,6 +304,6 @@
   </div>
 </div>
 
-<script src="/js/practice.js?v=7"></script>
+<script src="/js/practice.js?v=9"></script>
 </body>
 </html>

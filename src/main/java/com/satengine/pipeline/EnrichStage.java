@@ -226,6 +226,10 @@ public class EnrichStage {
         if (!wrongAnswers.isMissingNode() && !wrongAnswers.isNull()) {
             q.setWrongAnswerExplanations(objectMapper.writeValueAsString(wrongAnswers));
         }
+        JsonNode choiceExpls = fields.path("choiceExplanations");
+        if (!choiceExpls.isMissingNode() && !choiceExpls.isNull()) {
+            q.setChoiceExplanations(objectMapper.writeValueAsString(choiceExpls));
+        }
         q.setPool(fields.path("pool").asText("both"));
         // Keep approved status if already approved; otherwise advance to enriched
         if (!keepApproved) {

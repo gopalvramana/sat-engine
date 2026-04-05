@@ -53,6 +53,10 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
     @Query("SELECT q FROM Question q WHERE q.status = 'approved' AND q.coreConcept IS NULL")
     List<Question> findApprovedUnenriched();
 
+    /** Approved or enriched MCQ questions missing choiceExplanations — for choice-explanation backfill. */
+    @Query("SELECT q FROM Question q WHERE q.status IN ('approved', 'enriched') AND q.choiceExplanations IS NULL AND q.questionType = 'mcq'")
+    List<Question> findMissingChoiceExplanations();
+
     /** Approved or enriched questions — for re-enrich runs. */
     @Query("SELECT q FROM Question q WHERE q.status IN ('approved', 'enriched')")
     List<Question> findAllApproved();
@@ -136,4 +140,21 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
         GROUP BY skill_key
         """, nativeQuery = true)
     List<Object[]> countBySkillKeyForDomain(@Param("domain") String domain);
+
+    /** Approved/enriched geometry questions with animation.eligible=true but no frames yet — for animation backfill. */
+    @Query(value = """
+        SELECT * FROM questions
+        WHERE status IN ('approved', 'enriched')
+          AND CAST(animation->>'eligible' AS boolean) = true
+          AND animation->'frames' IS NULL
+        """, nativeQuery = true)
+    List<Question> findAnimationEligible();
+
+    /** All eligible geometry questions regardless of whether frames exist — for force re-enrichment. */
+    @Query(value = """
+        SELECT * FROM questions
+        WHERE status IN ('approved', 'enriched')
+          AND CAST(animation->>'eligible' AS boolean) = true
+        """, nativeQuery = true)
+    List<Question> findAllAnimationEligible();
 }

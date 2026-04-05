@@ -698,6 +698,19 @@ Rules:
             ? "  \"wrongAnswerExplanations\": { \"A\": \"...\", \"B\": \"...\", \"C\": \"...\", \"D\": \"...\" }"
             : "  \"wrongAnswerExplanations\": null";
 
+        // ── Choice explanations (MCQ only) — full explanation for ALL choices ─
+        String choiceExplField = isMcq
+            ? "\n8. choiceExplanations: 1–2 sentence explanation for EVERY choice — why it is correct OR what trap it represents.\n" +
+              "   { \"A\": \"...\", \"B\": \"...\", \"C\": \"...\", \"D\": \"...\" }\n" +
+              "   - For the CORRECT choice: explain precisely WHY it is the right answer (not just 'Correct').\n" +
+              "   - For each WRONG choice: explain the specific misconception or error that leads a student there.\n" +
+              "   - Max 35 words per explanation. Plain English only — no LaTeX.\n"
+            : "";
+
+        String choiceExplSchemaLine = isMcq
+            ? "  \"choiceExplanations\": { \"A\": \"...\", \"B\": \"...\", \"C\": \"...\", \"D\": \"...\" }"
+            : "  \"choiceExplanations\": null";
+
         // ── Build the full prompt ──────────────────────────────────────────────
         return
             "You are an expert SAT educator and pedagogy specialist.\n" +
@@ -795,7 +808,8 @@ Rules:
             "4. prerequisites: array of max " + maxPrereqs + " objects — each: { \"topic\", \"why\" }\n" +
             "5. animation: { \"eligible\": true/false } — true only for geometry/coordinate/transformation problems\n" +
             "6. pool: always \"both\"\n" +
-            wrongAnswerField + "\n\n" +
+            wrongAnswerField + "\n" +
+            choiceExplField + "\n\n" +
 
             "Return ONLY this exact JSON shape — no markdown fences, no extra text:\n" +
             "{\n" +
@@ -805,7 +819,8 @@ Rules:
             "  \"prerequisites\": [...],\n" +
             "  \"animation\": { \"eligible\": false },\n" +
             "  \"pool\": \"both\",\n" +
-            wrongAnswerSchemaLine + "\n" +
+            wrongAnswerSchemaLine + ",\n" +
+            choiceExplSchemaLine + "\n" +
             "}";
     }
 }

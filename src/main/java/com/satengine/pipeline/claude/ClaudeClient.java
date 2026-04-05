@@ -4,8 +4,6 @@ import com.anthropic.client.AnthropicClient;
 import com.anthropic.client.okhttp.AnthropicOkHttpClient;
 import com.anthropic.models.messages.Message;
 import com.anthropic.models.messages.MessageCreateParams;
-import io.github.cdimascio.dotenv.Dotenv;
-import io.github.cdimascio.dotenv.DotenvException;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -18,23 +16,31 @@ public class ClaudeClient {
 
     @PostConstruct
     public void init() {
-        // Load .env file if present
-        try {
-            Dotenv dotenv = Dotenv.configure()
-                    .ignoreIfMissing()
-                    .load();
-            dotenv.entries().forEach(e -> {
-                if (System.getenv(e.getKey()) == null) {
-                    System.setProperty(e.getKey(), e.getValue());
+        // Try several candidate directories for .env — stop at first that sets the key
+        String[] candidates = {".", "sat-engine", "../sat-engine"};
+        for (String dir : candidates) {
+            loadDotenv(dir);
+            String loaded = System.getProperty("ANTHROPIC_API_KEY", "");
+            if (!loaded.isBlank()) break;
+        }
+        // Final fallback: parent directory of the JAR (handles any layout)
+        if (System.getProperty("ANTHROPIC_API_KEY", "").isBlank()) {
+            try {
+                String jarPath = ClaudeClient.class.getProtectionDomain()
+                        .getCodeSource().getLocation().toURI().getPath();
+                java.nio.file.Path jarDir = java.nio.file.Paths.get(jarPath).getParent();
+                if (jarDir != null && jarDir.getParent() != null) {
+                    loadDotenv(jarDir.getParent().toString());
                 }
-            });
-        } catch (DotenvException ex) {
-            // .env not present or malformed
+            } catch (Exception ex) {
+                log.debug("JAR path .env lookup failed: {}", ex.getMessage());
+            }
         }
 
         String apiKey = null;
         // Resolution order: Spring property → env var → system property (dotenv sets this)
         log.info("Initializing ClaudeClient...");
+        log.info("user.dir: {}", System.getProperty("user.dir"));
         apiKey = System.getenv("ANTHROPIC_API_KEY");
         log.info("apiKey from getenv: '{}'", apiKey);
         if (apiKey == null || apiKey.isBlank()) {
@@ -57,6 +63,34 @@ public class ClaudeClient {
      */
     public String call(String model, int maxTokens, String systemPrompt, String userMessage) {
         return call(model, maxTokens, systemPrompt, userMessage, null);
+    }
+
+    /** Read .env file directly so system env blank values cannot shadow file values. */
+    private void loadDotenv(String directory) {
+        java.nio.file.Path envFile = java.nio.file.Paths.get(directory, ".env");
+        if (!java.nio.file.Files.exists(envFile)) return;
+        log.info("Loading .env from: {}", envFile.toAbsolutePath());
+        try {
+            java.nio.file.Files.lines(envFile).forEach(line -> {
+                line = line.trim();
+                if (line.isEmpty() || line.startsWith("#")) return;
+                int eq = line.indexOf('=');
+                if (eq <= 0) return;
+                String key = line.substring(0, eq).trim();
+                String val = line.substring(eq + 1).trim();
+                if (val.length() >= 2 && val.charAt(0) == '"' && val.charAt(val.length() - 1) == '"')
+                    val = val.substring(1, val.length() - 1);
+                if (!val.isBlank()) {
+                    String envVal = System.getenv(key);
+                    if (envVal == null || envVal.isBlank()) {
+                        System.setProperty(key, val);
+                        log.info("Set system property {} from .env", key);
+                    }
+                }
+            });
+        } catch (Exception ex) {
+            log.warn("Failed to read .env from {}: {}", directory, ex.getMessage());
+        }
     }
 
     public String call(String model, int maxTokens, String systemPrompt, String userMessage, Double temperature) {

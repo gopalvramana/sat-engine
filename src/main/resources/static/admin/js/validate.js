@@ -216,6 +216,21 @@ function renderQuestion(qOverride) {
     if (host) renderDiagram(q.diagram, host);
   }
 
+  // Mount animation player for eligible geometry questions (synced with step navigator)
+  try {
+    const anim = typeof q.animation === 'string' ? JSON.parse(q.animation) : (q.animation || null);
+    if (anim && anim.eligible && Array.isArray(anim.frames) && anim.frames.length > 0) {
+      const animHost = document.getElementById('validate-anim-player');
+      if (animHost && typeof renderAnimation === 'function') {
+        const animUid = renderAnimation(anim, animHost, { synced: true });
+        if (animUid) {
+          window._animNavMap = window._animNavMap || {};
+          window._animNavMap['vsnav-sol'] = animUid;
+        }
+      }
+    }
+  } catch(e) {}
+
   renderKaTeXIn(document.getElementById('question-area'));
   initAccordion();  // wire accordion toggle behaviour after DOM is built
   wireEvents(q);
@@ -364,21 +379,57 @@ function buildView(q) {
       : (q.explanationSteps || []);
   } catch (e) { steps = []; }
 
+  // Parse animation early so step navigator can absorb extra frames
+  let animCfgForSteps = null;
+  let animMountHtml = '';
+  try {
+    const anim = typeof q.animation === 'string' ? JSON.parse(q.animation) : (q.animation || null);
+    if (anim && anim.eligible && Array.isArray(anim.frames) && anim.frames.length > 0) {
+      animCfgForSteps = anim;
+      animMountHtml = `<div id="validate-anim-player" class="mb-3"></div>`;
+    }
+  } catch(e) {}
+
   let explBodyHtml = '';
   if (steps.length) {
-    explBodyHtml = '<div class="expl-steps-list">' + steps.map((s, i) => `
-      <div class="expl-step">
-        <div class="expl-step-num">${i + 1}</div>
-        <div class="expl-step-body">
-          <div class="expl-step-title">${escHtml(s.title || '')}</div>
-          ${s.content ? `<div class="expl-step-content">${processText(s.content)}</div>` : ''}
-          ${s.math ? `<div class="expl-step-math">\\(${s.math}\\)</div>` : ''}
-        </div>
-      </div>`).join('') + '</div>';
+    explBodyHtml = buildValStepNavigator('vsnav-sol', steps, animCfgForSteps);
   } else {
     explBodyHtml = `<div class="accordion-empty">${
       q.explanationShort ? processText(q.explanationShort) : '<em>No explanation available.</em>'
     }</div>`;
+  }
+
+  // "Why each option?" panel (MCQ with choiceExplanations)
+  let choiceWhyHtml = '';
+  if (isMCQ && q.choiceExplanations) {
+    try {
+      const ce = typeof q.choiceExplanations === 'string'
+        ? JSON.parse(q.choiceExplanations) : q.choiceExplanations;
+      if (ce && typeof ce === 'object') {
+        const opts = { A: q.optionA, B: q.optionB, C: q.optionC, D: q.optionD };
+        const rows = Object.entries(opts).filter(([,t]) => t).map(([letter, text]) => {
+          const isCorrect = letter === correct;
+          const expl = ce[letter] || '';
+          return `<div class="choice-why-row ${isCorrect ? 'correct' : 'wrong'}">
+            <div class="choice-why-header">
+              <span class="choice-why-icon ${isCorrect ? 'correct' : 'wrong'}">${isCorrect ? '✓' : '✗'}</span>
+              <span class="choice-why-letter">${letter}</span>
+              <span class="choice-why-text">${processText(text)}</span>
+            </div>
+            ${expl ? `<p class="choice-why-explanation">${escHtml(expl)}</p>` : ''}
+          </div>`;
+        }).join('');
+        choiceWhyHtml = `
+          <details class="accordion-item mt-2">
+            <summary class="accordion-summary">
+              <span class="accordion-icon">💬</span>
+              <span class="accordion-label">Why each option?</span>
+              <span class="accordion-chevron">▶</span>
+            </summary>
+            <div class="accordion-body"><div class="choice-why-list">${rows}</div></div>
+          </details>`;
+      }
+    } catch(e) {}
   }
 
   const explItem = `
@@ -389,8 +440,9 @@ function buildView(q) {
         ${steps.length ? `<span class="accordion-badge">${steps.length} steps</span>` : ''}
         <span class="accordion-chevron">▶</span>
       </summary>
-      <div class="accordion-body">${explBodyHtml}</div>
-    </details>`;
+      <div class="accordion-body">${animMountHtml}${explBodyHtml}</div>
+    </details>
+    ${choiceWhyHtml}`;
 
   /* ── ACCORDION ITEM 2: Core Concept (Math only) ─────────── */
   let conceptItem = '';
@@ -610,6 +662,83 @@ function domainLabel(d) {
     expression_ideas: 'Expression', standard_english: 'Standard English'
   };
   return M[d] || d || '?';
+}
+
+/* ── Step navigator (synced with animation player) ────────────── */
+function buildValStepNavigator(navId, steps, animCfg) {
+  if (!steps || steps.length === 0) return '';
+
+  // If animation has more frames than steps, extend with diagram-only cards
+  const animFrames = (animCfg && Array.isArray(animCfg.frames)) ? animCfg.frames : [];
+  const total = Math.max(steps.length, animFrames.length);
+
+  const stepsHtml = Array.from({ length: total }, (_, i) => {
+    const s = steps[i];
+    const frame = animFrames[i];
+    const isCalc = !!s;        // real calculation step
+    const isAnim = !s && frame; // animation-only continuation
+
+    if (isCalc) {
+      return `
+        <div class="step-card ${i > 0 ? 'hidden' : ''}" data-step="${i}">
+          ${total > 1 ? `<div class="step-number">Step ${i + 1} of ${total}</div>` : ''}
+          ${s.title   ? `<h3 class="step-title">${escHtml(s.title)}</h3>` : ''}
+          ${s.content ? `<p class="step-content">${processText(s.content)}</p>` : ''}
+          ${s.math    ? `<div class="step-math">\\[${s.math}\\]</div>` : ''}
+        </div>`;
+    } else if (isAnim) {
+      return `
+        <div class="step-card step-card-anim ${i > 0 ? 'hidden' : ''}" data-step="${i}">
+          <div class="step-number">Figure ${i + 1} of ${animFrames.length}</div>
+          <h3 class="step-title" style="color:#2563eb">${escHtml(frame.caption || '')}</h3>
+          <p class="step-content" style="color:#64748b;font-style:italic">See the diagram above.</p>
+        </div>`;
+    }
+    return '';
+  }).join('');
+
+  const dotsHtml = Array.from({ length: total }, (_, i) =>
+    `<span class="step-dot ${i === 0 ? 'active' : ''}"></span>`).join('');
+
+  const footer = total > 1 ? `
+    <div class="step-nav-footer">
+      <button class="step-nav-btn" onclick="valStepNav('${navId}',-1)" disabled>← Prev</button>
+      <div class="step-nav-center">
+        <div class="step-dots">${dotsHtml}</div>
+        <span class="step-counter">1 of ${total}</span>
+      </div>
+      <button class="step-nav-btn" onclick="valStepNav('${navId}',1)">Next →</button>
+    </div>` : '';
+
+  return `<div class="step-navigator" data-nav-id="${navId}" data-current="0" data-total="${total}">
+    ${stepsHtml}${footer}
+  </div>`;
+}
+
+function valStepNav(navId, dir) {
+  const nav = document.querySelector('[data-nav-id="' + navId + '"]');
+  if (!nav) return;
+  const total   = parseInt(nav.dataset.total);
+  const current = parseInt(nav.dataset.current);
+  const next    = current + dir;
+  if (next < 0 || next >= total) return;
+
+  nav.querySelector('[data-step="' + current + '"]').classList.add('hidden');
+  nav.querySelector('[data-step="' + next    + '"]').classList.remove('hidden');
+  nav.querySelectorAll('.step-dot').forEach((d, i) => d.classList.toggle('active', i === next));
+  const counter = nav.querySelector('.step-counter');
+  if (counter) counter.textContent = (next + 1) + ' of ' + total;
+  const btns = nav.querySelectorAll('.step-nav-btn');
+  btns[0].disabled = next === 0;
+  btns[1].disabled = next === total - 1;
+  nav.dataset.current = next;
+
+  renderKaTeXIn(nav.querySelector('[data-step="' + next + '"]'));
+
+  // Sync animation player
+  if (window._animNavMap && window._animNavMap[navId]) {
+    if (typeof animGoTo === 'function') animGoTo(window._animNavMap[navId], next);
+  }
 }
 
 function escHtml(s) {
