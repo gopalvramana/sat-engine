@@ -191,3 +191,29 @@
 .step-dot { width: 0.45rem; height: 0.45rem; border-radius: 50%; background: #cbd5e1; transition: background 0.15s, transform 0.15s; }
 .step-dot.active { background: #6366f1; transform: scale(1.35); }
 .step-counter { font-size: 0.7rem; color: #94a3b8; font-weight: 500; }
+
+/* ── Solution split layout (animation left, steps right) ─── */
+.solution-split {
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+}
+.sol-fig {
+  flex: 0 0 42%;
+  min-width: 200px;
+  max-width: 360px;
+}
+.sol-fig .anim-player {
+  margin-bottom: 0;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+.sol-steps {
+  flex: 1;
+  min-width: 0;
+}
+@media (max-width: 640px) {
+  .solution-split { flex-direction: column; }
+  .sol-fig { flex: none; width: 100%; max-width: 100%; }
+}

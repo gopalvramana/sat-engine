@@ -3227,14 +3227,14 @@ function renderKaTeXIn(el) {
       margin: 0 0 0.35rem;
     }
     .anim-svg-wrap {
-      margin: 0 auto;
       position: relative;
       display: block;
+      width: 100%;
     }
-    .anim-svg-wrap svg { display: block; overflow: visible; }
+    .anim-svg-wrap svg { display: block; overflow: visible; width: 100%; height: 100%; }
     .anim-overlays {
       position: absolute;
-      top: 0; left: 0;
+      inset: 0;
       pointer-events: none;
     }
     .anim-caption {
@@ -3339,9 +3339,9 @@ function renderAnimation(cfg, container, opts) {
 
   container.innerHTML = `
     <div class="anim-player${synced ? ' anim-player-synced' : ''}">
-      <div class="anim-svg-wrap" style="width:${w}px;height:${h}px;">
-        <svg id="${uid}_svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}"></svg>
-        <div id="${uid}_ov" class="anim-overlays" style="width:${w}px;height:${h}px;"></div>
+      <div class="anim-svg-wrap" style="aspect-ratio:${w}/${h};">
+        <svg id="${uid}_svg" viewBox="0 0 ${w} ${h}" style="width:100%;height:100%;"></svg>
+        <div id="${uid}_ov" class="anim-overlays"></div>
       </div>
       <div class="anim-caption" id="${uid}_cap"></div>
       ${controlsHtml}
@@ -3387,6 +3387,8 @@ function _animRenderFrame(uid, idx, animate) {
   const currentElements = frames[idx].elements || [];
   const prevCount = idx > 0 ? (frames[idx - 1].elements || []).length : 0;
 
+  const svgW = cfg.width  || 280;
+  const svgH = cfg.height || 260;
   let newElIdx = 0;
   for (let ei = 0; ei < currentElements.length; ei++) {
     const isNew = animate && ei >= prevCount;
@@ -3396,7 +3398,7 @@ function _animRenderFrame(uid, idx, animate) {
     // Stagger new elements: each new element starts 75ms after the previous new one
     const animDelay = isNew ? newElIdx * 75 : 0;
     if (isNew) newElIdx++;
-    _animRenderElement(svgEl, ovEl, el, isNew, animDelay);
+    _animRenderElement(svgEl, ovEl, el, isNew, animDelay, svgW, svgH);
   }
 
   // Caption: in synced mode show "Figure N of M: <caption>" as a contextual label below canvas
@@ -3436,7 +3438,8 @@ function animGoTo(uid, idx) {
 
 const _SVG_NS = 'http://www.w3.org/2000/svg';
 
-function _animRenderElement(svgEl, ovEl, el, isNew, animDelay) {
+function _animRenderElement(svgEl, ovEl, el, isNew, animDelay, svgW, svgH) {
+  svgW = svgW || 280; svgH = svgH || 260;
   const _applyAnim = (node, animClass) => {
     node.classList.add(animClass);
     if (animDelay) node.style.animationDelay = `${animDelay}ms`;
@@ -3586,8 +3589,8 @@ function _animRenderElement(svgEl, ovEl, el, isNew, animDelay) {
         const div = document.createElement('div');
         div.className = 'anim-overlay-label' + (isNew ? ' anim-fade' : '');
         if (isNew && animDelay) div.style.animationDelay = `${animDelay}ms`;
-        div.style.left     = el.x + 'px';
-        div.style.top      = el.y + 'px';
+        div.style.left     = (el.x / svgW * 100) + '%';
+        div.style.top      = (el.y / svgH * 100) + '%';
         div.style.fontSize = (el.fontSize || 13) + 'px';
         div.style.color    = el.color || '#1e293b';
         if (window.katex) {
@@ -3618,8 +3621,8 @@ function _animRenderElement(svgEl, ovEl, el, isNew, animDelay) {
       const div = document.createElement('div');
       div.className = 'anim-overlay-label' + (isNew ? ' anim-fade' : '');
       if (isNew && animDelay) div.style.animationDelay = `${animDelay}ms`;
-      div.style.left     = el.x + 'px';
-      div.style.top      = el.y + 'px';
+      div.style.left     = (el.x / svgW * 100) + '%';
+      div.style.top      = (el.y / svgH * 100) + '%';
       div.style.fontSize = (el.fontSize || 13) + 'px';
       div.style.color    = el.color || '#1e293b';
       // Render synchronously with katex.renderToString if available,

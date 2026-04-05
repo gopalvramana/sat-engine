@@ -381,12 +381,10 @@ function buildView(q) {
 
   // Parse animation early so step navigator can absorb extra frames
   let animCfgForSteps = null;
-  let animMountHtml = '';
   try {
     const anim = typeof q.animation === 'string' ? JSON.parse(q.animation) : (q.animation || null);
     if (anim && anim.eligible && Array.isArray(anim.frames) && anim.frames.length > 0) {
       animCfgForSteps = anim;
-      animMountHtml = `<div id="validate-anim-player" class="mb-3"></div>`;
     }
   } catch(e) {}
 
@@ -398,6 +396,14 @@ function buildView(q) {
       q.explanationShort ? processText(q.explanationShort) : '<em>No explanation available.</em>'
     }</div>`;
   }
+
+  // Side-by-side layout: animation figure left, steps right (stacked on mobile)
+  const solutionLayout = animCfgForSteps
+    ? `<div class="solution-split">
+         <div class="sol-fig" id="validate-anim-player"></div>
+         <div class="sol-steps">${explBodyHtml}</div>
+       </div>`
+    : explBodyHtml;
 
   // "Why each option?" panel (MCQ with choiceExplanations)
   let choiceWhyHtml = '';
@@ -440,7 +446,7 @@ function buildView(q) {
         ${steps.length ? `<span class="accordion-badge">${steps.length} steps</span>` : ''}
         <span class="accordion-chevron">▶</span>
       </summary>
-      <div class="accordion-body">${animMountHtml}${explBodyHtml}</div>
+      <div class="accordion-body">${solutionLayout}</div>
     </details>
     ${choiceWhyHtml}`;
 

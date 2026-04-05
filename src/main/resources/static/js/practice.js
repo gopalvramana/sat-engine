@@ -450,6 +450,27 @@ function buildAccordion(q, studentAnswer) {
     }
   } catch (e) { steps = []; }
 
+  // Parse animation early so step navigator can use animFrames for extended steps
+  let animFramesForNav = [];
+  let animMountId = '';
+  try {
+    const a = q.animation ? (typeof q.animation === 'object' ? q.animation : JSON.parse(q.animation)) : null;
+    if (a && a.eligible && Array.isArray(a.frames) && a.frames.length > 0) {
+      animFramesForNav = a.frames;
+      animMountId = 'pap_' + Math.random().toString(36).slice(2, 8);
+      setTimeout(() => {
+        const mountEl = document.getElementById(animMountId);
+        if (mountEl && typeof renderAnimation === 'function') {
+          const animUid = renderAnimation(a, mountEl, { synced: true });
+          if (animUid) {
+            window._animNavMap = window._animNavMap || {};
+            window._animNavMap['snav-sol'] = animUid;
+          }
+        }
+      }, 0);
+    }
+  } catch(e) {}
+
   let solutionBody;
   if (steps.length > 0) {
     solutionBody = buildStepNavigator('snav-sol', steps, (s) => `
@@ -463,27 +484,13 @@ function buildAccordion(q, studentAnswer) {
     }</div>`;
   }
 
-  // Check for animation frames — parse early so step navigator can absorb extra frames
-  let animPlayer = '';
-  let animFramesForNav = [];
-  try {
-    const a = q.animation ? (typeof q.animation === 'object' ? q.animation : JSON.parse(q.animation)) : null;
-    if (a && a.eligible && Array.isArray(a.frames) && a.frames.length > 0) {
-      animFramesForNav = a.frames;
-      const mountId = 'pap_' + Math.random().toString(36).slice(2, 8);
-      animPlayer = `<div id="${mountId}" class="anim-mount"></div>`;
-      setTimeout(() => {
-        const mountEl = document.getElementById(mountId);
-        if (mountEl && typeof renderAnimation === 'function') {
-          const animUid = renderAnimation(a, mountEl, { synced: true });
-          if (animUid) {
-            window._animNavMap = window._animNavMap || {};
-            window._animNavMap['snav-sol'] = animUid;
-          }
-        }
-      }, 0);
-    }
-  } catch(e) {}
+  // Side-by-side when animation exists: figure left, steps right
+  const solutionLayout = animMountId
+    ? `<div class="solution-split">
+         <div class="sol-fig" id="${animMountId}"></div>
+         <div class="sol-steps">${solutionBody}</div>
+       </div>`
+    : solutionBody;
 
   items.push(`
     <details class="accordion-item" open>
@@ -493,7 +500,7 @@ function buildAccordion(q, studentAnswer) {
         ${steps.length ? `<span class="accordion-badge">${steps.length} step${steps.length !== 1 ? 's' : ''}</span>` : ''}
         <span class="accordion-chevron">▶</span>
       </summary>
-      <div class="accordion-body">${animPlayer}${solutionBody}</div>
+      <div class="accordion-body">${solutionLayout}</div>
     </details>`);
 
   // ── Tab 2b: Why each option? (MCQ only) ──────────────────────
