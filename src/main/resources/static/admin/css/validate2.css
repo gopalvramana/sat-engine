@@ -196,7 +196,7 @@
 .solution-split {
   display: flex;
   gap: 1.25rem;
-  align-items: flex-start;
+  align-items: stretch;   /* both columns same height */
 }
 .sol-fig {
   flex: 0 0 42%;
@@ -212,8 +212,34 @@
 .sol-steps {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+/* Step navigator fills the full right column height */
+.sol-steps .step-navigator {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+}
+/* Step card grows to fill available space */
+.sol-steps .step-card {
+  flex: 1;
+  min-height: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+}
+/* Footer pins to bottom with a divider */
+.sol-steps .step-nav-footer {
+  margin-top: auto;
+  padding: 0.6rem 1.25rem 0.75rem;
+  border-top: 1px solid #e2e8f0;
 }
 @media (max-width: 640px) {
   .solution-split { flex-direction: column; }
   .sol-fig { flex: none; width: 100%; max-width: 100%; }
+  .sol-steps .step-navigator { min-height: 10rem; }
 }
