@@ -224,20 +224,31 @@
   border: 1px solid #e2e8f0;
   border-radius: 0.75rem;
 }
-/* Step card grows to fill available space */
+/* Step card: fills space, scrolls if content overflows */
 .sol-steps .step-card {
   flex: 1;
   min-height: 0;
   border: none;
   border-radius: 0;
   background: transparent;
+  overflow-y: auto;
+  padding: 0.9rem 1.1rem 0.5rem;
 }
+/* Compact font sizes inside the split layout to prevent truncation */
+.sol-steps .step-number  { font-size: 0.65rem; margin-bottom: 0.35rem; }
+.sol-steps .step-title   { font-size: 0.85rem; margin-bottom: 0.35rem; }
+.sol-steps .step-content { font-size: 0.82rem; line-height: 1.65; margin-bottom: 0.2rem; }
+.sol-steps .step-math    { margin-top: 0.5rem; font-size: 0.82rem; }
 /* Footer pins to bottom with a divider */
 .sol-steps .step-nav-footer {
-  margin-top: auto;
-  padding: 0.6rem 1.25rem 0.75rem;
+  flex-shrink: 0;
+  margin-top: 0;
+  padding: 0.5rem 1rem 0.6rem;
   border-top: 1px solid #e2e8f0;
 }
+.sol-steps .step-nav-btn  { padding: 0.3rem 0.75rem; font-size: 0.75rem; }
+.sol-steps .step-counter  { font-size: 0.67rem; }
+.sol-steps .step-dot      { width: 0.38rem; height: 0.38rem; }
 @media (max-width: 640px) {
   .solution-split { flex-direction: column; }
   .sol-fig { flex: none; width: 100%; max-width: 100%; }
