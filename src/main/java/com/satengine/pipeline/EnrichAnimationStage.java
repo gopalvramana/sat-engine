@@ -165,7 +165,7 @@ ELEMENT TYPES — use ONLY these:
 {"type":"rect","x":x,"y":y,"width":w,"height":h,"stroke":"#334155","fill":"#f0f9ff","strokeWidth":2}
 {"type":"sector","cx":x,"cy":y,"r":r,"startDeg":deg,"endDeg":deg,"stroke":"#334155","fill":"#dbeafe","strokeWidth":2}
 {"type":"right_angle","vertex":[x,y],"leg1":[x,y],"leg2":[x,y],"size":12}
-{"type":"arc","cx":x,"cy":y,"r":r,"startDeg":deg,"endDeg":deg,"stroke":"#64748b","strokeWidth":1.5}
+{"type":"arc","cx":x,"cy":y,"r":r,"startDeg":deg,"endDeg":deg,"stroke":"#64748b","strokeWidth":1.5,"label":"52°","labelColor":"#64748b","labelSize":12}
 {"type":"dot","x":x,"y":y,"r":4,"fill":"#1e293b"}
 {"type":"text","x":x,"y":y,"text":"short label","fontSize":13,"color":"#1e293b"}
 
@@ -190,6 +190,7 @@ PROBLEM TYPE GUIDANCE:
 - Composite figures: multiple shapes layered
 - Pythagorean theorem / diagonal of rectangle: ALWAYS draw the right TRIANGLE (not the full rectangle); use polygon with 3 points for the triangle, right_angle marker at the 90° corner, then add a bold line for the hypotenuse in frame 3-4; never draw the rectangle when the problem is about finding a diagonal
 - right_angle element: vertex is the corner point, leg1 and leg2 are the OTHER ends of the two legs (not unit vectors)
+- arc element with angle labels: ALWAYS use the "label" field (e.g. "label":"52°") instead of a separate text element for angle labels — the renderer auto-positions the label along the bisector, clear of the arc; never place a separate text element on top of an arc
 
 Return ONLY valid JSON, no markdown:
 {"eligible":true,"width":280,"height":260,"frames":[{"caption":"...","elements":[...]}]}

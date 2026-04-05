@@ -3279,17 +3279,17 @@ function renderKaTeXIn(el) {
       to   { stroke-dashoffset: 0; }
     }
     @keyframes anim-fade-in {
-      from { opacity: 0; transform: translateY(4px); }
+      from { opacity: 0; transform: translateY(3px); }
       to   { opacity: 1; transform: translateY(0); }
     }
     .anim-draw {
       stroke-dasharray: 3000;
       stroke-dashoffset: 3000;
-      animation: anim-draw-path 0.55s ease-out forwards;
+      animation: anim-draw-path 0.5s cubic-bezier(0.22,0.61,0.36,1) forwards;
     }
     .anim-fade {
       opacity: 0;
-      animation: anim-fade-in 0.4s ease-out 0.15s forwards;
+      animation: anim-fade-in 0.35s cubic-bezier(0.22,0.61,0.36,1) forwards;
     }
     .anim-overlay-label {
       position: absolute;
@@ -3299,7 +3299,7 @@ function renderKaTeXIn(el) {
     }
     .anim-overlay-label.anim-fade {
       opacity: 0;
-      animation: anim-fade-in 0.4s ease-out 0.15s forwards;
+      animation: anim-fade-in 0.35s cubic-bezier(0.22,0.61,0.36,1) forwards;
     }
   `;
   document.head.appendChild(style);
@@ -3387,12 +3387,16 @@ function _animRenderFrame(uid, idx, animate) {
   const currentElements = frames[idx].elements || [];
   const prevCount = idx > 0 ? (frames[idx - 1].elements || []).length : 0;
 
+  let newElIdx = 0;
   for (let ei = 0; ei < currentElements.length; ei++) {
     const isNew = animate && ei >= prevCount;
     const el = currentElements[ei];
     // In synced mode: skip katex overlays (formulas shown in step text below)
     if (synced && el.type === 'katex') continue;
-    _animRenderElement(svgEl, ovEl, el, isNew);
+    // Stagger new elements: each new element starts 75ms after the previous new one
+    const animDelay = isNew ? newElIdx * 75 : 0;
+    if (isNew) newElIdx++;
+    _animRenderElement(svgEl, ovEl, el, isNew, animDelay);
   }
 
   // Caption: in synced mode show "Figure N of M: <caption>" as a contextual label below canvas
@@ -3432,7 +3436,11 @@ function animGoTo(uid, idx) {
 
 const _SVG_NS = 'http://www.w3.org/2000/svg';
 
-function _animRenderElement(svgEl, ovEl, el, isNew) {
+function _animRenderElement(svgEl, ovEl, el, isNew, animDelay) {
+  const _applyAnim = (node, animClass) => {
+    node.classList.add(animClass);
+    if (animDelay) node.style.animationDelay = `${animDelay}ms`;
+  };
   switch (el.type) {
     case 'polygon': {
       const pts = (el.points || []).map(p => `${p[0]},${p[1]}`).join(' ');
@@ -3442,7 +3450,7 @@ function _animRenderElement(svgEl, ovEl, el, isNew) {
       node.setAttribute('stroke-width', el.strokeWidth || 2);
       node.setAttribute('fill', el.fill || 'none');
       node.setAttribute('stroke-linejoin', 'round');
-      if (isNew) node.classList.add('anim-draw');
+      if (isNew) _applyAnim(node, 'anim-draw');
       svgEl.appendChild(node);
       break;
     }
@@ -3454,8 +3462,8 @@ function _animRenderElement(svgEl, ovEl, el, isNew) {
       node.setAttribute('stroke-width', el.strokeWidth || 2);
       node.setAttribute('stroke-linecap', 'round');
       if (el.dashed) node.setAttribute('stroke-dasharray', isNew ? '5,4 3000' : '5,4');
-      if (isNew && !el.dashed) node.classList.add('anim-draw');
-      if (isNew && el.dashed)  node.classList.add('anim-fade');
+      if (isNew && !el.dashed) _applyAnim(node, 'anim-draw');
+      if (isNew && el.dashed)  _applyAnim(node, 'anim-fade');
       svgEl.appendChild(node);
       break;
     }
@@ -3476,24 +3484,42 @@ function _animRenderElement(svgEl, ovEl, el, isNew) {
       node.setAttribute('stroke', el.stroke || '#334155');
       node.setAttribute('stroke-width', el.strokeWidth || 1.5);
       node.setAttribute('fill', 'none');
-      if (isNew) node.classList.add('anim-fade');
+      if (isNew) _applyAnim(node, 'anim-fade');
       svgEl.appendChild(node);
       break;
     }
     case 'arc': {
       const { cx, cy, r = 20, startDeg = 0, endDeg = 90 } = el;
-      const s = startDeg * Math.PI / 180;
-      const e = endDeg   * Math.PI / 180;
-      const x1 = cx + r * Math.cos(s), y1 = cy + r * Math.sin(s);
-      const x2 = cx + r * Math.cos(e), y2 = cy + r * Math.sin(e);
+      const sRad = startDeg * Math.PI / 180;
+      const eRad = endDeg   * Math.PI / 180;
+      const x1 = cx + r * Math.cos(sRad), y1 = cy + r * Math.sin(sRad);
+      const x2 = cx + r * Math.cos(eRad), y2 = cy + r * Math.sin(eRad);
       const large = Math.abs(endDeg - startDeg) > 180 ? 1 : 0;
       const node = document.createElementNS(_SVG_NS, 'path');
       node.setAttribute('d', `M${x1},${y1} A${r},${r} 0 ${large},1 ${x2},${y2}`);
       node.setAttribute('stroke', el.stroke || '#64748b');
       node.setAttribute('stroke-width', el.strokeWidth || 1.5);
       node.setAttribute('fill', 'none');
-      if (isNew) node.classList.add('anim-draw');
+      if (isNew) _applyAnim(node, 'anim-draw');
       svgEl.appendChild(node);
+      // Auto-position label along the bisector at 1.75× arc radius — never overlaps the arc
+      if (el.label) {
+        const midRad = (sRad + eRad) / 2;
+        const labelR = r * 1.75;
+        const lx = cx + labelR * Math.cos(midRad);
+        const ly = cy + labelR * Math.sin(midRad);
+        const lNode = document.createElementNS(_SVG_NS, 'text');
+        lNode.setAttribute('x', lx.toFixed(1));
+        lNode.setAttribute('y', ly.toFixed(1));
+        lNode.setAttribute('text-anchor', 'middle');
+        lNode.setAttribute('dominant-baseline', 'central');
+        lNode.setAttribute('font-size', el.labelSize || 12);
+        lNode.setAttribute('font-family', "Georgia, serif");
+        lNode.setAttribute('fill', el.labelColor || el.stroke || '#64748b');
+        lNode.textContent = el.label;
+        if (isNew) { _applyAnim(lNode, 'anim-fade'); if (animDelay) lNode.style.animationDelay = `${animDelay + 80}ms`; }
+        svgEl.appendChild(lNode);
+      }
       break;
     }
     case 'dot': {
@@ -3501,7 +3527,7 @@ function _animRenderElement(svgEl, ovEl, el, isNew) {
       node.setAttribute('cx', el.x); node.setAttribute('cy', el.y);
       node.setAttribute('r',  el.r || 4);
       node.setAttribute('fill', el.fill || '#1e293b');
-      if (isNew) node.classList.add('anim-fade');
+      if (isNew) _applyAnim(node, 'anim-fade');
       svgEl.appendChild(node);
       break;
     }
@@ -3512,7 +3538,7 @@ function _animRenderElement(svgEl, ovEl, el, isNew) {
       node.setAttribute('stroke', el.stroke || '#334155');
       node.setAttribute('stroke-width', el.strokeWidth || 2);
       node.setAttribute('fill', el.fill || '#f0f9ff');
-      if (isNew) node.classList.add('anim-draw');
+      if (isNew) _applyAnim(node, 'anim-draw');
       svgEl.appendChild(node);
       break;
     }
@@ -3525,7 +3551,7 @@ function _animRenderElement(svgEl, ovEl, el, isNew) {
       node.setAttribute('stroke-width', el.strokeWidth || 2);
       node.setAttribute('fill', el.fill || '#f0f9ff');
       if (el.rx) node.setAttribute('rx', el.rx);
-      if (isNew) node.classList.add('anim-draw');
+      if (isNew) _applyAnim(node, 'anim-draw');
       svgEl.appendChild(node);
       break;
     }
@@ -3542,7 +3568,7 @@ function _animRenderElement(svgEl, ovEl, el, isNew) {
       node.setAttribute('stroke', el.stroke || '#334155');
       node.setAttribute('stroke-width', el.strokeWidth || 2);
       node.setAttribute('fill', el.fill || '#dbeafe');
-      if (isNew) node.classList.add('anim-fade');
+      if (isNew) _applyAnim(node, 'anim-fade');
       svgEl.appendChild(node);
       break;
     }
@@ -3559,6 +3585,7 @@ function _animRenderElement(svgEl, ovEl, el, isNew) {
           formula = formula.slice(2, -2);
         const div = document.createElement('div');
         div.className = 'anim-overlay-label' + (isNew ? ' anim-fade' : '');
+        if (isNew && animDelay) div.style.animationDelay = `${animDelay}ms`;
         div.style.left     = el.x + 'px';
         div.style.top      = el.y + 'px';
         div.style.fontSize = (el.fontSize || 13) + 'px';
@@ -3582,7 +3609,7 @@ function _animRenderElement(svgEl, ovEl, el, isNew) {
         node.setAttribute('dominant-baseline', 'central');
         if (el.bold) node.setAttribute('font-weight', '700');
         node.textContent = rawText;
-        if (isNew) node.classList.add('anim-fade');
+        if (isNew) _applyAnim(node, 'anim-fade');
         svgEl.appendChild(node);
       }
       break;
@@ -3590,6 +3617,7 @@ function _animRenderElement(svgEl, ovEl, el, isNew) {
     case 'katex': {
       const div = document.createElement('div');
       div.className = 'anim-overlay-label' + (isNew ? ' anim-fade' : '');
+      if (isNew && animDelay) div.style.animationDelay = `${animDelay}ms`;
       div.style.left     = el.x + 'px';
       div.style.top      = el.y + 'px';
       div.style.fontSize = (el.fontSize || 13) + 'px';
