@@ -1279,7 +1279,12 @@ function drawTriangleWithAltitude(cfg) {
     let snx = -sdy / slen, sny = sdx / slen;
     const toCx = mid.x - centX, toCy = mid.y - centY;
     if (snx * toCx + sny * toCy < 0) { snx = -snx; sny = -sny; }
-    const slpos = clampLabel(mid.x + snx * 14, mid.y + sny * 14, w, h);
+    // Auto-offset: scale with text length so long labels clear the side
+    const _fs = 13, _htw = (s.label.length * _fs * 0.55) / 2, _hth = _fs * 0.5;
+    const _minX = Math.abs(snx) > 0.15 ? Math.min((_htw + 5) / Math.abs(snx), _htw + 8) : 0;
+    const _minY = Math.abs(sny) > 0.15 ? Math.min((_hth + 4) / Math.abs(sny), _hth + 6) : 0;
+    const soff = Math.max(14, _minX, _minY);
+    const slpos = clampLabel(mid.x + snx * soff, mid.y + sny * soff, w, h);
     out += svgText(slpos.x, slpos.y, s.label, { italic: true, fontSize: 13 });
   }
 
