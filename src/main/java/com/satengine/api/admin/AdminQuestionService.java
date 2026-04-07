@@ -69,7 +69,8 @@ public class AdminQuestionService {
 
     private static final Set<String> PATCHABLE_FIELDS = Set.of(
             "optionA", "optionB", "optionC", "optionD",
-            "questionStem", "explanationShort", "trapExplanation", "passageText"
+            "questionStem", "explanationShort", "trapExplanation", "passageText",
+            "diagram"
     );
 
     @Transactional
@@ -87,6 +88,7 @@ public class AdminQuestionService {
                 case "explanationShort"-> q.setExplanationShort(value);
                 case "trapExplanation" -> q.setTrapExplanation(value);
                 case "passageText"     -> q.setPassageText(value);
+                case "diagram"         -> q.setDiagram(value);
             }
         });
         questionRepository.save(q);

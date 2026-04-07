@@ -21,6 +21,18 @@ function clampLabel(x, y, width, height, padding = 14) {
   };
 }
 
+/**
+ * Like clampLabel but accounts for the text box dimensions so the FULL label
+ * stays inside the canvas, not just its centre point.
+ * htw = half text width, hth = half text height (both in px).
+ */
+function clampLabelBox(x, y, width, height, htw, hth, padding = 6) {
+  return {
+    x: Math.max(htw + padding, Math.min(x, width  - htw - padding)),
+    y: Math.max(hth + padding, Math.min(y, height - hth - padding))
+  };
+}
+
 /** Midpoint between two {x,y} points. */
 function midpoint(p1, p2) {
   return { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 };
@@ -601,7 +613,7 @@ function drawTriangle(cfg) {
       const _minX = Math.abs(nx) > 0.15 ? Math.min((_htw + 5) / Math.abs(nx), _htw + 8) : 0;
       const _minY = Math.abs(ny) > 0.15 ? Math.min((_hth + 4) / Math.abs(ny), _hth + 6) : 0;
       const offset = Math.max(14, _minX, _minY);
-      const lpos = labelTracker.place(mid.x + nx * offset, mid.y + ny * offset, w, h, s.label ?? '');
+      const lpos = clampLabelBox(mid.x + nx * offset, mid.y + ny * offset, w, h, _htw, _hth);
       out += svgText(lpos.x, lpos.y, s.label, { fontSize: 13 });
     }
   }
@@ -1053,7 +1065,7 @@ function drawRectangle(cfg) {
       const _minX = Math.abs(nx) > 0.15 ? Math.min((_htw + 5) / Math.abs(nx), _htw + 8) : 0;
       const _minY = Math.abs(ny) > 0.15 ? Math.min((_hth + 4) / Math.abs(ny), _hth + 6) : 0;
       const offset = Math.max(16, _minX, _minY);
-      const lpos = clampLabel(mid.x + nx * offset, mid.y + ny * offset, w, h);
+      const lpos = clampLabelBox(mid.x + nx * offset, mid.y + ny * offset, w, h, _htw, _hth);
       const color = s.color ?? '#2563eb';
       out += svgText(lpos.x, lpos.y, s.label, { fontSize: 13, fill: color });
     }
@@ -1284,7 +1296,7 @@ function drawTriangleWithAltitude(cfg) {
     const _minX = Math.abs(snx) > 0.15 ? Math.min((_htw + 5) / Math.abs(snx), _htw + 8) : 0;
     const _minY = Math.abs(sny) > 0.15 ? Math.min((_hth + 4) / Math.abs(sny), _hth + 6) : 0;
     const soff = Math.max(14, _minX, _minY);
-    const slpos = clampLabel(mid.x + snx * soff, mid.y + sny * soff, w, h);
+    const slpos = clampLabelBox(mid.x + snx * soff, mid.y + sny * soff, w, h, _htw, _hth);
     out += svgText(slpos.x, slpos.y, s.label, { italic: true, fontSize: 13 });
   }
 
@@ -1723,7 +1735,7 @@ function drawParallelogram(cfg) {
     const _minX = Math.abs(nx) > 0.15 ? Math.min((_htw + 5) / Math.abs(nx), _htw + 8) : 0;
     const _minY = Math.abs(ny) > 0.15 ? Math.min((_hth + 4) / Math.abs(ny), _hth + 6) : 0;
     const offset = Math.max(14, _minX, _minY);
-    const lpos = clampLabel(mid.x + nx * offset, mid.y + ny * offset, w, h);
+    const lpos = clampLabelBox(mid.x + nx * offset, mid.y + ny * offset, w, h, _htw, _hth);
     const isGreek = /[θαβγδεφ]/.test(s.label);
     out += svgText(lpos.x, lpos.y, s.label, { italic: isGreek, fontSize: 13 });
   }
