@@ -25,11 +25,14 @@ function clampLabel(x, y, width, height, padding = 14) {
  * Like clampLabel but accounts for the text box dimensions so the FULL label
  * stays inside the canvas, not just its centre point.
  * htw = half text width, hth = half text height (both in px).
+ * tdx/tdy = autoCenterTransform translation that will be applied to this
+ *   content — the clamp shrinks available space by that amount so labels
+ *   don't shift off-canvas after the transform is applied.
  */
-function clampLabelBox(x, y, width, height, htw, hth, padding = 6) {
+function clampLabelBox(x, y, width, height, htw, hth, padding = 6, tdx = 0, tdy = 0) {
   return {
-    x: Math.max(htw + padding, Math.min(x, width  - htw - padding)),
-    y: Math.max(hth + padding, Math.min(y, height - hth - padding))
+    x: Math.max(htw + padding - tdx, Math.min(x, width  - htw - padding - tdx)),
+    y: Math.max(hth + padding - tdy, Math.min(y, height - hth - padding - tdy))
   };
 }
 
@@ -57,13 +60,13 @@ function svgWrap(w, h, inner) {
 function autoCenterTransform(points, w, h, padding = 28) {
   const xs = points.map(p => p.x).filter(Number.isFinite);
   const ys = points.map(p => p.y).filter(Number.isFinite);
-  if (!xs.length) return { open: '', close: '' };
+  if (!xs.length) return { open: '', close: '', dx: 0, dy: 0 };
   const minX = Math.min(...xs), maxX = Math.max(...xs);
   const minY = Math.min(...ys), maxY = Math.max(...ys);
   const dx = +((w - (maxX + minX)) / 2).toFixed(2);
   const dy = +((h - (maxY + minY)) / 2).toFixed(2);
-  if (Math.abs(dx) < 2 && Math.abs(dy) < 2) return { open: '', close: '' };
-  return { open: `<g transform="translate(${dx},${dy})">`, close: `</g>` };
+  if (Math.abs(dx) < 2 && Math.abs(dy) < 2) return { open: '', close: '', dx: 0, dy: 0 };
+  return { open: `<g transform="translate(${dx},${dy})">`, close: `</g>`, dx, dy };
 }
 
 /** Build a <text> SVG element with sensible defaults. */
@@ -561,6 +564,9 @@ function drawTriangle(cfg) {
 
   const w = cfg.width ?? 240, h = cfg.height ?? 200;
 
+  // Compute auto-center transform upfront so label clamping can account for it
+  const ct = autoCenterTransform(keys.map(k => ({ x: V[k].x, y: V[k].y })), w, h);
+
   // Centroid
   const cx = keys.reduce((s, k) => s + V[k].x, 0) / keys.length;
   const cy = keys.reduce((s, k) => s + V[k].y, 0) / keys.length;
@@ -613,7 +619,7 @@ function drawTriangle(cfg) {
       const _minX = Math.abs(nx) > 0.15 ? Math.min((_htw + 5) / Math.abs(nx), _htw + 8) : 0;
       const _minY = Math.abs(ny) > 0.15 ? Math.min((_hth + 4) / Math.abs(ny), _hth + 6) : 0;
       const offset = Math.max(14, _minX, _minY);
-      const lpos = clampLabelBox(mid.x + nx * offset, mid.y + ny * offset, w, h, _htw, _hth);
+      const lpos = clampLabelBox(mid.x + nx * offset, mid.y + ny * offset, w, h, _htw, _hth, 6, ct.dx, ct.dy);
       out += svgText(lpos.x, lpos.y, s.label, { fontSize: 13 });
     }
   }
@@ -729,7 +735,6 @@ function drawTriangle(cfg) {
     out += svgText(lpos.x, lpos.y, V[key].label ?? key, { bold: true, fontSize: 13 });
   }
 
-  const ct = autoCenterTransform(keys.map(k => ({ x: V[k].x, y: V[k].y })), w, h);
   return svgWrap(w, h, ct.open + out + ct.close);
 }
 
@@ -1042,6 +1047,8 @@ function drawRectangle(cfg) {
   const V = cfg.vertices ?? {};
   const vkeys = Object.keys(V);
   if (vkeys.length >= 4) {
+    const vpts = vkeys.map(k => ({ x: V[k].x, y: V[k].y }));
+    const ct = autoCenterTransform(vpts, w, h);
     const pts = vkeys.map(k => `${V[k].x},${V[k].y}`).join(' ');
     out += `<polygon points="${pts}" fill="${shapeFill}" stroke="${shapeStroke}" stroke-width="${shapeSW}"/>`;
 
@@ -1065,7 +1072,7 @@ function drawRectangle(cfg) {
       const _minX = Math.abs(nx) > 0.15 ? Math.min((_htw + 5) / Math.abs(nx), _htw + 8) : 0;
       const _minY = Math.abs(ny) > 0.15 ? Math.min((_hth + 4) / Math.abs(ny), _hth + 6) : 0;
       const offset = Math.max(16, _minX, _minY);
-      const lpos = clampLabelBox(mid.x + nx * offset, mid.y + ny * offset, w, h, _htw, _hth);
+      const lpos = clampLabelBox(mid.x + nx * offset, mid.y + ny * offset, w, h, _htw, _hth, 6, ct.dx, ct.dy);
       const color = s.color ?? '#2563eb';
       out += svgText(lpos.x, lpos.y, s.label, { fontSize: 13, fill: color });
     }
@@ -1084,8 +1091,6 @@ function drawRectangle(cfg) {
       out += svgText(lpos.x, lpos.y, k, { fontSize: 13, bold: true, textAnchor: 'middle', dominantBaseline: 'middle' });
     }
 
-    const vpts = vkeys.map(k => ({ x: V[k].x, y: V[k].y }));
-    const ct = autoCenterTransform(vpts, w, h);
     return svgWrap(w, h, ct.open + out + ct.close);
   }
 
@@ -1244,6 +1249,9 @@ function drawTriangleWithAltitude(cfg) {
   const shapeStroke = cfg.style?.stroke      ?? '#1d4ed8';
   const shapeSW     = cfg.style?.strokeWidth ?? 2.2;
 
+  // Compute auto-center transform upfront so label clamping can account for it
+  const ct = autoCenterTransform(keys.map(k => ({ x: V[k].x, y: V[k].y })), w, h);
+
   let out = '';
   out += `<polygon points="${pts}" fill="${shapeFill}" stroke="${shapeStroke}" stroke-width="${shapeSW}"/>`;
 
@@ -1296,7 +1304,7 @@ function drawTriangleWithAltitude(cfg) {
     const _minX = Math.abs(snx) > 0.15 ? Math.min((_htw + 5) / Math.abs(snx), _htw + 8) : 0;
     const _minY = Math.abs(sny) > 0.15 ? Math.min((_hth + 4) / Math.abs(sny), _hth + 6) : 0;
     const soff = Math.max(14, _minX, _minY);
-    const slpos = clampLabelBox(mid.x + snx * soff, mid.y + sny * soff, w, h, _htw, _hth);
+    const slpos = clampLabelBox(mid.x + snx * soff, mid.y + sny * soff, w, h, _htw, _hth, 6, ct.dx, ct.dy);
     out += svgText(slpos.x, slpos.y, s.label, { italic: true, fontSize: 13 });
   }
 
@@ -1311,7 +1319,6 @@ function drawTriangleWithAltitude(cfg) {
     out += svgText(vlpos.x, vlpos.y, key, { bold: true, fontSize: 13 });
   }
 
-  const ct = autoCenterTransform(keys.map(k => ({ x: V[k].x, y: V[k].y })), w, h);
   return svgWrap(w, h, ct.open + out + ct.close);
 }
 
@@ -1713,6 +1720,9 @@ function drawParallelogram(cfg) {
   const shapeStroke = cfg.style?.stroke      ?? '#1d4ed8';
   const shapeSW     = cfg.style?.strokeWidth ?? 2.2;
 
+  // Compute auto-center transform upfront so label clamping can account for it
+  const ct = autoCenterTransform(keys.map(k => ({ x: V[k].x, y: V[k].y })), w, h);
+
   // Centroid
   const cx = keys.reduce((s, k) => s + V[k].x, 0) / keys.length;
   const cy = keys.reduce((s, k) => s + V[k].y, 0) / keys.length;
@@ -1735,7 +1745,7 @@ function drawParallelogram(cfg) {
     const _minX = Math.abs(nx) > 0.15 ? Math.min((_htw + 5) / Math.abs(nx), _htw + 8) : 0;
     const _minY = Math.abs(ny) > 0.15 ? Math.min((_hth + 4) / Math.abs(ny), _hth + 6) : 0;
     const offset = Math.max(14, _minX, _minY);
-    const lpos = clampLabelBox(mid.x + nx * offset, mid.y + ny * offset, w, h, _htw, _hth);
+    const lpos = clampLabelBox(mid.x + nx * offset, mid.y + ny * offset, w, h, _htw, _hth, 6, ct.dx, ct.dy);
     const isGreek = /[θαβγδεφ]/.test(s.label);
     out += svgText(lpos.x, lpos.y, s.label, { italic: isGreek, fontSize: 13 });
   }
@@ -1807,7 +1817,6 @@ function drawParallelogram(cfg) {
     out += svgText(lpos.x, lpos.y, V[key].label ?? key, { bold: true, fontSize: 13 });
   }
 
-  const ct = autoCenterTransform(keys.map(k => ({ x: V[k].x, y: V[k].y })), w, h);
   return svgWrap(w, h, ct.open + out + ct.close);
 }
 
