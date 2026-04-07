@@ -592,7 +592,15 @@ function drawTriangle(cfg) {
       // Ensure it points away from centroid
       const toCx = mid.x - cx, toCy = mid.y - cy;
       if (nx * toCx + ny * toCy < 0) { nx = -nx; ny = -ny; }
-      const offset = 14;
+      // Auto-offset: ensure label clears the segment for any text length.
+      // Mirrors the capped formula used in the animation renderer so both
+      // the question diagram and animation labels stay off the sides.
+      const _fs  = 13;
+      const _htw = (s.label.length * _fs * 0.55) / 2;
+      const _hth = _fs * 0.5;
+      const _minX = Math.abs(nx) > 0.15 ? Math.min((_htw + 5) / Math.abs(nx), _htw + 8) : 0;
+      const _minY = Math.abs(ny) > 0.15 ? Math.min((_hth + 4) / Math.abs(ny), _hth + 6) : 0;
+      const offset = Math.max(14, _minX, _minY);
       const lpos = labelTracker.place(mid.x + nx * offset, mid.y + ny * offset, w, h, s.label ?? '');
       out += svgText(lpos.x, lpos.y, s.label, { fontSize: 13 });
     }
@@ -1010,12 +1018,68 @@ function drawNumberLine(cfg) {
 // ── Shape: rectangle ────────────────────────────────────────────────
 function drawRectangle(cfg) {
   const w = cfg.width ?? 260, h = cfg.height ?? 200;
-  const x = cfg.x ?? 30, y = cfg.y ?? 30;
-  const rw = cfg.rectWidth ?? 180, rh = cfg.rectHeight ?? 120;
   const shapeFill   = cfg.style?.fill        ?? '#dbeafe';
   const shapeStroke = cfg.style?.stroke      ?? '#1d4ed8';
   const shapeSW     = cfg.style?.strokeWidth ?? 2.2;
   let out = '';
+
+  // ── Vertex-based rendering (modern format: vertices + sides[]) ──────
+  // When the diagram was generated with explicit vertex coordinates
+  // (same format as triangles and parallelograms), use those directly
+  // so the question diagram shows labels and measurements.
+  const V = cfg.vertices ?? {};
+  const vkeys = Object.keys(V);
+  if (vkeys.length >= 4) {
+    const pts = vkeys.map(k => `${V[k].x},${V[k].y}`).join(' ');
+    out += `<polygon points="${pts}" fill="${shapeFill}" stroke="${shapeStroke}" stroke-width="${shapeSW}"/>`;
+
+    // Centroid for outward label placement
+    const cx = vkeys.reduce((s, k) => s + V[k].x, 0) / vkeys.length;
+    const cy = vkeys.reduce((s, k) => s + V[k].y, 0) / vkeys.length;
+
+    // Side labels from sides[] array
+    for (const s of (cfg.sides ?? [])) {
+      const p1 = V[s.from], p2 = V[s.to];
+      if (!p1 || !p2 || !s.label) continue;
+      const mid = midpoint(p1, p2);
+      const dx = p2.x - p1.x, dy = p2.y - p1.y;
+      const len = Math.sqrt(dx * dx + dy * dy) || 1;
+      let nx = -dy / len, ny = dx / len;
+      // Push outward from centroid
+      const toCx = mid.x - cx, toCy = mid.y - cy;
+      if (nx * toCx + ny * toCy < 0) { nx = -nx; ny = -ny; }
+      // Auto-offset: scale with text length so long labels clear the side
+      const _fs = 13, _htw = (s.label.length * _fs * 0.55) / 2, _hth = _fs * 0.5;
+      const _minX = Math.abs(nx) > 0.15 ? Math.min((_htw + 5) / Math.abs(nx), _htw + 8) : 0;
+      const _minY = Math.abs(ny) > 0.15 ? Math.min((_hth + 4) / Math.abs(ny), _hth + 6) : 0;
+      const offset = Math.max(16, _minX, _minY);
+      const lpos = clampLabel(mid.x + nx * offset, mid.y + ny * offset, w, h);
+      const color = s.color ?? '#2563eb';
+      out += svgText(lpos.x, lpos.y, s.label, { fontSize: 13, fill: color });
+    }
+
+    // Vertex dots
+    for (const k of vkeys) {
+      out += `<circle cx="${V[k].x}" cy="${V[k].y}" r="4" fill="#1e293b"/>`;
+    }
+
+    // Vertex labels pushed 16px outward from centroid
+    for (const k of vkeys) {
+      const vx = V[k].x, vy = V[k].y;
+      const ddx = vx - cx, ddy = vy - cy;
+      const dlen = Math.sqrt(ddx * ddx + ddy * ddy) || 1;
+      const lpos = clampLabel(vx + (ddx / dlen) * 16, vy + (ddy / dlen) * 16, w, h);
+      out += svgText(lpos.x, lpos.y, k, { fontSize: 13, bold: true, textAnchor: 'middle', dominantBaseline: 'middle' });
+    }
+
+    const vpts = vkeys.map(k => ({ x: V[k].x, y: V[k].y }));
+    const ct = autoCenterTransform(vpts, w, h);
+    return svgWrap(w, h, ct.open + out + ct.close);
+  }
+
+  // ── Legacy rendering (older format: x/y/rectWidth/rectHeight) ───────
+  const x = cfg.x ?? 30, y = cfg.y ?? 30;
+  const rw = cfg.rectWidth ?? 180, rh = cfg.rectHeight ?? 120;
 
   out += `<rect x="${x}" y="${y}" width="${rw}" height="${rh}" fill="${shapeFill}" stroke="${shapeStroke}" stroke-width="${shapeSW}"/>`;
 
@@ -1043,19 +1107,18 @@ function drawRectangle(cfg) {
   // Right angle markers
   if (cfg.showRightAngles) {
     const sz = 10;
-    // All four corners
     out += rightAngleSquare(x,      y,      x + rw, y,      x,      y + rh, sz);
     out += rightAngleSquare(x + rw, y,      x,      y,      x + rw, y + rh, sz);
     out += rightAngleSquare(x,      y + rh, x,      y,      x + rw, y + rh, sz);
     out += rightAngleSquare(x + rw, y + rh, x + rw, y,      x,      y + rh, sz);
   }
 
-  // Side labels
+  // Side labels (legacy top/bottom/left/right format)
   const lbs = cfg.labels ?? {};
   const rcx = x + rw / 2, rcy = y + rh / 2;
-  if (lbs.top)    { const lp = clampLabel(rcx, y - 10,    w, h); out += svgText(lp.x, lp.y, lbs.top.text,    { fontSize: 13 }); }
+  if (lbs.top)    { const lp = clampLabel(rcx, y - 10,      w, h); out += svgText(lp.x, lp.y, lbs.top.text,    { fontSize: 13 }); }
   if (lbs.bottom) { const lp = clampLabel(rcx, y + rh + 14, w, h); out += svgText(lp.x, lp.y, lbs.bottom.text, { fontSize: 13 }); }
-  if (lbs.left)   { const lp = clampLabel(x - 14, rcy,   w, h); out += svgText(lp.x, lp.y, lbs.left.text,   { fontSize: 13 }); }
+  if (lbs.left)   { const lp = clampLabel(x - 14, rcy,      w, h); out += svgText(lp.x, lp.y, lbs.left.text,   { fontSize: 13 }); }
   if (lbs.right)  { const lp = clampLabel(x + rw + 14, rcy, w, h); out += svgText(lp.x, lp.y, lbs.right.text,  { fontSize: 13 }); }
 
   const rectPoints = [{ x, y }, { x: x + rw, y }, { x, y: y + rh }, { x: x + rw, y: y + rh }];
@@ -1650,7 +1713,11 @@ function drawParallelogram(cfg) {
     let nx = -dy / len, ny = dx / len;
     const toCx = mid.x - cx, toCy = mid.y - cy;
     if (nx * toCx + ny * toCy < 0) { nx = -nx; ny = -ny; }
-    const offset = 14;
+    // Auto-offset: scale with text length so long labels clear the side
+    const _fs = 13, _htw = (s.label.length * _fs * 0.55) / 2, _hth = _fs * 0.5;
+    const _minX = Math.abs(nx) > 0.15 ? Math.min((_htw + 5) / Math.abs(nx), _htw + 8) : 0;
+    const _minY = Math.abs(ny) > 0.15 ? Math.min((_hth + 4) / Math.abs(ny), _hth + 6) : 0;
+    const offset = Math.max(14, _minX, _minY);
     const lpos = clampLabel(mid.x + nx * offset, mid.y + ny * offset, w, h);
     const isGreek = /[θαβγδεφ]/.test(s.label);
     out += svgText(lpos.x, lpos.y, s.label, { italic: isGreek, fontSize: 13 });
@@ -3316,6 +3383,76 @@ window._animPlayers = window._animPlayers || {};
  * @param {boolean} [opts.synced] — true = no controls, skip katex overlays (steps shown below)
  * @returns {string|null} uid — player ID for external control (animGoTo)
  */
+// ── Compute tight bounding box across all animation frames ──────────────
+function _animBBox(frames) {
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  const exp = (x, y) => { x0=Math.min(x0,x); y0=Math.min(y0,y); x1=Math.max(x1,x); y1=Math.max(y1,y); };
+
+  for (const frame of frames) {
+    for (const el of (frame.elements || [])) {
+      switch (el.type) {
+        case 'polygon':
+          (el.points||[]).forEach(([px,py]) => exp(px, py));
+          break;
+        case 'line':
+          exp(el.x1, el.y1); exp(el.x2, el.y2);
+          break;
+        case 'circle': case 'sector':
+          exp(el.cx-(el.r||0), el.cy-(el.r||0));
+          exp(el.cx+(el.r||0), el.cy+(el.r||0));
+          break;
+        case 'arc': {
+          const ar = el.r || 20;
+          exp(el.cx - ar, el.cy - ar); exp(el.cx + ar, el.cy + ar);
+          // Account for auto-positioned label
+          if (el.label) {
+            const mid = ((el.startDeg||0) + (el.endDeg||90)) / 2 * Math.PI / 180;
+            const lr = ar * 1.75;
+            const llen = String(el.label).length * (el.labelSize || 12) * 0.55;
+            exp(el.cx + lr*Math.cos(mid) - llen, el.cy + lr*Math.sin(mid) - 14);
+            exp(el.cx + lr*Math.cos(mid) + llen, el.cy + lr*Math.sin(mid) + 6);
+          }
+          break;
+        }
+        case 'rect':
+          exp(el.x, el.y); exp(el.x+(el.width||0), el.y+(el.height||0));
+          break;
+        case 'dot':
+          exp(el.x-(el.r||4), el.y-(el.r||4)); exp(el.x+(el.r||4), el.y+(el.r||4));
+          break;
+        case 'right_angle':
+          if (el.vertex) exp(el.vertex[0], el.vertex[1]);
+          if (el.leg1)   exp(el.leg1[0],   el.leg1[1]);
+          if (el.leg2)   exp(el.leg2[0],   el.leg2[1]);
+          break;
+        case 'side_label': {
+          const [slx1,sly1] = el.p1||[0,0], [slx2,sly2] = el.p2||[0,0];
+          const smx=(slx1+slx2)/2, smy=(sly1+sly2)/2;
+          const [sax,say] = el.awayFrom||[smx,smy];
+          let sdx=smx-sax, sdy=smy-say;
+          const sdl=Math.hypot(sdx,sdy)||1; sdx/=sdl; sdy/=sdl;
+          const so=el.offset??18, slx=smx+sdx*so, sly2b=smy+sdy*so;
+          const fs=el.fontSize||13, tw=(el.text||'').length*fs*0.58;
+          exp(slx-tw/2-4, sly2b-fs); exp(slx+tw/2+4, sly2b+4);
+          break;
+        }
+        case 'text': {
+          const fs  = el.fontSize || 13;
+          const len = String(el.text||'').length;
+          const ta  = el.textAnchor || 'start';
+          const tw  = len * fs * 0.58;
+          const tx  = ta === 'middle' ? el.x - tw/2 : ta === 'end' ? el.x - tw : el.x;
+          exp(tx - 4, el.y - fs); exp(tx + tw + 4, el.y + 4);
+          break;
+        }
+      }
+    }
+  }
+  if (!isFinite(x0)) return null;
+  const PAD = 16;
+  return { x: x0-PAD, y: y0-PAD, w: x1-x0+PAD*2, h: y1-y0+PAD*2 };
+}
+
 function renderAnimation(cfg, container, opts) {
   opts = opts || {};
   const synced = !!opts.synced;
@@ -3329,6 +3466,10 @@ function renderAnimation(cfg, container, opts) {
   const h   = cfg.height || 260;
   const uid = 'ap_' + Math.random().toString(36).slice(2, 9);
 
+  // Compute tight viewBox from actual element positions — figure always fills canvas
+  const bb  = _animBBox(cfg.frames);
+  const vb  = bb ? `${bb.x.toFixed(1)} ${bb.y.toFixed(1)} ${bb.w.toFixed(1)} ${bb.h.toFixed(1)}` : `0 0 ${w} ${h}`;
+
   const controlsHtml = synced
       ? `<div class="anim-dots anim-dots-synced" id="${uid}_dots"></div>`
       : `<div class="anim-controls">
@@ -3337,17 +3478,20 @@ function renderAnimation(cfg, container, opts) {
         <button class="anim-btn" id="${uid}_next" onclick="animStep('${uid}',1)">&#8594;</button>
       </div>`;
 
+  // Use tight bbox aspect-ratio for standalone mode; split-layout CSS overrides with flex height
+  const arStyle = bb ? `aspect-ratio:${(bb.w/bb.h).toFixed(4)};` : `aspect-ratio:${w}/${h};`;
+
   container.innerHTML = `
     <div class="anim-player${synced ? ' anim-player-synced' : ''}">
-      <div class="anim-svg-wrap" style="aspect-ratio:${w}/${h};">
-        <svg id="${uid}_svg" viewBox="0 0 ${w} ${h}" style="width:100%;height:100%;"></svg>
+      <div class="anim-svg-wrap" style="${arStyle}">
+        <svg id="${uid}_svg" viewBox="${vb}" preserveAspectRatio="xMidYMid meet" style="width:100%;height:100%;display:block;"></svg>
         <div id="${uid}_ov" class="anim-overlays"></div>
       </div>
       <div class="anim-caption" id="${uid}_cap"></div>
       ${controlsHtml}
     </div>`;
 
-  window._animPlayers[uid] = { cfg, currentIdx: 0, synced };
+  window._animPlayers[uid] = { cfg, currentIdx: 0, synced, viewBox: vb };
   _animRenderFrame(uid, 0, false);
   return uid;
 }
@@ -3573,6 +3717,42 @@ function _animRenderElement(svgEl, ovEl, el, isNew, animDelay, svgW, svgH) {
       node.setAttribute('fill', el.fill || '#dbeafe');
       if (isNew) _applyAnim(node, 'anim-fade');
       svgEl.appendChild(node);
+      break;
+    }
+    case 'side_label': {
+      // Label auto-positioned perpendicular to a segment, pushed away from an interior reference point.
+      // el.p1, el.p2: segment endpoints  el.awayFrom: any interior point (e.g. centroid)
+      // el.offset (default 18): px distance from segment midpoint
+      const [slx1, sly1] = el.p1 || [0, 0];
+      const [slx2, sly2] = el.p2 || [0, 0];
+      const smx = (slx1 + slx2) / 2, smy = (sly1 + sly2) / 2;
+      const [ax, ay] = el.awayFrom || [smx, smy];
+      let sdx = smx - ax, sdy = smy - ay;
+      const sdlen = Math.hypot(sdx, sdy) || 1;
+      sdx /= sdlen; sdy /= sdlen;
+      // Auto-compute minimum offset so text doesn't overlap the segment.
+      // Cap each axis contribution to avoid exploding offsets on diagonal push directions.
+      // e.g. a diagonal push on a horizontal segment shouldn't require 60px just because
+      // the horizontal component of the push direction is small.
+      const _fs  = el.fontSize || 13;
+      const _htw = (el.text || '').length * _fs * 0.55 / 2; // half text width
+      const _hth = _fs * 0.5;                                // half text height
+      const _minX = Math.abs(sdx) > 0.15 ? Math.min((_htw + 5) / Math.abs(sdx), _htw + 8) : 0;
+      const _minY = Math.abs(sdy) > 0.15 ? Math.min((_hth + 4) / Math.abs(sdy), _hth + 6) : 0;
+      const soff = Math.max(el.offset ?? 18, _minX, _minY);
+      const slx = smx + sdx * soff, sly = smy + sdy * soff;
+      const sNode = document.createElementNS(_SVG_NS, 'text');
+      sNode.setAttribute('x', slx.toFixed(1));
+      sNode.setAttribute('y', sly.toFixed(1));
+      sNode.setAttribute('font-size', el.fontSize || 13);
+      sNode.setAttribute('fill', el.color || '#1e293b');
+      sNode.setAttribute('font-family', "Inter, 'Helvetica Neue', sans-serif");
+      sNode.setAttribute('text-anchor', 'middle');
+      sNode.setAttribute('dominant-baseline', 'central');
+      if (el.bold) sNode.setAttribute('font-weight', '700');
+      sNode.textContent = el.text || '';
+      if (isNew) _applyAnim(sNode, 'anim-fade');
+      svgEl.appendChild(sNode);
       break;
     }
     case 'text': {

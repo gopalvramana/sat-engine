@@ -51,6 +51,17 @@ import java.util.List;
  *   # Enrich a single question by ID (any status)
  *   java -jar sat-engine.jar --job=enrich --id=MATH-GEO-010
  *
+ * ── VISUAL CHECK ──────────────────────────────────────────────────────────
+ *   # Check all animated geometry questions
+ *   java -jar sat-engine.jar --job=visual-check
+ *
+ *   # Auto-patch fixable issues (missing labels, bad offsets)
+ *   java -jar sat-engine.jar --job=visual-check --fix
+ *
+ *   # Check (and optionally fix) a single question
+ *   java -jar sat-engine.jar --job=visual-check --id=MATH-GEO-004
+ *   java -jar sat-engine.jar --job=visual-check --fix --id=MATH-GEO-004
+ *
  * ── FLAGS ─────────────────────────────────────────────────────────────────
  * --count       Number of questions to generate (default: 10)
  * --section     math | reading_writing  (default: random)
@@ -73,6 +84,7 @@ public class PipelineRunner implements ApplicationRunner {
     private final GenerateStage     generateStage;
     private final AgentReviewStage  agentReviewStage;
     private final EnrichStage       enrichStage;
+    private final VisualCheckStage  visualCheckStage;
 
     @Override
     public void run(ApplicationArguments args) {
@@ -87,10 +99,11 @@ public class PipelineRunner implements ApplicationRunner {
         String job = jobs.get(0).toLowerCase().strip();
 
         switch (job) {
-            case "generate" -> runGenerate(args);
-            case "agent-review" -> runAgentReview(args);
-            case "enrich" -> runEnrich(args);
-            default -> log.warn("Unknown --job value: '{}'. Valid: generate, agent-review, enrich", job);
+            case "generate"      -> runGenerate(args);
+            case "agent-review"  -> runAgentReview(args);
+            case "enrich"        -> runEnrich(args);
+            case "visual-check"  -> runVisualCheck(args);
+            default -> log.warn("Unknown --job value: '{}'. Valid: generate, agent-review, enrich, visual-check", job);
         }
 
         // Exit after pipeline job — don't start web server
@@ -121,6 +134,12 @@ public class PipelineRunner implements ApplicationRunner {
     private void runAgentReview(ApplicationArguments args) {
         boolean onlyFailed = args.containsOption("only-failed");
         agentReviewStage.run(onlyFailed);
+    }
+
+    private void runVisualCheck(ApplicationArguments args) {
+        boolean fix    = args.containsOption("fix");
+        String  onlyId = stringArg(args, "id", null);
+        visualCheckStage.run(fix, onlyId);
     }
 
     private int intArg(ApplicationArguments args, String key, int defaultValue) {

@@ -76,6 +76,37 @@ public class EnrichAnimationStage {
         enrichOne(q, 1, 1);
     }
 
+    /**
+     * Called automatically by EnrichStage after pedagogy enrichment.
+     * Generates animation frames only if:
+     *   1. The question has a non-empty diagram (the real signal of visual content)
+     *   2. animation.eligible = true (Claude's intent)
+     *   3. No frames exist yet (skip already-animated questions)
+     *
+     * The diagram check prevents animating word problems that Claude incorrectly
+     * marks eligible — if there is nothing to draw, there is no diagram.
+     *
+     * Returns true if frames were generated, false if skipped or failed.
+     */
+    public boolean enrichIfEligible(Question q) {
+        // Guard 1: must have a diagram — word problems never do
+        boolean hasDiagram = q.getDiagram() != null && !q.getDiagram().isBlank()
+                && !q.getDiagram().equals("{}");
+        if (!hasDiagram) return false;
+
+        try {
+            JsonNode anim = q.getAnimation() != null
+                    ? objectMapper.readTree(q.getAnimation()) : null;
+            boolean eligible = anim != null && anim.path("eligible").asBoolean(false);
+            boolean hasFrames = anim != null && anim.path("frames").isArray()
+                    && anim.path("frames").size() > 0;
+            if (!eligible || hasFrames) return false;
+        } catch (Exception e) {
+            return false;
+        }
+        return enrichOne(q, 1, 1);
+    }
+
     // ── Internal ────────────────────────────────────────────────────────────
 
     private int processQueue(List<Question> queue) {
@@ -124,39 +155,95 @@ public class EnrichAnimationStage {
         sb.append("Difficulty: ").append(q.getDifficulty()).append("/7\n");
         sb.append("Stem: ").append(q.getQuestionStem()).append("\n\n");
 
-        // Include existing diagram coordinates if available
+        // ── Extract canvas size + exact vertex coordinates from diagram ──────
+        int canvasW = 280, canvasH = 260;
+        StringBuilder vertexBlock = new StringBuilder();
         if (q.getDiagram() != null && !q.getDiagram().isBlank()) {
-            sb.append("EXISTING DIAGRAM (use these exact coordinates for your animation):\n");
-            sb.append(q.getDiagram()).append("\n\n");
+            try {
+                JsonNode diag = objectMapper.readTree(q.getDiagram());
+                JsonNode cfg  = diag.path("svgConfig");
+                if (cfg.has("width"))  canvasW = cfg.path("width").asInt(280);
+                if (cfg.has("height")) canvasH = cfg.path("height").asInt(260);
+                final int fCanvasW = canvasW, fCanvasH = canvasH;
+                JsonNode vertices = cfg.path("vertices");
+                if (vertices.isObject() && !vertices.isEmpty()) {
+                    double[] sumX = {0}, sumY = {0};
+                    int[]    cnt  = {0};
+                    vertices.fields().forEachRemaining(e -> {
+                        sumX[0] += e.getValue().path("x").asDouble();
+                        sumY[0] += e.getValue().path("y").asDouble();
+                        cnt[0]++;
+                    });
+                    int centX = (int) Math.round(sumX[0] / cnt[0]);
+                    int centY = (int) Math.round(sumY[0] / cnt[0]);
+
+                    vertexBlock.append("DIAGRAM COORDINATES — USE THESE EXACT VALUES, DO NOT INVENT NEW ONES:\n");
+                    vertexBlock.append("Canvas: ").append(canvasW).append("x").append(canvasH).append(" px\n");
+                    vertexBlock.append("Vertices (use for polygon points AND vertex text labels):\n");
+                    vertices.fields().forEachRemaining(e -> {
+                        int vx = e.getValue().path("x").asInt();
+                        int vy = e.getValue().path("y").asInt();
+                        // compute label offset position (16px outward from centroid)
+                        double ddx = vx - centX, ddy = vy - centY;
+                        double dlen = Math.max(Math.sqrt(ddx*ddx + ddy*ddy), 1);
+                        int lxRaw = (int) Math.round(vx + (ddx/dlen)*16);
+                        int lyRaw = (int) Math.round(vy + (ddy/dlen)*16);
+                        // clamp to canvas
+                        int lx = Math.max(12, Math.min(lxRaw, fCanvasW - 12));
+                        int ly = Math.max(12, Math.min(lyRaw, fCanvasH - 12));
+                        vertexBlock.append("  ").append(e.getKey())
+                                   .append(": polygon point=(").append(vx).append(",").append(vy).append(")")
+                                   .append("  label pos=(").append(lx).append(",").append(ly).append(")\n");
+                    });
+                    vertexBlock.append("Centroid (use as awayFrom for side_label): (")
+                               .append(centX).append(",").append(centY).append(")\n");
+                }
+            } catch (Exception ignored) {}
+        }
+        if (!vertexBlock.isEmpty()) {
+            sb.append(vertexBlock).append("\n");
         }
 
         // Include explanation steps for context
         if (q.getExplanationSteps() != null && !q.getExplanationSteps().isBlank()) {
             sb.append("SOLUTION STEPS (your animation should visually support these):\n");
-            // Truncate if too long
             String steps = q.getExplanationSteps();
             if (steps.length() > 1200) steps = steps.substring(0, 1200) + "...";
             sb.append(steps).append("\n\n");
         }
 
+        final int fw = canvasW, fh = canvasH;
+        final boolean hasVertices = !vertexBlock.isEmpty();
+        sb.append("TASK: Generate EXACTLY 3-4 animation frames that progressively build a geometric figure.\n");
+        sb.append("Frames are CUMULATIVE — each frame includes ALL elements from previous frames plus new ones.\n\n");
+        sb.append("CANVAS: ").append(fw).append("x").append(fh)
+          .append(" px. Top-left origin. Y increases downward. 25px margin.\n\n");
+
+        if (hasVertices) {
+            sb.append("CRITICAL: The diagram coordinates above are the SOURCE OF TRUTH.\n");
+            sb.append("Your polygon points MUST match the vertex coordinates exactly.\n\n");
+        }
+
         sb.append("""
-TASK: Generate EXACTLY 3-4 animation frames that progressively build a geometric figure.
-Frames are CUMULATIVE — each frame includes ALL elements from previous frames plus new ones.
-
-CANVAS: 280x260 px. Top-left origin. Y increases downward. 25px margin.
-
 FRAME STRUCTURE (cumulative):
-- Frame 1: base figure only (the geometric shape(s))
-- Frame 2: add labels for all known/given values
-- Frame 3: highlight unknown element (use red #dc2626)
-- Frame 4 (optional): show final answer highlighted (use green #16a34a)
+- Frame 1: base polygon/shape + dot at each vertex + vertex text labels (A, B, C…) + angle arc if needed
+- Frame 2: side_label elements for all given/known side values
+- Frame 3: highlight the unknown (red #dc2626)
+- Frame 4 (optional): show final answer (green #16a34a)
+
+VERTEX LABELS — ADD IN FRAME 1 (required for named-vertex problems):
+Use the label positions computed from vertices above. Format:
+{"type":"text","x":<lx>,"y":<ly>,"text":"A","fontSize":13,"color":"#1e293b","bold":true,"anchor":"middle"}
+
+SIDE LABELS — always use side_label type (never plain text on a side line):
+{"type":"side_label","p1":[x1,y1],"p2":[x2,y2],"text":"7","color":"#2563eb","offset":22,"awayFrom":[centX,centY],"fontSize":13}
+offset rules: vertical sides (p1.x≈p2.x) → offset≥36; horizontal sides → offset≥20; diagonal → offset≥24.
 
 STRICT LIMITS:
-- Max 8 elements per frame total (cumulative)
-- text labels: keep under 10 chars each
-- NO katex elements — formulas go in the solution steps, not the canvas
-- No vertex labels (A, B, C) unless needed for the problem
-- ALL numeric values in elements (x, y, cx, cy, r, x1, y1, x2, y2, fontSize, strokeWidth, size) MUST be numbers, never strings
+- Max 10 elements per frame total (cumulative)
+- text labels: keep under 12 chars
+- NO katex elements
+- ALL numeric values MUST be numbers, not strings
 
 ELEMENT TYPES — use ONLY these:
 {"type":"polygon","points":[[x,y],...],"stroke":"#334155","fill":"#f0f9ff","strokeWidth":2}
@@ -167,34 +254,25 @@ ELEMENT TYPES — use ONLY these:
 {"type":"right_angle","vertex":[x,y],"leg1":[x,y],"leg2":[x,y],"size":12}
 {"type":"arc","cx":x,"cy":y,"r":r,"startDeg":deg,"endDeg":deg,"stroke":"#64748b","strokeWidth":1.5,"label":"52°","labelColor":"#64748b","labelSize":12}
 {"type":"dot","x":x,"y":y,"r":4,"fill":"#1e293b"}
-{"type":"text","x":x,"y":y,"text":"short label","fontSize":13,"color":"#1e293b"}
+{"type":"text","x":x,"y":y,"text":"label","fontSize":13,"color":"#1e293b","bold":false,"anchor":"middle"}
+{"type":"side_label","p1":[x1,y1],"p2":[x2,y2],"text":"label","color":"#2563eb","offset":22,"awayFrom":[cx,cy],"fontSize":13}
 
-COLORS: base "#334155"/#f0f9ff, known "#2563eb", unknown "#dc2626", answer "#16a34a", sector "#dbeafe"
-
-COORDINATE TEMPLATES:
-Right triangle (right angle at C bottom-right): A=(40,220) C=(220,220) B=(220,55)
-Circle: center=(140,130) r=90
-Sector (arc slice): center=(140,220) r=110 — use startDeg/endDeg in degrees (0=right, 90=down, -90=up)
-Rectangle: x=40 y=60 width=200 height=140
-Composite (circle inside rectangle): rect x=40 y=60 w=200 h=160, circle cx=140 cy=140 r=70
-Coordinate plane: axes lines from (20,130)→(260,130) and (140,20)→(140,240), dot at origin (140,130)
-Triangle (general): three polygon points, use arc for angle markers
+COLORS: base "#334155"/#f0f9ff, given "#2563eb", unknown "#dc2626", answer "#16a34a"
 
 PROBLEM TYPE GUIDANCE:
-- Circle area/circumference: use circle element, label radius
-- Sector/arc: use sector element + arc for the arc portion
-- Area of shaded region: draw outer shape (rect/polygon) then inner shape with different fill
-- Similar triangles: two polygon triangles, highlight corresponding sides
-- Inscribed figures: outer circle + inner polygon (or vice versa)
+- Triangles: polygon + dot at each vertex + vertex text labels + arc for angle markers + side_label for sides
+- Circle area/circumference: circle element, label radius with side_label or text
+- Sector/arc: sector element + arc for the arc portion
+- Area of shaded region: outer shape then inner shape with different fill
 - Coordinate geometry: dot elements for points, line elements for segments
-- Composite figures: multiple shapes layered
-- Pythagorean theorem / diagonal of rectangle: ALWAYS draw the right TRIANGLE (not the full rectangle); use polygon with 3 points for the triangle, right_angle marker at the 90° corner, then add a bold line for the hypotenuse in frame 3-4; never draw the rectangle when the problem is about finding a diagonal
-- right_angle element: vertex is the corner point, leg1 and leg2 are the OTHER ends of the two legs (not unit vectors)
-- arc element with angle labels: ALWAYS use the "label" field (e.g. "label":"52°") instead of a separate text element for angle labels — the renderer auto-positions the label along the bisector, clear of the arc; never place a separate text element on top of an arc
-
-Return ONLY valid JSON, no markdown:
-{"eligible":true,"width":280,"height":260,"frames":[{"caption":"...","elements":[...]}]}
+- Pythagorean theorem: draw the right TRIANGLE (polygon 3 points), right_angle marker, label legs
+- right_angle element: vertex is the corner, leg1/leg2 are the OTHER ends of the two legs (not unit vectors)
+- arc angle labels: use "label" field on the arc (e.g. "label":"52°") — renderer auto-positions it; never put a separate text element on top of an arc
 """);
+        sb.append("Return ONLY valid JSON, no markdown:\n");
+        sb.append("{\"eligible\":true,\"width\":").append(fw)
+          .append(",\"height\":").append(fh)
+          .append(",\"frames\":[{\"caption\":\"...\",\"elements\":[...]}]}\n");
         return sb.toString();
     }
 

@@ -299,6 +299,10 @@
   border-radius: 0.75rem;
   padding: 1.25rem 1.35rem;
   min-height: 6rem;
+  /* Card has a bounded width from its flex/block parent.
+     overflow-x: auto here ensures wide KaTeX formulas scroll rather than
+     getting hard-clipped by the accordion-group's overflow:hidden. */
+  overflow-x: auto;
 }
 
 .step-number {
@@ -329,7 +333,9 @@
   color: #1d4ed8;
   margin-top: 0.9rem;
   text-align: center;
-  overflow-x: auto;
+  /* overflow-x on step-math alone is unreliable: KaTeX block children grow to
+     fit content so .step-math itself never overflows its own scroll width.
+     Scrolling is handled at the .step-card level instead. */
 }
 
 /* Step nav footer (prev/next) */
@@ -480,12 +486,31 @@
   flex: 0 0 42%;
   min-width: 200px;
   max-width: 360px;
+  display: flex;
+  flex-direction: column;
 }
 .sol-fig .anim-player {
   margin-bottom: 0;
   background: transparent;
   border: none;
   padding: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+/* Fixed canvas height — consistent across all questions */
+.sol-fig .anim-svg-wrap {
+  flex: 1;
+  min-height: 180px;
+  max-height: 260px;
+  aspect-ratio: unset !important;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.6rem;
+  overflow: hidden;
+}
+.sol-fig .anim-player-synced .anim-caption {
+  flex-shrink: 0;
 }
 .sol-steps {
   flex: 1;
@@ -493,7 +518,8 @@
   display: flex;
   flex-direction: column;
 }
-/* Step navigator fills the full right column height */
+/* Step navigator fills the full right column height.
+   max-height bounds the flex chain so step-card's overflow-y:auto triggers. */
 .sol-steps .step-navigator {
   flex: 1;
   display: flex;
@@ -501,6 +527,8 @@
   background: #f8fafc;
   border: 1px solid #e2e8f0;
   border-radius: 0.75rem;
+  max-height: 320px;
+  overflow: hidden;
 }
 /* Step card: fills space, scrolls if content overflows */
 .sol-steps .step-card {
@@ -510,13 +538,31 @@
   border-radius: 0;
   background: transparent;
   overflow-y: auto;
+  overflow-x: auto;
   padding: 0.9rem 1.1rem 0.5rem;
 }
 /* Compact font sizes inside the split layout to prevent truncation */
 .sol-steps .step-number  { font-size: 0.65rem; margin-bottom: 0.35rem; }
 .sol-steps .step-title   { font-size: 0.85rem; margin-bottom: 0.35rem; }
 .sol-steps .step-content { font-size: 0.82rem; line-height: 1.65; margin-bottom: 0.2rem; }
-.sol-steps .step-math    { margin-top: 0.5rem; font-size: 0.82rem; }
+/* Math in split layout: left-align so wide formulas start at left edge and scroll right.
+   Centering causes overflow to go both directions, permanently hiding the left side
+   since scrollLeft cannot go negative. */
+.sol-steps .step-math {
+  margin-top: 0.5rem;
+  font-size: 0.82rem;
+  overflow-x: auto;
+  overflow-y: visible;
+  padding-bottom: 4px; /* room for horizontal scrollbar */
+  max-width: 100%;
+}
+/* Override KaTeX's own centering inside the constrained split column.
+   KaTeX sets text-align:center on .katex-display and .katex-display>.katex;
+   left-align so the formula starts at x=0 and only overflows to the right. */
+.sol-steps .step-math .katex-display,
+.sol-steps .step-math .katex-display > .katex {
+  text-align: left;
+}
 /* Footer pins to bottom with a divider */
 .sol-steps .step-nav-footer {
   flex-shrink: 0;

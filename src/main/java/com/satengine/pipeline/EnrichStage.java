@@ -24,6 +24,7 @@ public class EnrichStage {
     private final QuestionAnswerRepository questionAnswerRepository;
     private final ClaudeClient             claudeClient;
     private final ObjectMapper             objectMapper;
+    private final EnrichAnimationStage     enrichAnimationStage;
 
     private static final String ENRICH_MODEL = "claude-opus-4-6";
     private static final int    MAX_TOKENS   = 3500;
@@ -113,6 +114,10 @@ public class EnrichStage {
 
         log.info("─".repeat(60));
         log.info(" Results: {} enriched  {} skipped (R&W)  {} failed", enriched, skipped, failed);
+
+        // Backfill animations for any eligible questions still missing frames
+        // (covers: inline failures, pre-existing questions, re-runs after prompt fixes)
+        enrichAnimationStage.runBackfill();
     }
 
     /** Enriches a single question. Returns int[]{enriched, skipped, failed} counts. */
@@ -126,7 +131,10 @@ public class EnrichStage {
             } else {
                 JsonNode fields = enrichQuestion(q);
                 applyFields(q, fields, "approved".equals(q.getStatus()) || "enriched".equals(q.getStatus()));
-                log.info("[{}/{}] {} done", i, total, label);
+                // Re-fetch so animation field reflects what was just saved
+                q = questionRepository.findById(q.getId()).orElse(q);
+                boolean animated = enrichAnimationStage.enrichIfEligible(q);
+                log.info("[{}/{}] {} done{}", i, total, label, animated ? "  (+ animation)" : "");
                 return new int[]{1, 0, 0};
             }
         } catch (Exception e) {
