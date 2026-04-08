@@ -1,0 +1,219 @@
+.page {
+  max-width: 580px;
+  margin: 0 auto;
+  padding: 60px 20px 40px;
+  text-align: center;
+}
+
+.hero { margin-bottom: 36px; }
+
+.badge {
+  display: inline-block;
+  background: #f5f3ff;
+  color: #7c3aed;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 14px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0 0 12px;
+}
+
+.sub {
+  font-size: 15px;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ── Step 1: Section cards ─────────────────────────── */
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.sectionCard {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s;
+}
+.sectionCard:hover { border-color: #a78bfa; background: #faf5ff; }
+.sectionSelected { border-color: #7c3aed; background: #f5f3ff; }
+
+.sectionIcon { font-size: 24px; flex-shrink: 0; }
+
+.sectionLabel {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+  min-width: 160px;
+}
+.sectionDesc { font-size: 13px; color: #64748b; }
+
+/* ── Step 2: Section tag + change button ───────────── */
+.sectionTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #f5f3ff;
+  border: 1.5px solid #ddd6fe;
+  border-radius: 999px;
+  padding: 5px 14px 5px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #5b21b6;
+  margin-bottom: 24px;
+}
+.sectionTagIcon { font-size: 16px; }
+
+.changeBtn {
+  background: none;
+  border: none;
+  color: #7c3aed;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  font-family: inherit;
+}
+
+/* ── Step 2: Domain rows ────────────────────────────── */
+.domainList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.domainRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 16px;
+}
+
+.domainIcon {
+  font-size: 18px;
+  width: 26px;
+  text-align: center;
+  flex-shrink: 0;
+  font-style: normal;
+  font-family: 'Georgia', serif;
+  color: #374151;
+}
+
+.domainLabel {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* ── Stepper +/- ────────────────────────────────────── */
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.stepperBtn {
+  width: 34px;
+  height: 34px;
+  background: #f8fafc;
+  border: none;
+  font-size: 18px;
+  font-weight: 700;
+  color: #374151;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.12s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.stepperBtn:hover:not(:disabled) { background: #7c3aed; color: #fff; }
+.stepperBtn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.stepperVal {
+  width: 36px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e293b;
+  border-left: 1.5px solid #e2e8f0;
+  border-right: 1.5px solid #e2e8f0;
+  line-height: 34px;
+}
+
+/* ── Total row ──────────────────────────────────────── */
+.totalRow {
+  margin-bottom: 24px;
+}
+
+.totalBadge {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 5px 16px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1.5px solid #e2e8f0;
+  transition: background 0.15s, color 0.15s;
+}
+.totalOk {
+  background: #f0fdf4;
+  color: #16a34a;
+  border-color: #86efac;
+}
+.totalOver {
+  background: #fef2f2;
+  color: #dc2626;
+  border-color: #fca5a5;
+}
+
+/* ── Start / Continue button ────────────────────────── */
+.startRow { display: flex; justify-content: center; }
+
+.startBtn {
+  padding: 14px 48px;
+  background: #7c3aed;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, opacity 0.15s;
+  letter-spacing: 0.01em;
+}
+.startBtn:hover:not(:disabled) { background: #6d28d9; }
+.startBtn:disabled { opacity: 0.4; cursor: not-allowed; }

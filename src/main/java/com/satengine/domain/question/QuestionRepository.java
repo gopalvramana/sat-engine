@@ -47,6 +47,44 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
             @Param("section") String section
     );
 
+    /**
+     * Find a random approved question for a specific domain, excluding already-answered ones.
+     */
+    @Query(value = """
+            SELECT * FROM questions
+            WHERE status = 'approved'
+            AND pool IN ('both', :pool)
+            AND (:section IS NULL OR section = :section)
+            AND domain = :domain
+            AND id NOT IN (:excludeIds)
+            ORDER BY RANDOM()
+            LIMIT 1
+            """, nativeQuery = true)
+    Optional<Question> findNextQuestionByDomain(
+            @Param("pool") String pool,
+            @Param("section") String section,
+            @Param("domain") String domain,
+            @Param("excludeIds") List<UUID> excludeIds
+    );
+
+    /**
+     * Find a random approved question for a specific domain, no exclusions.
+     */
+    @Query(value = """
+            SELECT * FROM questions
+            WHERE status = 'approved'
+            AND pool IN ('both', :pool)
+            AND (:section IS NULL OR section = :section)
+            AND domain = :domain
+            ORDER BY RANDOM()
+            LIMIT 1
+            """, nativeQuery = true)
+    Optional<Question> findNextQuestionByDomainNoExclusions(
+            @Param("pool") String pool,
+            @Param("section") String section,
+            @Param("domain") String domain
+    );
+
     List<Question> findByStatus(String status);
 
     /** Approved questions that were never enriched (coreConcept is null). */
@@ -87,6 +125,12 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
     List<Question> findBySection(String section);
 
     List<Question> findBySectionAndDomain(String section, String domain);
+
+    List<Question> findByStatusAndSection(String status, String section);
+
+    List<Question> findByStatusAndDomain(String status, String domain);
+
+    List<Question> findByStatusAndSectionAndDomain(String status, String section, String domain);
 
     List<Question> findByDifficulty(Short difficulty);
 

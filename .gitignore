@@ -39,3 +39,8 @@ application-local.properties
 # --- Test output ---
 /test-output/
 surefire-reports/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/node/

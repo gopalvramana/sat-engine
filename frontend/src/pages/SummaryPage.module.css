@@ -1,0 +1,112 @@
+.page {
+  min-height: 100vh;
+  background: #f8fafc;
+  padding: 40px 20px 60px;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.inner { max-width: 680px; margin: 0 auto; }
+
+/* ── Score card ─────────────────────────────────────────── */
+.scoreCard {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 28px 28px;
+  margin-bottom: 28px;
+}
+.scoreCircle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 90px; height: 90px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7c3aed, #a78bfa);
+  flex-shrink: 0;
+}
+.scorePct { font-size: 24px; font-weight: 800; color: #fff; line-height: 1; }
+.scoreLabel { font-size: 11px; color: #e9d5ff; font-weight: 600; text-transform: uppercase; }
+
+.scoreTitle { font-size: 20px; font-weight: 800; color: #1e293b; margin-bottom: 6px; }
+.scoreSub   { font-size: 15px; color: #475569; }
+
+/* ── Sections ───────────────────────────────────────────── */
+.section { margin-bottom: 28px; }
+.sectionTitle {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+  margin: 0 0 14px;
+}
+
+/* ── Domain breakdown ───────────────────────────────────── */
+.domainRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.domainName { font-size: 13px; color: #334155; min-width: 160px; font-weight: 500; }
+.domainBar {
+  flex: 1;
+  height: 8px;
+  background: #f1f5f9;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.domainFill {
+  height: 100%;
+  background: linear-gradient(90deg, #7c3aed, #a78bfa);
+  border-radius: 4px;
+  transition: width 0.6s ease;
+}
+.domainScore { font-size: 13px; color: #64748b; min-width: 36px; text-align: right; }
+
+/* ── Review list ────────────────────────────────────────── */
+.reviewList { display: flex; flex-direction: column; gap: 10px; }
+.reviewItem {
+  display: flex;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+}
+.reviewCorrect { border-left: 3px solid #16a34a; }
+.reviewWrong   { border-left: 3px solid #ef4444; }
+
+.reviewIcon { font-size: 16px; font-weight: 700; margin-top: 2px; flex-shrink: 0; }
+.reviewCorrect .reviewIcon { color: #16a34a; }
+.reviewWrong   .reviewIcon { color: #ef4444; }
+
+.reviewDomain {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #7c3aed;
+  margin-bottom: 4px;
+}
+.reviewStem { font-size: 13px; color: #334155; line-height: 1.5; }
+.reviewAnswer { font-size: 12px; color: #64748b; margin-top: 4px; }
+
+/* ── Restart ────────────────────────────────────────────── */
+.restartRow { display: flex; justify-content: center; margin-top: 8px; }
+.restartBtn {
+  padding: 13px 44px;
+  background: #7c3aed;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+.restartBtn:hover { background: #6d28d9; }

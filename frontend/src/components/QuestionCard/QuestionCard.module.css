@@ -1,0 +1,169 @@
+.card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.domain {
+  font-size: 12px;
+  font-weight: 600;
+  color: #7c3aed;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: #f5f3ff;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.diff {
+  display: flex;
+  gap: 3px;
+}
+.dotFilled {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #d97706;
+}
+.dotEmpty {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #e2e8f0;
+}
+
+.passage {
+  background: #f8fafc;
+  border-left: 3px solid #7c3aed;
+  padding: 14px 16px;
+  border-radius: 0 8px 8px 0;
+  margin-bottom: 16px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: #334155;
+}
+
+.stem {
+  font-size: 16px;
+  font-weight: 500;
+  color: #1e293b;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.choices {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.choice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s;
+  font-family: inherit;
+  font-size: 15px;
+}
+.choice:hover:not(:disabled) {
+  border-color: #a78bfa;
+  background: #faf5ff;
+}
+.choiceSelected {
+  border-color: #7c3aed;
+  background: #f5f3ff;
+}
+.choice:disabled {
+  cursor: not-allowed;
+}
+
+/* ── Post-submit color coding ──────────────────────────────── */
+.choiceCorrect {
+  border-color: #22c55e !important;
+  background: #f0fdf4 !important;
+  opacity: 1 !important;
+}
+.choiceWrong {
+  border-color: #ef4444 !important;
+  background: #fef2f2 !important;
+  opacity: 1 !important;
+}
+.choiceDimmed {
+  opacity: 0.45;
+}
+
+.choiceLetter {
+  font-weight: 700;
+  color: #7c3aed;
+  font-size: 14px;
+  min-width: 20px;
+}
+.choiceLetterCorrect { color: #16a34a; }
+.choiceLetterWrong   { color: #dc2626; }
+.choiceText { color: #334155; flex: 1; }
+
+.choiceBadge {
+  font-size: 11px; font-weight: 700;
+  color: #16a34a; background: #dcfce7;
+  padding: 2px 8px; border-radius: 999px;
+  flex-shrink: 0; margin-left: auto;
+}
+.choiceBadgeWrong {
+  font-size: 11px; font-weight: 700;
+  color: #dc2626; background: #fee2e2;
+  padding: 2px 8px; border-radius: 999px;
+  flex-shrink: 0; margin-left: auto;
+}
+
+.sprWrap {
+  margin-bottom: 20px;
+}
+.sprInput {
+  width: 100%;
+  max-width: 280px;
+  padding: 10px 14px;
+  font-size: 15px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+}
+.sprInput:focus { border-color: #7c3aed; }
+
+.submitRow {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.submitBtn {
+  padding: 10px 28px;
+  background: #7c3aed;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+.submitBtn:hover:not(:disabled) { background: #6d28d9; }
+.submitBtn:disabled { background: #c4b5fd; cursor: not-allowed; }

@@ -1,0 +1,304 @@
+.wrap { padding-bottom: 8px; }
+
+/* ── Result banner ──────────────────────────────────────────── */
+.banner {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 16px; border-radius: 12px; margin-bottom: 12px;
+}
+.bannerCorrect { background: #f0fdf4; border: 1.5px solid #86efac; }
+.bannerWrong   { background: #fef2f2; border: 1.5px solid #fca5a5; }
+
+.bannerIcon {
+  font-size: 18px; font-weight: 700;
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  color: #fff;
+}
+.bannerIconCorrect { background: #22c55e; }
+.bannerIconWrong   { background: #ef4444; }
+
+.bannerTitle { font-size: 15px; font-weight: 700; color: #1e293b; }
+.bannerSub   { font-size: 12px; color: #475569; margin-top: 2px; }
+
+/* ── Short explanation ──────────────────────────────────────── */
+.shortExpl {
+  background: #f8fafc; border-left: 3px solid #7c3aed;
+  padding: 9px 13px; border-radius: 0 8px 8px 0;
+  font-size: 13.5px; color: #334155; line-height: 1.6; margin-bottom: 12px;
+}
+
+/* ── Accordion group (outer card) ───────────────────────────── */
+.accordionGroup {
+  background: #fff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  margin-bottom: 14px;
+}
+
+/* ── Each <details> item ────────────────────────────────────── */
+.accordionItem {
+  border-bottom: 1px solid #f1f5f9;
+}
+.accordionItem:last-child { border-bottom: none; }
+
+/* ── Summary row ────────────────────────────────────────────── */
+.accordionSummary {
+  display: flex; align-items: center; gap: 0.55rem;
+  padding: 0.68rem 1rem; cursor: pointer;
+  list-style: none; user-select: none;
+  background: #f8fafc;
+  transition: background 0.12s;
+}
+.accordionSummary::-webkit-details-marker { display: none; }
+.accordionSummary:hover { background: #f1f5f9; }
+
+.accordionItem[open] > .accordionSummary {
+  background: #eff6ff;
+  border-bottom: 1px solid #dbeafe;
+}
+
+/* Icon */
+.accordionIcon { font-size: 0.9rem; flex-shrink: 0; width: 1.2rem; text-align: center; }
+
+/* Label */
+.accordionLabel {
+  font-size: 0.7rem; font-weight: 700;
+  color: #374151; text-transform: uppercase; letter-spacing: 0.06em; flex-shrink: 0;
+}
+.accordionItem[open] > .accordionSummary .accordionLabel { color: #1d4ed8; }
+
+/* Badge pill */
+.accordionBadge {
+  font-size: 0.71rem; font-weight: 500;
+  color: #64748b; background: #e2e8f0;
+  padding: 0.1rem 0.55rem; border-radius: 9999px;
+  max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.badgeConcept { background: #dbeafe; color: #1d4ed8; }
+.badgeAlt     { background: #e0f2fe; color: #0369a1; }
+
+/* Chevron — right-aligned, rotates on open */
+.accordionChevron {
+  margin-left: auto; font-size: 0.5rem; color: #94a3b8; flex-shrink: 0;
+  transition: transform 0.18s ease;
+}
+.accordionItem[open] > .accordionSummary .accordionChevron { transform: rotate(90deg); }
+
+/* Body */
+.accordionBody { padding: 0.8rem 1rem 1rem; background: #fff; }
+
+.accordionEmpty { font-size: 0.85rem; color: #64748b; font-style: italic; line-height: 1.6; margin: 0; }
+
+/* ── Solution split: animation left, steps right ────────────── */
+.solutionSplit {
+  display: grid;
+  grid-template-columns: 1fr 1fr;   /* strict 50/50 — no flex bias */
+  gap: 1.1rem;
+  align-items: stretch;
+}
+
+.solFig {
+  min-width: 0;
+}
+
+/* Synced player: borderless, no padding */
+.solFig :global(.anim-player-synced) {
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+/* SVG wrap: fills the column width; height driven by renderer's aspect-ratio */
+.solFig :global(.anim-svg-wrap) {
+  width: 100%;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.6rem;
+  overflow: hidden;
+  /* Do NOT override aspect-ratio — renderer sets it from the tight bounding box */
+}
+
+.solFig :global(.anim-caption) {
+  font-size: 0.72rem;
+  color: #64748b;
+  text-align: center;
+  margin-top: 0.35rem;
+}
+
+.solSteps {
+  min-width: 0;
+}
+
+/* ── Step Navigator ─────────────────────────────────────────── */
+.stepNavigator {
+  display: flex;
+  flex-direction: column;
+  height: 100%;           /* match the animation panel height */
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.stepCard {
+  flex: 1;                /* expand to fill available space */
+  display: flex;
+  flex-direction: column;
+  align-items: center;    /* center horizontally */
+  justify-content: center;/* center vertically */
+  padding: 0.9rem 1rem 0.5rem;
+  text-align: center;
+  background: transparent;
+}
+
+.stepNumber {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #6366f1;
+  margin-bottom: 0.3rem;
+  text-align: center;
+}
+
+.stepTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1.5;
+  margin-bottom: 0.4rem;
+  text-align: center;
+}
+
+.stepContent {
+  font-size: 0.88rem;
+  color: #374151;
+  line-height: 1.8;
+  margin: 0 0 0.25rem;
+  text-align: center;
+}
+
+/* Animation-only frame styles (no matching calc step) */
+.stepTitleAnim  { color: #2563eb; }
+.stepContentAnim { color: #64748b; font-style: italic; }
+
+.stepMath {
+  color: #1d4ed8;
+  margin-top: 0.5rem;
+  font-size: 0.88rem;
+  overflow-x: auto;
+  overflow-y: visible;
+  padding-bottom: 4px;
+  max-width: 100%;
+  text-align: center;
+}
+
+/* Step nav footer with Prev / dots / Next */
+.stepNavFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.45rem 0.75rem;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+  flex-shrink: 0;
+}
+
+.stepNavBtn {
+  font-size: 0.72rem; font-weight: 600;
+  padding: 0.25rem 0.65rem; border-radius: 0.4rem;
+  border: 1.5px solid #e2e8f0; background: #fff;
+  color: #374151; cursor: pointer; font-family: inherit;
+  transition: background 0.12s, color 0.12s;
+}
+.stepNavBtn:hover:not(:disabled) { background: #6366f1; color: #fff; border-color: #6366f1; }
+.stepNavBtn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.stepNavCenter {
+  display: flex; flex-direction: column; align-items: center; gap: 0.25rem;
+}
+
+.stepDots { display: flex; gap: 0.35rem; }
+
+.stepDot {
+  width: 0.45rem; height: 0.45rem; border-radius: 50%;
+  background: #cbd5e1; cursor: pointer;
+  transition: background 0.15s, transform 0.15s;
+}
+.stepDotActive { background: #6366f1; transform: scale(1.35); }
+
+.stepCounter { font-size: 0.68rem; color: #94a3b8; font-weight: 500; }
+
+/* ── Why each option rows ────────────────────────────────────── */
+.choiceWhyList { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.choiceWhyRow {
+  border-radius: 0.6rem; overflow: hidden;
+  border: 1.5px solid #e2e8f0;
+}
+.choiceWhyCorrect { border-color: #86efac; background: #f0fdf4; }
+.choiceWhyWrong   { border-color: #e2e8f0; background: #fafafa; }
+
+.choiceWhyHeader {
+  display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+  padding: 0.5rem 0.75rem;
+}
+.choiceWhyIcon {
+  width: 1.35rem; height: 1.35rem; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; font-weight: 700; flex-shrink: 0;
+}
+.iconCorrect { background: #22c55e; color: #fff; }
+.iconWrong   { background: #e2e8f0; color: #64748b; }
+
+.choiceWhyLetter {
+  font-weight: 700; font-size: 0.88rem; color: #374151; flex-shrink: 0;
+}
+.choiceWhyText { font-size: 0.88rem; color: #334155; flex: 1; }
+.yourAnswer {
+  font-size: 0.68rem; background: #fef3c7; color: #92400e;
+  padding: 0.1rem 0.45rem; border-radius: 9999px; font-weight: 600; flex-shrink: 0;
+}
+.choiceWhyExpl {
+  font-size: 0.8rem; color: #475569; line-height: 1.55;
+  padding: 0 0.75rem 0.6rem; margin: 0;
+  border-top: 1px solid rgba(0,0,0,0.05);
+  padding-top: 0.45rem;
+}
+
+/* ── Core Concept body ──────────────────────────────────────── */
+.conceptText {
+  font-size: 0.82rem; color: #1d4ed8; line-height: 1.6; margin: 0 0 0.55rem;
+}
+.conceptFormula {
+  display: inline-block; background: #eff6ff;
+  border: 1px solid #bfdbfe; border-radius: 0.4rem;
+  padding: 0.3rem 0.7rem; font-size: 0.82rem; color: #1e40af;
+}
+
+/* ── Alternative Approach body ──────────────────────────────── */
+.altSteps { display: flex; flex-direction: column; gap: 0.65rem; }
+.altStep  { background: #f8fafc; border-radius: 0.5rem; padding: 0.6rem 0.75rem; }
+.altStepHeader { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.3rem; }
+.altStepNum {
+  width: 1.4rem; height: 1.4rem; border-radius: 50%;
+  background: #7c3aed; color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.72rem; font-weight: 700; flex-shrink: 0;
+}
+.altStepTitle  { font-size: 0.82rem; font-weight: 600; color: #1e293b; }
+.altStepContent { font-size: 0.8rem; color: #475569; line-height: 1.55; margin: 0 0 0.3rem; }
+.altStepMath { margin-top: 0.3rem; font-size: 0.82rem; }
+
+/* ── Next button ────────────────────────────────────────────── */
+.nextRow { display: flex; justify-content: flex-end; padding-top: 4px; }
+
+.nextBtn {
+  padding: 9px 26px; background: #1e293b; color: #fff;
+  border: none; border-radius: 8px; font-size: 14px;
+  font-weight: 600; cursor: pointer; font-family: inherit;
+  transition: background 0.15s;
+}
+.nextBtn:hover { background: #0f172a; }

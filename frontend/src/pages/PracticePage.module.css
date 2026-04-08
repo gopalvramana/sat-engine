@@ -1,0 +1,57 @@
+.page {
+  min-height: 100vh;
+  background: #f1f5f9;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* Full-width content area — no max-width cap, matches validate.html */
+.content {
+  padding: 20px 20px 60px;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 60px;
+  color: #64748b;
+  font-size: 15px;
+}
+
+.spinner {
+  width: 22px; height: 22px;
+  border: 3px solid #e2e8f0;
+  border-top-color: #7c3aed;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Two-column layout: question left, feedback right */
+.questionWrap {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+/* Left column — question card, sticky so it stays visible while scrolling feedback */
+.leftCol {
+  width: 44%;
+  flex-shrink: 0;
+  position: sticky;
+  top: 12px;
+  max-height: calc(100vh - 57px - 24px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #e2e8f0 transparent;
+}
+.leftCol::-webkit-scrollbar { width: 4px; }
+.leftCol::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 2px; }
+
+/* Right column — feedback panel, scrolls naturally */
+.rightCol {
+  flex: 1;
+  min-width: 0;
+  padding-bottom: 2rem;
+}

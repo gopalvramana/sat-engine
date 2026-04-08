@@ -1,5 +1,7 @@
 package com.satengine.domain.session;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.satengine.domain.question.Question;
 import com.satengine.domain.question.QuestionAnswer;
 import com.satengine.domain.question.QuestionAnswerRepository;
@@ -9,9 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,12 +22,22 @@ public class SessionService {
     private final SessionAnswerRepository sessionAnswerRepository;
     private final QuestionRepository questionRepository;
     private final QuestionAnswerRepository questionAnswerRepository;
+    private final ObjectMapper objectMapper;
 
     @Transactional
     public Session createSession(CreateSessionRequest req) {
+        String domainCountsJson = null;
+        if (req.domainCounts() != null && !req.domainCounts().isEmpty()) {
+            try {
+                domainCountsJson = objectMapper.writeValueAsString(req.domainCounts());
+            } catch (Exception e) {
+                // ignore — fall back to random
+            }
+        }
         Session session = Session.builder()
                 .sessionType(req.sessionType())
                 .section(req.section())
+                .domainCounts(domainCountsJson)
                 .status("active")
                 .build();
         return sessionRepository.save(session);
@@ -34,11 +45,17 @@ public class SessionService {
 
     @Transactional(readOnly = true)
     public Optional<QuestionResponse> getNextQuestion(UUID sessionId) {
-        List<UUID> answeredIds = sessionAnswerRepository.findAnsweredQuestionIds(sessionId);
-
         Session session = sessionRepository.findById(sessionId)
                 .orElseThrow(() -> new RuntimeException("Session not found: " + sessionId));
 
+        List<UUID> answeredIds = sessionAnswerRepository.findAnsweredQuestionIds(sessionId);
+
+        // ── Domain-quota mode ──────────────────────────────────────────
+        if (session.getDomainCounts() != null) {
+            return getNextQuestionByQuota(session, answeredIds);
+        }
+
+        // ── Random mode (legacy) ───────────────────────────────────────
         Optional<Question> next = answeredIds.isEmpty()
                 ? questionRepository.findNextQuestionNoExclusions("practice", session.getSection())
                 : questionRepository.findNextQuestion("practice", session.getSection(), answeredIds);
@@ -46,26 +63,62 @@ public class SessionService {
         return next.map(QuestionResponse::from);
     }
 
+    /** Pick the next question respecting per-domain quotas. */
+    private Optional<QuestionResponse> getNextQuestionByQuota(Session session, List<UUID> answeredIds) {
+        // Parse quota map from JSON
+        Map<String, Integer> quotas;
+        try {
+            quotas = objectMapper.readValue(session.getDomainCounts(),
+                    new TypeReference<Map<String, Integer>>() {});
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+
+        // Count already-answered questions per domain
+        Map<String, Long> answeredByDomain = new HashMap<>();
+        if (!answeredIds.isEmpty()) {
+            List<Question> answeredQuestions = questionRepository.findAllById(answeredIds);
+            answeredByDomain = answeredQuestions.stream()
+                    .collect(Collectors.groupingBy(Question::getDomain, Collectors.counting()));
+        }
+
+        // Find domains that still have remaining quota — randomize order for variety
+        final Map<String, Long> finalAnswered = answeredByDomain;
+        List<String> remainingDomains = quotas.entrySet().stream()
+                .filter(e -> e.getValue() > 0
+                        && finalAnswered.getOrDefault(e.getKey(), 0L) < e.getValue())
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+
+        Collections.shuffle(remainingDomains);
+
+        // Try each remaining domain until we find a question
+        for (String domain : remainingDomains) {
+            Optional<Question> q = answeredIds.isEmpty()
+                    ? questionRepository.findNextQuestionByDomainNoExclusions("practice", session.getSection(), domain)
+                    : questionRepository.findNextQuestionByDomain("practice", session.getSection(), domain, answeredIds);
+            if (q.isPresent()) return q.map(QuestionResponse::from);
+        }
+
+        return Optional.empty(); // all quotas exhausted or no questions available
+    }
+
     @Transactional
     public AnswerFeedback submitAnswer(UUID sessionId, SubmitAnswerRequest req) {
-        // Guard: session must exist
         sessionRepository.findById(sessionId)
                 .orElseThrow(() -> new RuntimeException("Session not found: " + sessionId));
 
-        // Guard: cannot answer the same question twice in a session
         sessionAnswerRepository.findBySessionIdAndQuestionId(sessionId, req.questionId())
                 .ifPresent(a -> {
                     throw new RuntimeException("Already answered question " + req.questionId() + " in this session");
                 });
 
-        // Retrieve correct answer (server-side only, never sent to client before submission)
         QuestionAnswer answer = questionAnswerRepository.findByQuestionId(req.questionId())
                 .orElseThrow(() -> new RuntimeException("Answer not found for question: " + req.questionId()));
 
         boolean isCorrect = answer.getCorrectAnswer()
                 .equalsIgnoreCase(req.studentAnswer().trim());
 
-        // Persist the student's answer
         SessionAnswer sessionAnswer = SessionAnswer.builder()
                 .sessionId(sessionId)
                 .questionId(req.questionId())
@@ -75,7 +128,6 @@ public class SessionService {
                 .build();
         sessionAnswerRepository.save(sessionAnswer);
 
-        // Retrieve question for explanation fields
         Question question = questionRepository.findById(req.questionId())
                 .orElseThrow(() -> new RuntimeException("Question not found: " + req.questionId()));
 

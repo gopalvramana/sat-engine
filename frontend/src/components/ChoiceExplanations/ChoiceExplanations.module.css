@@ -1,0 +1,36 @@
+.wrap { margin-bottom: 20px; }
+.heading {
+  font-size: 13px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  color: #64748b; margin: 0 0 10px;
+}
+.list { display: flex; flex-direction: column; gap: 8px; }
+
+.row {
+  display: flex; flex-direction: column; gap: 4px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+.correct { background: #f0fdf4; border-color: #86efac; }
+.wrong   { background: #fff; }
+
+.badge { display: flex; align-items: center; gap: 8px; }
+.letter {
+  font-weight: 700; font-size: 14px; color: #7c3aed;
+  min-width: 18px;
+}
+.tag {
+  font-size: 11px; font-weight: 600;
+  background: #16a34a; color: #fff;
+  padding: 1px 8px; border-radius: 10px;
+}
+.tagWrong {
+  font-size: 11px; font-weight: 600;
+  background: #ef4444; color: #fff;
+  padding: 1px 8px; border-radius: 10px;
+}
+.text {
+  font-size: 13px; color: #334155;
+  line-height: 1.55; margin: 0;
+}

@@ -1,0 +1,39 @@
+.wrap { margin-bottom: 20px; }
+
+.heading {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+  margin: 0 0 10px;
+}
+
+.card {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  padding: 16px 18px;
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e40af;
+  margin-bottom: 8px;
+}
+
+.summary {
+  font-size: 14px;
+  color: #1e3a8a;
+  line-height: 1.6;
+  margin: 0 0 10px;
+}
+
+.formula {
+  background: #dbeafe;
+  border-radius: 6px;
+  padding: 10px 14px;
+  text-align: center;
+  overflow-x: auto;
+}

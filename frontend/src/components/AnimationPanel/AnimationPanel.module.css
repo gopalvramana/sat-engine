@@ -1,0 +1,21 @@
+.wrap {
+  margin-top: 12px;
+}
+
+/* Synced mode: no top margin — sits flush inside sol-fig */
+.synced {
+  margin-top: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Small label above the renderer-injected player */
+.label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #94a3b8;
+  margin-bottom: 6px;
+}

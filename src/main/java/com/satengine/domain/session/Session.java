@@ -45,6 +45,15 @@ public class Session {
     @Column(name = "score", columnDefinition = "jsonb")
     private String score;
 
+    /**
+     * Optional domain quotas for this session — e.g. {"algebra":3,"geometry_trigonometry":4}
+     * When set, questions are drawn from each domain until the quota is exhausted.
+     * Stored as JSONB; deserialized as a simple String that we parse in the service.
+     */
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "domain_counts", columnDefinition = "jsonb")
+    private String domainCounts;
+
     @PrePersist
     protected void onCreate() {
         if (startedAt == null) {
