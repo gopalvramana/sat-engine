@@ -1,0 +1,1 @@
+{"version":"0.0.1","configurations":[{"name":"sat-engine","runtimeExecutable":"java","runtimeArgs":["-jar","target/sat-engine.jar","--spring.profiles.active=local"],"cwd":"/Users/ramana/SatEngine/sat-engine","port":8080}]}

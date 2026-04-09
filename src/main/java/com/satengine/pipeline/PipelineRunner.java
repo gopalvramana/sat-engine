@@ -12,66 +12,87 @@ import java.util.List;
 /**
  * CLI entry point for pipeline stages.
  *
+ * ═══════════════════════════════════════════════════════════════════════════
+ * PIPELINE WORKFLOW
+ * ═══════════════════════════════════════════════════════════════════════════
+ *
+ *   Step 1  generate          → status: generated
+ *   Step 2  render-normalize  → fixes $...$ math notation  (generated only)
+ *   Step 3  agent-review      → automated QA               (generated → reviewed)
+ *   Step 4  enrich            → pedagogy + animation        (reviewed  → enriched)
+ *   Step 5  visual-check      → geometry diagram QA         (geometry only)
+ *   Step 6  [validate.html]   → human approve/reject        (enriched  → approved/rejected)
+ *
+ *   Human review happens LAST so reviewers see the fully enriched question —
+ *   solution steps, animations, choice explanations — and can catch any issues
+ *   introduced during enrichment.
+ *
+ * ═══════════════════════════════════════════════════════════════════════════
+ *
  * ── GENERATE ──────────────────────────────────────────────────────────────
- *   # Fully automatic — domain picked randomly, skill auto-balanced per domain
  *   java -jar sat-engine.jar --job=generate --count=10
+ *   java -jar sat-engine.jar --job=generate --section=math --count=10
+ *   java -jar sat-engine.jar --job=generate --section=reading_writing --count=10
+ *   java -jar sat-engine.jar --job=generate --domain=algebra --count=10
+ *   java -jar sat-engine.jar --job=generate --domain=algebra --difficulty=4 --count=5
+ *   java -jar sat-engine.jar --job=generate --domain=algebra --skill=linear_functions --count=3
  *
- *   # Pin section only
- *   java -jar sat-engine.jar --job=generate --count=10 --section=math
- *   java -jar sat-engine.jar --job=generate --count=10 --section=reading_writing
+ * ── RENDER NORMALIZE ──────────────────────────────────────────────────────
+ *   # Default: fix newly generated questions (status=generated)
+ *   java -jar sat-engine.jar --job=render-normalize
  *
- *   # Pin domain (skill still auto-balanced within that domain)
- *   java -jar sat-engine.jar --job=generate --count=10 --domain=algebra
- *   java -jar sat-engine.jar --job=generate --count=5  --domain=algebra --difficulty=4
+ *   # Dry-run: report issues without writing to DB
+ *   java -jar sat-engine.jar --job=render-normalize --dry-run
  *
- *   # Pin domain + explicit skill (overrides auto-balance)
- *   java -jar sat-engine.jar --job=generate --count=3 --domain=algebra --skill=linear_functions
- *   java -jar sat-engine.jar --job=generate --count=3 --domain=geometry_trigonometry --skill=pythagorean_theorem --difficulty=5
+ *   # Scope to section or domain (matches what you just generated)
+ *   java -jar sat-engine.jar --job=render-normalize --section=math
+ *   java -jar sat-engine.jar --job=render-normalize --domain=algebra
+ *
+ *   # Scan entire question bank (one-time backfill, any status)
+ *   java -jar sat-engine.jar --job=render-normalize --all
+ *   java -jar sat-engine.jar --job=render-normalize --all --dry-run
+ *
+ *   # Fix a single question (any status)
+ *   java -jar sat-engine.jar --job=render-normalize --id=MATH-ALG-031
  *
  * ── AGENT REVIEW ──────────────────────────────────────────────────────────
- *   # Review all enriched (pending) questions
+ *   # Review all generated questions
  *   java -jar sat-engine.jar --job=agent-review
+ *
+ *   # Scope to section or domain (match what you just generated)
+ *   java -jar sat-engine.jar --job=agent-review --section=reading_writing
+ *   java -jar sat-engine.jar --job=agent-review --domain=algebra
+ *   java -jar sat-engine.jar --job=agent-review --section=math --domain=algebra
  *
  *   # Re-review only questions that previously failed
  *   java -jar sat-engine.jar --job=agent-review --only-failed
+ *   java -jar sat-engine.jar --job=agent-review --only-failed --domain=algebra
  *
  * ── ENRICH ────────────────────────────────────────────────────────────────
- *   # Enrich reviewed questions (normal flow)
  *   java -jar sat-engine.jar --job=enrich
- *
- *   # Re-enrich all approved questions (after prompt improvement)
+ *   java -jar sat-engine.jar --job=enrich --section=math
+ *   java -jar sat-engine.jar --job=enrich --domain=algebra
  *   java -jar sat-engine.jar --job=enrich --include-approved
- *
- *   # Re-enrich one domain only (test new prompt before full run)
  *   java -jar sat-engine.jar --job=enrich --include-approved --domain=algebra
- *
- *   # Re-enrich one section only
- *   java -jar sat-engine.jar --job=enrich --include-approved --section=math
- *
- *   # Enrich a single question by ID (any status)
  *   java -jar sat-engine.jar --job=enrich --id=MATH-GEO-010
  *
  * ── VISUAL CHECK ──────────────────────────────────────────────────────────
- *   # Check all animated geometry questions
  *   java -jar sat-engine.jar --job=visual-check
- *
- *   # Auto-patch fixable issues (missing labels, bad offsets)
  *   java -jar sat-engine.jar --job=visual-check --fix
- *
- *   # Check (and optionally fix) a single question
- *   java -jar sat-engine.jar --job=visual-check --id=MATH-GEO-004
  *   java -jar sat-engine.jar --job=visual-check --fix --id=MATH-GEO-004
  *
  * ── FLAGS ─────────────────────────────────────────────────────────────────
  * --count       Number of questions to generate (default: 10)
- * --section     math | reading_writing  (default: random)
- * --domain      Key from sat_taxonomy.json, e.g. algebra, geometry_trigonometry
- *               (default: random within section)
- * --skill       Canonical skill key, e.g. linear_functions, pythagorean_theorem
- *               When omitted, GenerateStage auto-picks the least-covered skill
- *               within the domain for even distribution across all 66+ skills.
- *               Skill is injected into the generation prompt and saved to skill_key.
+ * --section     math | reading_writing
+ * --domain      e.g. algebra, geometry_trigonometry, standard_english
+ * --skill       Canonical skill key — overrides auto-balance within domain
  * --difficulty  1–7 integer (default: random 2–6)
+ * --only-failed Re-review only previously failed questions
+ * --include-approved  Re-enrich already-approved questions
+ * --all         render-normalize: scan all statuses (default: generated only)
+ * --dry-run     render-normalize: report without writing to DB
+ * --fix         visual-check: auto-patch fixable diagram issues
+ * --id          Target a single question by externalId
  *
  * Normal API server startup (no --job flag): all stages are skipped.
  */
@@ -81,10 +102,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PipelineRunner implements ApplicationRunner {
 
-    private final GenerateStage     generateStage;
-    private final AgentReviewStage  agentReviewStage;
-    private final EnrichStage       enrichStage;
-    private final VisualCheckStage  visualCheckStage;
+    private final GenerateStage          generateStage;
+    private final AgentReviewStage       agentReviewStage;
+    private final EnrichStage            enrichStage;
+    private final VisualCheckStage       visualCheckStage;
+    private final RenderNormalizeStage   renderNormalizeStage;
 
     @Override
     public void run(ApplicationArguments args) {
@@ -99,11 +121,12 @@ public class PipelineRunner implements ApplicationRunner {
         String job = jobs.get(0).toLowerCase().strip();
 
         switch (job) {
-            case "generate"      -> runGenerate(args);
-            case "agent-review"  -> runAgentReview(args);
-            case "enrich"        -> runEnrich(args);
-            case "visual-check"  -> runVisualCheck(args);
-            default -> log.warn("Unknown --job value: '{}'. Valid: generate, agent-review, enrich, visual-check", job);
+            case "generate"          -> runGenerate(args);
+            case "agent-review"      -> runAgentReview(args);
+            case "enrich"            -> runEnrich(args);
+            case "visual-check"      -> runVisualCheck(args);
+            case "render-normalize"  -> runRenderNormalize(args);
+            default -> log.warn("Unknown --job value: '{}'. Valid: generate, agent-review, enrich, visual-check, render-normalize", job);
         }
 
         // Exit after pipeline job — don't start web server
@@ -133,13 +156,24 @@ public class PipelineRunner implements ApplicationRunner {
 
     private void runAgentReview(ApplicationArguments args) {
         boolean onlyFailed = args.containsOption("only-failed");
-        agentReviewStage.run(onlyFailed);
+        String  section    = stringArg(args, "section", null);
+        String  domain     = stringArg(args, "domain",  null);
+        agentReviewStage.run(onlyFailed, section, domain);
     }
 
     private void runVisualCheck(ApplicationArguments args) {
         boolean fix    = args.containsOption("fix");
         String  onlyId = stringArg(args, "id", null);
         visualCheckStage.run(fix, onlyId);
+    }
+
+    private void runRenderNormalize(ApplicationArguments args) {
+        boolean dryRun     = args.containsOption("dry-run");
+        boolean allStatuses = args.containsOption("all");
+        String  section    = stringArg(args, "section", null);
+        String  domain     = stringArg(args, "domain",  null);
+        String  onlyId     = stringArg(args, "id",      null);
+        renderNormalizeStage.run(dryRun, allStatuses, section, domain, onlyId);
     }
 
     private int intArg(ApplicationArguments args, String key, int defaultValue) {

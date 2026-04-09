@@ -28,7 +28,7 @@ public class GapAnalysisService {
 
     /**
      * Generates AI diagnostic probes + gap lessons for a student who answered wrong.
-     * Returns raw JSON string matching the probe/lesson schema used by find-my-gap.html.
+     * Returns raw JSON string matching the probe/lesson schema used by the FindMyGap React component.
      */
     public String analyze(UUID questionId, String studentAnswer) {
         Question q = questionRepository.findById(questionId)

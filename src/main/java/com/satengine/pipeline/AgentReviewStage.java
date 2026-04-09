@@ -35,21 +35,37 @@ public class AgentReviewStage {
     private static final int    MAX_TOKENS   = 1200;
     private static final double MIN_CONF     = 0.85;
 
-    public void run(boolean onlyFailed) {
+    public void run(boolean onlyFailed, String section, String domain) {
+        String status = QuestionStatus.GENERATED.lower();
+
+        // Build candidate list scoped to section/domain if provided
+        List<Question> candidates;
+        if (section != null && domain != null) {
+            candidates = questionRepository.findByStatusAndSectionAndDomain(status, section, domain);
+        } else if (section != null) {
+            candidates = questionRepository.findByStatusAndSection(status, section);
+        } else if (domain != null) {
+            candidates = questionRepository.findByStatusAndDomain(status, domain);
+        } else {
+            candidates = questionRepository.findByStatus(status);
+        }
+
         List<Question> queue = onlyFailed
-                ? questionRepository.findByStatus(QuestionStatus.GENERATED.lower()).stream()
+                ? candidates.stream()
                     .filter(q -> questionReviewRepository.findByQuestion(q)
                             .map(r -> !r.getPass()).orElse(false))
                     .toList()
-                : questionRepository.findByStatus(QuestionStatus.GENERATED.lower());
+                : candidates;
 
         if (queue.isEmpty()) {
-            log.info("No questions with status=generated to review.");
+            log.info("No questions with status=generated to review (section={}, domain={}).", section, domain);
             return;
         }
 
         log.info("═".repeat(60));
-        log.info(" Agent Review  questions={} onlyFailed={} model={}", queue.size(), onlyFailed, REVIEW_MODEL);
+        log.info(" Agent Review  questions={}  section={}  domain={}  onlyFailed={}  model={}",
+                queue.size(), section != null ? section : "all", domain != null ? domain : "all",
+                onlyFailed, REVIEW_MODEL);
         log.info("═".repeat(60));
 
         int passed = 0, failed = 0, errors = 0;
