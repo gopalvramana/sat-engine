@@ -178,6 +178,23 @@
 }
 .sprInput:focus { border-color: #7c3aed; }
 
+/* SPR answer summary shown after submission */
+.sprFeedbackRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  font-size: 14px;
+  max-width: 320px;
+}
+.sprAnswerWrong  { color: #dc2626; }
+.sprAnswerCorrect { color: #16a34a; }
+.sprAnswerCorrectLabel { color: #16a34a; }
+
 .submitRow {
   display: flex;
   justify-content: flex-end;

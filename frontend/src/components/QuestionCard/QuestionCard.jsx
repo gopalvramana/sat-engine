@@ -94,15 +94,29 @@ export default function QuestionCard({ question, onSubmit, disabled, feedback, s
       {/* ── SPR input ─────────────────────────────────────────── */}
       {isSPR && (
         <div className={styles.sprWrap}>
-          <input
-            type="text"
-            className={styles.sprInput}
-            placeholder={`Enter answer${question.sprMin != null ? ` (${question.sprMin}–${question.sprMax})` : ''}`}
-            value={sprValue}
-            onChange={e => setSprValue(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleSubmit()}
-            disabled={disabled}
-          />
+          {/* After submission: show what the student entered + correct answer */}
+          {feedback ? (
+            <div className={styles.sprFeedbackRow}>
+              <span className={feedback.isCorrect ? styles.sprAnswerCorrect : styles.sprAnswerWrong}>
+                Your answer: <strong>{studentAnswer ?? '—'}</strong>
+              </span>
+              {!feedback.isCorrect && (
+                <span className={styles.sprAnswerCorrectLabel}>
+                  Correct: <strong>{feedback.correctAnswer}</strong>
+                </span>
+              )}
+            </div>
+          ) : (
+            <input
+              type="text"
+              className={styles.sprInput}
+              placeholder={`Enter answer${question.sprMin != null ? ` (${question.sprMin}–${question.sprMax})` : ''}`}
+              value={sprValue}
+              onChange={e => setSprValue(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleSubmit()}
+              disabled={disabled}
+            />
+          )}
         </div>
       )}
 
