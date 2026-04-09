@@ -103,11 +103,12 @@
   min-width: 0;
 }
 
-/* Synced player: borderless, no padding */
+/* Synced player: borderless, no padding, no margin */
 .solFig :global(.anim-player-synced) {
   background: transparent;
   border: none;
   padding: 0;
+  margin: 0;
 }
 
 /* SVG wrap: fills the column width; height driven by renderer's aspect-ratio */
@@ -120,22 +121,23 @@
   /* Do NOT override aspect-ratio — renderer sets it from the tight bounding box */
 }
 
-.solFig :global(.anim-caption) {
-  font-size: 0.72rem;
-  color: #64748b;
-  text-align: center;
-  margin-top: 0.35rem;
+/* Hide renderer's caption + dots in synced mode — step navigator provides its own */
+.solFig :global(.anim-player-synced .anim-caption),
+.solFig :global(.anim-dots-synced) {
+  display: none;
 }
 
 .solSteps {
   min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 /* ── Step Navigator ─────────────────────────────────────────── */
 .stepNavigator {
   display: flex;
   flex-direction: column;
-  height: 100%;           /* match the animation panel height */
+  flex: 1;                /* fill the full .solSteps column height */
   background: #f8fafc;
   border: 1px solid #e2e8f0;
   border-radius: 0.75rem;

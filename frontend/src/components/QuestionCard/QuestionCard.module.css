@@ -60,6 +60,36 @@
   margin-bottom: 20px;
 }
 
+/* ── Tables inside question stems ──────────────────────────── */
+.stem :global(table) {
+  border-collapse: collapse;
+  margin: 14px 0;
+  font-size: 14px;
+  width: auto;
+  min-width: 320px;
+}
+.stem :global(th),
+.stem :global(td) {
+  border: 1px solid #cbd5e1;
+  padding: 7px 16px;
+  text-align: center;
+  white-space: nowrap;
+}
+.stem :global(th) {
+  background: #f1f5f9;
+  font-weight: 700;
+  color: #1e293b;
+  font-size: 13px;
+}
+.stem :global(tr:nth-child(even) td) {
+  background: #f8fafc;
+}
+.stem :global(td:first-child),
+.stem :global(th:first-child) {
+  text-align: left;
+  font-weight: 600;
+}
+
 .choices {
   display: flex;
   flex-direction: column;
