@@ -94,7 +94,7 @@
 /* ── Solution split: animation left, steps right ────────────── */
 .solutionSplit {
   display: grid;
-  grid-template-columns: 1fr 1fr;   /* strict 50/50 — no flex bias */
+  grid-template-columns: 0.75fr 1.25fr;   /* diagram narrower than steps */
   gap: 1.1rem;
   align-items: stretch;
 }
