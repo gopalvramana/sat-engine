@@ -21,12 +21,11 @@ async function request(method, url, body) {
 // ── Sessions ────────────────────────────────────────────────────────
 
 /** POST /api/sessions — create a new practice session */
-export function createSession(sessionType, section, domainCounts, domainDifficulties) {
+export function createSession(sessionType, section, domainBandCounts) {
   return request('POST', '/api/sessions', {
     sessionType,
     section: section || null,
-    domainCounts: domainCounts || null,
-    domainDifficulties: domainDifficulties || null,
+    domainBandCounts: domainBandCounts || null,
   })
 }
 

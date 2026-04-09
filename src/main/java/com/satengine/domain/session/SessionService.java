@@ -24,25 +24,25 @@ public class SessionService {
     private final QuestionAnswerRepository questionAnswerRepository;
     private final ObjectMapper objectMapper;
 
+    /** Difficulty band → [min, max] difficulty values */
+    private static final Map<String, int[]> BAND_RANGE = Map.of(
+        "easy",   new int[]{1, 2},
+        "medium", new int[]{3, 5},
+        "hard",   new int[]{6, 7}
+    );
+
     @Transactional
     public Session createSession(CreateSessionRequest req) {
-        String domainCountsJson = null;
-        if (req.domainCounts() != null && !req.domainCounts().isEmpty()) {
+        String bandCountsJson = null;
+        if (req.domainBandCounts() != null && !req.domainBandCounts().isEmpty()) {
             try {
-                domainCountsJson = objectMapper.writeValueAsString(req.domainCounts());
-            } catch (Exception e) { /* ignore */ }
-        }
-        String domainDifficultiesJson = null;
-        if (req.domainDifficulties() != null && !req.domainDifficulties().isEmpty()) {
-            try {
-                domainDifficultiesJson = objectMapper.writeValueAsString(req.domainDifficulties());
+                bandCountsJson = objectMapper.writeValueAsString(req.domainBandCounts());
             } catch (Exception e) { /* ignore */ }
         }
         Session session = Session.builder()
                 .sessionType(req.sessionType())
                 .section(req.section())
-                .domainCounts(domainCountsJson)
-                .domainDifficulties(domainDifficultiesJson)
+                .domainBandCounts(bandCountsJson)
                 .status("active")
                 .build();
         return sessionRepository.save(session);
@@ -55,70 +55,83 @@ public class SessionService {
 
         List<UUID> answeredIds = sessionAnswerRepository.findAnsweredQuestionIds(sessionId);
 
-        // ── Domain-quota mode ──────────────────────────────────────────
-        if (session.getDomainCounts() != null) {
-            return getNextQuestionByQuota(session, answeredIds);
+        if (session.getDomainBandCounts() != null) {
+            return getNextQuestionByBandQuota(session, answeredIds);
         }
 
-        // ── Random mode (legacy) ───────────────────────────────────────
+        // Fallback: random
         Optional<Question> next = answeredIds.isEmpty()
                 ? questionRepository.findNextQuestionNoExclusions("practice", session.getSection())
                 : questionRepository.findNextQuestion("practice", session.getSection(), answeredIds);
-
         return next.map(QuestionResponse::from);
     }
 
-    /** Pick the next question respecting per-domain quotas. */
-    private Optional<QuestionResponse> getNextQuestionByQuota(Session session, List<UUID> answeredIds) {
-        // Parse quota map from JSON
-        Map<String, Integer> quotas;
+    /**
+     * Pick next question using per-domain per-band quotas.
+     * Builds a list of (domain, minDiff, maxDiff, remaining) slots,
+     * shuffles them, and returns the first slot that has an available question.
+     */
+    private Optional<QuestionResponse> getNextQuestionByBandQuota(Session session, List<UUID> answeredIds) {
+        // Parse quota map: { domain -> { band -> count } }
+        Map<String, Map<String, Integer>> bandCounts;
         try {
-            quotas = objectMapper.readValue(session.getDomainCounts(),
-                    new TypeReference<Map<String, Integer>>() {});
+            bandCounts = objectMapper.readValue(session.getDomainBandCounts(),
+                    new TypeReference<Map<String, Map<String, Integer>>>() {});
         } catch (Exception e) {
             return Optional.empty();
         }
 
-        // Count already-answered questions per domain
-        Map<String, Long> answeredByDomain = new HashMap<>();
+        // Count already-answered questions per domain per band
+        Map<String, Map<String, Long>> answeredByDomainBand = new HashMap<>();
         if (!answeredIds.isEmpty()) {
             List<Question> answeredQuestions = questionRepository.findAllById(answeredIds);
-            answeredByDomain = answeredQuestions.stream()
-                    .collect(Collectors.groupingBy(Question::getDomain, Collectors.counting()));
+            for (Question q : answeredQuestions) {
+                String band = difficultyToBand(q.getDifficulty());
+                answeredByDomainBand
+                    .computeIfAbsent(q.getDomain(), k -> new HashMap<>())
+                    .merge(band, 1L, Long::sum);
+            }
         }
 
-        // Find domains that still have remaining quota — randomize order for variety
-        final Map<String, Long> finalAnswered = answeredByDomain;
-        List<String> remainingDomains = quotas.entrySet().stream()
-                .filter(e -> e.getValue() > 0
-                        && finalAnswered.getOrDefault(e.getKey(), 0L) < e.getValue())
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toList());
+        // Build list of slots that still have remaining quota
+        record Slot(String domain, int minDiff, int maxDiff) {}
+        List<Slot> remaining = new ArrayList<>();
 
-        Collections.shuffle(remainingDomains);
-
-        // Parse per-domain difficulty ranges (optional)
-        Map<String, Map<String, Integer>> diffRanges = new HashMap<>();
-        if (session.getDomainDifficulties() != null) {
-            try {
-                diffRanges = objectMapper.readValue(session.getDomainDifficulties(),
-                        new TypeReference<Map<String, Map<String, Integer>>>() {});
-            } catch (Exception ignored) {}
+        for (Map.Entry<String, Map<String, Integer>> domainEntry : bandCounts.entrySet()) {
+            String domain = domainEntry.getKey();
+            Map<String, Integer> bands = domainEntry.getValue();
+            for (Map.Entry<String, Integer> bandEntry : bands.entrySet()) {
+                String band  = bandEntry.getKey();
+                int quota    = bandEntry.getValue();
+                if (quota <= 0) continue;
+                long answered = answeredByDomainBand
+                    .getOrDefault(domain, Map.of())
+                    .getOrDefault(band, 0L);
+                if (answered < quota) {
+                    int[] range = BAND_RANGE.getOrDefault(band, new int[]{1, 7});
+                    remaining.add(new Slot(domain, range[0], range[1]));
+                }
+            }
         }
-        final Map<String, Map<String, Integer>> finalDiffRanges = diffRanges;
 
-        // Try each remaining domain until we find a question
-        for (String domain : remainingDomains) {
-            Map<String, Integer> range = finalDiffRanges.getOrDefault(domain, Map.of("min", 1, "max", 7));
-            int minDiff = range.getOrDefault("min", 1);
-            int maxDiff = range.getOrDefault("max", 7);
+        Collections.shuffle(remaining);
+
+        for (Slot slot : remaining) {
             Optional<Question> q = answeredIds.isEmpty()
-                    ? questionRepository.findNextQuestionByDomainAndDifficultyNoExclusions("practice", session.getSection(), domain, minDiff, maxDiff)
-                    : questionRepository.findNextQuestionByDomainAndDifficulty("practice", session.getSection(), domain, answeredIds, minDiff, maxDiff);
+                ? questionRepository.findNextQuestionByDomainAndDifficultyNoExclusions(
+                    "practice", session.getSection(), slot.domain(), slot.minDiff(), slot.maxDiff())
+                : questionRepository.findNextQuestionByDomainAndDifficulty(
+                    "practice", session.getSection(), slot.domain(), answeredIds, slot.minDiff(), slot.maxDiff());
             if (q.isPresent()) return q.map(QuestionResponse::from);
         }
 
-        return Optional.empty(); // all quotas exhausted or no questions available
+        return Optional.empty();
+    }
+
+    private String difficultyToBand(short difficulty) {
+        if (difficulty <= 2) return "easy";
+        if (difficulty <= 5) return "medium";
+        return "hard";
     }
 
     @Transactional

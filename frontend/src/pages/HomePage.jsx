@@ -15,64 +15,35 @@ const RW_DOMAINS = [
   { key: 'expression_ideas',  label: 'Expression of Ideas', icon: '✏️' },
   { key: 'standard_english',  label: 'Standard English',    icon: '📝' },
 ]
-const ALL_DOMAINS = [...MATH_DOMAINS, ...RW_DOMAINS]
 
 function getDomainsForSection(section) {
   if (section === 'math')            return MATH_DOMAINS
   if (section === 'reading_writing') return RW_DOMAINS
-  return ALL_DOMAINS
+  return [...MATH_DOMAINS, ...RW_DOMAINS]
 }
 
 /* ── Difficulty bands ───────────────────────────────────────────── */
 const BANDS = [
-  { key: 'easy',   label: 'Easy',   color: '#16a34a', min: 1, max: 2 },
-  { key: 'medium', label: 'Medium', color: '#d97706', min: 3, max: 5 },
-  { key: 'hard',   label: 'Hard',   color: '#dc2626', min: 6, max: 7 },
+  { key: 'easy',   label: 'Easy',   color: '#16a34a' },
+  { key: 'medium', label: 'Medium', color: '#d97706' },
+  { key: 'hard',   label: 'Hard',   color: '#dc2626' },
 ]
 
-/* ── Build default per-domain difficulty state ──────────────────── */
-function defaultDiffState(domains) {
-  return Object.fromEntries(domains.map(d => [d.key, new Set(['easy', 'medium', 'hard'])]))
-}
-
-/* ── Count available questions for a domain given selected bands ── */
-function availableForDomain(counts, domain, selectedBands) {
-  const dc = counts[domain]
-  if (!dc) return 0
-  return [...selectedBands].reduce((s, b) => s + (dc[b] || 0), 0)
-}
-
-/* ── Compute domainDifficulties for the API from per-domain bands ─ */
-function buildDomainDifficulties(diffState) {
-  const result = {}
-  for (const [domain, bands] of Object.entries(diffState)) {
-    const active = BANDS.filter(b => bands.has(b.key))
-    if (!active.length) continue
-    result[domain] = {
-      min: Math.min(...active.map(b => b.min)),
-      max: Math.max(...active.map(b => b.max)),
-    }
-  }
-  return result
-}
-
-/* ── Distribute N questions evenly across selected domains ──────── */
-function buildDomainCounts(domains, total) {
-  if (!domains.length) return {}
-  const base  = Math.floor(total / domains.length)
-  const extra = total % domains.length
-  return Object.fromEntries(domains.map((d, i) => [d.key, base + (i < extra ? 1 : 0)]))
+/* ── Build default band counts for a set of domains ────────────── */
+function defaultBandCounts(domains) {
+  // Start all at 0
+  return Object.fromEntries(
+    domains.map(d => [d.key, { easy: 0, medium: 0, hard: 0 }])
+  )
 }
 
 export default function HomePage({ onStart }) {
   const [section,    setSection]    = useState('math')
-  const [diffState,  setDiffState]  = useState(() => defaultDiffState(MATH_DOMAINS))
-  const [domains,    setDomains]    = useState(() => new Set(MATH_DOMAINS.map(d => d.key)))
-  const [sessionLen, setSessionLen] = useState(10)
-  const [counts,     setCounts]     = useState({})   // { domain: { easy, medium, hard, total } }
+  const [bandCounts, setBandCounts] = useState(() => defaultBandCounts(MATH_DOMAINS))
+  const [counts,     setCounts]     = useState({})   // API: { domain: { easy, medium, hard, total } }
   const [loading,    setLoading]    = useState(false)
 
-  /* Fetch counts when section changes */
+  /* Fetch available counts when section changes */
   const fetchCounts = useCallback(async () => {
     setLoading(true)
     try {
@@ -84,48 +55,50 @@ export default function HomePage({ onStart }) {
 
   useEffect(() => { fetchCounts() }, [fetchCounts])
 
-  /* Reset domains + diff when section changes */
+  /* Reset counts when section changes */
   function handleSectionChange(val) {
-    const doms = getDomainsForSection(val)
     setSection(val)
-    setDomains(new Set(doms.map(d => d.key)))
-    setDiffState(defaultDiffState(doms))
+    setBandCounts(defaultBandCounts(getDomainsForSection(val)))
   }
 
-  function toggleDomain(key) {
-    setDomains(prev => {
-      const next = new Set(prev)
-      if (next.has(key)) { if (next.size > 1) next.delete(key) }
-      else next.add(key)
-      return next
+  /* Adjust a single domain+band count */
+  function adjust(domain, band, delta) {
+    setBandCounts(prev => {
+      const current = prev[domain]?.[band] ?? 0
+      const avail   = counts[domain]?.[band] ?? 0
+      const next    = Math.max(0, Math.min(avail, current + delta))
+      return {
+        ...prev,
+        [domain]: { ...prev[domain], [band]: next },
+      }
     })
   }
 
-  function toggleBand(domainKey, bandKey) {
-    setDiffState(prev => {
-      const cur  = new Set(prev[domainKey] || BANDS.map(b => b.key))
-      const next = new Set(cur)
-      if (next.has(bandKey)) { if (next.size > 1) next.delete(bandKey) }
-      else next.add(bandKey)
-      return { ...prev, [domainKey]: next }
-    })
+  /* Domain total */
+  function domainTotal(domain) {
+    const dc = bandCounts[domain]
+    if (!dc) return 0
+    return (dc.easy || 0) + (dc.medium || 0) + (dc.hard || 0)
   }
 
-  /* Derived */
-  const visibleDomains  = getDomainsForSection(section)
-  const selectedDomains = visibleDomains.filter(d => domains.has(d.key))
-  const totalAvailable  = selectedDomains.reduce(
-    (s, d) => s + availableForDomain(counts, d.key, diffState[d.key] || new Set(['easy','medium','hard'])), 0
-  )
-  const cappedLen = Math.min(sessionLen, totalAvailable)
-  const canStart  = totalAvailable > 0 && cappedLen > 0
+  /* Grand total across all domains */
+  const grandTotal = Object.keys(bandCounts).reduce((s, d) => s + domainTotal(d), 0)
+
+  const visibleDomains = getDomainsForSection(section)
+  const canStart = grandTotal > 0
 
   function handleStart() {
-    const domainCounts       = buildDomainCounts(selectedDomains, cappedLen)
-    const domainDifficulties = buildDomainDifficulties(
-      Object.fromEntries(selectedDomains.map(d => [d.key, diffState[d.key] || new Set(['easy','medium','hard'])]))
-    )
-    onStart({ section: section || null, domainCounts, domainDifficulties })
+    // Build domainBandCounts — only include domains/bands with count > 0
+    const domainBandCounts = {}
+    for (const [domain, bands] of Object.entries(bandCounts)) {
+      const filtered = Object.fromEntries(
+        Object.entries(bands).filter(([, v]) => v > 0)
+      )
+      if (Object.keys(filtered).length > 0) {
+        domainBandCounts[domain] = filtered
+      }
+    }
+    onStart({ section: section || null, domainBandCounts })
   }
 
   return (
@@ -133,7 +106,7 @@ export default function HomePage({ onStart }) {
       <div className={styles.hero}>
         <div className={styles.badge}>SAT Practice</div>
         <h1 className={styles.title}>Build Your Session</h1>
-        <p className={styles.sub}>Choose your section, topics, and difficulty to get started.</p>
+        <p className={styles.sub}>Set exactly how many questions you want from each topic and difficulty.</p>
       </div>
 
       {/* ── Section ─────────────────────────────────────────────── */}
@@ -154,56 +127,62 @@ export default function HomePage({ onStart }) {
         </div>
       </div>
 
-      {/* ── Topics with per-topic difficulty ────────────────────── */}
+      {/* ── Topics ──────────────────────────────────────────────── */}
       <div className={styles.card}>
         <div className={styles.cardLabelRow}>
           <span className={styles.cardLabel}>Topics & Difficulty</span>
-          <button
-            className={styles.selectAll}
-            onClick={() => setDomains(new Set(visibleDomains.map(d => d.key)))}
-          >Select all</button>
+          <button className={styles.resetBtn} onClick={() => setBandCounts(defaultBandCounts(visibleDomains))}>
+            Reset all
+          </button>
         </div>
+
         <div className={styles.domainList}>
           {visibleDomains.map(d => {
-            const checked  = domains.has(d.key)
-            const bands    = diffState[d.key] || new Set(['easy','medium','hard'])
-            const avail    = availableForDomain(counts, d.key, bands)
+            const dTotal = domainTotal(d.key)
+            const hasAny = dTotal > 0
             return (
-              <div key={d.key} className={`${styles.domainBlock} ${checked ? styles.domainBlockChecked : ''}`}>
-                {/* ── Topic header row ── */}
-                <button
-                  className={styles.domainRow}
-                  onClick={() => toggleDomain(d.key)}
-                >
-                  <span className={`${styles.checkbox} ${checked ? styles.checkboxOn : ''}`}>
-                    {checked && '✓'}
-                  </span>
+              <div key={d.key} className={`${styles.domainBlock} ${hasAny ? styles.domainBlockActive : ''}`}>
+                {/* ── Domain header ── */}
+                <div className={styles.domainHeader}>
                   <span className={styles.domainIcon}>{d.icon}</span>
                   <span className={styles.domainLabel}>{d.label}</span>
-                  <span className={`${styles.domainCount} ${loading ? styles.dimmed : ''} ${avail === 0 && !loading ? styles.domainCountZero : ''}`}>
-                    {loading ? '…' : avail}
-                  </span>
-                </button>
+                  {dTotal > 0 && (
+                    <span className={styles.domainTotal}>{dTotal} selected</span>
+                  )}
+                </div>
 
-                {/* ── Per-topic difficulty chips (always visible) ── */}
-                <div className={styles.bandRow}>
+                {/* ── Per-band stepper rows ── */}
+                <div className={styles.bandRows}>
                   {BANDS.map(b => {
-                    const cnt     = counts[d.key]?.[b.key] || 0
-                    const active  = bands.has(b.key)
+                    const avail   = counts[d.key]?.[b.key] ?? 0
+                    const current = bandCounts[d.key]?.[b.key] ?? 0
                     return (
-                      <button
-                        key={b.key}
-                        className={`${styles.bandChip} ${active ? styles.bandChipActive : ''}`}
-                        style={active ? { '--chip-color': b.color } : {}}
-                        onClick={() => toggleBand(d.key, b.key)}
-                        disabled={!checked}
-                      >
-                        <span className={styles.bandDot} style={{ background: b.color }} />
-                        {b.label}
-                        <span className={`${styles.bandCount} ${loading ? styles.dimmed : ''}`}>
-                          {loading ? '…' : cnt}
+                      <div key={b.key} className={`${styles.bandRow} ${current > 0 ? styles.bandRowActive : ''}`}>
+                        <div className={styles.bandLabel}>
+                          <span className={styles.bandDot} style={{ background: b.color }} />
+                          <span className={styles.bandName} style={{ color: current > 0 ? b.color : undefined }}>
+                            {b.label}
+                          </span>
+                        </div>
+                        <div className={styles.stepperWrap}>
+                          <button
+                            className={styles.stepBtn}
+                            onClick={() => adjust(d.key, b.key, -1)}
+                            disabled={current === 0}
+                          >−</button>
+                          <span className={`${styles.stepVal} ${current > 0 ? styles.stepValActive : ''}`}>
+                            {current}
+                          </span>
+                          <button
+                            className={styles.stepBtn}
+                            onClick={() => adjust(d.key, b.key, +1)}
+                            disabled={current >= avail}
+                          >+</button>
+                        </div>
+                        <span className={`${styles.availLabel} ${loading ? styles.dimmed : ''} ${avail === 0 && !loading ? styles.availZero : ''}`}>
+                          {loading ? '…' : `${avail} available`}
                         </span>
-                      </button>
+                      </div>
                     )
                   })}
                 </div>
@@ -213,37 +192,19 @@ export default function HomePage({ onStart }) {
         </div>
       </div>
 
-      {/* ── Session length ──────────────────────────────────────── */}
-      <div className={styles.card}>
-        <div className={styles.cardLabelRow}>
-          <span className={styles.cardLabel}>Questions</span>
-          <span className={styles.lenValue}>{cappedLen}</span>
-        </div>
-        <input
-          type="range"
-          className={styles.slider}
-          min={5}
-          max={Math.max(20, totalAvailable)}
-          step={1}
-          value={sessionLen}
-          onChange={e => setSessionLen(Number(e.target.value))}
-        />
-        <div className={styles.sliderLabels}>
-          <span>5</span>
-          <span className={`${styles.availBadge} ${totalAvailable === 0 ? styles.availNone : ''}`}>
-            {totalAvailable} available
+      {/* ── Total + Start ────────────────────────────────────────── */}
+      <div className={styles.startCard}>
+        <div className={styles.totalRow}>
+          <span className={styles.totalLabel}>Total questions</span>
+          <span className={`${styles.totalVal} ${grandTotal === 0 ? styles.totalZero : ''}`}>
+            {grandTotal}
           </span>
-          <span>{Math.max(20, totalAvailable)}</span>
         </div>
-      </div>
-
-      {/* ── Start ───────────────────────────────────────────────── */}
-      <div className={styles.startRow}>
         <button className={styles.startBtn} onClick={handleStart} disabled={!canStart}>
           Start Practice →
         </button>
-        {!canStart && totalAvailable === 0 && (
-          <p className={styles.noQMsg}>No questions match your filters. Try adjusting difficulty or topics.</p>
+        {!canStart && (
+          <p className={styles.noQMsg}>Add at least 1 question to start.</p>
         )}
       </div>
     </div>

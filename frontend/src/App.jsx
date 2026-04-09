@@ -44,8 +44,8 @@ export default function App() {
   if (phase === 'idle') {
     return (
       <HomePage
-        onStart={({ section, domainCounts, domainDifficulties }) =>
-          startSession('practice', section, domainCounts, domainDifficulties)
+        onStart={({ section, domainBandCounts }) =>
+          startSession('practice', section, domainBandCounts)
         }
       />
     )

@@ -46,21 +46,14 @@ public class Session {
     private String score;
 
     /**
-     * Optional domain quotas for this session — e.g. {"algebra":3,"geometry_trigonometry":4}
-     * When set, questions are drawn from each domain until the quota is exhausted.
-     * Stored as JSONB; deserialized as a simple String that we parse in the service.
+     * Granular per-domain per-difficulty-band quotas:
+     * { "algebra": { "easy": 2, "medium": 5, "hard": 1 },
+     *   "geometry_trigonometry": { "easy": 3 } }
+     * Bands: easy=1-2, medium=3-5, hard=6-7.
      */
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "domain_counts", columnDefinition = "jsonb")
-    private String domainCounts;
-
-    /**
-     * Per-domain difficulty ranges — e.g. {"algebra":{"min":1,"max":5},"geometry_trigonometry":{"min":6,"max":7}}
-     * When null for a domain, defaults to full range (1–7).
-     */
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "domain_difficulties", columnDefinition = "jsonb")
-    private String domainDifficulties;
+    @Column(name = "domain_band_counts", columnDefinition = "jsonb")
+    private String domainBandCounts;
 
     @PrePersist
     protected void onCreate() {

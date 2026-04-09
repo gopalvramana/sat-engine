@@ -5,16 +5,15 @@ import java.util.Map;
 
 /**
  * Request body for creating a new practice session.
- * section            — optional; null means any section.
- * domainCounts       — map of domain → desired question count.
- * domainDifficulties — optional per-domain difficulty ranges:
- *                      { "algebra": {"min":1,"max":5}, "geometry_trigonometry": {"min":6,"max":7} }
- *                      Omitted domains default to full range (1–7).
+ *
+ * domainBandCounts — granular per-domain per-difficulty-band question counts:
+ *   { "algebra": { "easy": 2, "medium": 5, "hard": 1 },
+ *     "geometry_trigonometry": { "easy": 3, "medium": 2 } }
+ * Bands: easy=1-2, medium=3-5, hard=6-7.
+ * Bands with count 0 or absent are skipped.
  */
 public record CreateSessionRequest(
         @NotBlank String sessionType,
         String section,
-        Map<String, Integer> domainCounts,
-        Map<String, Map<String, Integer>> domainDifficulties
-) {
-}
+        Map<String, Map<String, Integer>> domainBandCounts
+) {}
