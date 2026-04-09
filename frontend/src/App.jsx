@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useSession } from './hooks/useSession'
 import HomePage     from './pages/HomePage'
 import PracticePage from './pages/PracticePage'
@@ -7,20 +6,12 @@ import './App.css'
 
 export default function App() {
   const {
-    phase, question, feedback, sessionInfo, history, error,
-    startSession, submitAnswer, nextQuestion, endSession,
+    phase, question, feedback, sessionInfo, history,
+    studentAnswer, isReviewing, error,
+    startSession, submitAnswer, nextQuestion, goBack, endSession,
   } = useSession()
 
-  // Track what the student answered so FeedbackPanel can highlight it
-  const [studentAnswer, setStudentAnswer] = useState(null)
-
-  function handleSubmit(answer) {
-    setStudentAnswer(answer)
-    submitAnswer(answer)
-  }
-
   function handleRestart() {
-    setStudentAnswer(null)
     window.location.reload()
   }
 
@@ -67,11 +58,13 @@ export default function App() {
       question={question}
       feedback={feedback}
       sessionInfo={sessionInfo}
-      submitAnswer={handleSubmit}
+      submitAnswer={submitAnswer}
       nextQuestion={nextQuestion}
       endSession={endSession}
+      onBack={goBack}
       onHome={handleRestart}
       studentAnswer={studentAnswer}
+      isReviewing={isReviewing}
     />
   )
 }

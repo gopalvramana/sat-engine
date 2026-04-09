@@ -7,11 +7,12 @@ import styles from './PracticePage.module.css'
  * The main practice loop.
  *
  * Props come from useSession() in App.jsx:
- *   phase, question, feedback, sessionInfo, submitAnswer, nextQuestion
+ *   phase, question, feedback, sessionInfo, submitAnswer, nextQuestion,
+ *   endSession, onBack, onHome, studentAnswer, isReviewing
  */
 export default function PracticePage({
   phase, question, feedback, sessionInfo,
-  submitAnswer, nextQuestion, endSession, onHome, studentAnswer,
+  submitAnswer, nextQuestion, endSession, onBack, onHome, studentAnswer, isReviewing,
 }) {
   const answered = sessionInfo?.questionsAnswered ?? 0
   const correct  = sessionInfo?.correctCount      ?? 0
@@ -27,8 +28,9 @@ export default function PracticePage({
         current={current}
         total={total}
         correct={correct}
-        onHome={onHome}
+        onBack={onBack}
         onEnd={endSession}
+        isReviewing={isReviewing}
       />
 
       <div className={styles.content}>
@@ -60,6 +62,7 @@ export default function PracticePage({
                   question={question}
                   studentAnswer={studentAnswer}
                   onNext={nextQuestion}
+                  isReviewing={isReviewing}
                 />
               </div>
             )}

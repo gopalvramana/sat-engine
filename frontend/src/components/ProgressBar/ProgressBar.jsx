@@ -4,29 +4,33 @@ import styles from './ProgressBar.module.css'
  * Top bar shown during a practice session.
  *
  * Props:
- *   current   – the question number being shown (1-based)
- *   total     – total questions selected for this session
- *   correct   – correct answers so far
- *   onHome    – callback to abandon & go back to builder
- *   onEnd     – callback to end session early → summary
+ *   current      – the question number being shown (1-based)
+ *   total        – total questions selected for this session
+ *   correct      – correct answers so far
+ *   onBack       – go to previous question in history
+ *   onEnd        – end session early → summary
+ *   isReviewing  – true when browsing answered history
  */
-export default function ProgressBar({ current, total, correct, onHome, onEnd }) {
-  const answered = current - 1           // questions already submitted
+export default function ProgressBar({ current, total, correct, onBack, onEnd, isReviewing }) {
+  const answered = current - 1
   const pct = total > 0 ? Math.round((answered / total) * 100) : 0
 
   return (
     <div className={styles.bar}>
       <div className={styles.inner}>
 
-        {/* Left: back to builder */}
-        <button className={styles.homeBtn} onClick={onHome} title="Back to session builder">
+        {/* Left: back to previous question */}
+        <button className={styles.homeBtn} onClick={onBack} title="Go to previous question">
           ← Back
         </button>
 
         {/* Centre: progress */}
         <div className={styles.centre}>
           <div className={styles.label}>
-            <span>Question <strong>{current}</strong> of <strong>{total || '?'}</strong></span>
+            <span>
+              Question <strong>{current}</strong> of <strong>{total || '?'}</strong>
+              {isReviewing && <span className={styles.reviewingBadge}>reviewing</span>}
+            </span>
             <span className={styles.correct}><strong>{correct}</strong> correct</span>
           </div>
           <div className={styles.track}>

@@ -125,7 +125,7 @@ function StepNavigator({ steps, animUid, animFrames }) {
 }
 
 /* ── Main component ─────────────────────────────────────────── */
-export default function FeedbackPanel({ feedback, question, studentAnswer, onNext }) {
+export default function FeedbackPanel({ feedback, question, studentAnswer, onNext, isReviewing }) {
   const isCorrect = feedback.isCorrect
   const isMath    = MATH_DOMAINS.has(question.domain)
 
@@ -264,7 +264,7 @@ export default function FeedbackPanel({ feedback, question, studentAnswer, onNex
       {/* ── Next question button ──────────────────────────────── */}
       <div className={styles.nextRow}>
         <button className={styles.nextBtn} onClick={onNext}>
-          Next Question →
+          {isReviewing ? 'Next →' : 'Next Question →'}
         </button>
       </div>
     </div>
