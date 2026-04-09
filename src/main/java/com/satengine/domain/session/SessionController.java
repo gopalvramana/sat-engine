@@ -1,11 +1,14 @@
 package com.satengine.domain.session;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.satengine.dto.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -14,6 +17,7 @@ import java.util.UUID;
 public class SessionController {
 
     private final SessionService sessionService;
+    private final ObjectMapper objectMapper;
 
     /**
      * POST /api/sessions
@@ -24,7 +28,7 @@ public class SessionController {
             @Valid @RequestBody CreateSessionRequest request
     ) {
         Session session = sessionService.createSession(request);
-        // Build a minimal SessionResponse immediately after creation (0 answers so far)
+        int total = computeTotal(session.getDomainBandCounts());
         SessionResponse response = new SessionResponse(
                 session.getId(),
                 session.getSessionType(),
@@ -32,7 +36,8 @@ public class SessionController {
                 session.getStatus(),
                 session.getStartedAt(),
                 0,
-                0
+                0,
+                total
         );
         return ResponseEntity.status(201).body(response);
     }
@@ -70,5 +75,17 @@ public class SessionController {
     ) {
         AnswerFeedback feedback = sessionService.submitAnswer(id, request);
         return ResponseEntity.ok(feedback);
+    }
+
+    /** Sum all band counts from the stored JSON string, or 0 if none. */
+    private int computeTotal(String domainBandCountsJson) {
+        if (domainBandCountsJson == null) return 0;
+        try {
+            Map<String, Map<String, Integer>> map = objectMapper.readValue(
+                    domainBandCountsJson, new TypeReference<>() {});
+            return map.values().stream()
+                    .flatMap(bands -> bands.values().stream())
+                    .mapToInt(Integer::intValue).sum();
+        } catch (Exception e) { return 0; }
     }
 }

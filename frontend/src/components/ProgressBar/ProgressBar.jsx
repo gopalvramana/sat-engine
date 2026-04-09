@@ -1,20 +1,44 @@
-export default function ProgressBar({ answered, total, correct }) {
+import styles from './ProgressBar.module.css'
+
+/**
+ * Top bar shown during a practice session.
+ *
+ * Props:
+ *   current   – the question number being shown (1-based)
+ *   total     – total questions selected for this session
+ *   correct   – correct answers so far
+ *   onHome    – callback to abandon & go back to builder
+ *   onEnd     – callback to end session early → summary
+ */
+export default function ProgressBar({ current, total, correct, onHome, onEnd }) {
+  const answered = current - 1           // questions already submitted
   const pct = total > 0 ? Math.round((answered / total) * 100) : 0
 
   return (
-    <div style={{ background: '#fff', borderBottom: '1px solid #e2e8f0', padding: '10px 20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6, fontSize: 13, color: '#64748b' }}>
-        <span>Question <strong style={{ color: '#1e293b' }}>{answered + 1}</strong> of <strong style={{ color: '#1e293b' }}>{total}</strong></span>
-        <span><strong style={{ color: '#16a34a' }}>{correct}</strong> correct</span>
-      </div>
-      <div style={{ background: '#f1f5f9', borderRadius: 4, height: 6, overflow: 'hidden' }}>
-        <div style={{
-          height: '100%',
-          width: `${pct}%`,
-          background: 'linear-gradient(90deg, #7c3aed, #a78bfa)',
-          transition: 'width 0.4s ease',
-          borderRadius: 4,
-        }} />
+    <div className={styles.bar}>
+      <div className={styles.inner}>
+
+        {/* Left: back to builder */}
+        <button className={styles.homeBtn} onClick={onHome} title="Back to session builder">
+          ← Back
+        </button>
+
+        {/* Centre: progress */}
+        <div className={styles.centre}>
+          <div className={styles.label}>
+            <span>Question <strong>{current}</strong> of <strong>{total || '?'}</strong></span>
+            <span className={styles.correct}><strong>{correct}</strong> correct</span>
+          </div>
+          <div className={styles.track}>
+            <div className={styles.fill} style={{ width: `${pct}%` }} />
+          </div>
+        </div>
+
+        {/* Right: end session */}
+        <button className={styles.endBtn} onClick={onEnd} title="End session and see results">
+          End Session
+        </button>
+
       </div>
     </div>
   )

@@ -8,7 +8,7 @@ import './App.css'
 export default function App() {
   const {
     phase, question, feedback, sessionInfo, history, error,
-    startSession, submitAnswer, nextQuestion,
+    startSession, submitAnswer, nextQuestion, endSession,
   } = useSession()
 
   // Track what the student answered so FeedbackPanel can highlight it
@@ -69,6 +69,8 @@ export default function App() {
       sessionInfo={sessionInfo}
       submitAnswer={handleSubmit}
       nextQuestion={nextQuestion}
+      endSession={endSession}
+      onHome={handleRestart}
       studentAnswer={studentAnswer}
     />
   )

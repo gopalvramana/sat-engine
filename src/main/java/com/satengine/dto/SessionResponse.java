@@ -13,6 +13,7 @@ public record SessionResponse(
         String status,
         OffsetDateTime startedAt,
         int questionsAnswered,
-        int correctCount
+        int correctCount,
+        int totalQuestions
 ) {
 }

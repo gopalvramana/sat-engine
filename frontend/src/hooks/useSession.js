@@ -74,6 +74,16 @@ export function useSession() {
     if (sessionId) _loadNext(sessionId)
   }, [sessionId, _loadNext])
 
+  // ── End session early → go to summary ────────────────────────────
+  const endSession = useCallback(async () => {
+    if (!sessionId) { setPhase('idle'); return }
+    try {
+      const info = await api.getSession(sessionId)
+      setSessionInfo(info)
+    } catch { /* ignore */ }
+    setPhase('summary')
+  }, [sessionId])
+
   return {
     phase,        // 'idle' | 'loading' | 'question' | 'feedback' | 'summary'
     question,     // QuestionResponse
@@ -84,5 +94,6 @@ export function useSession() {
     startSession,
     submitAnswer,
     nextQuestion,
+    endSession,
   }
 }

@@ -181,6 +181,7 @@ public class SessionService {
                 .filter(a -> Boolean.TRUE.equals(a.getIsCorrect()))
                 .count();
 
+        int total = computeTotal(session.getDomainBandCounts());
         return new SessionResponse(
                 session.getId(),
                 session.getSessionType(),
@@ -188,7 +189,19 @@ public class SessionService {
                 session.getStatus(),
                 session.getStartedAt(),
                 answers.size(),
-                (int) correct
+                (int) correct,
+                total
         );
+    }
+
+    private int computeTotal(String domainBandCountsJson) {
+        if (domainBandCountsJson == null) return 0;
+        try {
+            Map<String, Map<String, Integer>> map = objectMapper.readValue(
+                    domainBandCountsJson, new TypeReference<>() {});
+            return map.values().stream()
+                    .flatMap(bands -> bands.values().stream())
+                    .mapToInt(Integer::intValue).sum();
+        } catch (Exception e) { return 0; }
     }
 }

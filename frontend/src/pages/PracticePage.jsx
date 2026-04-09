@@ -11,16 +11,25 @@ import styles from './PracticePage.module.css'
  */
 export default function PracticePage({
   phase, question, feedback, sessionInfo,
-  submitAnswer, nextQuestion, studentAnswer,
+  submitAnswer, nextQuestion, endSession, onHome, studentAnswer,
 }) {
-  const answered  = sessionInfo?.questionsAnswered ?? 0
-  const correct   = sessionInfo?.correctCount      ?? 0
-  // Total is tricky without a count API — we show answered count and keep total open
-  const total     = answered + (phase === 'question' || phase === 'feedback' ? 1 : 0)
+  const answered = sessionInfo?.questionsAnswered ?? 0
+  const correct  = sessionInfo?.correctCount      ?? 0
+  const total    = sessionInfo?.totalQuestions    ?? 0
+
+  // During 'question' phase the current Q hasn't been submitted yet → answered+1
+  // During 'feedback' phase the current Q was just answered → answered
+  const current = phase === 'feedback' ? answered : answered + 1
 
   return (
     <div className={styles.page}>
-      <ProgressBar answered={answered} total={total} correct={correct} />
+      <ProgressBar
+        current={current}
+        total={total}
+        correct={correct}
+        onHome={onHome}
+        onEnd={endSession}
+      />
 
       <div className={styles.content}>
         {phase === 'loading' && (
