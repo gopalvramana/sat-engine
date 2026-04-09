@@ -54,6 +54,14 @@ public class Session {
     @Column(name = "domain_counts", columnDefinition = "jsonb")
     private String domainCounts;
 
+    @Column(name = "min_difficulty")
+    @Builder.Default
+    private Integer minDifficulty = 1;
+
+    @Column(name = "max_difficulty")
+    @Builder.Default
+    private Integer maxDifficulty = 7;
+
     @PrePersist
     protected void onCreate() {
         if (startedAt == null) {

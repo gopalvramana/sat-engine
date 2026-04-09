@@ -25,6 +25,13 @@ public class QuestionService {
     }
 
     /**
+     * Count questions per domain for the session builder.
+     */
+    public List<Object[]> getCountsByDomain(String section, int minDifficulty, int maxDifficulty) {
+        return questionRepository.countByDomainFiltered(section, minDifficulty, maxDifficulty);
+    }
+
+    /**
      * Retrieve a filtered list of questions.
      * All parameters are optional — null means "no filter on that field".
      */

@@ -13,6 +13,24 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
     Optional<Question> findByExternalId(String externalId);
 
     /**
+     * Count approved questions per domain matching section + difficulty range.
+     * Returns rows of [domain, count].
+     */
+    @Query(value = """
+            SELECT domain, COUNT(*) as cnt
+            FROM questions
+            WHERE status = 'approved'
+            AND (:section IS NULL OR section = :section)
+            AND difficulty BETWEEN :minDiff AND :maxDiff
+            GROUP BY domain
+            """, nativeQuery = true)
+    List<Object[]> countByDomainFiltered(
+            @Param("section") String section,
+            @Param("minDiff") int minDiff,
+            @Param("maxDiff") int maxDiff
+    );
+
+    /**
      * Find a random reviewed question for the given pool and section,
      * excluding questions that have already been answered in this session.
      */
@@ -83,6 +101,50 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
             @Param("pool") String pool,
             @Param("section") String section,
             @Param("domain") String domain
+    );
+
+    /**
+     * Find a random approved question for a specific domain + difficulty range, excluding answered.
+     */
+    @Query(value = """
+            SELECT * FROM questions
+            WHERE status = 'approved'
+            AND pool IN ('both', :pool)
+            AND (:section IS NULL OR section = :section)
+            AND domain = :domain
+            AND difficulty BETWEEN :minDiff AND :maxDiff
+            AND id NOT IN (:excludeIds)
+            ORDER BY RANDOM()
+            LIMIT 1
+            """, nativeQuery = true)
+    Optional<Question> findNextQuestionByDomainAndDifficulty(
+            @Param("pool") String pool,
+            @Param("section") String section,
+            @Param("domain") String domain,
+            @Param("excludeIds") List<UUID> excludeIds,
+            @Param("minDiff") int minDiff,
+            @Param("maxDiff") int maxDiff
+    );
+
+    /**
+     * Find a random approved question for a specific domain + difficulty range, no exclusions.
+     */
+    @Query(value = """
+            SELECT * FROM questions
+            WHERE status = 'approved'
+            AND pool IN ('both', :pool)
+            AND (:section IS NULL OR section = :section)
+            AND domain = :domain
+            AND difficulty BETWEEN :minDiff AND :maxDiff
+            ORDER BY RANDOM()
+            LIMIT 1
+            """, nativeQuery = true)
+    Optional<Question> findNextQuestionByDomainAndDifficultyNoExclusions(
+            @Param("pool") String pool,
+            @Param("section") String section,
+            @Param("domain") String domain,
+            @Param("minDiff") int minDiff,
+            @Param("maxDiff") int maxDiff
     );
 
     List<Question> findByStatus(String status);

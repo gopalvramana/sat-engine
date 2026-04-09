@@ -38,6 +38,8 @@ public class SessionService {
                 .sessionType(req.sessionType())
                 .section(req.section())
                 .domainCounts(domainCountsJson)
+                .minDifficulty(req.minDifficulty() != null ? req.minDifficulty() : 1)
+                .maxDifficulty(req.maxDifficulty() != null ? req.maxDifficulty() : 7)
                 .status("active")
                 .build();
         return sessionRepository.save(session);
@@ -92,11 +94,14 @@ public class SessionService {
 
         Collections.shuffle(remainingDomains);
 
+        int minDiff = session.getMinDifficulty() != null ? session.getMinDifficulty() : 1;
+        int maxDiff = session.getMaxDifficulty() != null ? session.getMaxDifficulty() : 7;
+
         // Try each remaining domain until we find a question
         for (String domain : remainingDomains) {
             Optional<Question> q = answeredIds.isEmpty()
-                    ? questionRepository.findNextQuestionByDomainNoExclusions("practice", session.getSection(), domain)
-                    : questionRepository.findNextQuestionByDomain("practice", session.getSection(), domain, answeredIds);
+                    ? questionRepository.findNextQuestionByDomainAndDifficultyNoExclusions("practice", session.getSection(), domain, minDiff, maxDiff)
+                    : questionRepository.findNextQuestionByDomainAndDifficulty("practice", session.getSection(), domain, answeredIds, minDiff, maxDiff);
             if (q.isPresent()) return q.map(QuestionResponse::from);
         }
 

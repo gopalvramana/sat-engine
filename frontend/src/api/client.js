@@ -21,12 +21,23 @@ async function request(method, url, body) {
 // ── Sessions ────────────────────────────────────────────────────────
 
 /** POST /api/sessions — create a new practice session */
-export function createSession(sessionType, section, domainCounts) {
+export function createSession(sessionType, section, domainCounts, minDifficulty, maxDifficulty) {
   return request('POST', '/api/sessions', {
     sessionType,
     section: section || null,
     domainCounts: domainCounts || null,
+    minDifficulty: minDifficulty ?? 1,
+    maxDifficulty: maxDifficulty ?? 7,
   })
+}
+
+/** GET /api/questions/count — available counts per domain for the session builder */
+export function getQuestionCounts(section, minDifficulty, maxDifficulty) {
+  const params = new URLSearchParams()
+  if (section) params.set('section', section)
+  if (minDifficulty != null) params.set('minDifficulty', minDifficulty)
+  if (maxDifficulty != null) params.set('maxDifficulty', maxDifficulty)
+  return request('GET', `/api/questions/count?${params}`)
 }
 
 /** GET /api/sessions/{id} — current session status + counts */
