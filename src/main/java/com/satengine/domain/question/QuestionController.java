@@ -36,24 +36,35 @@ public class QuestionController {
      * Returns available question counts per domain for the session builder.
      * Query params: section (optional), minDifficulty (default 1), maxDifficulty (default 7)
      */
+    /**
+     * GET /api/questions/count
+     * Returns available question counts per domain, broken down by difficulty band.
+     * Response: { byDomain: { algebra: { easy:8, medium:15, hard:7, total:30 }, ... }, total: 65 }
+     */
     @GetMapping("/count")
     public ResponseEntity<Map<String, Object>> getQuestionCounts(
-            @RequestParam(required = false) String section,
-            @RequestParam(defaultValue = "1") int minDifficulty,
-            @RequestParam(defaultValue = "7") int maxDifficulty
+            @RequestParam(required = false) String section
     ) {
-        List<Object[]> rows = questionService.getCountsByDomain(section, minDifficulty, maxDifficulty);
-        Map<String, Integer> byDomain = new HashMap<>();
-        int total = 0;
+        List<Object[]> rows = questionService.getCountsByDomain(section);
+        Map<String, Map<String, Integer>> byDomain = new HashMap<>();
+        int grandTotal = 0;
         for (Object[] row : rows) {
             String domain = (String) row[0];
-            int count = ((Number) row[1]).intValue();
-            byDomain.put(domain, count);
-            total += count;
+            int easy   = ((Number) row[1]).intValue();
+            int medium = ((Number) row[2]).intValue();
+            int hard   = ((Number) row[3]).intValue();
+            int total  = ((Number) row[4]).intValue();
+            Map<String, Integer> bands = new HashMap<>();
+            bands.put("easy", easy);
+            bands.put("medium", medium);
+            bands.put("hard", hard);
+            bands.put("total", total);
+            byDomain.put(domain, bands);
+            grandTotal += total;
         }
         Map<String, Object> result = new HashMap<>();
         result.put("byDomain", byDomain);
-        result.put("total", total);
+        result.put("total", grandTotal);
         return ResponseEntity.ok(result);
     }
 

@@ -15,11 +15,11 @@ export function useSession() {
   const [error, setError]             = useState(null)
 
   // ── Start a new session ───────────────────────────────────────────
-  const startSession = useCallback(async (sessionType, section, domainCounts, minDifficulty, maxDifficulty) => {
+  const startSession = useCallback(async (sessionType, section, domainCounts, domainDifficulties) => {
     setPhase('loading')
     setError(null)
     try {
-      const session = await api.createSession(sessionType, section, domainCounts, minDifficulty, maxDifficulty)
+      const session = await api.createSession(sessionType, section, domainCounts, domainDifficulties)
       setSessionId(session.id)
       setSessionInfo(session)
       setHistory([])

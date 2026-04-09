@@ -13,22 +13,22 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
     Optional<Question> findByExternalId(String externalId);
 
     /**
-     * Count approved questions per domain matching section + difficulty range.
-     * Returns rows of [domain, count].
+     * Count approved questions per domain broken down by difficulty band.
+     * Returns rows of [domain, easy_count, medium_count, hard_count, total].
+     * easy=1-2, medium=3-5, hard=6-7
      */
     @Query(value = """
-            SELECT domain, COUNT(*) as cnt
+            SELECT domain,
+              SUM(CASE WHEN difficulty BETWEEN 1 AND 2 THEN 1 ELSE 0 END) AS easy,
+              SUM(CASE WHEN difficulty BETWEEN 3 AND 5 THEN 1 ELSE 0 END) AS medium,
+              SUM(CASE WHEN difficulty BETWEEN 6 AND 7 THEN 1 ELSE 0 END) AS hard,
+              COUNT(*) AS total
             FROM questions
             WHERE status = 'approved'
             AND (:section IS NULL OR section = :section)
-            AND difficulty BETWEEN :minDiff AND :maxDiff
             GROUP BY domain
             """, nativeQuery = true)
-    List<Object[]> countByDomainFiltered(
-            @Param("section") String section,
-            @Param("minDiff") int minDiff,
-            @Param("maxDiff") int maxDiff
-    );
+    List<Object[]> countByDomainAndDifficulty(@Param("section") String section);
 
     /**
      * Find a random reviewed question for the given pool and section,

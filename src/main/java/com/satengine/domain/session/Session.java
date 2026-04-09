@@ -54,13 +54,13 @@ public class Session {
     @Column(name = "domain_counts", columnDefinition = "jsonb")
     private String domainCounts;
 
-    @Column(name = "min_difficulty")
-    @Builder.Default
-    private Integer minDifficulty = 1;
-
-    @Column(name = "max_difficulty")
-    @Builder.Default
-    private Integer maxDifficulty = 7;
+    /**
+     * Per-domain difficulty ranges — e.g. {"algebra":{"min":1,"max":5},"geometry_trigonometry":{"min":6,"max":7}}
+     * When null for a domain, defaults to full range (1–7).
+     */
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "domain_difficulties", columnDefinition = "jsonb")
+    private String domainDifficulties;
 
     @PrePersist
     protected void onCreate() {

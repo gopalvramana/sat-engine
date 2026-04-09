@@ -30,16 +30,19 @@ public class SessionService {
         if (req.domainCounts() != null && !req.domainCounts().isEmpty()) {
             try {
                 domainCountsJson = objectMapper.writeValueAsString(req.domainCounts());
-            } catch (Exception e) {
-                // ignore — fall back to random
-            }
+            } catch (Exception e) { /* ignore */ }
+        }
+        String domainDifficultiesJson = null;
+        if (req.domainDifficulties() != null && !req.domainDifficulties().isEmpty()) {
+            try {
+                domainDifficultiesJson = objectMapper.writeValueAsString(req.domainDifficulties());
+            } catch (Exception e) { /* ignore */ }
         }
         Session session = Session.builder()
                 .sessionType(req.sessionType())
                 .section(req.section())
                 .domainCounts(domainCountsJson)
-                .minDifficulty(req.minDifficulty() != null ? req.minDifficulty() : 1)
-                .maxDifficulty(req.maxDifficulty() != null ? req.maxDifficulty() : 7)
+                .domainDifficulties(domainDifficultiesJson)
                 .status("active")
                 .build();
         return sessionRepository.save(session);
@@ -94,11 +97,21 @@ public class SessionService {
 
         Collections.shuffle(remainingDomains);
 
-        int minDiff = session.getMinDifficulty() != null ? session.getMinDifficulty() : 1;
-        int maxDiff = session.getMaxDifficulty() != null ? session.getMaxDifficulty() : 7;
+        // Parse per-domain difficulty ranges (optional)
+        Map<String, Map<String, Integer>> diffRanges = new HashMap<>();
+        if (session.getDomainDifficulties() != null) {
+            try {
+                diffRanges = objectMapper.readValue(session.getDomainDifficulties(),
+                        new TypeReference<Map<String, Map<String, Integer>>>() {});
+            } catch (Exception ignored) {}
+        }
+        final Map<String, Map<String, Integer>> finalDiffRanges = diffRanges;
 
         // Try each remaining domain until we find a question
         for (String domain : remainingDomains) {
+            Map<String, Integer> range = finalDiffRanges.getOrDefault(domain, Map.of("min", 1, "max", 7));
+            int minDiff = range.getOrDefault("min", 1);
+            int maxDiff = range.getOrDefault("max", 7);
             Optional<Question> q = answeredIds.isEmpty()
                     ? questionRepository.findNextQuestionByDomainAndDifficultyNoExclusions("practice", session.getSection(), domain, minDiff, maxDiff)
                     : questionRepository.findNextQuestionByDomainAndDifficulty("practice", session.getSection(), domain, answeredIds, minDiff, maxDiff);

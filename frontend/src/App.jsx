@@ -44,8 +44,8 @@ export default function App() {
   if (phase === 'idle') {
     return (
       <HomePage
-        onStart={({ section, domainCounts, minDifficulty, maxDifficulty }) =>
-          startSession('practice', section, domainCounts, minDifficulty, maxDifficulty)
+        onStart={({ section, domainCounts, domainDifficulties }) =>
+          startSession('practice', section, domainCounts, domainDifficulties)
         }
       />
     )

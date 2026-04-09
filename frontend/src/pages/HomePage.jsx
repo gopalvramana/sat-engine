@@ -4,10 +4,10 @@ import styles from './HomePage.module.css'
 
 /* ── Domain definitions ─────────────────────────────────────────── */
 const MATH_DOMAINS = [
-  { key: 'algebra',               label: 'Algebra',               icon: '𝑥' },
-  { key: 'advanced_math',         label: 'Advanced Math',          icon: '∫' },
-  { key: 'problem_solving_data',  label: 'Problem Solving & Data', icon: '📊' },
-  { key: 'geometry_trigonometry', label: 'Geometry & Trig',        icon: '△' },
+  { key: 'algebra',               label: 'Algebra',                icon: '𝑥' },
+  { key: 'advanced_math',         label: 'Advanced Math',           icon: '∫' },
+  { key: 'problem_solving_data',  label: 'Problem Solving & Data',  icon: '📊' },
+  { key: 'geometry_trigonometry', label: 'Geometry & Trig',         icon: '△' },
 ]
 const RW_DOMAINS = [
   { key: 'information_ideas', label: 'Information & Ideas', icon: '💡' },
@@ -24,92 +24,108 @@ function getDomainsForSection(section) {
 }
 
 /* ── Difficulty bands ───────────────────────────────────────────── */
-const DIFFICULTIES = [
-  { key: 'easy',   label: 'Easy',   min: 1, max: 2, color: '#16a34a' },
-  { key: 'medium', label: 'Medium', min: 3, max: 5, color: '#d97706' },
-  { key: 'hard',   label: 'Hard',   min: 6, max: 7, color: '#dc2626' },
+const BANDS = [
+  { key: 'easy',   label: 'Easy',   color: '#16a34a', min: 1, max: 2 },
+  { key: 'medium', label: 'Medium', color: '#d97706', min: 3, max: 5 },
+  { key: 'hard',   label: 'Hard',   color: '#dc2626', min: 6, max: 7 },
 ]
 
-/* ── Compute min/max difficulty from selected bands ─────────────── */
-function difficultyRange(selectedBands) {
-  const active = DIFFICULTIES.filter(d => selectedBands.has(d.key))
-  if (!active.length) return { min: 1, max: 7 }
-  return {
-    min: Math.min(...active.map(d => d.min)),
-    max: Math.max(...active.map(d => d.max)),
+/* ── Build default per-domain difficulty state ──────────────────── */
+function defaultDiffState(domains) {
+  return Object.fromEntries(domains.map(d => [d.key, new Set(['easy', 'medium', 'hard'])]))
+}
+
+/* ── Count available questions for a domain given selected bands ── */
+function availableForDomain(counts, domain, selectedBands) {
+  const dc = counts[domain]
+  if (!dc) return 0
+  return [...selectedBands].reduce((s, b) => s + (dc[b] || 0), 0)
+}
+
+/* ── Compute domainDifficulties for the API from per-domain bands ─ */
+function buildDomainDifficulties(diffState) {
+  const result = {}
+  for (const [domain, bands] of Object.entries(diffState)) {
+    const active = BANDS.filter(b => bands.has(b.key))
+    if (!active.length) continue
+    result[domain] = {
+      min: Math.min(...active.map(b => b.min)),
+      max: Math.max(...active.map(b => b.max)),
+    }
   }
+  return result
 }
 
 /* ── Distribute N questions evenly across selected domains ──────── */
 function buildDomainCounts(domains, total) {
   if (!domains.length) return {}
-  const base = Math.floor(total / domains.length)
+  const base  = Math.floor(total / domains.length)
   const extra = total % domains.length
   return Object.fromEntries(domains.map((d, i) => [d.key, base + (i < extra ? 1 : 0)]))
 }
 
 export default function HomePage({ onStart }) {
-  // ── Filter state ──────────────────────────────────────────────
-  const [section, setSection]         = useState('math')
-  const [diffBands, setDiffBands]     = useState(new Set(['easy', 'medium', 'hard']))
-  const [domains, setDomains]         = useState(new Set(MATH_DOMAINS.map(d => d.key)))
-  const [sessionLen, setSessionLen]   = useState(10)
+  const [section,    setSection]    = useState('math')
+  const [diffState,  setDiffState]  = useState(() => defaultDiffState(MATH_DOMAINS))
+  const [domains,    setDomains]    = useState(() => new Set(MATH_DOMAINS.map(d => d.key)))
+  const [sessionLen, setSessionLen] = useState(10)
+  const [counts,     setCounts]     = useState({})   // { domain: { easy, medium, hard, total } }
+  const [loading,    setLoading]    = useState(false)
 
-  // ── Available counts from API ─────────────────────────────────
-  const [counts, setCounts]   = useState({})   // { domain: count }
-  const [loading, setLoading] = useState(false)
-
-  // ── Fetch counts whenever filters change ─────────────────────
+  /* Fetch counts when section changes */
   const fetchCounts = useCallback(async () => {
     setLoading(true)
     try {
-      const { min, max } = difficultyRange(diffBands)
-      const data = await getQuestionCounts(section || null, min, max)
+      const data = await getQuestionCounts(section || null)
       setCounts(data.byDomain || {})
-    } catch {
-      setCounts({})
-    } finally {
-      setLoading(false)
-    }
-  }, [section, diffBands])
+    } catch { setCounts({}) }
+    finally { setLoading(false) }
+  }, [section])
 
   useEffect(() => { fetchCounts() }, [fetchCounts])
 
-  // ── When section changes, reset domain selection ──────────────
+  /* Reset domains + diff when section changes */
   function handleSectionChange(val) {
+    const doms = getDomainsForSection(val)
     setSection(val)
-    setDomains(new Set(getDomainsForSection(val).map(d => d.key)))
-  }
-
-  function toggleDiff(key) {
-    setDiffBands(prev => {
-      const next = new Set(prev)
-      if (next.has(key)) { if (next.size > 1) next.delete(key) } // keep at least one
-      else next.add(key)
-      return next
-    })
+    setDomains(new Set(doms.map(d => d.key)))
+    setDiffState(defaultDiffState(doms))
   }
 
   function toggleDomain(key) {
     setDomains(prev => {
       const next = new Set(prev)
-      if (next.has(key)) { if (next.size > 1) next.delete(key) } // keep at least one
+      if (next.has(key)) { if (next.size > 1) next.delete(key) }
       else next.add(key)
       return next
     })
   }
 
-  // ── Derived values ────────────────────────────────────────────
-  const visibleDomains    = getDomainsForSection(section)
-  const selectedDomains   = visibleDomains.filter(d => domains.has(d.key))
-  const totalAvailable    = selectedDomains.reduce((s, d) => s + (counts[d.key] || 0), 0)
-  const cappedLen         = Math.min(sessionLen, totalAvailable)
-  const canStart          = totalAvailable > 0 && cappedLen > 0
+  function toggleBand(domainKey, bandKey) {
+    setDiffState(prev => {
+      const cur  = new Set(prev[domainKey] || BANDS.map(b => b.key))
+      const next = new Set(cur)
+      if (next.has(bandKey)) { if (next.size > 1) next.delete(bandKey) }
+      else next.add(bandKey)
+      return { ...prev, [domainKey]: next }
+    })
+  }
+
+  /* Derived */
+  const visibleDomains  = getDomainsForSection(section)
+  const selectedDomains = visibleDomains.filter(d => domains.has(d.key))
+  const totalAvailable  = selectedDomains.reduce(
+    (s, d) => s + availableForDomain(counts, d.key, diffState[d.key] || new Set(['easy','medium','hard'])), 0
+  )
+  const cappedLen = Math.min(sessionLen, totalAvailable)
+  const canStart  = totalAvailable > 0 && cappedLen > 0
 
   function handleStart() {
-    const { min, max } = difficultyRange(diffBands)
-    const domainCounts = buildDomainCounts(selectedDomains, cappedLen)
-    onStart({ section: section || null, domainCounts, minDifficulty: min, maxDifficulty: max })
+    const domainCounts       = buildDomainCounts(selectedDomains, cappedLen)
+    const domainDifficulties = buildDomainDifficulties(
+      Object.fromEntries(selectedDomains.map(d => [d.key, diffState[d.key] || new Set(['easy','medium','hard'])]))
+    )
+    onStart({ section: section || null, domainCounts, domainDifficulties })
   }
 
   return (
@@ -138,28 +154,10 @@ export default function HomePage({ onStart }) {
         </div>
       </div>
 
-      {/* ── Difficulty ──────────────────────────────────────────── */}
-      <div className={styles.card}>
-        <div className={styles.cardLabel}>Difficulty</div>
-        <div className={styles.diffRow}>
-          {DIFFICULTIES.map(d => (
-            <button
-              key={d.key}
-              className={`${styles.diffChip} ${diffBands.has(d.key) ? styles.diffChipActive : ''}`}
-              style={diffBands.has(d.key) ? { '--chip-color': d.color } : {}}
-              onClick={() => toggleDiff(d.key)}
-            >
-              <span className={styles.diffDot} style={{ background: d.color }} />
-              {d.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* ── Topics ──────────────────────────────────────────────── */}
+      {/* ── Topics with per-topic difficulty ────────────────────── */}
       <div className={styles.card}>
         <div className={styles.cardLabelRow}>
-          <span className={styles.cardLabel}>Topics</span>
+          <span className={styles.cardLabel}>Topics & Difficulty</span>
           <button
             className={styles.selectAll}
             onClick={() => setDomains(new Set(visibleDomains.map(d => d.key)))}
@@ -167,23 +165,49 @@ export default function HomePage({ onStart }) {
         </div>
         <div className={styles.domainList}>
           {visibleDomains.map(d => {
-            const avail   = counts[d.key] || 0
-            const checked = domains.has(d.key)
+            const checked  = domains.has(d.key)
+            const bands    = diffState[d.key] || new Set(['easy','medium','hard'])
+            const avail    = availableForDomain(counts, d.key, bands)
             return (
-              <button
-                key={d.key}
-                className={`${styles.domainRow} ${checked ? styles.domainChecked : ''}`}
-                onClick={() => toggleDomain(d.key)}
-              >
-                <span className={`${styles.checkbox} ${checked ? styles.checkboxOn : ''}`}>
-                  {checked && '✓'}
-                </span>
-                <span className={styles.domainIcon}>{d.icon}</span>
-                <span className={styles.domainLabel}>{d.label}</span>
-                <span className={`${styles.domainCount} ${loading ? styles.dimmed : ''}`}>
-                  {loading ? '…' : avail}
-                </span>
-              </button>
+              <div key={d.key} className={`${styles.domainBlock} ${checked ? styles.domainBlockChecked : ''}`}>
+                {/* ── Topic header row ── */}
+                <button
+                  className={styles.domainRow}
+                  onClick={() => toggleDomain(d.key)}
+                >
+                  <span className={`${styles.checkbox} ${checked ? styles.checkboxOn : ''}`}>
+                    {checked && '✓'}
+                  </span>
+                  <span className={styles.domainIcon}>{d.icon}</span>
+                  <span className={styles.domainLabel}>{d.label}</span>
+                  <span className={`${styles.domainCount} ${loading ? styles.dimmed : ''} ${avail === 0 && !loading ? styles.domainCountZero : ''}`}>
+                    {loading ? '…' : avail}
+                  </span>
+                </button>
+
+                {/* ── Per-topic difficulty chips (always visible) ── */}
+                <div className={styles.bandRow}>
+                  {BANDS.map(b => {
+                    const cnt     = counts[d.key]?.[b.key] || 0
+                    const active  = bands.has(b.key)
+                    return (
+                      <button
+                        key={b.key}
+                        className={`${styles.bandChip} ${active ? styles.bandChipActive : ''}`}
+                        style={active ? { '--chip-color': b.color } : {}}
+                        onClick={() => toggleBand(d.key, b.key)}
+                        disabled={!checked}
+                      >
+                        <span className={styles.bandDot} style={{ background: b.color }} />
+                        {b.label}
+                        <span className={`${styles.bandCount} ${loading ? styles.dimmed : ''}`}>
+                          {loading ? '…' : cnt}
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
             )
           })}
         </div>
@@ -215,11 +239,7 @@ export default function HomePage({ onStart }) {
 
       {/* ── Start ───────────────────────────────────────────────── */}
       <div className={styles.startRow}>
-        <button
-          className={styles.startBtn}
-          onClick={handleStart}
-          disabled={!canStart}
-        >
+        <button className={styles.startBtn} onClick={handleStart} disabled={!canStart}>
           Start Practice →
         </button>
         {!canStart && totalAvailable === 0 && (

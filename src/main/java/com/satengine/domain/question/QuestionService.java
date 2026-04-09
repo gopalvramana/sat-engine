@@ -25,10 +25,10 @@ public class QuestionService {
     }
 
     /**
-     * Count questions per domain for the session builder.
+     * Count questions per domain broken down by difficulty band for the session builder.
      */
-    public List<Object[]> getCountsByDomain(String section, int minDifficulty, int maxDifficulty) {
-        return questionRepository.countByDomainFiltered(section, minDifficulty, maxDifficulty);
+    public List<Object[]> getCountsByDomain(String section) {
+        return questionRepository.countByDomainAndDifficulty(section);
     }
 
     /**
