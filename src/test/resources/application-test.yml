@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    # URL overridden dynamically by @DynamicPropertySource in AbstractIntegrationTest
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+# Disable pipeline auto-runner and any scheduled tasks in tests
+satengine:
+  pipeline:
+    auto-run: false
+
+# Stub out the Anthropic key — GapAnalysisService is not invoked in these tests
+anthropic:
+  api-key: test-key-not-used
+
+server:
+  port: 0
+
+logging:
+  level:
+    com.satengine: WARN
+    org.flywaydb: WARN
+    org.hibernate: WARN
+    org.testcontainers: WARN

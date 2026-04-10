@@ -184,10 +184,20 @@ public class EnrichStage {
 
     /** Named formulas that MUST have a populated math field in the same step. */
     private static final List<String> FORMULA_KEYWORDS = List.of(
+        // Algebra / general
         "quadratic formula", "pythagorean theorem", "slope-intercept form",
-        "distance formula", "midpoint formula", "law of sines", "law of cosines",
-        "completing the square", "discriminant", "vertex formula",
-        "point-slope form", "standard form", "exponential formula"
+        "distance formula", "midpoint formula", "completing the square",
+        "discriminant", "vertex formula", "point-slope form", "standard form",
+        "exponential formula",
+        // Geometry — area / perimeter / circumference
+        "area of a triangle", "area of a circle", "circumference",
+        // Trigonometry
+        "law of sines", "law of cosines",
+        "sine ratio", "cosine ratio", "tangent ratio",
+        // Finance / percent
+        "compound interest", "percent change",
+        // Sequences
+        "arithmetic sequence", "geometric sequence"
     );
 
     private void validateFormulaLaw(JsonNode stepsNode, String location) {
