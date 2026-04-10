@@ -1,0 +1,24 @@
+# Exclude from Docker build context — keeps the image clean and fast
+
+# Compiled output (Railway builds fresh from source)
+target/
+
+# Local secrets — NEVER send to build context
+.env
+
+# Frontend build artifacts (already baked into src/main/resources/static/)
+frontend/node_modules/
+frontend/dist/
+
+# Version control
+.git/
+.gitignore
+
+# IDE and OS files
+.idea/
+.vscode/
+*.iml
+.DS_Store
+
+# Local dev docs
+*.md

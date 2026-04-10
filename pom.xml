@@ -177,6 +177,9 @@
                     <workingDirectory>frontend</workingDirectory>
                     <nodeVersion>v22.13.0</nodeVersion>
                     <npmVersion>10.9.2</npmVersion>
+                    <!-- Set -Dskip.frontend=true to skip in Docker/CI where
+                         the pre-built static files are already committed -->
+                    <skip>${skip.frontend}</skip>
                 </configuration>
                 <executions>
                     <execution>

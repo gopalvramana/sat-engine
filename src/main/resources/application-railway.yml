@@ -1,0 +1,12 @@
+# Railway production profile
+# All values come from Railway environment variables set in the dashboard.
+# Never commit real secrets here.
+
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+server:
+  port: ${PORT:8080}
