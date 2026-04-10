@@ -1,4 +1,5 @@
 import MathText from '../components/MathText/MathText'
+import { formatTime } from '../hooks/useTimer'
 import styles from './SummaryPage.module.css'
 
 /**
@@ -13,6 +14,9 @@ export default function SummaryPage({ sessionInfo, history, onRestart }) {
   const total   = sessionInfo?.questionsAnswered ?? history.length
   const correct = sessionInfo?.correctCount      ?? history.filter(h => h.feedback.isCorrect).length
   const pct     = total > 0 ? Math.round((correct / total) * 100) : 0
+
+  // Total time across session
+  const totalSeconds = history.reduce((sum, h) => sum + (h.timeTaken ?? 0), 0)
 
   // Domain breakdown
   const domains = {}
@@ -37,6 +41,12 @@ export default function SummaryPage({ sessionInfo, history, onRestart }) {
             <div className={styles.scoreSub}>
               You got <strong>{correct}</strong> out of <strong>{total}</strong> questions correct.
             </div>
+            {totalSeconds > 0 && (
+              <div className={styles.scoreTiming}>
+                ⏱ Total time: <strong>{formatTime(totalSeconds)}</strong>
+                {total > 0 && <span className={styles.avgTime}> · avg {formatTime(Math.round(totalSeconds / total))} / question</span>}
+              </div>
+            )}
           </div>
         </div>
 
@@ -63,11 +73,16 @@ export default function SummaryPage({ sessionInfo, history, onRestart }) {
         <div className={styles.section}>
           <h3 className={styles.sectionTitle}>Review</h3>
           <div className={styles.reviewList}>
-            {history.map(({ question, feedback }, i) => (
+            {history.map(({ question, feedback, timeTaken }, i) => (
               <div key={i} className={`${styles.reviewItem} ${feedback.isCorrect ? styles.reviewCorrect : styles.reviewWrong}`}>
                 <span className={styles.reviewIcon}>{feedback.isCorrect ? '✓' : '✗'}</span>
                 <div className={styles.reviewBody}>
-                  <div className={styles.reviewDomain}>{domainLabel(question.domain)}</div>
+                  <div className={styles.reviewMeta}>
+                    <div className={styles.reviewDomain}>{domainLabel(question.domain)}</div>
+                    {timeTaken > 0 && (
+                      <span className={styles.reviewTime}>⏱ {formatTime(timeTaken)}</span>
+                    )}
+                  </div>
                   <MathText
                     text={question.questionStem?.slice(0, 120) + (question.questionStem?.length > 120 ? '…' : '')}
                     as="div"

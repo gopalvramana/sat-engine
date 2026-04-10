@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react'
 import * as api from '../api/client'
+import { useTimer } from './useTimer'
 
 /**
  * Manages the full lifecycle of a practice session:
@@ -19,6 +20,7 @@ export function useSession() {
   const [livePhase, setLivePhase]         = useState('idle') // idle|loading|question|feedback|summary
   const [error, setError]                 = useState(null)
   const [reviewIndex, setReviewIndex]     = useState(null)   // null = live; number = history index
+  const timer = useTimer()
 
   // ── Derived display values (review overrides live) ────────────────
   const isReviewing   = reviewIndex !== null
@@ -60,6 +62,7 @@ export function useSession() {
       } else {
         setLiveQuestion(q)
         setLivePhase('question')
+        timer.start()   // begin counting for this question
       }
     } catch (e) {
       setError(e.message)
@@ -69,12 +72,13 @@ export function useSession() {
   // ── Submit an answer ──────────────────────────────────────────────
   const submitAnswer = useCallback(async (answer) => {
     if (!sessionId || !liveQuestion) return
+    const timeTaken = timer.stop()   // freeze timer on submit
     setLiveAnswer(answer)
     setLivePhase('loading')
     try {
       const fb = await api.submitAnswer(sessionId, liveQuestion.id, answer)
       setLiveFeedback(fb)
-      setHistory(h => [...h, { question: liveQuestion, feedback: fb, studentAnswer: answer }])
+      setHistory(h => [...h, { question: liveQuestion, feedback: fb, studentAnswer: answer, timeTaken }])
       const info = await api.getSession(sessionId)
       setSessionInfo(info)
       setLivePhase('feedback')
@@ -120,11 +124,17 @@ export function useSession() {
     setLivePhase('summary')
   }, [sessionId])
 
+  // Time for current display: live timer ticking, or frozen time from history
+  const timeTaken = isReviewing
+    ? history[reviewIndex]?.timeTaken ?? 0
+    : liveFeedback ? (history[history.length - 1]?.timeTaken ?? 0) : timer.seconds
+
   return {
     phase,          // derived: 'idle'|'loading'|'question'|'feedback'|'summary'
     question,       // derived: live or history[reviewIndex]
     feedback,       // derived: live or history[reviewIndex]
     studentAnswer,  // derived: live or history[reviewIndex]
+    timeTaken,      // seconds: live count-up during question, frozen after submit
     sessionInfo,
     history,
     isReviewing,

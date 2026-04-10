@@ -12,7 +12,7 @@ import styles from './PracticePage.module.css'
  */
 export default function PracticePage({
   phase, question, feedback, sessionInfo,
-  submitAnswer, nextQuestion, endSession, onBack, onHome, studentAnswer, isReviewing,
+  submitAnswer, nextQuestion, endSession, onBack, onHome, studentAnswer, timeTaken, isReviewing,
 }) {
   const answered = sessionInfo?.questionsAnswered ?? 0
   const correct  = sessionInfo?.correctCount      ?? 0
@@ -51,6 +51,7 @@ export default function PracticePage({
                 disabled={phase === 'feedback' || phase === 'loading'}
                 feedback={phase === 'feedback' ? feedback : null}
                 studentAnswer={studentAnswer}
+                timeTaken={timeTaken}
               />
             </div>
 

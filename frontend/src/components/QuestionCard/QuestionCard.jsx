@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import MathText from '../MathText/MathText'
 import DiagramPanel from '../DiagramPanel/DiagramPanel'
+import { formatTime } from '../../hooks/useTimer'
 import styles from './QuestionCard.module.css'
 
 const LETTERS = ['A', 'B', 'C', 'D']
@@ -13,7 +14,7 @@ const LETTERS = ['A', 'B', 'C', 'D']
  *   onSubmit   — called with the chosen answer string (letter for MCQ, number for SPR)
  *   disabled   — true while submitting
  */
-export default function QuestionCard({ question, onSubmit, disabled, feedback, studentAnswer }) {
+export default function QuestionCard({ question, onSubmit, disabled, feedback, studentAnswer, timeTaken }) {
   const [selected, setSelected] = useState(null)
   const [sprValue, setSprValue] = useState('')
 
@@ -42,7 +43,12 @@ export default function QuestionCard({ question, onSubmit, disabled, feedback, s
       {/* ── Meta ──────────────────────────────────────────────── */}
       <div className={styles.meta}>
         <span className={styles.domain}>{domainLabel(question.domain)}</span>
-        <span className={styles.diff}>{diffDots}</span>
+        <div className={styles.metaRight}>
+          <span className={`${styles.timer} ${feedback ? styles.timerFrozen : ''}`}>
+            ⏱ {formatTime(timeTaken ?? 0)}
+          </span>
+          <span className={styles.diff}>{diffDots}</span>
+        </div>
       </div>
 
       {/* ── Passage (R&W only) ─────────────────────────────────── */}

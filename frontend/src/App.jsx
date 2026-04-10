@@ -7,7 +7,7 @@ import './App.css'
 export default function App() {
   const {
     phase, question, feedback, sessionInfo, history,
-    studentAnswer, isReviewing, error,
+    studentAnswer, timeTaken, isReviewing, error,
     startSession, submitAnswer, nextQuestion, goBack, endSession,
   } = useSession()
 
@@ -64,6 +64,7 @@ export default function App() {
       onBack={goBack}
       onHome={handleRestart}
       studentAnswer={studentAnswer}
+      timeTaken={timeTaken}
       isReviewing={isReviewing}
     />
   )

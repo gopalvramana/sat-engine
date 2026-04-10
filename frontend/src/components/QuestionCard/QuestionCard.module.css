@@ -24,6 +24,30 @@
   border-radius: 20px;
 }
 
+.metaRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.timer {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.03em;
+  background: #f1f5f9;
+  padding: 2px 8px;
+  border-radius: 20px;
+  min-width: 42px;
+  text-align: center;
+}
+
+.timerFrozen {
+  color: #94a3b8;
+  background: #f8fafc;
+}
+
 .diff {
   display: flex;
   gap: 3px;
