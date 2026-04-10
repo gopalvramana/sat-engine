@@ -212,6 +212,10 @@ public class GenerateStage {
             saveQuestion(generated, externalId, section, domain, resolvedSkill, difficulty, qtype);
             seqCache.put(domain, seq + 1);
             success++;
+
+            if (i < count) {
+                try { Thread.sleep(200); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+            }
         }
 
         log.info("─".repeat(60));
