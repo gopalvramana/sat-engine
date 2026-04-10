@@ -98,6 +98,13 @@
   gap: 12px;
 }
 
+/* ── Mobile: single column cards ───────────────────────────── */
+@media (max-width: 500px) {
+  .topicGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ── Topic card ─────────────────────────────────────────────────── */
 .topicCard {
   background: #fff;

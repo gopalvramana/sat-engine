@@ -67,3 +67,31 @@
   min-width: 0;
   padding-bottom: 2rem;
 }
+
+/* ── Mobile: stack question on top, feedback below ──────────── */
+@media (max-width: 767px) {
+  .content {
+    padding: 12px 12px 80px;
+  }
+
+  .questionWrap {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .leftCol {
+    width: 100%;
+    position: static;
+    max-height: none;
+    overflow-y: visible;
+  }
+
+  .questionOnly .leftCol {
+    max-width: 100%;
+  }
+
+  .rightCol {
+    width: 100%;
+    padding-bottom: 1rem;
+  }
+}

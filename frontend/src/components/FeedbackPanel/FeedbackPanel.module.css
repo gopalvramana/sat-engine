@@ -334,6 +334,17 @@
 .altStepContent { font-size: 0.8rem; color: #475569; line-height: 1.55; margin: 0 0 0.3rem; }
 .altStepMath { margin-top: 0.3rem; font-size: 0.82rem; }
 
+/* ── Mobile: stack animation above steps ───────────────────── */
+@media (max-width: 767px) {
+  .solutionSplit {
+    grid-template-columns: 1fr;
+  }
+
+  .solFig {
+    max-height: 220px;
+  }
+}
+
 /* ── Next button ────────────────────────────────────────────── */
 .nextRow { display: flex; justify-content: flex-end; padding-top: 4px; }
 
