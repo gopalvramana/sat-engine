@@ -42,7 +42,7 @@ export default function PracticePage({
         )}
 
         {(phase === 'question' || phase === 'feedback') && question && (
-          <div className={styles.questionWrap}>
+          <div className={`${styles.questionWrap} ${phase === 'question' ? styles.questionOnly : ''}`}>
             {/* Left: question + choices (sticky) */}
             <div className={styles.leftCol}>
               <QuestionCard

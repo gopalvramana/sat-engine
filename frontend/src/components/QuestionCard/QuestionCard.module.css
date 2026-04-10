@@ -197,11 +197,11 @@
 
 .submitRow {
   display: flex;
-  justify-content: flex-end;
 }
 
 .submitBtn {
-  padding: 10px 28px;
+  width: 100%;
+  padding: 13px 28px;
   background: #7c3aed;
   color: #fff;
   border: none;
@@ -211,6 +211,7 @@
   cursor: pointer;
   font-family: inherit;
   transition: background 0.15s;
+  letter-spacing: 0.01em;
 }
 .submitBtn:hover:not(:disabled) { background: #6d28d9; }
 .submitBtn:disabled { background: #c4b5fd; cursor: not-allowed; }

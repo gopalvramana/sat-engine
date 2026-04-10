@@ -35,6 +35,18 @@
   align-items: flex-start;
 }
 
+/* Question-only mode (no feedback yet): centre the card at a comfortable reading width */
+.questionOnly {
+  justify-content: center;
+}
+.questionOnly .leftCol {
+  width: 100%;
+  max-width: 720px;
+  position: static; /* no sticky needed when filling the page solo */
+  max-height: none;
+  overflow-y: visible;
+}
+
 /* Left column — question card, sticky so it stays visible while scrolling feedback */
 .leftCol {
   width: 44%;

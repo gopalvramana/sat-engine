@@ -1,6 +1,5 @@
 /* ── Page shell ─────────────────────────────────────────────────── */
 .page {
-  min-height: 100vh;
   padding: 0 0 72px;
   background: #f8fafc;
 }
