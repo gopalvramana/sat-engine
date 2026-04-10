@@ -23,12 +23,30 @@ public class GapAnalysisService {
     private final ClaudeClient             claudeClient;
     private final ObjectMapper             objectMapper;
 
-    private static final String MODEL      = "claude-haiku-4-5-20251001";
-    private static final int    MAX_TOKENS = 4096;
+    private static final String MODEL        = "claude-haiku-4-5-20251001";
+    private static final int    MAX_TOKENS   = 4096;
+    private static final int    MAX_ATTEMPTS = 2;
 
     /**
-     * Generates AI diagnostic probes + gap lessons for a student who answered wrong.
-     * Returns raw JSON string matching the probe/lesson schema used by the FindMyGap React component.
+     * Fallback returned when all Claude attempts fail so the student never sees a raw error.
+     * Structured identically to a real gap response — the React component renders it normally.
+     */
+    private static final String FALLBACK_GAP = """
+            {
+              "gaps": [{
+                "trigger": "I want to review this question",
+                "title": "Gap: Review the Solution Steps",
+                "body": "Work through the step-by-step solution shown above. Focus on the step where your approach first diverged from the correct method.",
+                "example": "Compare your working to each solution step to identify exactly where the mistake occurred.",
+                "takeaway": "Understanding the method matters more than just knowing the answer."
+              }]
+            }
+            """;
+
+    /**
+     * Generates AI diagnostic gap cards for a student who answered wrong.
+     * Retries once on transient failure; returns a generic fallback if both attempts fail
+     * so the student always sees something useful instead of an error.
      */
     public String analyze(UUID questionId, String studentAnswer) {
         Question q = questionRepository.findById(questionId)
@@ -38,24 +56,37 @@ public class GapAnalysisService {
                 .orElseThrow(() -> new IllegalArgumentException("Answer not found for: " + questionId));
 
         String prompt = buildPrompt(q, qa.getCorrectAnswer(), studentAnswer);
-        String raw = claudeClient.call(MODEL, MAX_TOKENS, "", prompt);
 
-        // Strip ```json ... ``` fences if present
-        String cleaned = raw.replaceAll("(?i)^```json\\s*", "")
-                            .replaceAll("\\s*```$", "")
-                            .strip();
+        Exception lastError = null;
+        for (int attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+            try {
+                String raw = claudeClient.call(MODEL, MAX_TOKENS, "", prompt);
 
-        // Validate it's parseable JSON before returning
-        try {
-            objectMapper.readTree(cleaned);
-        } catch (Exception e) {
-            log.error("Gap analysis returned invalid JSON for question {}: {}", questionId, e.getMessage());
-            throw new RuntimeException("Gap analysis returned invalid JSON", e);
+                // Strip ```json ... ``` fences if present
+                String cleaned = raw.replaceAll("(?i)^```json\\s*", "")
+                                    .replaceAll("\\s*```$", "")
+                                    .strip();
+
+                objectMapper.readTree(cleaned); // validate parseable JSON
+
+                log.info("Gap analysis done for {} (student={}, correct={}){}",
+                        q.getExternalId(), studentAnswer, qa.getCorrectAnswer(),
+                        attempt > 1 ? " (attempt " + attempt + ")" : "");
+                return cleaned;
+
+            } catch (Exception e) {
+                lastError = e;
+                log.warn("Gap analysis attempt {}/{} failed for question {}: {}",
+                        attempt, MAX_ATTEMPTS, questionId, e.getMessage());
+                if (attempt < MAX_ATTEMPTS) {
+                    try { Thread.sleep(500); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+                }
+            }
         }
 
-        log.info("Gap analysis generated for question {} (student={}, correct={})",
-                q.getExternalId(), studentAnswer, qa.getCorrectAnswer());
-        return cleaned;
+        log.error("Gap analysis failed after {} attempts for question {} — returning fallback. Error: {}",
+                MAX_ATTEMPTS, questionId, lastError.getMessage());
+        return FALLBACK_GAP.strip();
     }
 
     private String buildPrompt(Question q, String correctAnswer, String studentAnswer) {
