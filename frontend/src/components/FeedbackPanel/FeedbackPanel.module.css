@@ -27,6 +27,39 @@
   font-size: 13.5px; color: #334155; line-height: 1.6; margin-bottom: 12px;
 }
 
+/* ── Study this skill button ────────────────────────────────── */
+.studyBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  background: #f5f3ff;
+  border: 1.5px solid #ddd6fe;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: background 0.12s, border-color 0.12s;
+}
+.studyBtn:hover { background: #ede9fe; border-color: #c4b5fd; }
+
+.studyBtnIcon { font-size: 15px; flex-shrink: 0; }
+
+.studyBtnText {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #5b21b6;
+  flex: 1;
+}
+
+.studyBtnChevron {
+  font-size: 0.75rem;
+  color: #7c3aed;
+  flex-shrink: 0;
+}
+
 /* ── Accordion group (outer card) ───────────────────────────── */
 .accordionGroup {
   background: #fff;

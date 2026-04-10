@@ -57,3 +57,10 @@ export function submitAnswer(sessionId, questionId, studentAnswer) {
 export function analyzeGap(questionId, studentAnswer) {
   return request('POST', '/api/gaps/analyze', { questionId, studentAnswer })
 }
+
+// ── Skill content ─────────────────────────────────────────────────────
+
+/** GET /api/skills/{skillKey}/content — skill study content JSON */
+export function getSkillContent(skillKey) {
+  return request('GET', `/api/skills/${skillKey}/content`)
+}

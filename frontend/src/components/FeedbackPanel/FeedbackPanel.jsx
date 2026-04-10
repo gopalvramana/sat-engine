@@ -2,6 +2,7 @@ import { useState } from 'react'
 import MathText from '../MathText/MathText'
 import AnimationPanel from '../AnimationPanel/AnimationPanel'
 import FindMyGap from '../FindMyGap/FindMyGap'
+import SkillDrawer from '../SkillDrawer/SkillDrawer'
 import styles from './FeedbackPanel.module.css'
 
 const MATH_DOMAINS = new Set([
@@ -132,6 +133,9 @@ export default function FeedbackPanel({ feedback, question, studentAnswer, onNex
   // Find My Gap only fetches when student opens the accordion
   const [gapTriggered, setGapTriggered] = useState(false)
 
+  // Skill drawer — open when student taps "Study this skill"
+  const [skillDrawerOpen, setSkillDrawerOpen] = useState(false)
+
   // Animation uid — set by AnimationPanel once renderer mounts; used by StepNavigator to sync
   const [animUid, setAnimUid] = useState(null)
 
@@ -204,6 +208,26 @@ export default function FeedbackPanel({ feedback, question, studentAnswer, onNex
         <div className={styles.shortExpl}>
           <MathText text={feedback.explanationShort} as="div" />
         </div>
+      )}
+
+      {/* ── Study this skill button ──────────────────────────── */}
+      {question.skillKey && (
+        <button
+          className={styles.studyBtn}
+          onClick={() => setSkillDrawerOpen(true)}
+        >
+          <span className={styles.studyBtnIcon}>📚</span>
+          <span className={styles.studyBtnText}>Study this skill</span>
+          <span className={styles.studyBtnChevron}>→</span>
+        </button>
+      )}
+
+      {/* ── Skill drawer overlay ──────────────────────────────── */}
+      {skillDrawerOpen && question.skillKey && (
+        <SkillDrawer
+          skillKey={question.skillKey}
+          onClose={() => setSkillDrawerOpen(false)}
+        />
       )}
 
       {/* ── Accordion group ──────────────────────────────────── */}

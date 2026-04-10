@@ -36,7 +36,8 @@ public record QuestionResponse(
         String passageText,
         String passageSource,
         String diagramJson,
-        Boolean calculatorOk
+        Boolean calculatorOk,
+        String skillKey
 ) {
 
     /**
@@ -71,7 +72,8 @@ public record QuestionResponse(
                 q.getPassageText(),
                 q.getPassageSource(),
                 q.getDiagram(),
-                q.getCalculatorOk()
+                q.getCalculatorOk(),
+                q.getSkillKey()
         );
     }
 }
