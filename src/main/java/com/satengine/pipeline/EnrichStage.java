@@ -120,27 +120,50 @@ public class EnrichStage {
         enrichAnimationStage.runBackfill();
     }
 
+    private static final int ENRICH_MAX_ATTEMPTS = 2;
+
     /** Enriches a single question. Returns int[]{enriched, skipped, failed} counts. */
     private int[] enrichOne(Question q, int i, int total) {
         String label = padEnd(q.getExternalId(), 20);
-        try {
-            if ("reading_writing".equals(q.getSection())) {
+
+        // R&W questions don't need Opus enrichment — advance status and move on
+        if ("reading_writing".equals(q.getSection())) {
+            try {
                 advanceRWQuestion(q, "approved".equals(q.getStatus()));
                 log.info("[{}/{}] {} skipped (R&W — no enrich needed)", i, total, label);
                 return new int[]{0, 1, 0};
-            } else {
+            } catch (Exception e) {
+                log.error("[{}/{}] {} FAILED (R&W advance): {}", i, total, label, e.getMessage());
+                return new int[]{0, 0, 1};
+            }
+        }
+
+        // Math questions: attempt enrichment with one retry on transient failures
+        Exception lastError = null;
+        for (int attempt = 1; attempt <= ENRICH_MAX_ATTEMPTS; attempt++) {
+            try {
                 JsonNode fields = enrichQuestion(q);
                 applyFields(q, fields, "approved".equals(q.getStatus()) || "enriched".equals(q.getStatus()));
                 // Re-fetch so animation field reflects what was just saved
                 q = questionRepository.findById(q.getId()).orElse(q);
                 boolean animated = enrichAnimationStage.enrichIfEligible(q);
-                log.info("[{}/{}] {} done{}", i, total, label, animated ? "  (+ animation)" : "");
+                log.info("[{}/{}] {} done{}{}", i, total, label,
+                        animated ? "  (+ animation)" : "",
+                        attempt > 1 ? "  (attempt " + attempt + ")" : "");
                 return new int[]{1, 0, 0};
+            } catch (Exception e) {
+                lastError = e;
+                log.warn("[{}/{}] {} attempt {}/{} failed: {}", i, total, label,
+                        attempt, ENRICH_MAX_ATTEMPTS, e.getMessage());
+                if (attempt < ENRICH_MAX_ATTEMPTS) {
+                    try { Thread.sleep(1000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+                }
             }
-        } catch (Exception e) {
-            log.error("[{}/{}] {} FAILED: {}", i, total, label, e.getMessage());
-            return new int[]{0, 0, 1};
         }
+
+        log.error("[{}/{}] {} FAILED after {} attempts: {}", i, total, label,
+                ENRICH_MAX_ATTEMPTS, lastError.getMessage());
+        return new int[]{0, 0, 1};
     }
 
     @Transactional
