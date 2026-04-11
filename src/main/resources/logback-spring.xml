@@ -1,0 +1,11 @@
+<configuration>
+  <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+  <!-- Custom appender that routes log lines to per-job deques via MDC -->
+  <appender name="JOB_CAPTURE" class="com.satengine.admin.JobLogAppender"/>
+
+  <root level="INFO">
+    <appender-ref ref="CONSOLE"/>
+    <appender-ref ref="JOB_CAPTURE"/>
+  </root>
+</configuration>

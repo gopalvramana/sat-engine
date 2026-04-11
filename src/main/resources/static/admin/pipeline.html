@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pipeline Dashboard — SAT Engine Admin</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --purple:    #7c3aed;
+      --purple-lt: #ede9fe;
+      --green:     #4ade80;
+      --red:       #f87171;
+      --slate-50:  #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-300: #cbd5e1;
+      --slate-400: #94a3b8;
+      --slate-500: #64748b;
+      --slate-600: #475569;
+      --slate-700: #334155;
+      --slate-800: #1e293b;
+      --slate-900: #0f172a;
+      --white:     #ffffff;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.05);
+      --shadow:    0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--slate-50);
+      color: var(--slate-800);
+      min-height: 100vh;
+    }
+
+    /* ── Header ──────────────────────────────────────────────────── */
+    .header {
+      background: var(--white);
+      border-bottom: 1px solid var(--slate-200);
+      box-shadow: var(--shadow-sm);
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .header-left { display: flex; align-items: center; gap: 10px; }
+    .header-icon { font-size: 22px; }
+    .header-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--slate-900);
+    }
+    .header-sub {
+      font-size: 11px;
+      color: var(--slate-400);
+      font-weight: 500;
+    }
+    .header-nav a {
+      font-size: 13px;
+      color: var(--purple);
+      text-decoration: none;
+      font-weight: 600;
+      padding: 6px 12px;
+      border: 1.5px solid var(--purple);
+      border-radius: 6px;
+      transition: background 0.15s, color 0.15s;
+    }
+    .header-nav a:hover { background: var(--purple); color: var(--white); }
+
+    /* ── Main layout ─────────────────────────────────────────────── */
+    .main { max-width: 1100px; margin: 0 auto; padding: 24px 20px 48px; }
+
+    /* ── Stats bar ───────────────────────────────────────────────── */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    @media (max-width: 640px) {
+      .stats-bar { grid-template-columns: repeat(2, 1fr); }
+    }
+    .stat-card {
+      background: var(--white);
+      border: 1px solid var(--slate-200);
+      border-radius: 10px;
+      padding: 16px 18px;
+      box-shadow: var(--shadow-sm);
+    }
+    .stat-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--slate-400);
+      margin-bottom: 4px;
+    }
+    .stat-value {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--slate-900);
+      font-variant-numeric: tabular-nums;
+    }
+    .stat-card.approved .stat-value { color: var(--purple); }
+
+    /* ── Step cards grid ─────────────────────────────────────────── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 900px) {
+      .cards-grid { grid-template-columns: 1fr; }
+    }
+
+    .step-card {
+      background: var(--white);
+      border: 1.5px solid var(--slate-200);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .step-card.active {
+      border-color: var(--purple);
+      box-shadow: 0 0 0 3px rgba(124,58,237,0.12), var(--shadow);
+    }
+
+    .step-header { display: flex; align-items: center; gap: 10px; }
+    .step-badge {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--purple);
+      color: var(--white);
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .step-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--slate-900);
+    }
+
+    /* ── Form controls ───────────────────────────────────────────── */
+    .field-group { display: flex; flex-direction: column; gap: 6px; }
+    .field-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--slate-500);
+    }
+
+    /* Toggle buttons (Section / Difficulty) */
+    .toggle-group { display: flex; flex-wrap: wrap; gap: 6px; }
+    .toggle-btn {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 6px;
+      border: 1.5px solid var(--slate-200);
+      background: var(--slate-50);
+      color: var(--slate-600);
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .toggle-btn:hover { border-color: var(--purple); color: var(--purple); }
+    .toggle-btn.selected {
+      background: var(--purple);
+      border-color: var(--purple);
+      color: var(--white);
+    }
+
+    /* Domain checkboxes */
+    .domain-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px 8px;
+    }
+    .domain-check {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--slate-600);
+      cursor: pointer;
+      padding: 2px 0;
+    }
+    .domain-check input[type="checkbox"] {
+      accent-color: var(--purple);
+      width: 13px;
+      height: 13px;
+      cursor: pointer;
+    }
+    .domain-check.all-option {
+      font-weight: 600;
+      color: var(--slate-700);
+      grid-column: 1 / -1;
+      margin-bottom: 2px;
+    }
+
+    /* Count input */
+    .count-input {
+      width: 80px;
+      padding: 6px 10px;
+      border: 1.5px solid var(--slate-200);
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      color: var(--slate-800);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .count-input:focus { border-color: var(--purple); }
+
+    /* Option checkboxes (onlyFailed, includeApproved) */
+    .option-check {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      color: var(--slate-600);
+      cursor: pointer;
+    }
+    .option-check input[type="checkbox"] {
+      accent-color: var(--purple);
+      width: 14px;
+      height: 14px;
+      cursor: pointer;
+    }
+
+    /* Run button */
+    .run-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      width: 100%;
+      padding: 10px 16px;
+      background: var(--purple);
+      color: var(--white);
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s, opacity 0.15s;
+      margin-top: auto;
+    }
+    .run-btn:hover:not(:disabled) { background: #6d28d9; }
+    .run-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    .run-btn .spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      display: none;
+    }
+    .run-btn.running .spinner { display: block; }
+    .run-btn.running .btn-icon { display: none; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Job log panel ───────────────────────────────────────────── */
+    .log-panel {
+      background: var(--white);
+      border: 1.5px solid var(--slate-200);
+      border-radius: 12px;
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+    .log-header {
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--slate-200);
+    }
+    .log-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--slate-800);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .status-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 999px;
+      display: none;
+    }
+    .status-badge.running {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: #fef3c7;
+      color: #92400e;
+    }
+    .status-badge.done {
+      display: inline-flex;
+      background: #dcfce7;
+      color: #166534;
+    }
+    .status-badge.failed {
+      display: inline-flex;
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    .status-badge .pulse {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #f59e0b;
+      animation: pulse 1s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    .log-clear-btn {
+      font-size: 12px;
+      color: var(--slate-400);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 3px 8px;
+      border-radius: 4px;
+      transition: color 0.15s, background 0.15s;
+    }
+    .log-clear-btn:hover { color: var(--slate-600); background: var(--slate-100); }
+
+    .log-terminal {
+      background: var(--slate-900);
+      padding: 14px 16px;
+      min-height: 220px;
+      max-height: 420px;
+      overflow-y: auto;
+      font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+      font-size: 12px;
+      line-height: 1.65;
+      color: var(--green);
+      scroll-behavior: smooth;
+    }
+    .log-terminal .log-line { display: block; white-space: pre-wrap; word-break: break-all; }
+    .log-terminal .log-line.error { color: var(--red); }
+    .log-terminal .log-empty {
+      color: var(--slate-500);
+      font-style: italic;
+    }
+
+    /* ── Run All banner ──────────────────────────────────────────── */
+    .run-all-card {
+      background: linear-gradient(135deg, #6d28d9 0%, #7c3aed 100%);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      box-shadow: 0 4px 14px rgba(124,58,237,0.3);
+    }
+    .run-all-left { flex-shrink: 0; }
+    .run-all-title { font-size: 16px; font-weight: 700; color: #fff; }
+    .run-all-sub   { font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 2px; }
+    .run-all-params {
+      display: flex;
+      align-items: flex-end;
+      gap: 20px;
+      flex-wrap: wrap;
+      flex: 1;
+    }
+    .inline-field { display: flex; flex-direction: column; gap: 5px; }
+    .run-all-card .field-label { color: rgba(255,255,255,0.75); }
+    .run-all-card .toggle-btn {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.25);
+      color: rgba(255,255,255,0.8);
+    }
+    .run-all-card .toggle-btn:hover {
+      background: rgba(255,255,255,0.2);
+      border-color: rgba(255,255,255,0.5);
+      color: #fff;
+    }
+    .run-all-card .toggle-btn.selected {
+      background: #fff;
+      border-color: #fff;
+      color: #6d28d9;
+    }
+    .run-all-card .count-input {
+      background: rgba(255,255,255,0.15);
+      border-color: rgba(255,255,255,0.3);
+      color: #fff;
+    }
+    .run-all-card .count-input:focus { border-color: #fff; }
+    .domain-select {
+      padding: 5px 10px;
+      border-radius: 6px;
+      border: 1.5px solid rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      font-size: 12px;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      outline: none;
+    }
+    .domain-select option { background: #6d28d9; color: #fff; }
+    .run-all-btn {
+      width: auto;
+      padding: 10px 24px;
+      background: #fff;
+      color: #6d28d9;
+      flex-shrink: 0;
+      font-size: 14px;
+    }
+    .run-all-btn:hover:not(:disabled) { background: #f5f3ff; }
+
+    /* ── Scrollbar styling for terminal ──────────────────────────── */
+    .log-terminal::-webkit-scrollbar { width: 6px; }
+    .log-terminal::-webkit-scrollbar-track { background: transparent; }
+    .log-terminal::-webkit-scrollbar-thumb { background: var(--slate-600); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<!-- ══ HEADER ══════════════════════════════════════════════════════ -->
+<header class="header">
+  <div class="header-left">
+    <span class="header-icon">⚙️</span>
+    <div>
+      <div class="header-sub">SAT Engine Admin</div>
+      <div class="header-title">Pipeline Dashboard</div>
+    </div>
+  </div>
+  <nav class="header-nav">
+    <a href="/admin/validate.html">→ Validate Page</a>
+  </nav>
+</header>
+
+<!-- ══ MAIN ════════════════════════════════════════════════════════ -->
+<main class="main">
+
+  <!-- Stats bar -->
+  <div class="stats-bar" id="statsBar">
+    <div class="stat-card">
+      <div class="stat-label">Generated</div>
+      <div class="stat-value" id="statGenerated">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Reviewed</div>
+      <div class="stat-value" id="statReviewed">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Enriched</div>
+      <div class="stat-value" id="statEnriched">—</div>
+    </div>
+    <div class="stat-card approved">
+      <div class="stat-label">Approved</div>
+      <div class="stat-value" id="statApproved">—</div>
+    </div>
+  </div>
+
+  <!-- Run All Steps banner -->
+  <div class="run-all-card">
+    <div class="run-all-left">
+      <div class="run-all-title">🚀 Run All Steps</div>
+      <div class="run-all-sub">Generate → Agent Review → Enrich in one shot</div>
+    </div>
+    <div class="run-all-params">
+      <div class="inline-field">
+        <span class="field-label">Section</span>
+        <div class="toggle-group" id="section-all">
+          <button class="toggle-btn selected" data-value="math">Math</button>
+          <button class="toggle-btn" data-value="reading_writing">R&amp;W</button>
+          <button class="toggle-btn" data-value="">Both</button>
+        </div>
+      </div>
+      <div class="inline-field">
+        <span class="field-label">Domain</span>
+        <select class="domain-select" id="domain-all">
+          <option value="">All domains</option>
+          <option value="algebra">Algebra</option>
+          <option value="advanced_math">Advanced Math</option>
+          <option value="problem_solving_data">Problem Solving</option>
+          <option value="geometry_trigonometry">Geometry &amp; Trig</option>
+          <option value="information_ideas">Info &amp; Ideas</option>
+          <option value="craft_structure">Craft &amp; Structure</option>
+          <option value="expression_ideas">Expression of Ideas</option>
+          <option value="standard_english">Standard English</option>
+        </select>
+      </div>
+      <div class="inline-field">
+        <span class="field-label">Difficulty</span>
+        <div class="toggle-group" id="difficulty-all">
+          <button class="toggle-btn" data-value="easy">Easy</button>
+          <button class="toggle-btn" data-value="medium">Medium</button>
+          <button class="toggle-btn" data-value="hard">Hard</button>
+          <button class="toggle-btn selected" data-value="">All</button>
+        </div>
+      </div>
+      <div class="inline-field">
+        <span class="field-label">Count</span>
+        <input type="number" class="count-input" id="count-all" value="5" min="1" max="50">
+      </div>
+    </div>
+    <button class="run-btn run-all-btn" id="btn-all" onclick="runAll()">
+      <span class="spinner"></span>
+      <span class="btn-icon">▶▶</span>
+      Run All
+    </button>
+  </div>
+
+  <!-- Step cards -->
+  <div class="cards-grid">
+
+    <!-- ── Step 1: Generate ─────────────────────────── -->
+    <div class="step-card" id="card-generate">
+      <div class="step-header">
+        <div class="step-badge">1</div>
+        <div class="step-title">Generate</div>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Section</div>
+        <div class="toggle-group" id="section-generate">
+          <button class="toggle-btn selected" data-value="math">Math</button>
+          <button class="toggle-btn" data-value="reading_writing">R&amp;W</button>
+          <button class="toggle-btn" data-value="">Both</button>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Domain</div>
+        <div class="domain-grid" id="domains-generate">
+          <!-- populated by JS -->
+        </div>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Difficulty</div>
+        <div class="toggle-group" id="difficulty-generate">
+          <button class="toggle-btn" data-value="easy">Easy</button>
+          <button class="toggle-btn" data-value="medium">Medium</button>
+          <button class="toggle-btn" data-value="hard">Hard</button>
+          <button class="toggle-btn selected" data-value="">All</button>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Count</div>
+        <input type="number" class="count-input" id="count-generate" value="5" min="1" max="50">
+      </div>
+
+      <button class="run-btn" id="btn-generate" onclick="runStep('generate')">
+        <span class="spinner"></span>
+        <span class="btn-icon">▶</span>
+        Run Generate
+      </button>
+    </div>
+
+    <!-- ── Step 2: Agent Review ─────────────────────── -->
+    <div class="step-card" id="card-review">
+      <div class="step-header">
+        <div class="step-badge">2</div>
+        <div class="step-title">Agent Review</div>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Section</div>
+        <div class="toggle-group" id="section-review">
+          <button class="toggle-btn" data-value="math">Math</button>
+          <button class="toggle-btn" data-value="reading_writing">R&amp;W</button>
+          <button class="toggle-btn selected" data-value="">Both</button>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Domain</div>
+        <div class="domain-grid" id="domains-review">
+          <!-- populated by JS -->
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="option-check">
+          <input type="checkbox" id="onlyFailed-review">
+          Only re-review failed questions
+        </label>
+      </div>
+
+      <button class="run-btn" id="btn-review" onclick="runStep('review')">
+        <span class="spinner"></span>
+        <span class="btn-icon">▶</span>
+        Run Review
+      </button>
+    </div>
+
+    <!-- ── Step 3: Enrich ───────────────────────────── -->
+    <div class="step-card" id="card-enrich">
+      <div class="step-header">
+        <div class="step-badge">3</div>
+        <div class="step-title">Enrich</div>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Section</div>
+        <div class="toggle-group" id="section-enrich">
+          <button class="toggle-btn" data-value="math">Math</button>
+          <button class="toggle-btn" data-value="reading_writing">R&amp;W</button>
+          <button class="toggle-btn selected" data-value="">Both</button>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Domain</div>
+        <div class="domain-grid" id="domains-enrich">
+          <!-- populated by JS -->
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="option-check">
+          <input type="checkbox" id="includeApproved-enrich">
+          Include already-approved questions
+        </label>
+      </div>
+
+      <button class="run-btn" id="btn-enrich" onclick="runStep('enrich')">
+        <span class="spinner"></span>
+        <span class="btn-icon">▶</span>
+        Run Enrich
+      </button>
+    </div>
+
+  </div><!-- /cards-grid -->
+
+  <!-- ── Job Log Panel ─────────────────────────────────────────── -->
+  <div class="log-panel">
+    <div class="log-header">
+      <div class="log-title">
+        📋 Job Log
+        <span class="status-badge" id="statusBadge">
+          <span class="pulse" id="statusPulse"></span>
+          <span id="statusText">RUNNING</span>
+        </span>
+      </div>
+      <button class="log-clear-btn" onclick="clearLog()">Clear</button>
+    </div>
+    <div class="log-terminal" id="logTerminal">
+      <span class="log-empty">No job running. Press a Run button above to start.</span>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ── Domain definitions ────────────────────────────────────────────
+const DOMAINS = [
+  { value: 'algebra',              label: 'Algebra' },
+  { value: 'advanced_math',        label: 'Advanced Math' },
+  { value: 'problem_solving_data', label: 'Problem Solving' },
+  { value: 'geometry_trigonometry',label: 'Geometry' },
+  { value: 'information_ideas',    label: 'Info & Ideas' },
+  { value: 'craft_structure',      label: 'Craft & Structure' },
+  { value: 'expression_ideas',     label: 'Expression of Ideas' },
+  { value: 'standard_english',     label: 'Standard English' },
+];
+
+// ── Build domain checkboxes for each step card ────────────────────
+function buildDomainCheckboxes(containerId) {
+  const container = document.getElementById(containerId);
+
+  // "All" option
+  const allLabel = document.createElement('label');
+  allLabel.className = 'domain-check all-option';
+  allLabel.innerHTML = `<input type="checkbox" id="${containerId}-all" checked> All domains`;
+  container.appendChild(allLabel);
+
+  DOMAINS.forEach(d => {
+    const label = document.createElement('label');
+    label.className = 'domain-check';
+    label.innerHTML = `<input type="checkbox" class="domain-cb-${containerId}" value="${d.value}"> ${d.label}`;
+    container.appendChild(label);
+  });
+
+  // "All" checkbox logic
+  const allCb = document.getElementById(`${containerId}-all`);
+  allCb.addEventListener('change', () => {
+    if (allCb.checked) {
+      document.querySelectorAll(`.domain-cb-${containerId}`).forEach(cb => { cb.checked = false; });
+    }
+  });
+  document.querySelectorAll(`.domain-cb-${containerId}`).forEach(cb => {
+    cb.addEventListener('change', () => {
+      if (cb.checked) allCb.checked = false;
+      const anyChecked = [...document.querySelectorAll(`.domain-cb-${containerId}`)].some(c => c.checked);
+      if (!anyChecked) allCb.checked = true;
+    });
+  });
+}
+
+['domains-generate', 'domains-review', 'domains-enrich'].forEach(buildDomainCheckboxes);
+
+// ── Toggle button groups ─────────────────────────────────────────
+document.querySelectorAll('.toggle-group').forEach(group => {
+  group.querySelectorAll('.toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      group.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+    });
+  });
+});
+
+// ── Helpers to read UI state ──────────────────────────────────────
+function getSelectedToggle(groupId) {
+  const btn = document.querySelector(`#${groupId} .toggle-btn.selected`);
+  return btn ? btn.dataset.value : '';
+}
+
+function getSelectedDomains(containerId) {
+  const allCb = document.getElementById(`${containerId}-all`);
+  if (allCb && allCb.checked) return null;
+  const checked = [...document.querySelectorAll(`.domain-cb-${containerId}`)].filter(c => c.checked);
+  if (checked.length === 0) return null;
+  // If exactly one domain selected, return it as a string; otherwise return the first
+  // (the API accepts a single domain — multi-domain would need separate calls)
+  return checked[0].value;
+}
+
+// ── Job tracking state ────────────────────────────────────────────
+let currentJobId   = null;
+let pollInterval   = null;
+let seenLogCount   = 0;
+let activeStepId   = null;
+
+// ── Run a pipeline step ───────────────────────────────────────────
+async function runStep(step) {
+  if (currentJobId) return; // guard: only one job at a time
+
+  const domainMap = { generate: 'domains-generate', review: 'domains-review', enrich: 'domains-enrich' };
+  const sectionMap = { generate: 'section-generate', review: 'section-review', enrich: 'section-enrich' };
+
+  const domain     = getSelectedDomains(domainMap[step]);
+  const section    = getSelectedToggle(sectionMap[step]) || null;
+  const difficulty = step === 'generate' ? (getSelectedToggle('difficulty-generate') || null) : null;
+  const count      = step === 'generate' ? (parseInt(document.getElementById('count-generate').value) || 5) : 5;
+  const onlyFailed = step === 'review'   ? document.getElementById('onlyFailed-review').checked : false;
+
+  const body = { step, domain, section, difficulty, count, onlyFailed };
+
+  clearLog();
+  setRunning(step);
+
+  try {
+    const res = await fetch('/admin/pipeline/run', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    currentJobId = data.jobId;
+    seenLogCount = 0;
+    startPolling();
+  } catch (err) {
+    appendLog(`ERROR starting job: ${err.message}`, true);
+    setIdle();
+  }
+}
+
+// ── Polling ───────────────────────────────────────────────────────
+function startPolling() {
+  pollInterval = setInterval(pollJob, 1000);
+}
+
+async function pollJob() {
+  if (!currentJobId) return;
+  try {
+    const res = await fetch(`/admin/pipeline/job/${currentJobId}`);
+    if (!res.ok) return;
+    const data = await res.json();
+
+    // Append new lines only
+    const logs = data.logs || [];
+    const newLines = logs.slice(seenLogCount);
+    newLines.forEach(line => appendLog(line, line.toLowerCase().includes('error') || line.toLowerCase().includes('failed')));
+    seenLogCount = logs.length;
+
+    if (data.status === 'DONE') {
+      showStatusBadge('done', '✓ DONE');
+      stopPolling();
+      setIdle();
+      fetchStats(); // refresh stats after job completes
+    } else if (data.status === 'FAILED') {
+      showStatusBadge('failed', '✗ FAILED');
+      stopPolling();
+      setIdle();
+    }
+  } catch (err) {
+    // network hiccup — keep polling
+  }
+}
+
+function stopPolling() {
+  if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
+  currentJobId = null;
+}
+
+// ── UI state helpers ──────────────────────────────────────────────
+function setRunning(step) {
+  activeStepId = step;
+  document.querySelectorAll('.run-btn').forEach(b => { b.disabled = true; });
+  const btn = document.getElementById(`btn-${step}`);
+  if (btn) btn.classList.add('running');
+  document.querySelectorAll('.step-card').forEach(c => c.classList.remove('active'));
+  const card = document.getElementById(`card-${step}`);
+  if (card) card.classList.add('active');
+  showStatusBadge('running', 'RUNNING');
+}
+
+function setIdle() {
+  document.querySelectorAll('.run-btn').forEach(b => { b.disabled = false; b.classList.remove('running'); });
+  document.querySelectorAll('.step-card').forEach(c => c.classList.remove('active'));
+  activeStepId = null;
+}
+
+function showStatusBadge(type, text) {
+  const badge = document.getElementById('statusBadge');
+  const pulse = document.getElementById('statusPulse');
+  const statusText = document.getElementById('statusText');
+  badge.className = `status-badge ${type}`;
+  statusText.textContent = text;
+  pulse.style.display = type === 'running' ? 'block' : 'none';
+}
+
+// ── Log terminal helpers ──────────────────────────────────────────
+function appendLog(line, isError = false) {
+  const terminal = document.getElementById('logTerminal');
+  // Remove placeholder on first real line
+  const empty = terminal.querySelector('.log-empty');
+  if (empty) empty.remove();
+
+  const span = document.createElement('span');
+  span.className = `log-line${isError ? ' error' : ''}`;
+  span.textContent = line;
+  terminal.appendChild(span);
+  terminal.scrollTop = terminal.scrollHeight;
+}
+
+function clearLog() {
+  const terminal = document.getElementById('logTerminal');
+  terminal.innerHTML = '<span class="log-empty">No job running. Press a Run button above to start.</span>';
+  const badge = document.getElementById('statusBadge');
+  badge.className = 'status-badge';
+  seenLogCount = 0;
+}
+
+// ── Stats fetch ───────────────────────────────────────────────────
+async function fetchStats() {
+  try {
+    const res = await fetch('/admin/pipeline/stats');
+    if (!res.ok) return;
+    const data = await res.json();
+    const sc = data.statusCounts || {};
+    document.getElementById('statGenerated').textContent = (sc.generated ?? 0).toLocaleString();
+    document.getElementById('statReviewed').textContent  = (sc.reviewed  ?? 0).toLocaleString();
+    document.getElementById('statEnriched').textContent  = (sc.enriched  ?? 0).toLocaleString();
+    document.getElementById('statApproved').textContent  = (sc.approved  ?? 0).toLocaleString();
+  } catch (_) {
+    // silently ignore
+  }
+}
+
+// ── Run All Steps ─────────────────────────────────────────────────
+async function runAll() {
+  if (currentJobId) return;
+
+  const domain     = document.getElementById('domain-all').value || null;
+  const section    = getSelectedToggle('section-all') || null;
+  const difficulty = getSelectedToggle('difficulty-all') || null;
+  const count      = parseInt(document.getElementById('count-all').value) || 5;
+
+  const body = { domain, section, difficulty, count };
+
+  clearLog();
+  setRunningAll();
+
+  try {
+    const res = await fetch('/admin/pipeline/run-all', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    currentJobId = data.jobId;
+    seenLogCount = 0;
+    startPolling();
+  } catch (err) {
+    appendLog(`ERROR starting pipeline: ${err.message}`, true);
+    setIdle();
+  }
+}
+
+function setRunningAll() {
+  activeStepId = 'all';
+  document.querySelectorAll('.run-btn').forEach(b => { b.disabled = true; });
+  const btn = document.getElementById('btn-all');
+  if (btn) btn.classList.add('running');
+  document.querySelectorAll('.step-card').forEach(c => c.classList.add('active'));
+  showStatusBadge('running', 'RUNNING ALL');
+}
+
+// Load stats on page load
+fetchStats();
+</script>
+</body>
+</html>
