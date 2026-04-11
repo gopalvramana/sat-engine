@@ -63,6 +63,7 @@
       color: var(--slate-400);
       font-weight: 500;
     }
+    .header-nav { display: flex; align-items: center; gap: 10px; }
     .header-nav a {
       font-size: 13px;
       color: var(--purple);
@@ -74,6 +75,141 @@
       transition: background 0.15s, color 0.15s;
     }
     .header-nav a:hover { background: var(--purple); color: var(--white); }
+    .help-btn {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      border: 1.5px solid var(--slate-300);
+      background: var(--white);
+      color: var(--slate-500);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+    .help-btn:hover { border-color: var(--purple); color: var(--purple); background: var(--purple-lt); }
+
+    /* ── Help modal ──────────────────────────────────────────────── */
+    .modal-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(15,23,42,0.55);
+      backdrop-filter: blur(3px);
+      z-index: 100;
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .modal-backdrop.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--white);
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      width: 100%; max-width: 680px;
+      max-height: 85vh;
+      display: flex; flex-direction: column;
+      transform: translateY(16px);
+      transition: transform 0.2s;
+    }
+    .modal-backdrop.open .modal { transform: translateY(0); }
+    .modal-head {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid var(--slate-200);
+      display: flex; align-items: flex-start; justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .modal-head-left { display: flex; align-items: center; gap: 12px; }
+    .modal-head-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: var(--purple-lt);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
+    }
+    .modal-title { font-size: 17px; font-weight: 700; color: var(--slate-900); }
+    .modal-subtitle { font-size: 12px; color: var(--slate-400); margin-top: 2px; }
+    .modal-close {
+      background: none; border: none; cursor: pointer;
+      color: var(--slate-400); font-size: 20px; line-height: 1;
+      padding: 4px; border-radius: 4px;
+      transition: color 0.15s, background 0.15s;
+    }
+    .modal-close:hover { color: var(--slate-700); background: var(--slate-100); }
+    .modal-body {
+      overflow-y: auto; padding: 24px;
+      display: flex; flex-direction: column; gap: 24px;
+    }
+    /* Guide sections */
+    .guide-section { display: flex; flex-direction: column; gap: 10px; }
+    .guide-section-title {
+      font-size: 13px; font-weight: 700;
+      color: var(--purple);
+      text-transform: uppercase; letter-spacing: 0.06em;
+      display: flex; align-items: center; gap: 7px;
+    }
+    .guide-pipeline {
+      display: flex; align-items: center; gap: 0;
+      background: var(--slate-50); border: 1px solid var(--slate-200);
+      border-radius: 10px; padding: 14px 16px;
+      overflow-x: auto;
+    }
+    .pipe-step {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 5px; flex-shrink: 0;
+    }
+    .pipe-badge {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--purple); color: #fff;
+      font-size: 13px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .pipe-label { font-size: 11px; font-weight: 600; color: var(--slate-600); }
+    .pipe-arrow {
+      font-size: 18px; color: var(--slate-300);
+      margin: 0 8px; flex-shrink: 0; margin-bottom: 14px;
+    }
+    .guide-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .guide-table th {
+      text-align: left; padding: 8px 12px;
+      background: var(--slate-50); color: var(--slate-500);
+      font-size: 11px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--slate-200);
+    }
+    .guide-table td {
+      padding: 9px 12px; vertical-align: top;
+      border-bottom: 1px solid var(--slate-100);
+      color: var(--slate-700); line-height: 1.5;
+    }
+    .guide-table tr:last-child td { border-bottom: none; }
+    .guide-table td:first-child { font-weight: 600; color: var(--slate-800); white-space: nowrap; }
+    .tag {
+      display: inline-block; font-size: 11px; font-weight: 600;
+      padding: 2px 8px; border-radius: 4px;
+      background: var(--purple-lt); color: var(--purple);
+    }
+    .guide-tip {
+      background: #fefce8; border: 1px solid #fde68a;
+      border-radius: 8px; padding: 12px 14px;
+      font-size: 13px; color: #78350f; line-height: 1.6;
+    }
+    .guide-tip strong { color: #92400e; }
+    .guide-steps { display: flex; flex-direction: column; gap: 8px; }
+    .guide-step-row {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 10px 12px;
+      background: var(--slate-50); border-radius: 8px;
+      border: 1px solid var(--slate-100);
+    }
+    .guide-step-num {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--purple); color: #fff;
+      font-size: 11px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .guide-step-text { font-size: 13px; color: var(--slate-700); line-height: 1.55; }
+    .guide-step-text strong { color: var(--slate-900); }
 
     /* ── Main layout ─────────────────────────────────────────────── */
     .main { max-width: 1100px; margin: 0 auto; padding: 24px 20px 48px; }
@@ -458,9 +594,149 @@
     </div>
   </div>
   <nav class="header-nav">
+    <button class="help-btn" onclick="openHelp()" title="How to use this dashboard">?</button>
     <a href="/admin/validate.html">→ Validate Page</a>
   </nav>
 </header>
+
+<!-- ══ HELP MODAL ══════════════════════════════════════════════════ -->
+<div class="modal-backdrop" id="helpModal" onclick="closeHelpOnBackdrop(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-head-left">
+        <div class="modal-head-icon">📖</div>
+        <div>
+          <div class="modal-title">Pipeline Dashboard Guide</div>
+          <div class="modal-subtitle">How to generate, review and enrich questions</div>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeHelp()">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- The Pipeline -->
+      <div class="guide-section">
+        <div class="guide-section-title">🔄 How the Pipeline Works</div>
+        <div class="guide-pipeline">
+          <div class="pipe-step">
+            <div class="pipe-badge">1</div>
+            <div class="pipe-label">Generate</div>
+          </div>
+          <div class="pipe-arrow">→</div>
+          <div class="pipe-step">
+            <div class="pipe-badge">2</div>
+            <div class="pipe-label">AI Review</div>
+          </div>
+          <div class="pipe-arrow">→</div>
+          <div class="pipe-step">
+            <div class="pipe-badge">3</div>
+            <div class="pipe-label">Enrich</div>
+          </div>
+          <div class="pipe-arrow">→</div>
+          <div class="pipe-step">
+            <div class="pipe-badge">4</div>
+            <div class="pipe-label">You Validate</div>
+          </div>
+        </div>
+        <div class="guide-tip">
+          <strong>Step 4 (Validate) is done by you</strong> on the <a href="/admin/validate.html" style="color:#92400e">Validate Page</a> after running steps 1–3 here. Only questions you approve go live to students.
+        </div>
+      </div>
+
+      <!-- What each step does -->
+      <div class="guide-section">
+        <div class="guide-section-title">⚙️ What Each Step Does</div>
+        <table class="guide-table">
+          <thead><tr><th>Step</th><th>What it does</th><th>Status after</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>1 · Generate</td>
+              <td>Asks Claude to write new SAT questions for the domain/difficulty you choose</td>
+              <td><span class="tag">generated</span></td>
+            </tr>
+            <tr>
+              <td>2 · Agent Review</td>
+              <td>Claude checks each question for correctness, answer key accuracy, and SAT style. Bad ones are rejected automatically</td>
+              <td><span class="tag">reviewed</span></td>
+            </tr>
+            <tr>
+              <td>3 · Enrich</td>
+              <td>Adds step-by-step explanations, trap analysis, core concept, and animations (Math only)</td>
+              <td><span class="tag">enriched</span></td>
+            </tr>
+            <tr>
+              <td>4 · Validate</td>
+              <td>You read each question and click Approve or Reject. Only approved questions appear in practice sessions</td>
+              <td><span class="tag">approved</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Parameters -->
+      <div class="guide-section">
+        <div class="guide-section-title">🎛️ Parameters Explained</div>
+        <table class="guide-table">
+          <thead><tr><th>Parameter</th><th>What it controls</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Section</td>
+              <td><strong>Math</strong> = algebra, geometry, data. <strong>R&amp;W</strong> = reading &amp; writing passages. <strong>Both</strong> = mix of both</td>
+            </tr>
+            <tr>
+              <td>Domain</td>
+              <td>The specific topic area (e.g. Algebra, Geometry). Choose <strong>All</strong> to let the system pick the most under-covered domain automatically</td>
+            </tr>
+            <tr>
+              <td>Difficulty</td>
+              <td><strong>Easy</strong> = SAT levels 1–2, <strong>Medium</strong> = 3–5, <strong>Hard</strong> = 6–7. <strong>All</strong> uses the SAT distribution (more medium than hard)</td>
+            </tr>
+            <tr>
+              <td>Count</td>
+              <td>How many questions to generate. Start with <strong>5</strong>. Each question calls the AI so higher numbers take longer and cost more</td>
+            </tr>
+            <tr>
+              <td>Only re-review failed</td>
+              <td>On the Review step — re-runs review only on questions that failed the last time. Use this to retry without re-reviewing everything</td>
+            </tr>
+            <tr>
+              <td>Include already-approved</td>
+              <td>On the Enrich step — re-enriches questions that were previously approved. Use this to refresh explanations after a prompt update</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Step by step workflow -->
+      <div class="guide-section">
+        <div class="guide-section-title">🚀 Recommended Workflow</div>
+        <div class="guide-steps">
+          <div class="guide-step-row">
+            <div class="guide-step-num">1</div>
+            <div class="guide-step-text">Use the <strong>Stats bar</strong> at the top to see how many questions are in each stage. If a domain has 0 approved questions, that's your target.</div>
+          </div>
+          <div class="guide-step-row">
+            <div class="guide-step-num">2</div>
+            <div class="guide-step-text">Use <strong>Run All Steps</strong> (the purple banner) for the fastest workflow — pick domain, difficulty, count and it runs all 3 steps automatically.</div>
+          </div>
+          <div class="guide-step-row">
+            <div class="guide-step-num">3</div>
+            <div class="guide-step-text">Use <strong>individual step buttons</strong> when you need control — e.g. re-reviewing only failed questions, or enriching without generating new ones.</div>
+          </div>
+          <div class="guide-step-row">
+            <div class="guide-step-num">4</div>
+            <div class="guide-step-text">Watch the <strong>Job Log</strong> at the bottom. Each line shows what Claude generated. Lines in red are errors. A green <strong>✓ DONE</strong> badge means success.</div>
+          </div>
+          <div class="guide-step-row">
+            <div class="guide-step-num">5</div>
+            <div class="guide-step-text">After steps complete, go to the <strong>Validate Page</strong> to review and approve the enriched questions before they reach students.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
 
 <!-- ══ MAIN ════════════════════════════════════════════════════════ -->
 <main class="main">
@@ -934,6 +1210,17 @@ function setRunningAll() {
   if (btn) btn.classList.add('running');
   document.querySelectorAll('.step-card').forEach(c => c.classList.add('active'));
   showStatusBadge('running', 'RUNNING ALL');
+}
+
+// ── Help modal ────────────────────────────────────────────────────
+function openHelp()  { document.getElementById('helpModal').classList.add('open'); }
+function closeHelp() { document.getElementById('helpModal').classList.remove('open'); }
+function closeHelpOnBackdrop(e) { if (e.target === document.getElementById('helpModal')) closeHelp(); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeHelp(); });
+
+// Auto-show on first ever visit
+if (!localStorage.getItem('pipeline-guide-seen')) {
+  setTimeout(() => { openHelp(); localStorage.setItem('pipeline-guide-seen', '1'); }, 400);
 }
 
 // Load stats on page load
