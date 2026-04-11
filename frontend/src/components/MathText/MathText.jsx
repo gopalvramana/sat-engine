@@ -26,7 +26,9 @@ function applyKatex(text) {
   if (!text) return ''
 
   // Combined pattern: \[...\] display | \(...\) inline | $...$ inline (with isMathContent guard)
-  const re = /(\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\)|\$(?:[^$\\]|\\.)+?\$)/g
+  // Negative lookahead (?!\d) skips currency like $50, $120 so they never consume
+  // the opening $ of adjacent math expressions like $m$ or $C_A = 50m$
+  const re = /(\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\)|\$(?!\d)(?:[^$\\]|\\.)+?\$)/g
   let result = ''
   let lastIndex = 0
   let match
