@@ -14,7 +14,7 @@ const LETTERS = ['A', 'B', 'C', 'D']
  *   onSubmit   — called with the chosen answer string (letter for MCQ, number for SPR)
  *   disabled   — true while submitting
  */
-export default function QuestionCard({ question, onSubmit, disabled, feedback, studentAnswer, timeTaken }) {
+export default function QuestionCard({ question, onSubmit, disabled, feedback, studentAnswer, timeTaken, isMarked, onMarkToggle }) {
   const [selected, setSelected] = useState(null)
   const [sprValue, setSprValue] = useState('')
 
@@ -48,6 +48,22 @@ export default function QuestionCard({ question, onSubmit, disabled, feedback, s
             ⏱ {formatTime(timeTaken ?? 0)}
           </span>
           <span className={styles.diff}>{diffDots}</span>
+          {!feedback && (
+            <button
+              className={`${styles.markBtn} ${isMarked ? styles.markBtnActive : ''}`}
+              onClick={onMarkToggle}
+              title={isMarked ? 'Unmark question' : 'Mark for review'}
+              aria-label={isMarked ? 'Unmark question' : 'Mark for review'}
+              type="button"
+            >
+              {isMarked ? '🔖' : (
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 2.5C3 2.22386 3.22386 2 3.5 2H12.5C12.7761 2 13 2.22386 13 2.5V14L8 11L3 14V2.5Z"
+                    stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" fill="none"/>
+                </svg>
+              )}
+            </button>
+          )}
         </div>
       </div>
 

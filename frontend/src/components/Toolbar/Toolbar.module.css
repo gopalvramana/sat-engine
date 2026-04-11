@@ -1,0 +1,281 @@
+/* ── Toolbar strip ──────────────────────────────────────────── */
+.toolbar {
+  position: fixed;
+  top: 12px;
+  right: 20px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 6px 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* ── Tool button ────────────────────────────────────────────── */
+.toolBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, border-color 0.15s;
+  color: #374151;
+  min-width: 60px;
+}
+.toolBtn:hover:not(:disabled) {
+  background: #f5f3ff;
+  border-color: #c4b5fd;
+  color: #7c3aed;
+}
+.toolBtn:disabled,
+.toolBtnDisabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.toolIcon {
+  font-size: 18px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+}
+.toolLabel {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: inherit;
+}
+
+/* ── Disabled tooltip ───────────────────────────────────────── */
+.btnWrap {
+  position: relative;
+  display: flex;
+}
+.tooltip {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1e293b;
+  color: #fff;
+  font-size: 11px;
+  white-space: nowrap;
+  padding: 4px 8px;
+  border-radius: 6px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 200;
+}
+.btnWrap:hover .tooltip {
+  opacity: 1;
+}
+
+/* ── Full-screen overlay (shared by calc + ref) ─────────────── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.18s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Close button (used in both overlays) ───────────────────── */
+.closeBtn {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #475569;
+  transition: background 0.15s, color 0.15s;
+  z-index: 10;
+}
+.closeBtn:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+/* ── Calculator overlay ─────────────────────────────────────── */
+.calcContainer {
+  position: relative;
+  width: 90vw;
+  height: 80vh;
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  animation: slideUp 0.2s ease;
+}
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.calcFrame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+/* ── Reference modal ────────────────────────────────────────── */
+.refModal {
+  position: relative;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  width: 90vw;
+  max-width: 600px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.2s ease;
+}
+
+.refHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px 14px;
+  border-bottom: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+.refTitle {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.refBody {
+  overflow-y: auto;
+  padding: 20px 24px 24px;
+  scrollbar-width: thin;
+  scrollbar-color: #e2e8f0 transparent;
+}
+.refBody::-webkit-scrollbar { width: 5px; }
+.refBody::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 3px; }
+
+/* ── Reference content ──────────────────────────────────────── */
+.refContent {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.refSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.refSectionTitle {
+  font-size: 12px;
+  font-weight: 700;
+  color: #7c3aed;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0 0 4px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.formulaList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.formulaRow {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  font-size: 14px;
+  padding: 6px 10px;
+  background: #f8fafc;
+  border-radius: 6px;
+}
+
+.formulaLabel {
+  font-weight: 600;
+  color: #475569;
+  min-width: 130px;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.formulaValue {
+  color: #1e293b;
+  font-size: 15px;
+}
+
+.factList {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  color: #334155;
+  list-style: disc;
+}
+.factList li {
+  padding: 2px 0;
+}
+
+/* ── Mobile ─────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .toolbar {
+    top: auto;
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+    justify-content: center;
+    border-radius: 14px;
+  }
+
+  .calcContainer {
+    width: 100vw;
+    height: 90vh;
+    border-radius: 14px 14px 0 0;
+  }
+
+  .refModal {
+    width: 100vw;
+    max-width: 100vw;
+    max-height: 90vh;
+    border-radius: 14px 14px 0 0;
+    align-self: flex-end;
+    margin-bottom: 0;
+  }
+}

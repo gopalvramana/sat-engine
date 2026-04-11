@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import ProgressBar from '../components/ProgressBar/ProgressBar'
 import QuestionCard from '../components/QuestionCard/QuestionCard'
 import FeedbackPanel from '../components/FeedbackPanel/FeedbackPanel'
+import Toolbar from '../components/Toolbar/Toolbar'
 import styles from './PracticePage.module.css'
 
 /**
@@ -18,6 +20,18 @@ export default function PracticePage({
   const correct  = sessionInfo?.correctCount      ?? 0
   const total    = sessionInfo?.totalQuestions    ?? 0
 
+  // Mark-for-review state
+  const [markedIds, setMarkedIds] = useState(new Set())
+  const isMarked = markedIds.has(question?.id)
+  function handleMarkToggle() {
+    if (!question?.id) return
+    setMarkedIds(prev => {
+      const next = new Set(prev)
+      next.has(question.id) ? next.delete(question.id) : next.add(question.id)
+      return next
+    })
+  }
+
   // During 'question' phase the current Q hasn't been submitted yet → answered+1
   // During 'feedback' phase the current Q was just answered → answered
   const current = phase === 'feedback' ? answered : answered + 1
@@ -31,6 +45,11 @@ export default function PracticePage({
         onBack={onBack}
         onEnd={endSession}
         isReviewing={isReviewing}
+      />
+
+      <Toolbar
+        phase={phase}
+        calculatorOk={question?.calculatorOk ?? true}
       />
 
       <div className={styles.content}>
@@ -52,6 +71,8 @@ export default function PracticePage({
                 feedback={phase === 'feedback' ? feedback : null}
                 studentAnswer={studentAnswer}
                 timeTaken={timeTaken}
+                isMarked={isMarked}
+                onMarkToggle={handleMarkToggle}
               />
             </div>
 

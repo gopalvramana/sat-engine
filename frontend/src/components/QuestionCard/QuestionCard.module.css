@@ -239,3 +239,28 @@
 }
 .submitBtn:hover:not(:disabled) { background: #6d28d9; }
 .submitBtn:disabled { background: #c4b5fd; cursor: not-allowed; }
+
+/* ── Mark for Review button ─────────────────────────────────── */
+.markBtn {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 3px 5px;
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+}
+.markBtn:hover {
+  color: #7c3aed;
+  background: #f5f3ff;
+  border-color: #c4b5fd;
+}
+.markBtnActive {
+  color: #7c3aed;
+}
