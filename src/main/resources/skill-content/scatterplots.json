@@ -1,0 +1,47 @@
+{
+  "skillKey": "scatterplots",
+  "domain": "problem_solving_data",
+  "section": "math",
+  "label": "Scatterplots & Line of Best Fit",
+  "overview": "A scatterplot displays the relationship between two numerical variables. SAT questions ask you to describe the association (positive/negative, linear/nonlinear), use the line of best fit to make predictions, and interpret slope and intercept in context. You may also be asked to identify outliers or assess how well the line fits the data.",
+
+  "conceptDiagram": {
+    "caption": "Positive vs. negative correlation and the line of best fit",
+    "svg": "<svg viewBox='0 0 340 210' xmlns='http://www.w3.org/2000/svg' font-family=\"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\"><rect width='340' height='210' fill='#faf5ff' rx='10'/><rect x='10' y='10' width='150' height='190' fill='#ede9fe' rx='6'/><text x='85' y='30' font-size='11' fill='#5b21b6' font-weight='700' text-anchor='middle'>Positive Association</text><line x1='20' y1='180' x2='150' y2='30' stroke='#7c3aed' stroke-width='1.5' stroke-dasharray='5,3'/><circle cx='35' cy='165' r='3' fill='#7c3aed'/><circle cx='50' cy='145' r='3' fill='#7c3aed'/><circle cx='65' cy='130' r='3' fill='#7c3aed'/><circle cx='80' cy='120' r='3' fill='#7c3aed'/><circle cx='95' cy='95' r='3' fill='#7c3aed'/><circle cx='110' cy='85' r='3' fill='#7c3aed'/><circle cx='130' cy='62' r='3' fill='#7c3aed'/><circle cx='143' cy='48' r='3' fill='#7c3aed'/><text x='85' y='195' font-size='10' fill='#374151' text-anchor='middle'>As x ↑, y ↑</text><rect x='175' y='10' width='155' height='190' fill='#fef3c7' rx='6'/><text x='252' y='30' font-size='11' fill='#92400e' font-weight='700' text-anchor='middle'>Negative Association</text><line x1='185' y1='35' x2='320' y2='175' stroke='#d97706' stroke-width='1.5' stroke-dasharray='5,3'/><circle cx='193' cy='48' r='3' fill='#d97706'/><circle cx='210' cy='65' r='3' fill='#d97706'/><circle cx='225' cy='85' r='3' fill='#d97706'/><circle cx='238' cy='100' r='3' fill='#d97706'/><circle cx='253' cy='120' r='3' fill='#d97706'/><circle cx='270' cy='135' r='3' fill='#d97706'/><circle cx='285' cy='152' r='3' fill='#d97706'/><circle cx='305' cy='168' r='3' fill='#d97706'/><text x='252' y='195' font-size='10' fill='#374151' text-anchor='middle'>As x ↑, y ↓</text></svg>"
+  },
+
+  "keyFormulas": [
+    { "name": "Interpreting the best-fit line", "latex": "\\hat{y} = mx + b \\quad (m = \\text{rate of change per unit x})" },
+    { "name": "Residual", "latex": "\\text{residual} = \\text{actual } y - \\text{predicted } \\hat{y}" }
+  ],
+
+  "workedExamples": [
+    {
+      "problem": "A scatterplot shows hours studied (x) vs. test score (y), with a line of best fit y = 4x + 55. According to the model, what score is predicted for a student who studies 8 hours?",
+      "steps": [
+        {
+          "title": "Substitute x = 8 into the model",
+          "content": "",
+          "math": "\\hat{y} = 4(8) + 55 = 32 + 55 = 87"
+        },
+        {
+          "title": "Interpret the slope",
+          "content": "The slope 4 means each additional hour of studying is associated with a 4-point increase in the predicted score.",
+          "math": null
+        }
+      ]
+    }
+  ],
+
+  "commonMistakes": [
+    {
+      "mistake": "Confusing correlation with causation",
+      "fix": "A scatterplot shows association, not cause-and-effect. The SAT only asks you to say two variables are associated, not that one causes the other."
+    },
+    {
+      "mistake": "Extrapolating far beyond the data range",
+      "fix": "The line of best fit is only reliable within the range of the data. Predictions far outside that range may be unreliable."
+    }
+  ],
+  "quickTip": "To use the line of best fit, just substitute the given x-value into the equation. The slope tells you the predicted change in y for each 1-unit increase in x."
+}

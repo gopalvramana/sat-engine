@@ -1,0 +1,47 @@
+{
+  "skillKey": "inference_statistics",
+  "domain": "problem_solving_data",
+  "section": "math",
+  "label": "Inference & Statistics",
+  "overview": "Statistical inference uses a sample to draw conclusions about a larger population. SAT questions focus on margin of error, confidence intervals, and whether a study's sample allows generalization. The key ideas are: larger samples reduce error, a confidence interval is a range of plausible values, and conclusions can only be generalized to the population the sample was drawn from.",
+
+  "conceptDiagram": {
+    "caption": "Confidence interval: the estimate ± margin of error captures the true value",
+    "svg": "<svg viewBox='0 0 340 210' xmlns='http://www.w3.org/2000/svg' font-family=\"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\"><rect width='340' height='210' fill='#faf5ff' rx='10'/><line x1='40' y1='100' x2='300' y2='100' stroke='#a78bfa' stroke-width='2'/><line x1='40' y1='90' x2='40' y2='112' stroke='#7c3aed' stroke-width='2'/><line x1='300' y1='90' x2='300' y2='112' stroke='#7c3aed' stroke-width='2'/><circle cx='170' cy='100' r='6' fill='#7c3aed'/><line x1='170' y1='90' x2='170' y2='112' stroke='#5b21b6' stroke-width='2'/><text x='170' y='75' font-size='12' fill='#5b21b6' font-weight='700' text-anchor='middle'>point estimate (sample mean)</text><text x='40' y='130' font-size='11' fill='#7c3aed' text-anchor='middle'>lower</text><text x='300' y='130' font-size='11' fill='#7c3aed' text-anchor='middle'>upper</text><text x='170' y='148' font-size='11' fill='#374151' text-anchor='middle'>estimate − MoE  ←  interval  →  estimate + MoE</text><rect x='20' y='160' width='300' height='36' fill='#ede9fe' rx='5'/><text x='170' y='176' font-size='11' fill='#5b21b6' text-anchor='middle'>Larger sample → smaller margin of error</text><text x='170' y='191' font-size='11' fill='#5b21b6' text-anchor='middle'>More confidence → wider interval</text></svg>"
+  },
+
+  "keyFormulas": [
+    { "name": "Confidence interval", "latex": "\\text{estimate} \\pm \\text{margin of error}" },
+    { "name": "Margin of error decreases as", "latex": "\\text{MoE} \\propto \\dfrac{1}{\\sqrt{n}} \\quad (n = \\text{sample size})" }
+  ],
+
+  "workedExamples": [
+    {
+      "problem": "A poll of 400 voters found that 52% support a candidate, with a margin of error of ±4%. What is the 95% confidence interval, and can we conclude the candidate leads?",
+      "steps": [
+        {
+          "title": "Construct the interval",
+          "content": "Add and subtract the margin of error from the estimate.",
+          "math": "52\\% \\pm 4\\% \\implies [48\\%,\\ 56\\%]"
+        },
+        {
+          "title": "Interpret",
+          "content": "Since the interval [48%, 56%] includes 50%, we cannot conclude the candidate leads — 50% (a tie) is a plausible value.",
+          "math": null
+        }
+      ]
+    }
+  ],
+
+  "commonMistakes": [
+    {
+      "mistake": "Thinking a larger sample makes the confidence interval wider",
+      "fix": "A larger sample reduces the margin of error, making the interval narrower and the estimate more precise."
+    },
+    {
+      "mistake": "Generalizing results to a population different from the sample",
+      "fix": "Conclusions only apply to the population that the sample represents. A survey of students at one school cannot generalize to all students nationwide."
+    }
+  ],
+  "quickTip": "Check whether 50% (or whatever the 'no difference' value is) falls inside the confidence interval. If it does, the result is not statistically conclusive."
+}

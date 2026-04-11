@@ -1,0 +1,47 @@
+{
+  "skillKey": "linear_eq_one_var",
+  "domain": "algebra",
+  "section": "math",
+  "label": "Linear Equations in One Variable",
+  "overview": "A linear equation in one variable has exactly one unknown and can always be solved by isolating that variable through inverse operations. SAT questions range from straightforward one-step equations to multi-step equations with fractions, parentheses, or variables on both sides. Every question reduces to the same goal: get x alone on one side.",
+
+  "conceptDiagram": {
+    "caption": "Solving strategy: simplify both sides, then move variables left and constants right",
+    "svg": "<svg viewBox='0 0 340 210' xmlns='http://www.w3.org/2000/svg' font-family=\"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\"><rect width='340' height='210' fill='#faf5ff' rx='10'/><rect x='15' y='15' width='310' height='34' fill='#7c3aed' rx='5'/><text x='170' y='37' font-size='13' fill='#fff' font-weight='700' text-anchor='middle'>Example: 3(2x − 4) = 2x + 8</text><rect x='15' y='57' width='310' height='26' fill='#ede9fe' rx='4'/><text x='170' y='74' font-size='12' fill='#5b21b6' text-anchor='middle'>Step 1 — Distribute: 6x − 12 = 2x + 8</text><rect x='15' y='90' width='310' height='26' fill='#ede9fe' rx='4'/><text x='170' y='107' font-size='12' fill='#5b21b6' text-anchor='middle'>Step 2 — Move variables: 4x − 12 = 8</text><rect x='15' y='123' width='310' height='26' fill='#ede9fe' rx='4'/><text x='170' y='140' font-size='12' fill='#5b21b6' text-anchor='middle'>Step 3 — Move constants: 4x = 20</text><rect x='15' y='156' width='310' height='26' fill='#c4b5fd' rx='4'/><text x='170' y='173' font-size='13' fill='#3b0764' font-weight='700' text-anchor='middle'>Step 4 — Divide: x = 5</text><text x='170' y='200' font-size='11' fill='#6b7280' text-anchor='middle'>Check: 3(10−4) = 18, 2(5)+8 = 18 ✓</text></svg>"
+  },
+
+  "keyFormulas": [
+    { "name": "General approach", "latex": "ax + b = c \\implies x = \\dfrac{c - b}{a}" },
+    { "name": "Variables on both sides", "latex": "ax + b = cx + d \\implies (a-c)x = d - b \\implies x = \\dfrac{d-b}{a-c}" }
+  ],
+
+  "workedExamples": [
+    {
+      "problem": "Solve for x: 5x − 3 = 2x + 9",
+      "steps": [
+        {
+          "title": "Collect variable terms on one side",
+          "content": "Subtract 2x from both sides.",
+          "math": "3x - 3 = 9"
+        },
+        {
+          "title": "Isolate x",
+          "content": "Add 3 to both sides, then divide by 3.",
+          "math": "3x = 12 \\implies x = 4"
+        }
+      ]
+    }
+  ],
+
+  "commonMistakes": [
+    {
+      "mistake": "Distributing incorrectly through parentheses",
+      "fix": "Multiply every term inside the parentheses. With a negative outside, all signs flip: −3(x−2) = −3x + 6."
+    },
+    {
+      "mistake": "Performing the operation on only one side",
+      "fix": "Whatever you do to one side you must do to the other. Writing each step as a complete equation helps."
+    }
+  ],
+  "quickTip": "Always check your answer: substitute back into the original equation and verify both sides are equal."
+}

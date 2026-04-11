@@ -1,0 +1,54 @@
+{
+  "skillKey": "quadratic_equations",
+  "domain": "algebra",
+  "section": "math",
+  "label": "Quadratic Equations",
+  "overview": "A quadratic equation has the form ax² + bx + c = 0 and can have 0, 1, or 2 real solutions. SAT questions ask you to solve by factoring, by the quadratic formula, or by completing the square, and to use the discriminant to determine the number of solutions. Choosing the fastest method for each problem is key.",
+
+  "conceptDiagram": {
+    "caption": "The discriminant b²−4ac tells you how many real solutions exist",
+    "svg": "<svg viewBox='0 0 340 210' xmlns='http://www.w3.org/2000/svg' font-family=\"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\"><rect width='340' height='210' fill='#faf5ff' rx='10'/><rect x='10' y='10' width='98' height='185' fill='#dcfce7' rx='6'/><text x='59' y='32' font-size='11' fill='#166534' font-weight='700' text-anchor='middle'>b²−4ac &gt; 0</text><text x='59' y='50' font-size='10' fill='#374151' text-anchor='middle'>Two real solutions</text><line x1='18' y1='130' x2='98' y2='130' stroke='#d1d5db' stroke-width='1'/><path d='M 18,165 Q 35,80 59,130 Q 80,180 98,100' fill='none' stroke='#16a34a' stroke-width='2'/><circle cx='35' cy='130' r='4' fill='#16a34a'/><circle cx='83' cy='130' r='4' fill='#16a34a'/><rect x='118' y='10' width='98' height='185' fill='#fef3c7' rx='6'/><text x='167' y='32' font-size='11' fill='#92400e' font-weight='700' text-anchor='middle'>b²−4ac = 0</text><text x='167' y='50' font-size='10' fill='#374151' text-anchor='middle'>One real solution</text><line x1='126' y1='130' x2='206' y2='130' stroke='#d1d5db' stroke-width='1'/><path d='M 126,165 Q 167,75 206,165' fill='none' stroke='#d97706' stroke-width='2'/><circle cx='167' cy='130' r='4' fill='#d97706'/><rect x='226' y='10' width='104' height='185' fill='#fee2e2' rx='6'/><text x='278' y='32' font-size='11' fill='#991b1b' font-weight='700' text-anchor='middle'>b²−4ac &lt; 0</text><text x='278' y='50' font-size='10' fill='#374151' text-anchor='middle'>No real solutions</text><line x1='234' y1='130' x2='322' y2='130' stroke='#d1d5db' stroke-width='1'/><path d='M 234,180 Q 278,90 322,180' fill='none' stroke='#dc2626' stroke-width='2'/></svg>"
+  },
+
+  "keyFormulas": [
+    { "name": "Standard form", "latex": "ax^2 + bx + c = 0" },
+    { "name": "Quadratic formula", "latex": "x = \\dfrac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}" },
+    { "name": "Discriminant", "latex": "\\Delta = b^2 - 4ac" },
+    { "name": "Vertex form", "latex": "f(x) = a(x - h)^2 + k \\quad \\text{(vertex at }(h, k))" }
+  ],
+
+  "workedExamples": [
+    {
+      "problem": "Solve 2x² − 3x − 2 = 0 using the quadratic formula.",
+      "steps": [
+        {
+          "title": "Identify a, b, c",
+          "content": "a = 2, b = −3, c = −2",
+          "math": null
+        },
+        {
+          "title": "Substitute into the formula",
+          "content": "Compute the discriminant first: (−3)² − 4(2)(−2) = 9 + 16 = 25.",
+          "math": "x = \\dfrac{3 \\pm \\sqrt{25}}{4} = \\dfrac{3 \\pm 5}{4}"
+        },
+        {
+          "title": "Find both solutions",
+          "content": "",
+          "math": "x = \\dfrac{3+5}{4} = 2 \\qquad \\text{or} \\qquad x = \\dfrac{3-5}{4} = -\\dfrac{1}{2}"
+        }
+      ]
+    }
+  ],
+
+  "commonMistakes": [
+    {
+      "mistake": "Forgetting the ± — writing only one solution from the quadratic formula",
+      "fix": "The ± gives two separate solutions. Always compute both +√ and −√ cases."
+    },
+    {
+      "mistake": "Computing −b incorrectly when b is already negative",
+      "fix": "If b = −3, then −b = −(−3) = +3. Double-check the sign of −b before substituting."
+    }
+  ],
+  "quickTip": "Try factoring first (it's faster). Use the quadratic formula as a fallback when factoring isn't obvious. Check the discriminant quickly to see if solutions even exist."
+}

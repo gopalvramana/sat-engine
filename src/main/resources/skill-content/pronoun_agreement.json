@@ -1,0 +1,44 @@
+{
+  "skillKey": "pronoun_agreement",
+  "domain": "standard_english_conventions",
+  "section": "reading_writing",
+  "label": "Pronoun-Antecedent Agreement",
+  "overview": "A pronoun must agree with its antecedent in number (singular/plural) and, for personal pronouns, in gender. SAT questions also test ambiguous pronouns — where it is unclear which noun the pronoun refers to. Common traps include collective nouns, compound antecedents, and indefinite pronouns like 'everyone' (singular).",
+
+  "conceptDiagram": {
+    "caption": "Pronoun must match antecedent in number; watch out for tricky singular antecedents",
+    "svg": "<svg viewBox='0 0 340 210' xmlns='http://www.w3.org/2000/svg' font-family=\"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\"><rect width='340' height='210' fill='#faf5ff' rx='10'/><rect x='15' y='15' width='310' height='28' fill='#7c3aed' rx='4'/><text x='170' y='33' font-size='13' fill='#fff' font-weight='700' text-anchor='middle'>Pronoun-Antecedent Agreement Rules</text><rect x='15' y='50' width='145' height='60' fill='#dcfce7' rx='5'/><text x='87' y='68' font-size='11' fill='#166534' font-weight='700' text-anchor='middle'>Correct ✓</text><text x='87' y='86' font-size='11' fill='#374151' text-anchor='middle'>Each student must</text><text x='87' y='101' font-size='11' fill='#374151' text-anchor='middle'>submit his or her work.</text><rect x='175' y='50' width='150' height='60' fill='#fee2e2' rx='5'/><text x='250' y='68' font-size='11' fill='#991b1b' font-weight='700' text-anchor='middle'>Incorrect ✗</text><text x='250' y='86' font-size='11' fill='#374151' text-anchor='middle'>Each student must</text><text x='250' y='101' font-size='11' fill='#374151' text-anchor='middle'>submit their work.</text><rect x='15' y='120' width='310' height='35' fill='#fef3c7' rx='5'/><text x='170' y='136' font-size='11' fill='#92400e' font-weight='700' text-anchor='middle'>Tricky singular antecedents:</text><text x='170' y='151' font-size='11' fill='#374151' text-anchor='middle'>everyone, nobody, each, either, neither, someone</text><rect x='15' y='163' width='310' height='35' fill='#ede9fe' rx='5'/><text x='170' y='179' font-size='11' fill='#5b21b6' font-weight='700' text-anchor='middle'>Ambiguous pronoun:</text><text x='170' y='194' font-size='11' fill='#374151' text-anchor='middle'>&quot;Tom told James that he failed.&quot; — who failed?</text></svg>"
+  },
+
+  "keyFormulas": [],
+
+  "workedExamples": [
+    {
+      "problem": "Choose the correct pronoun: 'Neither the manager nor the employees admitted _____ role in the mistake.'  (A) its  (B) their  (C) his  (D) his or her",
+      "steps": [
+        {
+          "title": "Identify the antecedent and the rule",
+          "content": "With 'neither...nor', the pronoun agrees with the closer noun. The closer noun is 'employees' (plural).",
+          "math": null
+        },
+        {
+          "title": "Select the plural pronoun",
+          "content": "'Employees' is plural, so use 'their.' Answer: (B).",
+          "math": null
+        }
+      ]
+    }
+  ],
+
+  "commonMistakes": [
+    {
+      "mistake": "Using 'their' with singular indefinite pronouns like 'everyone' or 'each'",
+      "fix": "Everyone, everyone, nobody, each, either, neither are grammatically singular. Use 'his or her' in formal writing (though the SAT may accept singular 'they' in specific contexts — read answer choices carefully)."
+    },
+    {
+      "mistake": "Unclear pronoun reference — using 'they' or 'it' when multiple nouns could be the antecedent",
+      "fix": "If replacing the pronoun with two different nouns gives two different meanings, the pronoun is ambiguous. Rewrite to name the specific noun."
+    }
+  ],
+  "quickTip": "When you see a pronoun in an answer choice, immediately find its antecedent. Count: is the antecedent singular or plural? Match the pronoun to that."
+}

@@ -1,0 +1,54 @@
+{
+  "skillKey": "triangles",
+  "domain": "geometry_trigonometry",
+  "section": "math",
+  "label": "Triangle Properties",
+  "overview": "SAT triangle questions test the angle sum rule (all angles sum to 180°), exterior angles, similar triangles, and triangle inequality. Similar triangles are especially common: if two triangles are similar, their corresponding sides are proportional and their corresponding angles are equal. These appear frequently in geometry diagrams and coordinate problems.",
+
+  "conceptDiagram": {
+    "caption": "Similar triangles: same shape, proportional sides; AA is the main similarity shortcut",
+    "svg": "<svg viewBox='0 0 340 210' xmlns='http://www.w3.org/2000/svg' font-family=\"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\"><rect width='340' height='210' fill='#faf5ff' rx='10'/><polygon points='20,185 100,185 20,100' fill='#ede9fe' stroke='#7c3aed' stroke-width='2'/><text x='60' y='200' font-size='11' fill='#5b21b6' text-anchor='middle'>b=4</text><text x='5' y='145' font-size='11' fill='#5b21b6'>a=3</text><text x='68' y='140' font-size='11' fill='#5b21b6'>c=5</text><polygon points='130,185 270,185 130,40' fill='#fef3c7' stroke='#d97706' stroke-width='2'/><text x='200' y='200' font-size='11' fill='#92400e' text-anchor='middle'>b′=8</text><text x='113' y='115' font-size='11' fill='#92400e'>a′=6</text><text x='215' y='110' font-size='11' fill='#92400e'>c′=10</text><line x1='70' y1='90' x2='130' y2='100' stroke='#374151' stroke-width='1' stroke-dasharray='4,3'/><text x='95' y='88' font-size='11' fill='#374151'>×2</text><rect x='15' y='10' width='310' height='22' fill='#7c3aed' rx='4'/><text x='170' y='25' font-size='12' fill='#fff' font-weight='700' text-anchor='middle'>Angle Sum: A + B + C = 180°  |  Exterior angle = sum of remote interior angles</text></svg>"
+  },
+
+  "keyFormulas": [
+    { "name": "Angle sum", "latex": "A + B + C = 180°" },
+    { "name": "Exterior angle theorem", "latex": "\\text{exterior angle} = \\text{sum of the two non-adjacent interior angles}" },
+    { "name": "Similar triangle side ratios", "latex": "\\dfrac{a}{a'} = \\dfrac{b}{b'} = \\dfrac{c}{c'}" },
+    { "name": "Triangle inequality", "latex": "\\text{Each side} < \\text{sum of the other two sides}" }
+  ],
+
+  "workedExamples": [
+    {
+      "problem": "In triangle ABC, angle A = 50° and angle B = 70°. What is angle C?",
+      "steps": [
+        {
+          "title": "Use angle sum",
+          "content": "All three angles add to 180°.",
+          "math": "C = 180 - 50 - 70 = 60°"
+        }
+      ]
+    },
+    {
+      "problem": "Two similar triangles have a scale factor of 3:5. If the shorter triangle has sides 6, 8, and 10, what is the longest side of the larger triangle?",
+      "steps": [
+        {
+          "title": "Set up the proportion",
+          "content": "The scale factor is 5/3. Multiply the corresponding side.",
+          "math": "\\text{longest side} = 10 \\times \\dfrac{5}{3} = \\dfrac{50}{3} \\approx 16.7"
+        }
+      ]
+    }
+  ],
+
+  "commonMistakes": [
+    {
+      "mistake": "Assuming two triangles are similar just because they look the same in a diagram",
+      "fix": "Prove similarity: AA (two pairs of equal angles), SAS (two proportional sides and included angle), or SSS (all three sides proportional)."
+    },
+    {
+      "mistake": "Using the exterior angle as an interior angle in calculations",
+      "fix": "An exterior angle is outside the triangle. It equals the sum of the two interior angles not adjacent to it — not the adjacent interior angle."
+    }
+  ],
+  "quickTip": "When two parallel lines cross a triangle or create similar triangles in a diagram, proportional sides appear automatically. Look for parallel marks or right-angle marks."
+}

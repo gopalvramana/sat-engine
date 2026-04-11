@@ -1,0 +1,48 @@
+{
+  "skillKey": "law_sines_cosines",
+  "domain": "geometry_trigonometry",
+  "section": "math",
+  "label": "Law of Sines & Law of Cosines",
+  "overview": "When a triangle is not a right triangle, you cannot use basic SOH-CAH-TOA. The Law of Sines relates sides to the sines of their opposite angles; the Law of Cosines generalizes the Pythagorean theorem to any triangle. SAT questions give you enough information (sides and/or angles) to identify which law applies and solve for the unknown.",
+
+  "conceptDiagram": {
+    "caption": "In triangle ABC: sides a, b, c are opposite angles A, B, C respectively",
+    "svg": "<svg viewBox='0 0 340 210' xmlns='http://www.w3.org/2000/svg' font-family=\"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\"><rect width='340' height='210' fill='#faf5ff' rx='10'/><polygon points='60,180 280,180 180,40' fill='#ede9fe' stroke='none'/><line x1='60' y1='180' x2='280' y2='180' stroke='#059669' stroke-width='2.5'/><line x1='280' y1='180' x2='180' y2='40' stroke='#ef4444' stroke-width='2.5'/><line x1='60' y1='180' x2='180' y2='40' stroke='#3b82f6' stroke-width='2.5'/><text x='170' y='198' font-size='13' fill='#059669' font-weight='700' text-anchor='middle'>c (opposite C)</text><text x='248' y='120' font-size='13' fill='#dc2626' font-weight='700'>b (opp B)</text><text x='85' y='120' font-size='13' fill='#2563eb' font-weight='700'>a (opp A)</text><circle cx='60' cy='180' r='4' fill='#7c3aed'/><text x='50' y='175' font-size='12' fill='#5b21b6' font-weight='700'>A</text><circle cx='280' cy='180' r='4' fill='#7c3aed'/><text x='285' y='175' font-size='12' fill='#5b21b6' font-weight='700'>B</text><circle cx='180' cy='40' r='4' fill='#7c3aed'/><text x='185' y='36' font-size='12' fill='#5b21b6' font-weight='700'>C</text></svg>"
+  },
+
+  "keyFormulas": [
+    { "name": "Law of Sines", "latex": "\\dfrac{a}{\\sin A} = \\dfrac{b}{\\sin B} = \\dfrac{c}{\\sin C}" },
+    { "name": "Law of Cosines (find side)", "latex": "c^2 = a^2 + b^2 - 2ab\\cos C" },
+    { "name": "Law of Cosines (find angle)", "latex": "\\cos C = \\dfrac{a^2 + b^2 - c^2}{2ab}" }
+  ],
+
+  "workedExamples": [
+    {
+      "problem": "In triangle ABC, angle A = 35°, angle B = 70°, and side a = 10. Find side b.",
+      "steps": [
+        {
+          "title": "Choose Law of Sines (two angles, one side)",
+          "content": "We know two angles and the side opposite one of them — perfect for Law of Sines.",
+          "math": "\\dfrac{a}{\\sin A} = \\dfrac{b}{\\sin B}"
+        },
+        {
+          "title": "Substitute and solve",
+          "content": "Plug in a = 10, A = 35°, B = 70°.",
+          "math": "\\dfrac{10}{\\sin 35°} = \\dfrac{b}{\\sin 70°} \\implies b = \\dfrac{10 \\sin 70°}{\\sin 35°} \\approx \\dfrac{9.40}{0.574} \\approx 16.4"
+        }
+      ]
+    }
+  ],
+
+  "commonMistakes": [
+    {
+      "mistake": "Using Law of Sines when you have two sides and the included angle (SAS)",
+      "fix": "SAS requires Law of Cosines. Law of Sines needs an angle opposite a known side."
+    },
+    {
+      "mistake": "Pairing the wrong side with the wrong angle",
+      "fix": "Side a is always opposite angle A (lowercase = uppercase rule). Label the triangle before writing any formula."
+    }
+  ],
+  "quickTip": "Two angles + any side → Law of Sines. Two sides + included angle OR all three sides → Law of Cosines."
+}

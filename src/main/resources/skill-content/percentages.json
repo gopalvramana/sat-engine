@@ -1,0 +1,63 @@
+{
+  "skillKey": "percentages",
+  "domain": "problem_solving_data",
+  "section": "math",
+  "label": "Percentages",
+  "overview": "Percent problems on the SAT include finding a percent of a number, calculating percent change, and working backwards from a result to find the original (reverse percent). These concepts appear in data-interpretation questions, word problems, and table-reading questions. Keeping track of what value is the 'whole' (100%) is the key to avoiding errors.",
+
+  "conceptDiagram": {
+    "caption": "Three percent question types and their formulas",
+    "svg": "<svg viewBox='0 0 340 210' xmlns='http://www.w3.org/2000/svg' font-family=\"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\"><rect width='340' height='210' fill='#faf5ff' rx='10'/><rect x='15' y='15' width='92' height='175' fill='#ede9fe' rx='6'/><text x='61' y='38' font-size='11' fill='#5b21b6' font-weight='700' text-anchor='middle'>Percent OF</text><text x='61' y='90' font-size='20' fill='#7c3aed' font-weight='700' text-anchor='middle'>P%</text><text x='61' y='110' font-size='20' fill='#7c3aed' font-weight='700' text-anchor='middle'>× n</text><text x='61' y='155' font-size='10' fill='#374151' text-anchor='middle'>Convert % to</text><text x='61' y='167' font-size='10' fill='#374151' text-anchor='middle'>decimal first</text><rect x='123' y='15' width='92' height='175' fill='#fef3c7' rx='6'/><text x='169' y='38' font-size='11' fill='#92400e' font-weight='700' text-anchor='middle'>% Change</text><text x='169' y='80' font-size='11' fill='#b45309' text-anchor='middle'>new − old</text><line x1='133' y1='87' x2='205' y2='87' stroke='#d97706' stroke-width='1.5'/><text x='169' y='100' font-size='11' fill='#b45309' text-anchor='middle'>old</text><text x='169' y='120' font-size='20' fill='#d97706' font-weight='700' text-anchor='middle'>× 100</text><text x='169' y='155' font-size='10' fill='#374151' text-anchor='middle'>Positive = increase</text><text x='169' y='167' font-size='10' fill='#374151' text-anchor='middle'>Negative = decrease</text><rect x='231' y='15' width='92' height='175' fill='#dcfce7' rx='6'/><text x='277' y='38' font-size='11' fill='#166534' font-weight='700' text-anchor='middle'>Reverse %</text><text x='277' y='70' font-size='11' fill='#374151' text-anchor='middle'>result</text><line x1='241' y1='77' x2='313' y2='77' stroke='#16a34a' stroke-width='1.5'/><text x='277' y='90' font-size='11' fill='#374151' text-anchor='middle'>multiplier</text><text x='277' y='120' font-size='11' fill='#166534' text-anchor='middle'>= original</text><text x='277' y='155' font-size='10' fill='#374151' text-anchor='middle'>20% increase →</text><text x='277' y='167' font-size='10' fill='#374151' text-anchor='middle'>multiplier = 1.2</text></svg>"
+  },
+
+  "keyFormulas": [
+    { "name": "Percent of a number", "latex": "\\text{part} = \\dfrac{P}{100} \\times \\text{whole}" },
+    { "name": "Percent change", "latex": "\\% \\text{ change} = \\dfrac{\\text{new} - \\text{old}}{\\text{old}} \\times 100" },
+    { "name": "Reverse percent (find original)", "latex": "\\text{original} = \\dfrac{\\text{result}}{\\text{multiplier}} \\quad (\\text{e.g., after 20\\% increase, divide by 1.20})" }
+  ],
+
+  "workedExamples": [
+    {
+      "problem": "A jacket originally costs $80 and is on sale for 25% off. What is the sale price?",
+      "steps": [
+        {
+          "title": "Find the discount",
+          "content": "25% of $80.",
+          "math": "0.25 \\times 80 = \\$20"
+        },
+        {
+          "title": "Subtract from original",
+          "content": "Or use the multiplier shortcut: 100% − 25% = 75% → multiply by 0.75.",
+          "math": "80 \\times 0.75 = \\$60"
+        }
+      ]
+    },
+    {
+      "problem": "After a 15% increase, a product costs $92. What was the original price?",
+      "steps": [
+        {
+          "title": "Identify the multiplier",
+          "content": "A 15% increase multiplies the original by 1.15.",
+          "math": "\\text{original} \\times 1.15 = 92"
+        },
+        {
+          "title": "Divide to find original",
+          "content": "",
+          "math": "\\text{original} = \\dfrac{92}{1.15} = \\$80"
+        }
+      ]
+    }
+  ],
+
+  "commonMistakes": [
+    {
+      "mistake": "For reverse percent, subtracting the percentage from the result instead of dividing by the multiplier",
+      "fix": "After a 15% increase to get $92, the original is $92 ÷ 1.15 = $80, not $92 − $13.80."
+    },
+    {
+      "mistake": "Using the wrong base for percent change",
+      "fix": "Percent change is always relative to the original (old) value, not the new one."
+    }
+  ],
+  "quickTip": "Convert percentages to decimals by dividing by 100 before multiplying. 'Of' means multiply. Use a multiplier (0.85 for 15% off, 1.20 for 20% increase) for speed."
+}

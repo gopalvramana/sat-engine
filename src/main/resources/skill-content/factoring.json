@@ -1,0 +1,72 @@
+{
+  "skillKey": "factoring",
+  "domain": "algebra",
+  "section": "math",
+  "label": "Factoring Quadratics & Polynomials",
+  "overview": "Factoring rewrites an expression as a product, making it easy to find zeros or simplify. On the SAT, factoring quadratics is the fastest route to solving ax²+bx+c = 0 — quicker than the quadratic formula for most problems. You also need to recognize difference of squares and GCF factoring.",
+
+  "conceptDiagram": {
+    "caption": "Two main factoring patterns: standard quadratic and difference of squares",
+    "svg": "<svg viewBox='0 0 340 210' xmlns='http://www.w3.org/2000/svg' font-family=\"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\"><rect width='340' height='210' fill='#faf5ff' rx='10'/><rect x='15' y='15' width='310' height='80' fill='#ede9fe' rx='6'/><text x='170' y='38' font-size='13' fill='#5b21b6' font-weight='700' text-anchor='middle'>Standard Quadratic: x² + bx + c</text><text x='170' y='58' font-size='12' fill='#374151' text-anchor='middle'>Find two numbers that multiply to c and add to b</text><text x='170' y='78' font-size='13' fill='#7c3aed' font-weight='600' text-anchor='middle'>x² + 5x + 6 = (x + 2)(x + 3)</text><rect x='15' y='105' width='310' height='65' fill='#fef3c7' rx='6'/><text x='170' y='126' font-size='13' fill='#92400e' font-weight='700' text-anchor='middle'>Difference of Squares</text><text x='170' y='148' font-size='13' fill='#b45309' text-anchor='middle'>a² − b² = (a + b)(a − b)</text><text x='170' y='165' font-size='12' fill='#374151' text-anchor='middle'>e.g. x² − 9 = (x + 3)(x − 3)</text><rect x='15' y='180' width='310' height='22' fill='#dcfce7' rx='4'/><text x='170' y='195' font-size='11' fill='#166534' text-anchor='middle'>Always factor out GCF first: 2x² + 6x = 2x(x + 3)</text></svg>"
+  },
+
+  "keyFormulas": [
+    { "name": "Standard quadratic (a=1)", "latex": "x^2 + bx + c = (x + p)(x + q) \\text{ where } p+q=b,\\ pq=c" },
+    { "name": "Difference of squares", "latex": "a^2 - b^2 = (a+b)(a-b)" },
+    { "name": "Perfect square trinomial", "latex": "a^2 + 2ab + b^2 = (a+b)^2" }
+  ],
+
+  "workedExamples": [
+    {
+      "problem": "Solve x² − 7x + 12 = 0 by factoring.",
+      "steps": [
+        {
+          "title": "Find two numbers",
+          "content": "Need two numbers that multiply to 12 and add to −7. Those numbers are −3 and −4.",
+          "math": "(-3) \\times (-4) = 12 \\quad \\text{and} \\quad (-3) + (-4) = -7"
+        },
+        {
+          "title": "Write the factored form",
+          "content": "Replace the trinomial with two binomial factors.",
+          "math": "(x - 3)(x - 4) = 0"
+        },
+        {
+          "title": "Apply zero-product property",
+          "content": "If a product equals zero, at least one factor is zero.",
+          "math": "x - 3 = 0 \\implies x = 3 \\qquad x - 4 = 0 \\implies x = 4"
+        }
+      ]
+    },
+    {
+      "problem": "Factor completely: 3x² − 27.",
+      "steps": [
+        {
+          "title": "Factor out the GCF",
+          "content": "Both terms are divisible by 3.",
+          "math": "3(x^2 - 9)"
+        },
+        {
+          "title": "Apply difference of squares",
+          "content": "x² − 9 = x² − 3² fits the pattern a² − b².",
+          "math": "3(x + 3)(x - 3)"
+        }
+      ]
+    }
+  ],
+
+  "commonMistakes": [
+    {
+      "mistake": "Wrong signs on the factors",
+      "fix": "Check both conditions: the product pq equals c (watch the sign of c!) and the sum p+q equals b."
+    },
+    {
+      "mistake": "Skipping the GCF step before factoring the quadratic",
+      "fix": "Always factor out the greatest common factor first. It simplifies the remaining trinomial and can change the leading coefficient."
+    },
+    {
+      "mistake": "Stopping at the factored form without solving for x",
+      "fix": "If the question asks for solutions (roots/zeros), set each factor equal to zero and solve."
+    }
+  ],
+  "quickTip": "Check your factoring by expanding: (x+p)(x+q) should equal the original trinomial. This takes 10 seconds and catches sign errors."
+}

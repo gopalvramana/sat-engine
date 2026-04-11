@@ -1,0 +1,49 @@
+{
+  "skillKey": "boundaries",
+  "domain": "standard_english_conventions",
+  "section": "reading_writing",
+  "label": "Sentence Boundaries",
+  "overview": "Sentence boundary questions test whether you can recognize and correct run-on sentences, comma splices, and sentence fragments. SAT questions ask you to choose the punctuation or conjunction that correctly joins or separates independent clauses. The core rule: two independent clauses cannot be joined by only a comma — you need a period, semicolon, or coordinating conjunction.",
+
+  "conceptDiagram": {
+    "caption": "Ways to correctly join two independent clauses",
+    "svg": "<svg viewBox='0 0 340 210' xmlns='http://www.w3.org/2000/svg' font-family=\"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\"><rect width='340' height='210' fill='#faf5ff' rx='10'/><rect x='15' y='15' width='310' height='28' fill='#7c3aed' rx='4'/><text x='170' y='33' font-size='13' fill='#fff' font-weight='700' text-anchor='middle'>Two independent clauses — 4 correct options</text><rect x='15' y='50' width='310' height='30' fill='#dcfce7' rx='4'/><text x='170' y='70' font-size='12' fill='#166534' text-anchor='middle'>Period: She ran. He walked.</text><rect x='15' y='87' width='310' height='30' fill='#dcfce7' rx='4'/><text x='170' y='107' font-size='12' fill='#166534' text-anchor='middle'>Semicolon: She ran; he walked.</text><rect x='15' y='124' width='310' height='30' fill='#dcfce7' rx='4'/><text x='170' y='144' font-size='12' fill='#166534' text-anchor='middle'>Comma + FANBOYS: She ran, but he walked.</text><rect x='15' y='161' width='310' height='30' fill='#fee2e2' rx='4'/><text x='170' y='181' font-size='12' fill='#991b1b' text-anchor='middle'>✗ Comma splice: She ran, he walked. (WRONG)</text></svg>"
+  },
+
+  "keyFormulas": [],
+
+  "workedExamples": [
+    {
+      "problem": "Choose the best option: 'The experiment was a success _____ the team celebrated.'  (A) ,  (B) ;  (C) because  (D) , so",
+      "steps": [
+        {
+          "title": "Identify both clauses",
+          "content": "'The experiment was a success' and 'the team celebrated' are both independent clauses (each has a subject and verb and can stand alone).",
+          "math": null
+        },
+        {
+          "title": "Test each option",
+          "content": "(A) comma alone — comma splice, incorrect. (B) semicolon — grammatically correct but doesn't show the cause-effect relationship. (D) comma + 'so' — correct: FANBOYS conjunction showing result.",
+          "math": null
+        },
+        {
+          "title": "Choose the best answer",
+          "content": "(D) 'The experiment was a success, so the team celebrated.' conveys meaning and is grammatically correct.",
+          "math": null
+        }
+      ]
+    }
+  ],
+
+  "commonMistakes": [
+    {
+      "mistake": "Thinking a semicolon and a comma are interchangeable",
+      "fix": "A semicolon can join two independent clauses alone. A comma can only join them when followed by a coordinating conjunction (FANBOYS: for, and, nor, but, or, yet, so)."
+    },
+    {
+      "mistake": "Treating a dependent clause as an independent clause",
+      "fix": "A dependent clause (starting with 'because,' 'although,' 'when,' etc.) cannot stand alone. It must be attached to an independent clause — no semicolon between them."
+    }
+  ],
+  "quickTip": "FANBOYS = For, And, Nor, But, Or, Yet, So. Only these seven coordinating conjunctions (with a comma) can join two independent clauses in a simple comma construction."
+}

@@ -1,0 +1,59 @@
+{
+  "skillKey": "perimeter_2d",
+  "domain": "geometry_trigonometry",
+  "section": "math",
+  "label": "Perimeter & Circumference",
+  "overview": "Perimeter is the total distance around a 2D figure, found by summing all side lengths. Circumference is the perimeter of a circle. SAT questions combine perimeter with area, ask for missing sides given a perimeter, or embed perimeter in word problems about fencing, framing, or wrapping.",
+
+  "conceptDiagram": {
+    "caption": "Perimeter and circumference formulas at a glance",
+    "svg": "<svg viewBox='0 0 340 210' xmlns='http://www.w3.org/2000/svg' font-family=\"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\"><rect width='340' height='210' fill='#faf5ff' rx='10'/><rect x='20' y='20' width='120' height='70' fill='#ede9fe' stroke='#7c3aed' stroke-width='2' rx='3'/><text x='80' y='45' font-size='12' fill='#5b21b6' font-weight='700' text-anchor='middle'>Rectangle</text><text x='80' y='63' font-size='11' fill='#5b21b6' text-anchor='middle'>P = 2(l + w)</text><text x='80' y='80' font-size='10' fill='#6b7280' text-anchor='middle'>or 2l + 2w</text><rect x='20' y='105' width='120' height='70' fill='#fef3c7' stroke='#d97706' stroke-width='2' rx='3'/><text x='80' y='130' font-size='12' fill='#92400e' font-weight='700' text-anchor='middle'>Square</text><text x='80' y='150' font-size='11' fill='#b45309' text-anchor='middle'>P = 4s</text><circle cx='250' cy='65' r='45' fill='#dbeafe' stroke='#3b82f6' stroke-width='2'/><text x='250' y='58' font-size='12' fill='#1d4ed8' font-weight='700' text-anchor='middle'>Circle</text><text x='250' y='75' font-size='11' fill='#2563eb' text-anchor='middle'>C = 2πr = πd</text><rect x='155' y='105' width='170' height='70' fill='#dcfce7' stroke='#16a34a' stroke-width='2' rx='3'/><text x='240' y='128' font-size='12' fill='#14532d' font-weight='700' text-anchor='middle'>Triangle / Polygon</text><text x='240' y='148' font-size='11' fill='#166534' text-anchor='middle'>P = sum of all sides</text><text x='240' y='165' font-size='10' fill='#6b7280' text-anchor='middle'>a + b + c (for triangle)</text></svg>"
+  },
+
+  "keyFormulas": [
+    { "name": "Rectangle", "latex": "P = 2(l + w)" },
+    { "name": "Square", "latex": "P = 4s" },
+    { "name": "Triangle", "latex": "P = a + b + c" },
+    { "name": "Circle (circumference)", "latex": "C = 2\\pi r = \\pi d" }
+  ],
+
+  "workedExamples": [
+    {
+      "problem": "A rectangle has a perimeter of 46 cm and a width of 8 cm. What is the length?",
+      "steps": [
+        {
+          "title": "Use the perimeter formula",
+          "content": "Set up the equation with P = 46 and w = 8.",
+          "math": "2(l + 8) = 46"
+        },
+        {
+          "title": "Solve for l",
+          "content": "Divide by 2, then subtract 8.",
+          "math": "l + 8 = 23 \\implies l = 15 \\text{ cm}"
+        }
+      ]
+    },
+    {
+      "problem": "A circle has a circumference of 20π. What is the diameter?",
+      "steps": [
+        {
+          "title": "Use C = πd",
+          "content": "Set πd = 20π and divide both sides by π.",
+          "math": "d = 20"
+        }
+      ]
+    }
+  ],
+
+  "commonMistakes": [
+    {
+      "mistake": "Mixing up perimeter (add sides) and area (space inside)",
+      "fix": "Perimeter is a length (units like cm). Area is square units (cm²). Make sure the question is asking for one-dimensional boundary, not two-dimensional space."
+    },
+    {
+      "mistake": "Using radius when the formula needs diameter (or vice versa)",
+      "fix": "C = 2πr = πd. If given radius r, multiply by 2 to get diameter d."
+    }
+  ],
+  "quickTip": "For any polygon (not just standard shapes), perimeter is always just the sum of all side lengths — no special formula needed."
+}

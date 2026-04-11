@@ -1,0 +1,46 @@
+{
+  "skillKey": "linear_functions_word_problems",
+  "domain": "algebra",
+  "section": "math",
+  "label": "Linear Functions — Word Problems",
+  "overview": "Word problems that model real-world situations with linear functions require you to build the function from context, not just use a given formula. You must identify the rate of change (slope) and initial value (y-intercept) from the problem's description, then use the function to make predictions or answer specific questions.",
+
+  "conceptDiagram": {
+    "caption": "Building a linear model: identify the starting value and rate from the problem",
+    "svg": "<svg viewBox='0 0 340 210' xmlns='http://www.w3.org/2000/svg' font-family=\"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\"><rect width='340' height='210' fill='#faf5ff' rx='10'/><rect x='15' y='15' width='310' height='48' fill='#7c3aed' rx='5'/><text x='170' y='33' font-size='12' fill='#fff' font-weight='700' text-anchor='middle'>&quot;A pool has 3,200 gallons. Water drains</text><text x='170' y='51' font-size='12' fill='#fff' font-weight='700' text-anchor='middle'>at 80 gallons per hour.&quot;</text><rect x='15' y='73' width='148' height='50' fill='#fef3c7' rx='5'/><text x='89' y='92' font-size='11' fill='#92400e' font-weight='700' text-anchor='middle'>Rate (slope)</text><text x='89' y='110' font-size='12' fill='#374151' text-anchor='middle'>m = −80 gal/hr</text><rect x='175' y='73' width='150' height='50' fill='#dcfce7' rx='5'/><text x='250' y='92' font-size='11' fill='#166534' font-weight='700' text-anchor='middle'>Starting value (b)</text><text x='250' y='110' font-size='12' fill='#374151' text-anchor='middle'>b = 3,200 gal</text><rect x='15' y='133' width='310' height='34' fill='#ede9fe' rx='5'/><text x='170' y='154' font-size='13' fill='#5b21b6' font-weight='700' text-anchor='middle'>W(t) = −80t + 3,200</text><text x='170' y='192' font-size='11' fill='#6b7280' text-anchor='middle'>After 20 hrs: W(20) = −1600 + 3200 = 1600 gal</text></svg>"
+  },
+
+  "keyFormulas": [
+    { "name": "Linear model", "latex": "f(x) = (\\text{rate of change}) \\cdot x + (\\text{initial value})" }
+  ],
+
+  "workedExamples": [
+    {
+      "problem": "A car rental company charges $30 per day plus a one-time $15 insurance fee. Write a function C(d) for total cost in terms of days d. How much does a 5-day rental cost?",
+      "steps": [
+        {
+          "title": "Identify slope and intercept",
+          "content": "The daily rate is the slope (30 per day). The insurance fee is fixed regardless of days, so it is the y-intercept.",
+          "math": "C(d) = 30d + 15"
+        },
+        {
+          "title": "Evaluate for d = 5",
+          "content": "Substitute d = 5.",
+          "math": "C(5) = 30(5) + 15 = 150 + 15 = \\$165"
+        }
+      ]
+    }
+  ],
+
+  "commonMistakes": [
+    {
+      "mistake": "Treating a decrease (draining, depreciating) as a positive slope",
+      "fix": "If the quantity goes down as x increases, the slope is negative. Look for words like 'decreases,' 'drains,' 'loses.'"
+    },
+    {
+      "mistake": "Including the initial value in the slope",
+      "fix": "Initial value is what you have at x = 0. Rate of change is how much it changes per unit of x. They are separate."
+    }
+  ],
+  "quickTip": "Write the function first, then evaluate. Jumping straight to arithmetic without writing the function often leads to missing the initial value."
+}

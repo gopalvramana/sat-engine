@@ -1,0 +1,48 @@
+{
+  "skillKey": "two_var_models",
+  "domain": "problem_solving_data",
+  "section": "math",
+  "label": "Two-Variable Models",
+  "overview": "SAT data questions ask you to interpret and use equations that model real-world relationships between two variables. These models can be linear (constant rate of change), quadratic (parabolic growth/decay), or exponential (percentage growth/decay). The key skill is reading the equation's parameters — slope, intercepts, and constants — in the context of the problem.",
+
+  "conceptDiagram": {
+    "caption": "Linear, quadratic, and exponential models: which pattern fits the data?",
+    "svg": "<svg viewBox='0 0 340 210' xmlns='http://www.w3.org/2000/svg' font-family=\"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\"><rect width='340' height='210' fill='#faf5ff' rx='10'/><text x='170' y='22' font-size='12' fill='#5b21b6' font-weight='700' text-anchor='middle'>Three Model Types</text><line x1='20' y1='185' x2='310' y2='185' stroke='#d1d5db' stroke-width='1'/><line x1='20' y1='30' x2='20' y2='185' stroke='#d1d5db' stroke-width='1'/><line x1='20' y1='185' x2='120' y2='65' stroke='#7c3aed' stroke-width='2'/><text x='105' y='58' font-size='10' fill='#7c3aed'>Linear</text><path d='M 120,185 Q 185,30 250,105' fill='none' stroke='#d97706' stroke-width='2'/><text x='250' y='100' font-size='10' fill='#d97706'>Quadratic</text><path d='M 140,185 C 170,170 200,130 310,30' fill='none' stroke='#059669' stroke-width='2'/><text x='290' y='45' font-size='10' fill='#059669'>Exponential</text><rect x='15' y='190' width='310' height='15' fill='#ede9fe' rx='3'/><text x='170' y='201' font-size='9' fill='#5b21b6' text-anchor='middle'>Constant Δ → linear | Constant 2nd Δ → quadratic | Constant ratio → exponential</text></svg>"
+  },
+
+  "keyFormulas": [
+    { "name": "Linear model", "latex": "y = mx + b \\quad (\\text{constant rate of change})" },
+    { "name": "Quadratic model", "latex": "y = ax^2 + bx + c \\quad (\\text{rate of change itself changes})" },
+    { "name": "Exponential model", "latex": "y = a \\cdot b^x \\quad (b > 1: \\text{growth}; \\; 0 < b < 1: \\text{decay})" }
+  ],
+
+  "workedExamples": [
+    {
+      "problem": "The model P = 1200(1.03)^t gives the population of a town t years after 2010. What was the population in 2010, and what is the annual growth rate?",
+      "steps": [
+        {
+          "title": "Initial value (t = 0)",
+          "content": "When t = 0, P = 1200 × (1.03)⁰ = 1200 × 1 = 1200.",
+          "math": "P(0) = 1200"
+        },
+        {
+          "title": "Interpret the base",
+          "content": "The base 1.03 = 1 + 0.03 means the population grows by 3% per year.",
+          "math": "\\text{annual growth rate} = 3\\%"
+        }
+      ]
+    }
+  ],
+
+  "commonMistakes": [
+    {
+      "mistake": "Misidentifying an exponential model as linear",
+      "fix": "Linear models add a constant amount each period; exponential models multiply by a constant ratio. Check whether the rate of change is constant (linear) or the ratio is constant (exponential)."
+    },
+    {
+      "mistake": "Confusing the y-intercept with the slope in a linear model",
+      "fix": "In y = mx + b: b is the starting value (x = 0), m is the rate of change per unit of x."
+    }
+  ],
+  "quickTip": "Read the question carefully: it usually asks what the coefficient or exponent base represents in context, not just a numerical answer. Connect each parameter to its real-world meaning."
+}

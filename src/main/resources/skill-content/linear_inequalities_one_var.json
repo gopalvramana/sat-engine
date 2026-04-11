@@ -1,0 +1,47 @@
+{
+  "skillKey": "linear_inequalities_one_var",
+  "domain": "algebra",
+  "section": "math",
+  "label": "Linear Inequalities in One Variable",
+  "overview": "Solving a linear inequality follows the same steps as solving an equation, with one critical rule: multiplying or dividing by a negative number flips the inequality sign. SAT questions ask you to solve, graph on a number line, or interpret the solution in context (e.g., 'what is the minimum number of items...').",
+
+  "conceptDiagram": {
+    "caption": "Number line representations: open circle excludes the endpoint; closed circle includes it",
+    "svg": "<svg viewBox='0 0 340 210' xmlns='http://www.w3.org/2000/svg' font-family=\"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\"><rect width='340' height='210' fill='#faf5ff' rx='10'/><text x='170' y='30' font-size='13' fill='#5b21b6' font-weight='700' text-anchor='middle'>Graphing Inequalities on a Number Line</text><line x1='30' y1='70' x2='310' y2='70' stroke='#374151' stroke-width='2'/><text x='170' y='68' font-size='12' fill='#374151'>|</text><text x='170' y='85' font-size='11' fill='#374151' text-anchor='middle'>3</text><circle cx='170' cy='70' r='7' fill='none' stroke='#7c3aed' stroke-width='2.5'/><line x1='177' y1='70' x2='305' y2='70' stroke='#7c3aed' stroke-width='3'/><polygon points='305,65 315,70 305,75' fill='#7c3aed'/><text x='170' y='103' font-size='12' fill='#7c3aed' text-anchor='middle'>x &gt; 3 (open: 3 not included)</text><line x1='30' y1='145' x2='310' y2='145' stroke='#374151' stroke-width='2'/><text x='170' y='143' font-size='12' fill='#374151'>|</text><text x='170' y='160' font-size='11' fill='#374151' text-anchor='middle'>3</text><circle cx='170' cy='145' r='7' fill='#059669' stroke='#059669' stroke-width='2'/><line x1='35' y1='145' x2='163' y2='145' stroke='#059669' stroke-width='3'/><polygon points='35,140 25,145 35,150' fill='#059669'/><text x='170' y='178' font-size='12' fill='#059669' text-anchor='middle'>x ≤ 3 (closed: 3 included)</text></svg>"
+  },
+
+  "keyFormulas": [
+    { "name": "Solving inequality", "latex": "ax + b > c \\implies x > \\dfrac{c-b}{a} \\quad (\\text{flip if } a < 0)" },
+    { "name": "Flip rule", "latex": "\\text{If you multiply/divide by a negative, flip } > \\text{ to } <" }
+  ],
+
+  "workedExamples": [
+    {
+      "problem": "Solve and graph: −2x + 6 ≤ 12",
+      "steps": [
+        {
+          "title": "Isolate the variable term",
+          "content": "Subtract 6 from both sides.",
+          "math": "-2x \\leq 6"
+        },
+        {
+          "title": "Divide by −2 and flip the inequality",
+          "content": "Dividing by a negative number reverses the inequality direction.",
+          "math": "x \\geq -3"
+        }
+      ]
+    }
+  ],
+
+  "commonMistakes": [
+    {
+      "mistake": "Forgetting to flip the inequality sign when dividing by a negative",
+      "fix": "Any time you divide (or multiply) both sides by a negative number, the inequality reverses: < becomes >, ≤ becomes ≥."
+    },
+    {
+      "mistake": "Using a closed circle for a strict inequality (< or >)",
+      "fix": "Strict inequalities (< or >) use an open circle. Non-strict (≤ or ≥) use a closed (filled) circle."
+    }
+  ],
+  "quickTip": "After solving, test a value in the solution set back in the original inequality to confirm your answer is correct."
+}

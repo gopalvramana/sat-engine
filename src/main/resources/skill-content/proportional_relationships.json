@@ -1,0 +1,48 @@
+{
+  "skillKey": "proportional_relationships",
+  "domain": "problem_solving_data",
+  "section": "math",
+  "label": "Proportional Relationships",
+  "overview": "Two quantities are proportional if their ratio is constant. SAT questions involve unit rates, direct variation, and setting up proportions to find unknown values. Many real-world problems (speed, price per item, conversion between units) are proportional relationships in disguise.",
+
+  "conceptDiagram": {
+    "caption": "Direct proportion: y = kx passes through the origin; the slope k is the unit rate",
+    "svg": "<svg viewBox='0 0 340 210' xmlns='http://www.w3.org/2000/svg' font-family=\"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\"><rect width='340' height='210' fill='#faf5ff' rx='10'/><line x1='30' y1='170' x2='310' y2='170' stroke='#d1d5db' stroke-width='1.5'/><line x1='30' y1='15' x2='30' y2='195' stroke='#d1d5db' stroke-width='1.5'/><line x1='30' y1='170' x2='290' y2='30' stroke='#7c3aed' stroke-width='2.5'/><circle cx='30' cy='170' r='5' fill='#7c3aed'/><text x='10' y='174' font-size='11' fill='#5b21b6'>(0,0)</text><text x='295' y='28' font-size='12' fill='#7c3aed' font-weight='700'>y = kx</text><line x1='30' y1='130' x2='90' y2='130' stroke='#ef4444' stroke-width='1.5' stroke-dasharray='4,3'/><line x1='90' y1='130' x2='90' y2='170' stroke='#3b82f6' stroke-width='1.5' stroke-dasharray='4,3'/><text x='58' y='148' font-size='11' fill='#dc2626'>run</text><text x='96' y='152' font-size='11' fill='#2563eb'>rise</text><text x='150' y='80' font-size='12' fill='#374151'>k = y/x = unit rate</text><text x='150' y='98' font-size='11' fill='#6b7280'>(constant ratio)</text><circle cx='90' cy='130' r='4' fill='#059669'/><text x='95' y='126' font-size='10' fill='#166534'>(x, y)</text></svg>"
+  },
+
+  "keyFormulas": [
+    { "name": "Direct variation", "latex": "y = kx \\quad (k = \\text{constant of proportionality})" },
+    { "name": "Proportion", "latex": "\\dfrac{a}{b} = \\dfrac{c}{d} \\implies ad = bc" },
+    { "name": "Unit rate", "latex": "\\text{unit rate} = \\dfrac{\\text{total quantity}}{\\text{number of units}}" }
+  ],
+
+  "workedExamples": [
+    {
+      "problem": "A car travels 270 miles in 4.5 hours at constant speed. At the same rate, how far does it travel in 7 hours?",
+      "steps": [
+        {
+          "title": "Find the unit rate (speed)",
+          "content": "Divide distance by time.",
+          "math": "\\text{speed} = \\dfrac{270}{4.5} = 60 \\text{ mph}"
+        },
+        {
+          "title": "Use the rate for 7 hours",
+          "content": "",
+          "math": "d = 60 \\times 7 = 420 \\text{ miles}"
+        }
+      ]
+    }
+  ],
+
+  "commonMistakes": [
+    {
+      "mistake": "Setting up the proportion with mismatched units (mixing miles/hours with a different ratio)",
+      "fix": "Keep units consistent on each side: miles/hours = miles/hours. Label each part of the proportion."
+    },
+    {
+      "mistake": "Confusing proportional (passes through origin) with linear (may not pass through origin)",
+      "fix": "Proportional means y/x is always constant, which requires the line to pass through (0, 0). A linear function with a non-zero y-intercept is NOT proportional."
+    }
+  ],
+  "quickTip": "For proportion problems, set up the ratio with the same units in the same position on both sides, then cross-multiply and solve."
+}

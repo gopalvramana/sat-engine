@@ -1,0 +1,49 @@
+{
+  "skillKey": "rational_expressions",
+  "domain": "algebra",
+  "section": "math",
+  "label": "Rational Expressions",
+  "overview": "A rational expression is a fraction where the numerator and/or denominator are polynomials. SAT questions ask you to simplify by canceling common factors, multiply or divide rational expressions, and identify values that make the expression undefined. Factoring is the key step in nearly every rational expression problem.",
+
+  "conceptDiagram": {
+    "caption": "Simplify by factoring both polynomials, then cancel common factors",
+    "svg": "<svg viewBox='0 0 340 210' xmlns='http://www.w3.org/2000/svg' font-family=\"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\"><rect width='340' height='210' fill='#faf5ff' rx='10'/><text x='170' y='30' font-size='13' fill='#5b21b6' font-weight='700' text-anchor='middle'>Simplifying a Rational Expression</text><rect x='15' y='42' width='310' height='40' fill='#ede9fe' rx='5'/><text x='170' y='58' font-size='13' fill='#374151' text-anchor='middle'>x² + 5x + 6</text><line x1='30' y1='63' x2='310' y2='63' stroke='#a78bfa' stroke-width='1.5'/><text x='170' y='78' font-size='13' fill='#374151' text-anchor='middle'>x² + 3x</text><text x='170' y='108' font-size='12' fill='#7c3aed' text-anchor='middle'>Step 1 — Factor both polynomials</text><text x='170' y='128' font-size='13' fill='#374151' text-anchor='middle'>(x + 2)(x + 3)</text><line x1='80' y1='133' x2='260' y2='133' stroke='#a78bfa' stroke-width='1.5'/><text x='170' y='148' font-size='13' fill='#374151' text-anchor='middle'>x(x + 3)</text><text x='170' y='168' font-size='12' fill='#7c3aed' text-anchor='middle'>Step 2 — Cancel (x+3) from top &amp; bottom</text><rect x='95' y='178' width='150' height='26' fill='#c4b5fd' rx='5'/><text x='170' y='196' font-size='14' fill='#3b0764' font-weight='700' text-anchor='middle'>= (x + 2) / x</text></svg>"
+  },
+
+  "keyFormulas": [
+    { "name": "Simplify", "latex": "\\dfrac{p(x)}{q(x)} \\rightarrow \\text{factor both, cancel common factors}" },
+    { "name": "Multiply", "latex": "\\dfrac{a}{b} \\cdot \\dfrac{c}{d} = \\dfrac{ac}{bd}" },
+    { "name": "Divide (flip and multiply)", "latex": "\\dfrac{a}{b} \\div \\dfrac{c}{d} = \\dfrac{a}{b} \\cdot \\dfrac{d}{c} = \\dfrac{ad}{bc}" },
+    { "name": "Undefined values", "latex": "\\text{Expression is undefined when denominator} = 0" }
+  ],
+
+  "workedExamples": [
+    {
+      "problem": "Simplify: (x² − 9) / (x² − x − 6)",
+      "steps": [
+        {
+          "title": "Factor numerator and denominator",
+          "content": "x² − 9 is a difference of squares. x² − x − 6 factors as (x−3)(x+2).",
+          "math": "\\dfrac{(x+3)(x-3)}{(x-3)(x+2)}"
+        },
+        {
+          "title": "Cancel the common factor (x−3)",
+          "content": "Valid as long as x ≠ 3.",
+          "math": "\\dfrac{x+3}{x+2}, \\quad x \\neq 3"
+        }
+      ]
+    }
+  ],
+
+  "commonMistakes": [
+    {
+      "mistake": "Canceling terms instead of factors: (x+3)/(x+5) ≠ 3/5",
+      "fix": "You can only cancel a factor that multiplies the entire numerator or denominator. Terms added together cannot be canceled individually."
+    },
+    {
+      "mistake": "Forgetting to state excluded values after canceling",
+      "fix": "If (x−3) is canceled, note that x ≠ 3 (the original denominator was zero there)."
+    }
+  ],
+  "quickTip": "Always factor completely before trying to cancel. Trying to cancel before factoring is the most common error on rational expression problems."
+}

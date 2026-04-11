@@ -1,0 +1,52 @@
+{
+  "skillKey": "systems_linear_word_problems",
+  "domain": "algebra",
+  "section": "math",
+  "label": "Systems of Equations — Word Problems",
+  "overview": "Word problems that require two unknowns need two equations to solve. SAT questions commonly involve total cost + total quantity, mixing problems, or rate-and-time problems. The challenge is setting up the correct pair of equations before applying algebra. Clear variable definitions are essential.",
+
+  "conceptDiagram": {
+    "caption": "Set-up guide: one equation for each constraint in the problem",
+    "svg": "<svg viewBox='0 0 340 210' xmlns='http://www.w3.org/2000/svg' font-family=\"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\"><rect width='340' height='210' fill='#faf5ff' rx='10'/><rect x='15' y='15' width='310' height='40' fill='#7c3aed' rx='5'/><text x='170' y='33' font-size='12' fill='#fff' font-weight='700' text-anchor='middle'>&quot;Tickets: adult $8, child $5. 200 tickets, $1,270 total.&quot;</text><text x='170' y='48' font-size='11' fill='#e0d7ff' text-anchor='middle'>Let a = adult tickets, c = child tickets</text><rect x='15' y='63' width='148' height='50' fill='#ede9fe' rx='5'/><text x='89' y='82' font-size='11' fill='#5b21b6' font-weight='700' text-anchor='middle'>Quantity constraint</text><text x='89' y='102' font-size='13' fill='#374151' text-anchor='middle'>a + c = 200</text><rect x='175' y='63' width='150' height='50' fill='#fef3c7' rx='5'/><text x='250' y='82' font-size='11' fill='#92400e' font-weight='700' text-anchor='middle'>Value constraint</text><text x='250' y='102' font-size='13' fill='#374151' text-anchor='middle'>8a + 5c = 1270</text><rect x='15' y='123' width='310' height='70' fill='#dcfce7' rx='5'/><text x='170' y='143' font-size='11' fill='#166534' font-weight='700' text-anchor='middle'>Solve the system:</text><text x='170' y='162' font-size='12' fill='#374151' text-anchor='middle'>From 1st: c = 200 − a</text><text x='170' y='180' font-size='12' fill='#374151' text-anchor='middle'>Substitute: 8a + 5(200−a) = 1270 → a = 90</text></svg>"
+  },
+
+  "keyFormulas": [
+    { "name": "General setup", "latex": "\\text{Equation 1 (total count): } x + y = \\text{total}" },
+    { "name": "", "latex": "\\text{Equation 2 (total value/cost): } p_1 x + p_2 y = \\text{total value}" }
+  ],
+
+  "workedExamples": [
+    {
+      "problem": "A store sells pens for $2 each and notebooks for $5 each. A customer buys 12 items and spends $42. How many of each item were purchased?",
+      "steps": [
+        {
+          "title": "Define variables and write equations",
+          "content": "Let p = pens, n = notebooks.",
+          "math": "p + n = 12 \\quad \\text{and} \\quad 2p + 5n = 42"
+        },
+        {
+          "title": "Solve by substitution",
+          "content": "From equation 1: p = 12 − n. Substitute.",
+          "math": "2(12 - n) + 5n = 42 \\implies 24 + 3n = 42 \\implies n = 6"
+        },
+        {
+          "title": "Find p",
+          "content": "",
+          "math": "p = 12 - 6 = 6"
+        }
+      ]
+    }
+  ],
+
+  "commonMistakes": [
+    {
+      "mistake": "Writing both equations for the same constraint (e.g., two quantity equations)",
+      "fix": "Each equation must represent a different constraint. One equation usually comes from counts/quantities; the other comes from totals/costs/rates."
+    },
+    {
+      "mistake": "Not labeling what x and y represent, causing confusion mid-solution",
+      "fix": "Write 'Let x = ___' and 'Let y = ___' at the top. This prevents mixing up what you solved for."
+    }
+  ],
+  "quickTip": "There should be exactly as many equations as unknowns. If you have two unknowns, you need two distinct constraints from the problem."
+}

@@ -1,0 +1,52 @@
+{
+  "skillKey": "linear_functions",
+  "domain": "algebra",
+  "section": "math",
+  "label": "Linear Functions",
+  "overview": "A linear function has the form f(x) = mx + b and produces a constant rate of change. SAT questions ask you to interpret slope as a rate of change (e.g., dollars per hour), interpret the y-intercept as a starting value, evaluate the function at a given input, or determine the equation from a table or graph.",
+
+  "conceptDiagram": {
+    "caption": "f(x) = 3x + 10: slope 3 means +3 units of output per +1 unit of input",
+    "svg": "<svg viewBox='0 0 340 210' xmlns='http://www.w3.org/2000/svg' font-family=\"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\"><rect width='340' height='210' fill='#faf5ff' rx='10'/><rect x='15' y='15' width='155' height='130' fill='#ede9fe' rx='6'/><text x='92' y='33' font-size='12' fill='#5b21b6' font-weight='700' text-anchor='middle'>Table of values</text><text x='55' y='52' font-size='11' fill='#374151' font-weight='600'>x</text><text x='130' y='52' font-size='11' fill='#374151' font-weight='600'>f(x)</text><line x1='30' y1='56' x2='160' y2='56' stroke='#a78bfa' stroke-width='1'/><text x='55' y='74' font-size='12' fill='#374151' text-anchor='middle'>0</text><text x='130' y='74' font-size='12' fill='#374151' text-anchor='middle'>10</text><text x='55' y='94' font-size='12' fill='#374151' text-anchor='middle'>1</text><text x='130' y='94' font-size='12' fill='#374151' text-anchor='middle'>13</text><text x='55' y='114' font-size='12' fill='#374151' text-anchor='middle'>2</text><text x='130' y='114' font-size='12' fill='#374151' text-anchor='middle'>16</text><text x='55' y='134' font-size='12' fill='#374151' text-anchor='middle'>3</text><text x='130' y='134' font-size='12' fill='#374141' text-anchor='middle'>19</text><text x='92' y='155' font-size='11' fill='#7c3aed' text-anchor='middle'>+3 each time → slope = 3</text><rect x='180' y='15' width='145' height='55' fill='#fef3c7' rx='5'/><text x='252' y='32' font-size='11' fill='#92400e' font-weight='700' text-anchor='middle'>slope = rate of change</text><text x='252' y='50' font-size='11' fill='#374151' text-anchor='middle'>= (output change) / (input change)</text><text x='252' y='65' font-size='11' fill='#374151' text-anchor='middle'>= Δf(x) / Δx</text><rect x='180' y='80' width='145' height='55' fill='#dcfce7' rx='5'/><text x='252' y='97' font-size='11' fill='#166534' font-weight='700' text-anchor='middle'>y-intercept b</text><text x='252' y='115' font-size='11' fill='#374151' text-anchor='middle'>= value when x = 0</text><text x='252' y='130' font-size='11' fill='#374151' text-anchor='middle'>= starting value</text></svg>"
+  },
+
+  "keyFormulas": [
+    { "name": "Linear function", "latex": "f(x) = mx + b" },
+    { "name": "Slope (rate of change)", "latex": "m = \\dfrac{\\Delta f(x)}{\\Delta x} = \\dfrac{f(x_2) - f(x_1)}{x_2 - x_1}" }
+  ],
+
+  "workedExamples": [
+    {
+      "problem": "A linear function f satisfies f(2) = 11 and f(5) = 20. Write the equation of f(x).",
+      "steps": [
+        {
+          "title": "Calculate the slope",
+          "content": "Use the two given points (2, 11) and (5, 20).",
+          "math": "m = \\dfrac{20 - 11}{5 - 2} = \\dfrac{9}{3} = 3"
+        },
+        {
+          "title": "Find the y-intercept",
+          "content": "Use f(x) = 3x + b and plug in one known point, say (2, 11).",
+          "math": "11 = 3(2) + b \\implies b = 5"
+        },
+        {
+          "title": "Write the equation",
+          "content": "",
+          "math": "f(x) = 3x + 5"
+        }
+      ]
+    }
+  ],
+
+  "commonMistakes": [
+    {
+      "mistake": "Confusing slope and y-intercept when interpreting a real-world function",
+      "fix": "Slope is the per-unit rate (what changes per extra x). The y-intercept is the flat starting value when x = 0."
+    },
+    {
+      "mistake": "Computing slope as (x₂−x₁)/(y₂−y₁) instead of rise over run",
+      "fix": "Slope = Δy/Δx (change in output divided by change in input). y always goes on top."
+    }
+  ],
+  "quickTip": "In context questions, the slope always carries units: 'dollars per hour,' 'meters per second.' The y-intercept is usually a starting amount or fixed value."
+}

@@ -1,0 +1,68 @@
+{
+  "skillKey": "area_2d",
+  "domain": "geometry_trigonometry",
+  "section": "math",
+  "label": "2D Area Formulas",
+  "overview": "Area measures the space enclosed inside a 2D figure. SAT questions ask you to compute or compare areas of circles, triangles, rectangles, and trapezoids, often embedding the shape inside a word problem or coordinate grid. Memorizing the four core formulas and knowing when to apply each one is the entire skill.",
+
+  "conceptDiagram": {
+    "caption": "Area formulas for the four shapes most tested on the SAT",
+    "svg": "<svg viewBox='0 0 340 210' xmlns='http://www.w3.org/2000/svg' font-family=\"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\"><rect width='340' height='210' fill='#faf5ff' rx='10'/><rect x='20' y='20' width='130' height='80' fill='#ede9fe' stroke='#7c3aed' stroke-width='2' rx='3'/><text x='85' y='65' font-size='13' fill='#5b21b6' font-weight='700' text-anchor='middle'>Rectangle</text><text x='85' y='82' font-size='12' fill='#6d28d9' text-anchor='middle'>A = l × w</text><circle cx='255' cy='60' r='38' fill='#dbeafe' stroke='#3b82f6' stroke-width='2'/><text x='255' y='57' font-size='13' fill='#1d4ed8' font-weight='700' text-anchor='middle'>Circle</text><text x='255' y='74' font-size='12' fill='#2563eb' text-anchor='middle'>A = πr²</text><polygon points='40,195 160,195 130,125' fill='#fef3c7' stroke='#d97706' stroke-width='2'/><text x='100' y='168' font-size='13' fill='#92400e' font-weight='700' text-anchor='middle'>Triangle</text><text x='100' y='183' font-size='12' fill='#b45309' text-anchor='middle'>A = ½bh</text><polygon points='190,125 320,125 305,195 205,195' fill='#dcfce7' stroke='#16a34a' stroke-width='2'/><text x='255' y='158' font-size='13' fill='#14532d' font-weight='700' text-anchor='middle'>Trapezoid</text><text x='255' y='174' font-size='11' fill='#166534' text-anchor='middle'>A = ½(b₁+b₂)h</text></svg>"
+  },
+
+  "keyFormulas": [
+    { "name": "Rectangle / Parallelogram", "latex": "A = b \\times h" },
+    { "name": "Triangle", "latex": "A = \\dfrac{1}{2} b h" },
+    { "name": "Circle", "latex": "A = \\pi r^2" },
+    { "name": "Trapezoid", "latex": "A = \\dfrac{1}{2}(b_1 + b_2)h" }
+  ],
+
+  "workedExamples": [
+    {
+      "problem": "A trapezoid has parallel bases of length 8 and 14, and a height of 5. What is its area?",
+      "steps": [
+        {
+          "title": "Identify the formula",
+          "content": "A trapezoid has two parallel bases b₁ and b₂ and a perpendicular height h.",
+          "math": "A = \\dfrac{1}{2}(b_1 + b_2)h"
+        },
+        {
+          "title": "Substitute and calculate",
+          "content": "Plug in b₁ = 8, b₂ = 14, h = 5.",
+          "math": "A = \\dfrac{1}{2}(8 + 14)(5) = \\dfrac{1}{2}(22)(5) = 55"
+        }
+      ]
+    },
+    {
+      "problem": "A circle has an area of 36π. What is its radius?",
+      "steps": [
+        {
+          "title": "Set up the equation",
+          "content": "Use A = πr² and set it equal to 36π.",
+          "math": "\\pi r^2 = 36\\pi"
+        },
+        {
+          "title": "Solve for r",
+          "content": "Divide both sides by π, then take the square root.",
+          "math": "r^2 = 36 \\implies r = 6"
+        }
+      ]
+    }
+  ],
+
+  "commonMistakes": [
+    {
+      "mistake": "Using diameter instead of radius in the circle formula",
+      "fix": "A = πr². If the problem gives diameter d, divide by 2 first: r = d/2."
+    },
+    {
+      "mistake": "Forgetting the ½ in the triangle and trapezoid formulas",
+      "fix": "Both triangle and trapezoid formulas have a ½. Write the formula before plugging in numbers."
+    },
+    {
+      "mistake": "Using slant height instead of perpendicular height",
+      "fix": "Height in every area formula means the perpendicular distance between the base and the opposite side or vertex — not a slanted side."
+    }
+  ],
+  "quickTip": "The SAT provides these formulas in the reference box at the start of each math section — but recognizing which shape to use saves precious seconds."
+}

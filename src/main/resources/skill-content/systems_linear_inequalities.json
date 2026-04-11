@@ -1,0 +1,52 @@
+{
+  "skillKey": "systems_linear_inequalities",
+  "domain": "algebra",
+  "section": "math",
+  "label": "Systems of Linear Inequalities",
+  "overview": "A system of linear inequalities is solved by finding the region of the coordinate plane that satisfies all inequalities simultaneously. SAT questions ask you to identify the correct feasible region on a graph, determine whether a given point satisfies the system, or match a graph to a system. The feasible region is always the overlap of the individual half-planes.",
+
+  "conceptDiagram": {
+    "caption": "The feasible region (dark overlap) satisfies both inequalities at once",
+    "svg": "<svg viewBox='0 0 340 210' xmlns='http://www.w3.org/2000/svg' font-family=\"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\"><rect width='340' height='210' fill='#faf5ff' rx='10'/><line x1='20' y1='105' x2='320' y2='105' stroke='#d1d5db' stroke-width='1'/><line x1='170' y1='10' x2='170' y2='200' stroke='#d1d5db' stroke-width='1'/><polygon points='20,200 320,200 320,105 20,105' fill='#ede9fe' fill-opacity='0.5'/><line x1='20' y1='105' x2='320' y2='105' stroke='#7c3aed' stroke-width='2'/><text x='295' y='100' font-size='10' fill='#7c3aed'>y ≥ 0</text><polygon points='20,200 320,50 320,200' fill='#fef3c7' fill-opacity='0.6'/><line x1='20' y1='200' x2='320' y2='50' stroke='#d97706' stroke-width='2'/><text x='240' y='170' font-size='10' fill='#d97706'>y ≤ x + 10</text><polygon points='170,105 320,105 320,50' fill='#a78bfa' fill-opacity='0.6'/><text x='255' y='90' font-size='12' fill='#5b21b6' font-weight='700'>Feasible</text><text x='255' y='106' font-size='12' fill='#5b21b6' font-weight='700'>region</text><text x='60' y='170' font-size='11' fill='#374151'>Test (0,0): satisfies y ≥ 0?</text><text x='60' y='185' font-size='11' fill='#374151'>Yes! Satisfies y ≤ x+10? Yes!</text></svg>"
+  },
+
+  "keyFormulas": [
+    { "name": "To find the feasible region", "latex": "\\text{Shade each inequality separately; feasible region = overlap}" },
+    { "name": "Test a point", "latex": "\\text{Substitute a point into all inequalities; if ALL are satisfied, it is in the region}" }
+  ],
+
+  "workedExamples": [
+    {
+      "problem": "Which point satisfies both y ≤ 2x + 3 and y ≥ x − 1? Check (4, 2).",
+      "steps": [
+        {
+          "title": "Test in the first inequality",
+          "content": "y ≤ 2x + 3: substitute (4, 2).",
+          "math": "2 \\leq 2(4) + 3 = 11 \\quad \\checkmark"
+        },
+        {
+          "title": "Test in the second inequality",
+          "content": "y ≥ x − 1: substitute (4, 2).",
+          "math": "2 \\geq 4 - 1 = 3 \\quad \\times \\quad \\text{(2 is NOT ≥ 3)}"
+        },
+        {
+          "title": "Conclusion",
+          "content": "(4, 2) fails the second inequality, so it is NOT in the feasible region.",
+          "math": null
+        }
+      ]
+    }
+  ],
+
+  "commonMistakes": [
+    {
+      "mistake": "Only testing one of the two inequalities",
+      "fix": "A point must satisfy ALL inequalities in the system. Check every one."
+    },
+    {
+      "mistake": "Shading the wrong side of a boundary line after rearranging",
+      "fix": "After rearranging to y ≤ or y ≥ form, 'y ≤' shades below the line and 'y ≥' shades above. Test (0,0) to double-check."
+    }
+  ],
+  "quickTip": "The easiest SAT approach: plug each answer choice into all inequalities. The correct answer is the one that satisfies every single constraint."
+}

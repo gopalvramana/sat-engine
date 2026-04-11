@@ -1,0 +1,54 @@
+{
+  "skillKey": "linear_eq_two_var",
+  "domain": "algebra",
+  "section": "math",
+  "label": "Linear Equations in Two Variables",
+  "overview": "Two linear equations in two unknowns form a system whose solution is the point where both lines intersect. SAT questions ask you to solve the system, determine how many solutions exist, or identify what change to one equation would create no solution or infinite solutions. Substitution and elimination are the two algebraic methods.",
+
+  "conceptDiagram": {
+    "caption": "Three possible outcomes when two lines meet (or don't) on a coordinate plane",
+    "svg": "<svg viewBox='0 0 340 210' xmlns='http://www.w3.org/2000/svg' font-family=\"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\"><rect width='340' height='210' fill='#faf5ff' rx='10'/><rect x='10' y='10' width='98' height='190' fill='#ede9fe' rx='6'/><text x='59' y='30' font-size='11' fill='#5b21b6' font-weight='700' text-anchor='middle'>One Solution</text><line x1='20' y1='150' x2='95' y2='60' stroke='#7c3aed' stroke-width='2'/><line x1='15' y1='80' x2='100' y2='130' stroke='#3b82f6' stroke-width='2'/><circle cx='62' cy='103' r='5' fill='#ef4444'/><text x='59' y='175' font-size='10' fill='#374151' text-anchor='middle'>lines intersect</text><rect x='120' y='10' width='98' height='190' fill='#fef3c7' rx='6'/><text x='169' y='30' font-size='11' fill='#92400e' font-weight='700' text-anchor='middle'>No Solution</text><line x1='130' y1='150' x2='205' y2='60' stroke='#d97706' stroke-width='2'/><line x1='132' y1='145' x2='207' y2='55' stroke='#dc2626' stroke-width='2' stroke-dasharray='5,3'/><text x='169' y='175' font-size='10' fill='#374151' text-anchor='middle'>parallel lines</text><rect x='230' y='10' width='100' height='190' fill='#dcfce7' rx='6'/><text x='280' y='30' font-size='11' fill='#166534' font-weight='700' text-anchor='middle'>Infinite</text><line x1='240' y1='150' x2='320' y2='60' stroke='#16a34a' stroke-width='3'/><line x1='242' y1='149' x2='322' y2='59' stroke='#bbf7d0' stroke-width='5' stroke-opacity='0.6'/><text x='280' y='175' font-size='10' fill='#374151' text-anchor='middle'>same line</text></svg>"
+  },
+
+  "keyFormulas": [
+    { "name": "Substitution method", "latex": "\\text{Solve one equation for one variable, substitute into the other}" },
+    { "name": "Elimination method", "latex": "\\text{Multiply equations so one variable cancels when added}" },
+    { "name": "No solution condition", "latex": "\\text{Same slope, different y-intercept (parallel lines)}" },
+    { "name": "Infinite solutions", "latex": "\\text{Equations are multiples of each other (same line)}" }
+  ],
+
+  "workedExamples": [
+    {
+      "problem": "Solve the system: 2x + y = 7 and x − y = 2.",
+      "steps": [
+        {
+          "title": "Use elimination — add the equations",
+          "content": "The y terms are opposites (+y and −y), so adding eliminates y immediately.",
+          "math": "(2x + y) + (x - y) = 7 + 2 \\implies 3x = 9 \\implies x = 3"
+        },
+        {
+          "title": "Substitute back to find y",
+          "content": "Plug x = 3 into the simpler equation.",
+          "math": "3 - y = 2 \\implies y = 1"
+        },
+        {
+          "title": "State the solution",
+          "content": "The lines intersect at (3, 1).",
+          "math": "(x, y) = (3, 1)"
+        }
+      ]
+    }
+  ],
+
+  "commonMistakes": [
+    {
+      "mistake": "Multiplying only some terms when scaling an equation for elimination",
+      "fix": "Multiply every term on both sides by the scalar — treat the entire equation."
+    },
+    {
+      "mistake": "Stopping after finding one variable",
+      "fix": "Always substitute back to find the second variable. The answer is a coordinate pair (x, y)."
+    }
+  ],
+  "quickTip": "If the system looks easy to eliminate (coefficients are already equal or opposite), use elimination. If one equation already has x = or y =, use substitution."
+}

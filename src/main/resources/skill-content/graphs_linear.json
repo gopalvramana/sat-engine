@@ -1,0 +1,49 @@
+{
+  "skillKey": "graphs_linear",
+  "domain": "algebra",
+  "section": "math",
+  "label": "Graphing Linear Equations",
+  "overview": "A linear equation in two variables produces a straight line on the coordinate plane. SAT questions ask you to read slope and intercepts from a graph or equation, identify the correct graph for a given equation, or find where a line crosses an axis. Mastering slope-intercept form y = mx + b is the foundation.",
+
+  "conceptDiagram": {
+    "caption": "y = mx + b: slope m controls steepness, b is where the line crosses the y-axis",
+    "svg": "<svg viewBox='0 0 340 210' xmlns='http://www.w3.org/2000/svg' font-family=\"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\"><rect width='340' height='210' fill='#faf5ff' rx='10'/><line x1='30' y1='105' x2='310' y2='105' stroke='#d1d5db' stroke-width='1.5'/><line x1='170' y1='15' x2='170' y2='195' stroke='#d1d5db' stroke-width='1.5'/><text x='315' y='109' font-size='11' fill='#9ca3af'>x</text><text x='173' y='14' font-size='11' fill='#9ca3af'>y</text><line x1='30' y1='175' x2='280' y2='45' stroke='#7c3aed' stroke-width='2.5'/><circle cx='170' cy='105' r='5' fill='#7c3aed'/><text x='178' y='100' font-size='11' fill='#5b21b6'>(0, b)</text><text x='182' y='116' font-size='11' fill='#5b21b6'>y-intercept</text><line x1='130' y1='130' x2='170' y2='130' stroke='#ef4444' stroke-width='2' stroke-dasharray='4,3'/><line x1='170' y1='105' x2='170' y2='130' stroke='#3b82f6' stroke-width='2' stroke-dasharray='4,3'/><text x='148' y='145' font-size='11' fill='#dc2626'>run</text><text x='175' y='120' font-size='11' fill='#2563eb'>rise</text><text x='40' y='50' font-size='13' fill='#7c3aed' font-weight='700'>y = mx + b</text><text x='40' y='68' font-size='11' fill='#374151'>m = rise/run = slope</text><text x='40' y='84' font-size='11' fill='#374151'>b = y-intercept</text></svg>"
+  },
+
+  "keyFormulas": [
+    { "name": "Slope-intercept form", "latex": "y = mx + b" },
+    { "name": "Standard form", "latex": "Ax + By = C" },
+    { "name": "Slope from two points", "latex": "m = \\dfrac{y_2 - y_1}{x_2 - x_1}" },
+    { "name": "x-intercept (set y = 0)", "latex": "x = -\\dfrac{b}{m}" }
+  ],
+
+  "workedExamples": [
+    {
+      "problem": "The line 4x + 2y = 12 is graphed in the xy-plane. What are its slope and y-intercept?",
+      "steps": [
+        {
+          "title": "Convert to slope-intercept form",
+          "content": "Isolate y by subtracting 4x and dividing by 2.",
+          "math": "2y = -4x + 12 \\implies y = -2x + 6"
+        },
+        {
+          "title": "Read off m and b",
+          "content": "The coefficient of x is the slope; the constant is the y-intercept.",
+          "math": "m = -2, \\quad b = 6"
+        }
+      ]
+    }
+  ],
+
+  "commonMistakes": [
+    {
+      "mistake": "Reading the x-intercept as the y-intercept from a graph",
+      "fix": "The y-intercept is where the line crosses the y-axis (x = 0). The x-intercept is where it crosses the x-axis (y = 0)."
+    },
+    {
+      "mistake": "Getting the slope sign wrong when the line goes downward",
+      "fix": "A line going from upper-left to lower-right has a negative slope (rise is negative when run is positive)."
+    }
+  ],
+  "quickTip": "To graph quickly from y = mx + b: plot the y-intercept (0, b), then move rise/run from that point to get a second point, and connect."
+}
