@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react'
+import katex from 'katex'
+import 'katex/dist/katex.min.css'
 
 /**
  * Renders a string that may contain LaTeX math.
@@ -22,7 +24,6 @@ function isMathContent(inner) {
 /** Parse `text` and replace math delimiters with KaTeX-rendered HTML */
 function applyKatex(text) {
   if (!text) return ''
-  if (!window.katex) return escapeHtml(text)
 
   // Combined pattern: \[...\] display | \(...\) inline | $...$ inline (with isMathContent guard)
   const re = /(\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\)|\$(?:[^$\\]|\\.)+?\$)/g
@@ -56,7 +57,7 @@ function applyKatex(text) {
     }
 
     try {
-      result += window.katex.renderToString(inner.trim(), {
+      result += katex.renderToString(inner.trim(), {
         displayMode: isDisplay,
         throwOnError: false,
         trust: false,
@@ -95,21 +96,7 @@ export default function MathText({ text, as: Tag = 'span', style, className }) {
   const [html, setHtml] = useState(() => applyKatex(text))
 
   useEffect(() => {
-    if (window.katex) {
-      setHtml(applyKatex(text))
-    } else {
-      // KaTeX CDN not yet loaded — show raw text, then re-process when it arrives
-      setHtml(escapeHtml(text || ''))
-
-      const check = setInterval(() => {
-        if (window.katex) {
-          clearInterval(check)
-          setHtml(applyKatex(text))
-        }
-      }, 50)
-
-      return () => clearInterval(check)
-    }
+    setHtml(applyKatex(text))
   }, [text])
 
   if (!text) return null
