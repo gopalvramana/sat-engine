@@ -54,7 +54,12 @@ public class SessionController {
      * Return current session status with answer counts.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<SessionResponse> getSession(@PathVariable UUID id) {
+    public ResponseEntity<SessionResponse> getSession(
+            @PathVariable UUID id,
+            HttpSession httpSession
+    ) {
+        UUID userId = requireAuth(httpSession);
+        sessionService.requireOwnership(id, userId);
         SessionResponse response = sessionService.getSessionStatus(id);
         return ResponseEntity.ok(response);
     }
@@ -65,7 +70,12 @@ public class SessionController {
      * Returns 204 No Content when the question pool is exhausted.
      */
     @GetMapping("/{id}/next")
-    public ResponseEntity<QuestionResponse> getNextQuestion(@PathVariable UUID id) {
+    public ResponseEntity<QuestionResponse> getNextQuestion(
+            @PathVariable UUID id,
+            HttpSession httpSession
+    ) {
+        UUID userId = requireAuth(httpSession);
+        sessionService.requireOwnership(id, userId);
         log.debug("next question requested session={}", id);
         return sessionService.getNextQuestion(id)
                 .map(ResponseEntity::ok)
@@ -79,12 +89,34 @@ public class SessionController {
     @PostMapping("/{id}/answers")
     public ResponseEntity<AnswerFeedback> submitAnswer(
             @PathVariable UUID id,
-            @Valid @RequestBody SubmitAnswerRequest request
+            @Valid @RequestBody SubmitAnswerRequest request,
+            HttpSession httpSession
     ) {
+        UUID userId = requireAuth(httpSession);
+        sessionService.requireOwnership(id, userId);
         AnswerFeedback feedback = sessionService.submitAnswer(id, request);
         log.info("answer submitted session={} question={} correct={}",
                 id, request.questionId(), feedback.isCorrect());
         return ResponseEntity.ok(feedback);
+    }
+
+    /**
+     * Returns the userId from the HTTP session, or throws 401 if not authenticated.
+     */
+    private UUID requireAuth(HttpSession httpSession) {
+        String userIdStr = (String) httpSession.getAttribute("userId");
+        if (userIdStr == null) {
+            log.warn("unauthenticated session API request");
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.UNAUTHORIZED, "Not authenticated");
+        }
+        try {
+            return UUID.fromString(userIdStr);
+        } catch (IllegalArgumentException e) {
+            log.warn("malformed userId in session: {}", userIdStr);
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.UNAUTHORIZED, "Not authenticated");
+        }
     }
 
     /** Extract userId UUID from HTTP session, or null if not logged in. */

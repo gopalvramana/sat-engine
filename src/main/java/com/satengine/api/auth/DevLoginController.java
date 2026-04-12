@@ -18,7 +18,7 @@ import java.util.Map;
  * The login.html page calls this on localhost so developers can test without Google OAuth.
  */
 @Slf4j
-@Profile("local")
+@Profile({"local", "test"})
 @RestController
 @RequestMapping("/dev")
 @RequiredArgsConstructor

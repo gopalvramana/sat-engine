@@ -293,6 +293,24 @@ public class SessionService {
         );
     }
 
+    /**
+     * Verifies the session exists and belongs to the given user.
+     * Throws 404 if the session doesn't exist (avoids leaking session existence to wrong users).
+     * Throws 403 if the session belongs to a different user.
+     */
+    @Transactional(readOnly = true)
+    public void requireOwnership(UUID sessionId, UUID userId) {
+        Session session = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Session", sessionId));
+        if (!userId.equals(session.getUserId())) {
+            log.warn("ownership violation session={} requestedBy={} owner={}",
+                    sessionId, userId, session.getUserId());
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.FORBIDDEN,
+                    "Access denied to session " + sessionId);
+        }
+    }
+
     @Transactional(readOnly = true)
     public SessionResponse getSessionStatus(UUID sessionId) {
         Session session = sessionRepository.findById(sessionId)

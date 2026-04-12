@@ -1,12 +1,15 @@
 package com.satengine;
 
 import com.satengine.TestDataHelper;
+import org.apache.hc.client5.http.cookie.BasicCookieStore;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.http.*;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -48,6 +51,23 @@ class IntegrationTest {
     @Nested
     @DisplayName("Session API")
     class SessionApiTests {
+
+        /**
+         * Before each session test: configure a stateful HTTP client so the JSESSIONID cookie
+         * is tracked automatically, then call /dev/login to establish an authenticated session.
+         * This is required because the session endpoints now enforce authentication (#5).
+         */
+        @BeforeEach
+        void authenticate() {
+            var cookieStore = new BasicCookieStore();
+            var httpClient = HttpClients.custom()
+                    .setDefaultCookieStore(cookieStore)
+                    .build();
+            rest.getRestTemplate().setRequestFactory(
+                    new HttpComponentsClientHttpRequestFactory(httpClient));
+            var r = rest.postForEntity("/dev/login", null, Map.class);
+            assertThat(r.getStatusCode()).isEqualTo(HttpStatus.OK);
+        }
 
         @AfterEach void cleanUp() { data.deleteAllTestData(); }
 
