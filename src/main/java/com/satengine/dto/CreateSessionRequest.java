@@ -15,5 +15,7 @@ import java.util.Map;
 public record CreateSessionRequest(
         @NotBlank String sessionType,
         String section,
-        Map<String, Map<String, Integer>> domainBandCounts
+        Map<String, Map<String, Integer>> domainBandCounts,
+        Boolean timedMode,      // reserved — future timed-exam mode, ignored for now
+        Integer moduleNumber    // reserved — future multi-module support, ignored for now
 ) {}

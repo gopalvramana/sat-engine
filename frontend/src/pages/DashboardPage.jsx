@@ -55,12 +55,17 @@ export default function DashboardPage() {
     ? domainEntries.reduce((a, b) => a[1] >= b[1] ? a : b)
     : null
 
+  // Only treat as genuinely weak if accuracy is below 70%
+  const hasWeakDomain = weakestDomain && weakestDomain[1] < 70
+  // Only highlight strongest when there are multiple domains (avoids "Strongest = Weakest" paradox)
+  const hasDistinctStrongest = domainEntries.length > 1 && strongestDomain
+
   // Interpretation helpers for stat cards
   function accuracyInsight(pct) {
     if (pct == null) return null
-    if (weakestDomain && pct < 40)
+    if (hasWeakDomain && pct < 40)
       return `Weakest: ${labelFor(weakestDomain[0])} (${weakestDomain[1]}%) — start here`
-    if (strongestDomain && pct > 70)
+    if (hasDistinctStrongest && pct > 70)
       return `Strongest: ${labelFor(strongestDomain[0])} (${strongestDomain[1]}%)`
     if (pct < 40)  return 'Focus on fundamentals'
     if (pct <= 70) return 'On track — keep going'
@@ -122,8 +127,8 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* CTA — personalized when domain data exists, generic otherwise */}
-      {!loading && weakestDomain ? (
+      {/* CTA — focused when there's a genuinely weak domain (<70%), generic otherwise */}
+      {!loading && hasWeakDomain ? (
         <div className={`${styles.ctaCard} ${styles.ctaCardFocused}`}>
           <div className={styles.ctaLeft}>
             <div className={styles.ctaIcon}>🎯</div>

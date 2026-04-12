@@ -83,7 +83,7 @@ class SessionServiceUnitTest {
         @Test
         @DisplayName("persists session with correct sessionType and section")
         void savesCorrectFields() {
-            var req = new CreateSessionRequest("practice", "math", null);
+            var req = new CreateSessionRequest("practice", "math", null, null, null);
             var saved = Session.builder()
                     .id(UUID.randomUUID())
                     .sessionType("practice")
@@ -104,7 +104,7 @@ class SessionServiceUnitTest {
         @DisplayName("domainBandCounts serialised to JSON and stored on the entity")
         void bandCountsSerialised() {
             var bands = Map.of("algebra", Map.of("easy", 2, "medium", 3));
-            var req = new CreateSessionRequest("practice", "math", bands);
+            var req = new CreateSessionRequest("practice", "math", bands, null, null);
 
             var captor = ArgumentCaptor.forClass(Session.class);
             when(sessionRepository.save(captor.capture()))
@@ -119,7 +119,7 @@ class SessionServiceUnitTest {
         @Test
         @DisplayName("null domainBandCounts stores null (not empty JSON string)")
         void nullBandCounts_storesNull() {
-            var req = new CreateSessionRequest("practice", "math", null);
+            var req = new CreateSessionRequest("practice", "math", null, null, null);
             var captor = ArgumentCaptor.forClass(Session.class);
             when(sessionRepository.save(captor.capture()))
                     .thenAnswer(inv -> inv.getArgument(0));
@@ -133,7 +133,7 @@ class SessionServiceUnitTest {
         @DisplayName("stores the userId on the session entity")
         void storesUserId() {
             UUID userId = UUID.randomUUID();
-            var req = new CreateSessionRequest("practice", "math", null);
+            var req = new CreateSessionRequest("practice", "math", null, null, null);
             var captor = ArgumentCaptor.forClass(Session.class);
             when(sessionRepository.save(captor.capture()))
                     .thenAnswer(inv -> inv.getArgument(0));
