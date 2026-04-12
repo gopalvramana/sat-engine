@@ -35,28 +35,28 @@
   width: 100%;
   padding: 10px 14px;
   margin-bottom: 10px;
-  background: #fffbeb;
-  border: 1.5px solid #ddd6fe;
+  background: #eef2ff;
+  border: 1.5px solid #c7d2fe;
   border-radius: 10px;
   cursor: pointer;
   font-family: inherit;
   text-align: left;
   transition: background 0.12s, border-color 0.12s;
 }
-.studyBtn:hover { background: #fef3c7; border-color: #fcd34d; }
+.studyBtn:hover { background: #e0e7ff; border-color: #818cf8; }
 
 .studyBtnIcon { font-size: 15px; flex-shrink: 0; }
 
 .studyBtnText {
   font-size: 0.8rem;
   font-weight: 600;
-  color: #5b21b6;
+  color: #4f46e5;
   flex: 1;
 }
 
 .studyBtnChevron {
   font-size: 0.75rem;
-  color: #d97706;
+  color: #4f46e5;
   flex-shrink: 0;
 }
 
@@ -97,7 +97,7 @@
 
 /* Label */
 .accordionLabel {
-  font-size: 0.7rem; font-weight: 700;
+  font-size: 0.78rem; font-weight: 700;
   color: #374151; text-transform: uppercase; letter-spacing: 0.06em; flex-shrink: 0;
 }
 .accordionItem[open] > .accordionSummary .accordionLabel { color: #1d4ed8; }

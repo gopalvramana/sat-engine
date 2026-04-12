@@ -13,7 +13,8 @@ public record DashboardResponse(
         Integer accuracyPct,                    // null if no answers yet
         Integer avgTimeSeconds,                 // null if no answers yet
         List<RecentSession> recentSessions,
-        Map<String, Integer> domainAccuracy     // domain → accuracy pct (0-100)
+        Map<String, Integer> domainAccuracy,    // domain → accuracy pct (0-100)
+        List<Integer> accuracyTrend             // last 7 completed sessions accuracy %, oldest first
 ) {
     public record RecentSession(
             String id,

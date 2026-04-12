@@ -60,6 +60,21 @@ export default function DashboardPage() {
   // Only highlight strongest when there are multiple domains (avoids "Strongest = Weakest" paradox)
   const hasDistinctStrongest = domainEntries.length > 1 && strongestDomain
 
+  // Accuracy trend badge
+  function trendBadge(trend) {
+    if (!trend || trend.length < 2) return null
+    const half = Math.floor(trend.length / 2)
+    const firstHalf  = trend.slice(0, half)
+    const secondHalf = trend.slice(half)
+    const avg = arr => arr.reduce((a, b) => a + b, 0) / arr.length
+    const firstAvg  = avg(firstHalf)
+    const secondAvg = avg(secondHalf)
+    if (secondAvg > firstAvg)  return { label: '↑ Improving', cls: styles.trendUp }
+    if (secondAvg < firstAvg)  return { label: '↓ Declining', cls: styles.trendDown }
+    return { label: '→ Steady', cls: styles.trendFlat }
+  }
+  const trend = trendBadge(data?.accuracyTrend)
+
   // Interpretation helpers for stat cards
   function accuracyInsight(pct) {
     if (pct == null) return null
@@ -114,6 +129,9 @@ export default function DashboardPage() {
           <span className={styles.statVal}>{fmt(data?.accuracyPct, '%')}</span>
           <span className={styles.statLabel}>Accuracy</span>
           {!loading && <span className={styles.statInsight}>{accuracyInsight(data?.accuracyPct) ?? 'Answer questions to see insight'}</span>}
+          {!loading && trend && (
+            <span className={`${styles.trendBadge} ${trend.cls}`}>{trend.label}</span>
+          )}
         </div>
         <div className={styles.statCard}>
           <span className={styles.statVal}>

@@ -60,6 +60,19 @@
   font-style: italic;
 }
 
+.trendBadge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  margin-top: 4px;
+  letter-spacing: 0.02em;
+}
+.trendUp   { background: #dcfce7; color: #15803d; }
+.trendDown { background: #fee2e2; color: #b91c1c; }
+.trendFlat { background: #f1f5f9; color: #64748b; }
+
 /* CTA card */
 .ctaCard {
   background: linear-gradient(135deg, #1c1008 0%, #78350f 100%);

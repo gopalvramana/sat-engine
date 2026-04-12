@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -21,6 +22,16 @@ public class SessionController {
 
     private final SessionService sessionService;
     private final ObjectMapper objectMapper;
+
+    /**
+     * GET /api/sessions
+     * List all sessions for the authenticated user.
+     */
+    @GetMapping
+    public ResponseEntity<List<SessionResponse>> listSessions(HttpSession httpSession) {
+        UUID userId = requireAuth(httpSession);
+        return ResponseEntity.ok(sessionService.listSessionsForUser(userId));
+    }
 
     /**
      * POST /api/sessions

@@ -1,11 +1,12 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, PenLine, BookMarked, TrendingUp, ClipboardList } from 'lucide-react'
+import { LayoutDashboard, PenLine, BookMarked, TrendingUp, ClipboardList, History } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import styles from './Sidebar.module.css'
 
 const NAV_ITEMS = [
   { path: '/',         label: 'Dashboard',       Icon: LayoutDashboard, exact: true },
   { path: '/practice', label: 'Practice Exams',  Icon: PenLine,         exact: false },
+  { path: '/history',  label: 'History',         Icon: History,         exact: false },
   { path: null,        label: 'Question Bank',   Icon: BookMarked,      soon: true },
   { path: null,        label: 'Score Predictor', Icon: TrendingUp,      soon: true },
   { path: null,        label: 'Full Tests',      Icon: ClipboardList,   soon: true },

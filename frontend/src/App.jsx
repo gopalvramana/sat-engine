@@ -6,6 +6,7 @@ import DashboardPage from './pages/DashboardPage'
 import PracticeSetupPage from './pages/PracticeSetupPage'
 import PracticePage from './pages/PracticePage'
 import SummaryPage from './pages/SummaryPage'
+import SessionHistoryPage from './pages/SessionHistoryPage'
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
         <Route element={<AppShell />}>
           <Route index element={<DashboardPage />} />
           <Route path="practice" element={<PracticeSetupPage />} />
+          <Route path="history" element={<SessionHistoryPage />} />
         </Route>
 
         {/* Full-screen pages (no sidebar — focused practice mode) */}

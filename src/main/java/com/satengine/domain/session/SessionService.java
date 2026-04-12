@@ -101,11 +101,21 @@ public class SessionService {
             }
         }
 
-        log.info("dashboard computed userId={} sessions={} questions={} accuracy={} domains={}",
-                userId, sessionsCompleted, questionsAnswered, accuracyPct, domainAccuracy.size());
+        // Accuracy trend: last 7 sessions with answers, oldest first
+        List<Integer> accuracyTrend = recentSessions.stream()
+                .limit(7)
+                .filter(s -> s.accuracyPct() != null)
+                .map(DashboardResponse.RecentSession::accuracyPct)
+                .collect(Collectors.collectingAndThen(
+                        Collectors.toList(),
+                        list -> { java.util.Collections.reverse(list); return list; }
+                ));
+
+        log.info("dashboard computed userId={} sessions={} questions={} accuracy={} domains={} trendLen={}",
+                userId, sessionsCompleted, questionsAnswered, accuracyPct, domainAccuracy.size(), accuracyTrend.size());
         return new DashboardResponse(
                 sessionsCompleted, questionsAnswered, accuracyPct, avgTimeSeconds, recentSessions,
-                domainAccuracy);
+                domainAccuracy, accuracyTrend);
     }
 
     // ── Session creation ───────────────────────────────────────────────────
@@ -321,6 +331,32 @@ public class SessionService {
                 .filter(a -> Boolean.TRUE.equals(a.getIsCorrect()))
                 .count();
 
+        int total = computeTotal(session.getDomainBandCounts());
+        return new SessionResponse(
+                session.getId(),
+                session.getSessionType(),
+                session.getSection(),
+                session.getStatus(),
+                session.getStartedAt(),
+                answers.size(),
+                (int) correct,
+                total
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public List<SessionResponse> listSessionsForUser(UUID userId) {
+        return sessionRepository.findByUserIdOrderByStartedAtDesc(userId)
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    private SessionResponse toResponse(Session session) {
+        List<SessionAnswer> answers = sessionAnswerRepository.findBySessionId(session.getId());
+        long correct = answers.stream()
+                .filter(a -> Boolean.TRUE.equals(a.getIsCorrect()))
+                .count();
         int total = computeTotal(session.getDomainBandCounts());
         return new SessionResponse(
                 session.getId(),

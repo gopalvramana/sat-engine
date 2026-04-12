@@ -209,11 +209,9 @@ export default function FeedbackPanel({ feedback, question, studentAnswer, onNex
         </div>
         <div>
           <div className={styles.bannerTitle}>{isCorrect ? 'Correct!' : 'Not quite'}</div>
-          {!isCorrect && (
-            <div className={styles.bannerSub}>
-              Correct answer: <strong>{feedback.correctAnswer}</strong>
-            </div>
-          )}
+          <div className={styles.bannerSub}>
+            {isCorrect ? 'Answer: ' : 'Correct answer: '}<strong>{feedback.correctAnswer}</strong>
+          </div>
         </div>
       </div>
 
@@ -257,7 +255,21 @@ export default function FeedbackPanel({ feedback, question, studentAnswer, onNex
           {renderSolutionBody()}
         </AccordionItem>
 
-        {/* 2 — Why each option (MCQ only) */}
+        {/* 2 — Find My Gap (wrong answers only, lazy) */}
+        {!isCorrect && (
+          <AccordionItem
+            icon="🔍"
+            label="Find My Gap"
+            onOpen={() => setGapTriggered(true)}
+          >
+            {gapTriggered
+              ? <FindMyGap questionId={question.id} studentAnswer={studentAnswer} />
+              : <p className={styles.accordionEmpty}>Open to identify the gap in your reasoning.</p>
+            }
+          </AccordionItem>
+        )}
+
+        {/* 3 — Why each option (MCQ only) */}
         {hasChoiceEx && (
           <AccordionItem icon="💬" label="Why each option?">
             <ChoiceWhyBody
@@ -269,31 +281,17 @@ export default function FeedbackPanel({ feedback, question, studentAnswer, onNex
           </AccordionItem>
         )}
 
-        {/* 3 — Core Concept (Math only) */}
+        {/* 4 — Core Concept (Math only) */}
         {isMath && cc?.title && (
           <AccordionItem icon="💡" label="Core Concept" badge={cc.title} badgeVariant="concept">
             <CoreConceptBody cc={cc} />
           </AccordionItem>
         )}
 
-        {/* 4 — Alternative Approach (Math only) */}
+        {/* 5 — Alternative Approach (Math only) */}
         {hasAlt && (
           <AccordionItem icon="⇄" label="Alternative Approach" badge={alt.title} badgeVariant="alt">
             <AltApproachBody alt={alt} />
-          </AccordionItem>
-        )}
-
-        {/* 5 — Find My Gap (wrong answers only, lazy) */}
-        {!isCorrect && (
-          <AccordionItem
-            icon="🔍"
-            label="Find My Gap"
-            onOpen={() => setGapTriggered(true)}
-          >
-            {gapTriggered
-              ? <FindMyGap questionId={question.id} studentAnswer={studentAnswer} />
-              : <p className={styles.accordionEmpty}>Open to identify the gap in your reasoning.</p>
-            }
           </AccordionItem>
         )}
 
