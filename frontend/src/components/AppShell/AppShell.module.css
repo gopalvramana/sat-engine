@@ -12,3 +12,18 @@
   min-width: 0;
   overflow-y: auto;
 }
+
+/* ── Mobile ─────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .shell {
+    padding: 0;
+    gap: 0;
+    flex-direction: column;
+    padding-bottom: 64px; /* space for bottom nav */
+  }
+
+  .main {
+    width: 100%;
+    padding: 16px;
+  }
+}

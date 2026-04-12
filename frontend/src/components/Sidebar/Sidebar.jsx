@@ -11,10 +11,14 @@ const NAV_ITEMS = [
   { path: null,        label: 'Full Tests',      Icon: ClipboardList,   soon: true },
 ]
 
+// Only the active nav items shown in bottom bar (no "soon" items — too cramped)
+const BOTTOM_NAV_ITEMS = NAV_ITEMS.filter(i => !i.soon)
+
 export default function Sidebar() {
   const { user, logout } = useAuth()
 
   return (
+    <>
     <aside className={styles.sidebar}>
       {/* Logo */}
       <div className={styles.logo}>
@@ -87,5 +91,23 @@ export default function Sidebar() {
         )}
       </div>
     </aside>
+
+    {/* Bottom navigation — visible only on mobile (CSS handles show/hide) */}
+    <nav className={styles.bottomNav}>
+      {BOTTOM_NAV_ITEMS.map(item => (
+        <NavLink
+          key={item.path}
+          to={item.path}
+          end={item.exact}
+          className={({ isActive }) =>
+            `${styles.bottomNavItem} ${isActive ? styles.bottomNavItemActive : ''}`
+          }
+        >
+          <item.Icon size={20} />
+          <span>{item.label === 'Practice Exams' ? 'Practice' : item.label}</span>
+        </NavLink>
+      ))}
+    </nav>
+    </>
   )
 }

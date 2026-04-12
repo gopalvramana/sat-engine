@@ -256,6 +256,14 @@
 .mid  { color: #d97706; }
 .bad  { color: #ef4444; }
 
+@media (max-width: 767px) {
+  .page {
+    padding: 24px 0 40px; /* AppShell.main already has 16px side padding */
+  }
+
+  .title { font-size: 22px; }
+}
+
 @media (max-width: 640px) {
   .statsRow {
     grid-template-columns: repeat(2, 1fr);
@@ -264,6 +272,8 @@
   .ctaCard {
     flex-direction: column;
     align-items: flex-start;
+    padding: 20px;
+    gap: 16px;
   }
 
   .ctaBtn {
