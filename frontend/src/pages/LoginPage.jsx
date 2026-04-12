@@ -38,8 +38,8 @@ export default function LoginPage() {
       <div className={styles.card}>
         {/* Logo / brand */}
         <div className={styles.brand}>
-          <div className={styles.brandIcon}>S</div>
-          <span className={styles.brandName}>SatEngine</span>
+          <div className={styles.brandIcon}>A</div>
+          <span className={styles.brandName}>Aptify</span>
         </div>
 
         <h1 className={styles.title}>Welcome back</h1>
