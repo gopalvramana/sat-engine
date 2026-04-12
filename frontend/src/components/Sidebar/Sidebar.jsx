@@ -14,12 +14,12 @@ const NAV_ITEMS = [
 // Only the active nav items shown in bottom bar (no "soon" items — too cramped)
 const BOTTOM_NAV_ITEMS = NAV_ITEMS.filter(i => !i.soon)
 
-export default function Sidebar() {
+export default function Sidebar({ drawerOpen = false, onClose }) {
   const { user, logout } = useAuth()
 
   return (
     <>
-    <aside className={styles.sidebar}>
+    <aside className={`${styles.sidebar} ${drawerOpen ? styles.drawerOpen : ''}`}>
       {/* Logo */}
       <div className={styles.logo}>
         <svg className={styles.logoMark} viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -59,6 +59,7 @@ export default function Sidebar() {
               key={item.path}
               to={item.path}
               end={item.exact}
+              onClick={onClose}
               className={({ isActive }) =>
                 `${styles.item} ${isActive ? styles.itemActive : ''}`
               }
