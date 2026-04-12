@@ -13,12 +13,6 @@ spring:
       max-lifetime: 300000
       minimum-idle: 1
       maximum-pool-size: 3
-
-server:
-  port: ${PORT:8080}
-
-# Google OAuth2 — set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in Railway dashboard
-spring:
   security:
     oauth2:
       client:
@@ -30,3 +24,6 @@ spring:
               - openid
               - email
               - profile
+
+server:
+  port: ${PORT:8080}
