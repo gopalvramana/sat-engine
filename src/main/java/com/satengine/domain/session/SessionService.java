@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -70,6 +71,7 @@ public class SessionService {
 
         DateTimeFormatter fmt = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
         List<DashboardResponse.RecentSession> recentSessions = sessions.stream()
+                .filter(s -> bySession.containsKey(s.getId()))   // exclude 0-answer sessions
                 .limit(10)
                 .map(s -> {
                     List<SessionAnswer> sAnswers = bySession.getOrDefault(s.getId(), List.of());
@@ -122,10 +124,16 @@ public class SessionService {
         return sessionRepository.save(session);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public Optional<QuestionResponse> getNextQuestion(UUID sessionId) {
         Session session = sessionRepository.findById(sessionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Session", sessionId));
+
+        // Already completed — no more questions
+        if ("completed".equals(session.getStatus())) {
+            log.debug("next question requested on completed session={}", sessionId);
+            return Optional.empty();
+        }
 
         List<UUID> answeredIds = sessionAnswerRepository.findAnsweredQuestionIds(sessionId);
 
@@ -145,7 +153,10 @@ public class SessionService {
         }
 
         if (result.isEmpty()) {
-            log.info("session exhausted session={} answered={}", sessionId, answeredIds.size());
+            session.setStatus("completed");
+            session.setCompletedAt(OffsetDateTime.now());
+            sessionRepository.save(session);
+            log.info("session completed session={} answered={}", sessionId, answeredIds.size());
         }
         return result;
     }
