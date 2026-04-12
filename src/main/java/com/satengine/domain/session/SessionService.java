@@ -8,6 +8,7 @@ import com.satengine.domain.question.QuestionAnswerRepository;
 import com.satengine.domain.question.QuestionRepository;
 import com.satengine.dto.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +16,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SessionService {
@@ -82,6 +84,8 @@ public class SessionService {
                 })
                 .toList();
 
+        log.info("dashboard computed userId={} sessions={} questions={} accuracy={}",
+                userId, sessionsCompleted, questionsAnswered, accuracyPct);
         return new DashboardResponse(
                 sessionsCompleted, questionsAnswered, accuracyPct, avgTimeSeconds, recentSessions);
     }
@@ -90,6 +94,12 @@ public class SessionService {
 
     @Transactional
     public Session createSession(UUID userId, CreateSessionRequest req) {
+        log.info("creating session userId={} section={} totalQuestions={}",
+                userId, req.section(), req.domainBandCounts() != null
+                        ? req.domainBandCounts().values().stream()
+                               .flatMap(m -> m.values().stream())
+                               .mapToInt(Integer::intValue).sum()
+                        : 0);
         String bandCountsJson = null;
         if (req.domainBandCounts() != null && !req.domainBandCounts().isEmpty()) {
             try {
@@ -113,15 +123,25 @@ public class SessionService {
 
         List<UUID> answeredIds = sessionAnswerRepository.findAnsweredQuestionIds(sessionId);
 
+        log.debug("picking next question session={} answered={} domainBandCounts={}",
+                sessionId, answeredIds.size(),
+                session.getDomainBandCounts() != null ? "present" : "absent");
+
+        Optional<QuestionResponse> result;
         if (session.getDomainBandCounts() != null) {
-            return getNextQuestionByBandQuota(session, answeredIds);
+            result = getNextQuestionByBandQuota(session, answeredIds);
+        } else {
+            // Fallback: random
+            Optional<Question> next = answeredIds.isEmpty()
+                    ? questionRepository.findNextQuestionNoExclusions("practice", session.getSection())
+                    : questionRepository.findNextQuestion("practice", session.getSection(), answeredIds);
+            result = next.map(QuestionResponse::from);
         }
 
-        // Fallback: random
-        Optional<Question> next = answeredIds.isEmpty()
-                ? questionRepository.findNextQuestionNoExclusions("practice", session.getSection())
-                : questionRepository.findNextQuestion("practice", session.getSection(), answeredIds);
-        return next.map(QuestionResponse::from);
+        if (result.isEmpty()) {
+            log.info("session exhausted session={} answered={}", sessionId, answeredIds.size());
+        }
+        return result;
     }
 
     /**
@@ -181,6 +201,8 @@ public class SessionService {
                 : questionRepository.findNextQuestionByDomainAndDifficulty(
                     "practice", session.getSection(), slot.domain(), answeredIds, slot.minDiff(), slot.maxDiff());
             if (q.isPresent()) return q.map(QuestionResponse::from);
+            log.debug("no question found for slot domain={} band={} (diff={}-{})",
+                    slot.domain(), difficultyToBand((short) slot.minDiff()), slot.minDiff(), slot.maxDiff());
         }
 
         return Optional.empty();
@@ -216,6 +238,12 @@ public class SessionService {
                 .timeSpentSeconds(req.timeSpentSeconds())
                 .build();
         sessionAnswerRepository.save(sessionAnswer);
+        log.info("answer recorded session={} question={} answer={} correct={} timeSecs={}",
+                sessionId, req.questionId(),
+                req.studentAnswer() != null
+                        ? req.studentAnswer().substring(0, Math.min(10, req.studentAnswer().length()))
+                        : "null",
+                isCorrect, req.timeSpentSeconds());
 
         Question question = questionRepository.findById(req.questionId())
                 .orElseThrow(() -> new RuntimeException("Question not found: " + req.questionId()));

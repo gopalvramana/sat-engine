@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { getQuestionCounts, createSession } from '../api/client'
 import styles from './HomePage.module.css'
+import log from '../lib/logger'
 
 /* ── Domain definitions ─────────────────────────────────────────── */
 const MATH_DOMAINS = [
@@ -57,6 +58,7 @@ export default function PracticeSetupPage() {
   useEffect(() => { fetchCounts() }, [fetchCounts])
 
   function handleSectionChange(val) {
+    log.debug('section changed', { section: val })
     setSection(val)
     setBandCounts(defaultBandCounts(getDomainsForSection(val)))
   }
@@ -83,6 +85,7 @@ export default function PracticeSetupPage() {
   async function handleStart() {
     // Soft auth gate: require login to start
     if (!user) {
+      log.warn('start blocked — not logged in')
       setAuthPrompt(true)
       return
     }
@@ -93,11 +96,14 @@ export default function PracticeSetupPage() {
       if (Object.keys(filtered).length > 0) domainBandCounts[domain] = filtered
     }
 
+    log.info('starting session', { section, grandTotal, domainBandCounts })
     setStarting(true)
     try {
       const session = await createSession('practice', section || null, domainBandCounts)
+      log.info('session created', { sessionId: session.id })
       navigate(`/session/${session.id}`)
     } catch (e) {
+      log.error('session create failed', { error: e.message })
       alert(`Failed to start session: ${e.message}`)
       setStarting(false)
     }

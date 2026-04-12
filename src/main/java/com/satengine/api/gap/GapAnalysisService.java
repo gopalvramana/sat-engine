@@ -60,7 +60,10 @@ public class GapAnalysisService {
         Exception lastError = null;
         for (int attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
             try {
+                log.info("gap analysis claude call start questionId={} attempt={}/{}", questionId, attempt, MAX_ATTEMPTS);
+                long callStart = System.currentTimeMillis();
                 String raw = claudeClient.call(MODEL, MAX_TOKENS, "", prompt);
+                long callMs = System.currentTimeMillis() - callStart;
 
                 // Strip ```json ... ``` fences if present
                 String cleaned = raw.replaceAll("(?i)^```json\\s*", "")
@@ -69,14 +72,14 @@ public class GapAnalysisService {
 
                 objectMapper.readTree(cleaned); // validate parseable JSON
 
-                log.info("Gap analysis done for {} (student={}, correct={}){}",
-                        q.getExternalId(), studentAnswer, qa.getCorrectAnswer(),
-                        attempt > 1 ? " (attempt " + attempt + ")" : "");
+                log.info("gap analysis claude call done questionId={} durationMs={}{}",
+                        questionId, callMs,
+                        attempt > 1 ? " attempt=" + attempt : "");
                 return cleaned;
 
             } catch (Exception e) {
                 lastError = e;
-                log.warn("Gap analysis attempt {}/{} failed for question {}: {}",
+                log.warn("gap analysis attempt {}/{} failed questionId={} error={}",
                         attempt, MAX_ATTEMPTS, questionId, e.getMessage());
                 if (attempt < MAX_ATTEMPTS) {
                     try { Thread.sleep(500); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
@@ -84,8 +87,8 @@ public class GapAnalysisService {
             }
         }
 
-        log.error("Gap analysis failed after {} attempts for question {} — returning fallback. Error: {}",
-                MAX_ATTEMPTS, questionId, lastError.getMessage());
+        log.error("gap analysis failed after {} attempts questionId={} — returning fallback. error={}",
+                MAX_ATTEMPTS, questionId, lastError.getMessage(), lastError);
         return FALLBACK_GAP.strip();
     }
 

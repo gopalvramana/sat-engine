@@ -2,6 +2,7 @@ import { useState, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import * as api from '../api/client'
 import { useTimer } from './useTimer'
+import log from '../lib/logger'
 
 /**
  * Manages the question/feedback loop for an active practice session.
@@ -53,6 +54,7 @@ export function usePracticeSession(sessionId) {
 
   // ── Load next question (or navigate to summary) ──────────────────────
   const loadNext = useCallback(async () => {
+    log.debug('loadNext', { sessionId, historyLength: historyRef.current.length })
     setLivePhase('loading')
     setLiveFeedback(null)
     setLiveQuestion(null)
@@ -61,6 +63,7 @@ export function usePracticeSession(sessionId) {
     try {
       const q = await api.getNextQuestion(sessionId)
       if (!q) {
+        log.info('session exhausted', { sessionId, totalAnswered: historyRef.current.length })
         // Session exhausted — navigate to summary, passing history via state
         const info = await api.getSession(sessionId)
         navigate(`/session/${sessionId}/summary`, {
@@ -68,11 +71,13 @@ export function usePracticeSession(sessionId) {
           replace: true,
         })
       } else {
+        log.info('question loaded', { questionId: q.id, domain: q.domain, difficulty: q.difficulty, phase: 'question' })
         setLiveQuestion(q)
         setLivePhase('question')
         timer.start()
       }
     } catch (e) {
+      log.error('session error', { error: e.message, phase: livePhase })
       setError(e.message)
     }
   }, [sessionId, navigate])
@@ -80,17 +85,21 @@ export function usePracticeSession(sessionId) {
   // ── Submit answer ────────────────────────────────────────────────────
   const submitAnswer = useCallback(async (answer) => {
     if (!liveQuestion) return
+    log.debug('submitting answer', { questionId: liveQuestion?.id, answer })
     const t = timer.stop()
     setLiveAnswer(answer)
     setLivePhase('loading')
     try {
       const fb   = await api.submitAnswer(sessionId, liveQuestion.id, answer)
       const info = await api.getSession(sessionId)
+      log.info('answer result', { questionId: liveQuestion.id, correct: fb.isCorrect, timeSecs: t })
       setLiveFeedback(fb)
       setSessionInfo(info)
       appendHistory({ question: liveQuestion, feedback: fb, studentAnswer: answer, timeTaken: t })
+      log.debug('review mode', { index: historyRef.current.length - 1 })
       setLivePhase('feedback')
     } catch (e) {
+      log.error('session error', { error: e.message, phase: livePhase })
       setError(e.message)
       setLivePhase('question')
     }
@@ -120,6 +129,7 @@ export function usePracticeSession(sessionId) {
 
   // ── End session early → navigate to summary ──────────────────────────
   const endSession = useCallback(async () => {
+    log.info('session ended early', { sessionId, answered: historyRef.current.length })
     try {
       const info = await api.getSession(sessionId)
       navigate(`/session/${sessionId}/summary`, {

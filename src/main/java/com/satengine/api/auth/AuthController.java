@@ -4,12 +4,14 @@ import com.satengine.domain.user.User;
 import com.satengine.domain.user.UserRepository;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 import java.util.UUID;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -26,11 +28,15 @@ public class AuthController {
     public ResponseEntity<Map<String, Object>> me(HttpSession session) {
         String userIdStr = (String) session.getAttribute("userId");
         if (userIdStr == null) {
+            log.debug("auth check — no session");
             return ResponseEntity.status(401).build();
         }
 
         return userRepository.findById(UUID.fromString(userIdStr))
-                .<ResponseEntity<Map<String, Object>>>map(user -> ResponseEntity.ok(toMap(user)))
+                .<ResponseEntity<Map<String, Object>>>map(user -> {
+                    log.debug("auth check userId={}", user.getId());
+                    return ResponseEntity.ok(toMap(user));
+                })
                 .orElse(ResponseEntity.status(401).build());
     }
 

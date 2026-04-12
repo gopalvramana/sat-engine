@@ -4,6 +4,7 @@ import com.satengine.domain.session.SessionService;
 import com.satengine.dto.DashboardResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/dashboard")
 @RequiredArgsConstructor
@@ -26,11 +28,17 @@ public class DashboardController {
     @GetMapping
     public ResponseEntity<DashboardResponse> getDashboard(HttpSession httpSession) {
         String userIdStr = (String) httpSession.getAttribute("userId");
-        if (userIdStr == null) return ResponseEntity.status(401).build();
+        if (userIdStr == null) {
+            log.debug("dashboard — no session");
+            return ResponseEntity.status(401).build();
+        }
         try {
             UUID userId = UUID.fromString(userIdStr);
-            return ResponseEntity.ok(sessionService.getDashboard(userId));
+            DashboardResponse resp = sessionService.getDashboard(userId);
+            log.info("dashboard requested userId={}", userId);
+            return ResponseEntity.ok(resp);
         } catch (Exception e) {
+            log.debug("dashboard — no session (invalid userId)");
             return ResponseEntity.status(401).build();
         }
     }

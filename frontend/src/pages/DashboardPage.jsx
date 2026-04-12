@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { Link } from 'react-router-dom'
 import styles from './DashboardPage.module.css'
+import log from '../lib/logger'
 
 export default function DashboardPage() {
   const { user } = useAuth()
@@ -11,10 +12,20 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    log.debug('dashboard fetch started')
     fetch('/api/dashboard')
       .then(r => r.ok ? r.json() : null)
-      .then(json => { setData(json); setLoading(false) })
-      .catch(() => setLoading(false))
+      .then(json => {
+        if (json) {
+          log.info('dashboard loaded', { sessions: json.sessionsCompleted, questions: json.questionsAnswered, accuracy: json.accuracyPct })
+        }
+        setData(json)
+        setLoading(false)
+      })
+      .catch(error => {
+        log.error('dashboard fetch failed', { error })
+        setLoading(false)
+      })
   }, [])
 
   const fmt = (val, suffix = '') =>
