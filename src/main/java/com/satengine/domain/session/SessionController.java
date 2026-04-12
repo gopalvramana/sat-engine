@@ -3,6 +3,7 @@ package com.satengine.domain.session;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.satengine.dto.*;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +26,11 @@ public class SessionController {
      */
     @PostMapping
     public ResponseEntity<SessionResponse> createSession(
-            @Valid @RequestBody CreateSessionRequest request
+            @Valid @RequestBody CreateSessionRequest request,
+            HttpSession httpSession
     ) {
-        Session session = sessionService.createSession(request);
+        UUID userId = resolveUserId(httpSession);
+        Session session = sessionService.createSession(userId, request);
         int total = computeTotal(session.getDomainBandCounts());
         SessionResponse response = new SessionResponse(
                 session.getId(),
@@ -75,6 +78,13 @@ public class SessionController {
     ) {
         AnswerFeedback feedback = sessionService.submitAnswer(id, request);
         return ResponseEntity.ok(feedback);
+    }
+
+    /** Extract userId UUID from HTTP session, or null if not logged in. */
+    private UUID resolveUserId(HttpSession httpSession) {
+        String userIdStr = (String) httpSession.getAttribute("userId");
+        if (userIdStr == null) return null;
+        try { return UUID.fromString(userIdStr); } catch (Exception e) { return null; }
     }
 
     /** Sum all band counts from the stored JSON string, or 0 if none. */

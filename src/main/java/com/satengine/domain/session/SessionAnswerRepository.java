@@ -16,4 +16,12 @@ public interface SessionAnswerRepository extends JpaRepository<SessionAnswer, UU
 
     @Query("SELECT sa.questionId FROM SessionAnswer sa WHERE sa.sessionId = :sessionId")
     List<UUID> findAnsweredQuestionIds(@Param("sessionId") UUID sessionId);
+
+    @Query("""
+        SELECT sa FROM SessionAnswer sa
+        WHERE sa.sessionId IN (
+            SELECT s.id FROM Session s WHERE s.userId = :userId
+        )
+        """)
+    List<SessionAnswer> findAllByUserId(@Param("userId") UUID userId);
 }

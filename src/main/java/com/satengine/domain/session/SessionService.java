@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,8 +32,64 @@ public class SessionService {
         "hard",   new int[]{6, 7}
     );
 
+    // ── Dashboard ──────────────────────────────────────────────────────────
+
+    @Transactional(readOnly = true)
+    public DashboardResponse getDashboard(UUID userId) {
+        // Aggregate stats across all user answers
+        List<SessionAnswer> allAnswers = sessionAnswerRepository.findAllByUserId(userId);
+        long questionsAnswered = allAnswers.size();
+        long correct = allAnswers.stream().filter(a -> Boolean.TRUE.equals(a.getIsCorrect())).count();
+        Integer accuracyPct = questionsAnswered > 0
+                ? (int) Math.round(correct * 100.0 / questionsAnswered) : null;
+        Integer avgTimeSeconds = allAnswers.stream()
+                .map(SessionAnswer::getTimeSpentSeconds)
+                .filter(Objects::nonNull)
+                .mapToInt(Integer::intValue)
+                .average()
+                .isPresent()
+                ? (int) allAnswers.stream()
+                        .map(SessionAnswer::getTimeSpentSeconds)
+                        .filter(Objects::nonNull)
+                        .mapToInt(Integer::intValue)
+                        .average().getAsDouble()
+                : null;
+
+        long sessionsCompleted = sessionRepository.countCompletedByUser(userId);
+
+        // Recent sessions (last 10)
+        List<Session> sessions = sessionRepository.findByUserIdOrderByStartedAtDesc(userId);
+        // Group answers by session for per-session stats
+        Map<UUID, List<SessionAnswer>> bySession = allAnswers.stream()
+                .collect(Collectors.groupingBy(SessionAnswer::getSessionId));
+
+        DateTimeFormatter fmt = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+        List<DashboardResponse.RecentSession> recentSessions = sessions.stream()
+                .limit(10)
+                .map(s -> {
+                    List<SessionAnswer> sAnswers = bySession.getOrDefault(s.getId(), List.of());
+                    int sCorrect = (int) sAnswers.stream().filter(a -> Boolean.TRUE.equals(a.getIsCorrect())).count();
+                    Integer sAcc = sAnswers.isEmpty() ? null
+                            : (int) Math.round(sCorrect * 100.0 / sAnswers.size());
+                    return new DashboardResponse.RecentSession(
+                            s.getId().toString(),
+                            s.getSection(),
+                            sAnswers.size(),
+                            sCorrect,
+                            sAcc,
+                            s.getStartedAt() != null ? s.getStartedAt().format(fmt) : null
+                    );
+                })
+                .toList();
+
+        return new DashboardResponse(
+                sessionsCompleted, questionsAnswered, accuracyPct, avgTimeSeconds, recentSessions);
+    }
+
+    // ── Session creation ───────────────────────────────────────────────────
+
     @Transactional
-    public Session createSession(CreateSessionRequest req) {
+    public Session createSession(UUID userId, CreateSessionRequest req) {
         String bandCountsJson = null;
         if (req.domainBandCounts() != null && !req.domainBandCounts().isEmpty()) {
             try {
@@ -40,6 +97,7 @@ public class SessionService {
             } catch (Exception e) { /* ignore */ }
         }
         Session session = Session.builder()
+                .userId(userId)
                 .sessionType(req.sessionType())
                 .section(req.section())
                 .domainBandCounts(bandCountsJson)

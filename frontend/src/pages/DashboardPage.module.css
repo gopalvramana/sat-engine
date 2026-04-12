@@ -135,6 +135,64 @@
   color: #94a3b8;
 }
 
+/* Session list */
+.sessionList {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.sessionRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  gap: 12px;
+}
+.sessionRow:last-child { border-bottom: none; }
+.sessionRow:hover { background: #fafaf9; }
+
+.sessionLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sessionSection {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1c1008;
+  text-transform: capitalize;
+}
+
+.sessionDate {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.sessionRight {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.sessionQuestions {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.sessionAccuracy {
+  font-size: 14px;
+  font-weight: 700;
+  min-width: 40px;
+  text-align: right;
+}
+.good { color: #16a34a; }
+.mid  { color: #d97706; }
+.bad  { color: #ef4444; }
+
 @media (max-width: 640px) {
   .statsRow {
     grid-template-columns: repeat(2, 1fr);
