@@ -170,10 +170,6 @@
   color: #1e293b;
   line-height: 1.5;
   margin-bottom: 8px;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 
 .reviewAnswers {
