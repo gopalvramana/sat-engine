@@ -45,6 +45,7 @@ export default function PracticeSetupPage() {
   const [loading,    setLoading]    = useState(false)
   const [starting,   setStarting]   = useState(false)
   const [authPrompt, setAuthPrompt] = useState(false)
+  const [startError, setStartError] = useState(null)
 
   const fetchCounts = useCallback(async () => {
     setLoading(true)
@@ -61,6 +62,7 @@ export default function PracticeSetupPage() {
     log.debug('section changed', { section: val })
     setSection(val)
     setBandCounts(defaultBandCounts(getDomainsForSection(val)))
+    setStartError(null)
   }
 
   function adjust(domain, band, delta) {
@@ -83,6 +85,8 @@ export default function PracticeSetupPage() {
   const canStart       = grandTotal > 0
 
   async function handleStart() {
+    setStartError(null)
+
     // Soft auth gate: require login to start
     if (!user) {
       log.warn('start blocked — not logged in')
@@ -104,7 +108,7 @@ export default function PracticeSetupPage() {
       navigate(`/session/${session.id}`)
     } catch (e) {
       log.error('session create failed', { error: e.message })
-      alert(`Failed to start session: ${e.message}`)
+      setStartError('Failed to start session. Please try again.')
       setStarting(false)
     }
   }
@@ -200,6 +204,11 @@ export default function PracticeSetupPage() {
           {authPrompt && (
             <span style={{ fontSize: 13, color: '#d97706', fontWeight: 600 }}>
               Please <a href="/login" style={{ color: '#d97706' }}>sign in</a> to start a session.
+            </span>
+          )}
+          {startError && (
+            <span style={{ fontSize: 13, color: '#dc2626', fontWeight: 600 }}>
+              {startError}
             </span>
           )}
           <div className={styles.totalBlock}>

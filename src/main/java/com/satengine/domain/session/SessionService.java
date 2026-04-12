@@ -7,6 +7,9 @@ import com.satengine.domain.question.QuestionAnswer;
 import com.satengine.domain.question.QuestionAnswerRepository;
 import com.satengine.domain.question.QuestionRepository;
 import com.satengine.dto.*;
+import com.satengine.exception.DuplicateAnswerException;
+import com.satengine.exception.InvalidRequestException;
+import com.satengine.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -104,7 +107,10 @@ public class SessionService {
         if (req.domainBandCounts() != null && !req.domainBandCounts().isEmpty()) {
             try {
                 bandCountsJson = objectMapper.writeValueAsString(req.domainBandCounts());
-            } catch (Exception e) { /* ignore */ }
+            } catch (Exception e) {
+                log.error("Failed to serialize domainBandCounts userId={} error={}", userId, e.getMessage(), e);
+                throw new InvalidRequestException("Invalid domainBandCounts format: " + e.getMessage());
+            }
         }
         Session session = Session.builder()
                 .userId(userId)
@@ -119,7 +125,7 @@ public class SessionService {
     @Transactional(readOnly = true)
     public Optional<QuestionResponse> getNextQuestion(UUID sessionId) {
         Session session = sessionRepository.findById(sessionId)
-                .orElseThrow(() -> new RuntimeException("Session not found: " + sessionId));
+                .orElseThrow(() -> new ResourceNotFoundException("Session", sessionId));
 
         List<UUID> answeredIds = sessionAnswerRepository.findAnsweredQuestionIds(sessionId);
 
@@ -156,6 +162,8 @@ public class SessionService {
             bandCounts = objectMapper.readValue(session.getDomainBandCounts(),
                     new TypeReference<Map<String, Map<String, Integer>>>() {});
         } catch (Exception e) {
+            log.error("Failed to parse domainBandCounts for session={} — falling back to empty. error={}",
+                    session.getId(), e.getMessage(), e);
             return Optional.empty();
         }
 
@@ -217,15 +225,19 @@ public class SessionService {
     @Transactional
     public AnswerFeedback submitAnswer(UUID sessionId, SubmitAnswerRequest req) {
         sessionRepository.findById(sessionId)
-                .orElseThrow(() -> new RuntimeException("Session not found: " + sessionId));
+                .orElseThrow(() -> new ResourceNotFoundException("Session", sessionId));
+
+        if (req.studentAnswer() == null || req.studentAnswer().isBlank()) {
+            throw new InvalidRequestException("studentAnswer must not be blank");
+        }
 
         sessionAnswerRepository.findBySessionIdAndQuestionId(sessionId, req.questionId())
                 .ifPresent(a -> {
-                    throw new RuntimeException("Already answered question " + req.questionId() + " in this session");
+                    throw new DuplicateAnswerException(sessionId, req.questionId());
                 });
 
         QuestionAnswer answer = questionAnswerRepository.findByQuestionId(req.questionId())
-                .orElseThrow(() -> new RuntimeException("Answer not found for question: " + req.questionId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Answer for question", req.questionId()));
 
         boolean isCorrect = answer.getCorrectAnswer()
                 .equalsIgnoreCase(req.studentAnswer().trim());
@@ -246,7 +258,7 @@ public class SessionService {
                 isCorrect, req.timeSpentSeconds());
 
         Question question = questionRepository.findById(req.questionId())
-                .orElseThrow(() -> new RuntimeException("Question not found: " + req.questionId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Question", req.questionId()));
 
         return new AnswerFeedback(
                 req.questionId(),
@@ -260,7 +272,7 @@ public class SessionService {
     @Transactional(readOnly = true)
     public SessionResponse getSessionStatus(UUID sessionId) {
         Session session = sessionRepository.findById(sessionId)
-                .orElseThrow(() -> new RuntimeException("Session not found: " + sessionId));
+                .orElseThrow(() -> new ResourceNotFoundException("Session", sessionId));
 
         List<SessionAnswer> answers = sessionAnswerRepository.findBySessionId(sessionId);
         long correct = answers.stream()
@@ -288,6 +300,9 @@ public class SessionService {
             return map.values().stream()
                     .flatMap(bands -> bands.values().stream())
                     .mapToInt(Integer::intValue).sum();
-        } catch (Exception e) { return 0; }
+        } catch (Exception e) {
+            log.warn("Failed to parse domainBandCountsJson for total computation: {}", e.getMessage());
+            return 0;
+        }
     }
 }

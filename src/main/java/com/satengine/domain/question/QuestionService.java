@@ -1,6 +1,7 @@
 package com.satengine.domain.question;
 
 import com.satengine.dto.QuestionResponse;
+import com.satengine.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +21,7 @@ public class QuestionService {
      */
     public QuestionResponse getQuestion(UUID id) {
         Question question = questionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Question not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Question", id));
         return QuestionResponse.from(question);
     }
 

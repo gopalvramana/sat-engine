@@ -6,6 +6,7 @@ import com.satengine.domain.question.Question;
 import com.satengine.domain.question.QuestionAnswer;
 import com.satengine.domain.question.QuestionAnswerRepository;
 import com.satengine.domain.question.QuestionRepository;
+import com.satengine.exception.ResourceNotFoundException;
 import com.satengine.pipeline.claude.ClaudeClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,10 +51,10 @@ public class GapAnalysisService {
      */
     public String analyze(UUID questionId, String studentAnswer) {
         Question q = questionRepository.findById(questionId)
-                .orElseThrow(() -> new IllegalArgumentException("Question not found: " + questionId));
+                .orElseThrow(() -> new ResourceNotFoundException("Question", questionId));
 
         QuestionAnswer qa = questionAnswerRepository.findByQuestionId(questionId)
-                .orElseThrow(() -> new IllegalArgumentException("Answer not found for: " + questionId));
+                .orElseThrow(() -> new ResourceNotFoundException("Answer for question", questionId));
 
         String prompt = buildPrompt(q, qa.getCorrectAnswer(), studentAnswer);
 
@@ -129,6 +130,8 @@ public class GapAnalysisService {
                     }
                 }
             } catch (Exception e) {
+                log.warn("Could not parse explanationSteps JSON for questionId={} — using raw text. error={}",
+                        q.getId(), e.getMessage());
                 sb.append(q.getExplanationSteps()).append("\n");
             }
             sb.append("\n");

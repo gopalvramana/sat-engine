@@ -32,14 +32,15 @@ public class DashboardController {
             log.debug("dashboard — no session");
             return ResponseEntity.status(401).build();
         }
+        UUID userId;
         try {
-            UUID userId = UUID.fromString(userIdStr);
-            DashboardResponse resp = sessionService.getDashboard(userId);
-            log.info("dashboard requested userId={}", userId);
-            return ResponseEntity.ok(resp);
-        } catch (Exception e) {
-            log.debug("dashboard — no session (invalid userId)");
+            userId = UUID.fromString(userIdStr);
+        } catch (IllegalArgumentException e) {
+            log.warn("dashboard — malformed userId in session: {}", userIdStr);
             return ResponseEntity.status(401).build();
         }
+        DashboardResponse resp = sessionService.getDashboard(userId);
+        log.info("dashboard requested userId={}", userId);
+        return ResponseEntity.ok(resp);
     }
 }
