@@ -1,5 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import AppShell from './components/AppShell/AppShell'
+import RequireAuth from './components/RequireAuth/RequireAuth'
+import LoginPage from './pages/LoginPage'
 import DashboardPage from './pages/DashboardPage'
 import PracticeSetupPage from './pages/PracticeSetupPage'
 import PracticePage from './pages/PracticePage'
@@ -8,15 +10,21 @@ import SummaryPage from './pages/SummaryPage'
 export default function App() {
   return (
     <Routes>
-      {/* Shell-wrapped pages (sidebar visible) */}
-      <Route element={<AppShell />}>
-        <Route index element={<DashboardPage />} />
-        <Route path="practice" element={<PracticeSetupPage />} />
-      </Route>
+      {/* Public */}
+      <Route path="login" element={<LoginPage />} />
 
-      {/* Full-screen pages (no sidebar — focused practice mode) */}
-      <Route path="session/:sessionId" element={<PracticePage />} />
-      <Route path="session/:sessionId/summary" element={<SummaryPage />} />
+      {/* Authenticated — all routes below require a valid session */}
+      <Route element={<RequireAuth />}>
+        {/* Shell-wrapped pages (sidebar visible) */}
+        <Route element={<AppShell />}>
+          <Route index element={<DashboardPage />} />
+          <Route path="practice" element={<PracticeSetupPage />} />
+        </Route>
+
+        {/* Full-screen pages (no sidebar — focused practice mode) */}
+        <Route path="session/:sessionId" element={<PracticePage />} />
+        <Route path="session/:sessionId/summary" element={<SummaryPage />} />
+      </Route>
     </Routes>
   )
 }

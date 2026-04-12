@@ -89,10 +89,23 @@ public class SessionService {
                 })
                 .toList();
 
-        log.info("dashboard computed userId={} sessions={} questions={} accuracy={}",
-                userId, sessionsCompleted, questionsAnswered, accuracyPct);
+        // Domain accuracy map: domain → accuracy pct
+        Map<String, Integer> domainAccuracy = new LinkedHashMap<>();
+        List<Object[]> domainRows = sessionAnswerRepository.getDomainAccuracyForUser(userId);
+        for (Object[] row : domainRows) {
+            String domain       = (String) row[0];
+            long   domainTotal  = ((Number) row[1]).longValue();
+            long   domainRight  = ((Number) row[2]).longValue();
+            if (domainTotal > 0) {
+                domainAccuracy.put(domain, (int) Math.round(domainRight * 100.0 / domainTotal));
+            }
+        }
+
+        log.info("dashboard computed userId={} sessions={} questions={} accuracy={} domains={}",
+                userId, sessionsCompleted, questionsAnswered, accuracyPct, domainAccuracy.size());
         return new DashboardResponse(
-                sessionsCompleted, questionsAnswered, accuracyPct, avgTimeSeconds, recentSessions);
+                sessionsCompleted, questionsAnswered, accuracyPct, avgTimeSeconds, recentSessions,
+                domainAccuracy);
     }
 
     // ── Session creation ───────────────────────────────────────────────────

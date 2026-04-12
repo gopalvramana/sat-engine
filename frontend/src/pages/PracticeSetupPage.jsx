@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { getQuestionCounts, createSession } from '../api/client'
 import styles from './HomePage.module.css'
@@ -37,10 +37,29 @@ function defaultBandCounts(domains) {
 
 export default function PracticeSetupPage() {
   const navigate  = useNavigate()
+  const location  = useLocation()
   const { user }  = useAuth()
 
-  const [section,    setSection]    = useState('math')
-  const [bandCounts, setBandCounts] = useState(() => defaultBandCounts(MATH_DOMAINS))
+  // If navigated from dashboard CTA with a prefillDomain, pre-select that domain + 5 medium
+  const prefillDomain = location.state?.prefillDomain ?? null
+
+  const initialSection = (() => {
+    if (!prefillDomain) return 'math'
+    const isMath = MATH_DOMAINS.some(d => d.key === prefillDomain)
+    return isMath ? 'math' : 'reading_writing'
+  })()
+
+  const initialBandCounts = (() => {
+    const domains  = getDomainsForSection(initialSection)
+    const defaults = defaultBandCounts(domains)
+    if (prefillDomain && defaults[prefillDomain]) {
+      defaults[prefillDomain] = { easy: 0, medium: 5, hard: 0 }
+    }
+    return defaults
+  })()
+
+  const [section,    setSection]    = useState(initialSection)
+  const [bandCounts, setBandCounts] = useState(initialBandCounts)
   const [counts,     setCounts]     = useState({})
   const [loading,    setLoading]    = useState(false)
   const [starting,   setStarting]   = useState(false)

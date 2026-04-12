@@ -52,10 +52,11 @@ export default function PracticePage() {
     )
   }
 
-  const answered = sessionInfo?.questionsAnswered ?? 0
-  const correct  = sessionInfo?.correctCount      ?? 0
-  const total    = sessionInfo?.totalQuestions    ?? 0
-  const current  = phase === 'feedback' ? answered : answered + 1
+  const answered       = sessionInfo?.questionsAnswered ?? 0
+  const correct        = sessionInfo?.correctCount      ?? 0
+  const total          = sessionInfo?.totalQuestions    ?? 0
+  const current        = phase === 'feedback' ? answered : answered + 1
+  const isLastQuestion = !isReviewing && total > 0 && answered >= total
 
   return (
     <div className={styles.page}>
@@ -106,6 +107,7 @@ export default function PracticePage() {
                   studentAnswer={studentAnswer}
                   onNext={nextQuestion}
                   isReviewing={isReviewing}
+                  isLastQuestion={isLastQuestion}
                 />
               </div>
             )}
