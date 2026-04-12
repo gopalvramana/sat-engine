@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { formatTime } from '../hooks/useTimer'
+import MathText from '../components/MathText/MathText'
 import styles from './SummaryPage.module.css'
 
 export default function SummaryPage() {
@@ -181,7 +182,7 @@ export default function SummaryPage() {
                     )}
                   </div>
                   {a.questionStem && (
-                    <div className={styles.reviewStem}>{a.questionStem}</div>
+                    <MathText text={a.questionStem} as="div" className={styles.reviewStem} />
                   )}
                   <div className={styles.reviewAnswers}>
                     <span className={styles.reviewAnswerLabel}>Your answer:</span>
@@ -196,7 +197,7 @@ export default function SummaryPage() {
                     )}
                   </div>
                   {!a.isCorrect && a.explanationShort && (
-                    <div className={styles.reviewExplanation}>{a.explanationShort}</div>
+                    <MathText text={a.explanationShort} as="div" className={styles.reviewExplanation} />
                   )}
                 </div>
               ))}
