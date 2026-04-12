@@ -38,7 +38,19 @@ export default function LoginPage() {
       <div className={styles.card}>
         {/* Logo / brand */}
         <div className={styles.brand}>
-          <div className={styles.brandIcon}>A</div>
+          <svg className={styles.brandIcon} viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="ag" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#fbbf24"/>
+                <stop offset="1" stopColor="#92400e"/>
+              </linearGradient>
+            </defs>
+            <rect width="36" height="36" rx="10" fill="url(#ag)"/>
+            <path d="M18 8L8 28" stroke="white" strokeWidth="3.5" strokeLinecap="round"/>
+            <path d="M18 8L28 28" stroke="white" strokeWidth="3.5" strokeLinecap="round"/>
+            <path d="M12.5 21H23.5" stroke="white" strokeWidth="3" strokeLinecap="round"/>
+            <circle cx="18" cy="6" r="2" fill="#fcd34d"/>
+          </svg>
           <span className={styles.brandName}>Aptify</span>
         </div>
 
