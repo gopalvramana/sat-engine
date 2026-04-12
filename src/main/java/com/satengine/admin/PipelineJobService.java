@@ -31,6 +31,7 @@ public class PipelineJobService {
     private final GenerateStage    generateStage;
     private final AgentReviewStage agentReviewStage;
     private final EnrichStage      enrichStage;
+    private final NeonSyncService  neonSyncService;
 
     /** Job state store. Entries are evicted when older than 1 hour. */
     private final ConcurrentHashMap<String, JobState> jobs = new ConcurrentHashMap<>();
@@ -144,6 +145,39 @@ public class PipelineJobService {
 
     public JobState getJob(String jobId) {
         return jobs.get(jobId);
+    }
+
+    /**
+     * Starts an async job that syncs approved questions from local DB to Neon.
+     */
+    public String startSyncJob() {
+        evictOldJobs();
+        String jobId = UUID.randomUUID().toString();
+        ConcurrentLinkedDeque<String> logDeque = new ConcurrentLinkedDeque<>();
+        JobLogAppender.JOB_LOGS.put(jobId, logDeque);
+        JobState state = new JobState(jobId, "sync", "RUNNING", logDeque, Instant.now());
+        jobs.put(jobId, state);
+
+        Executor executor = Executors.newSingleThreadExecutor(r -> {
+            Thread t = new Thread(r, "pipeline-job-" + jobId.substring(0, 8));
+            t.setDaemon(true);
+            return t;
+        });
+
+        CompletableFuture.runAsync(() -> {
+            MDC.put("pipelineJobId", jobId);
+            try {
+                neonSyncService.sync();
+                state.setStatus("DONE");
+            } catch (Exception e) {
+                log.error("Sync job {} failed: {}", jobId, e.getMessage(), e);
+                state.setStatus("FAILED");
+            } finally {
+                MDC.remove("pipelineJobId");
+            }
+        }, executor);
+
+        return jobId;
     }
 
     // ─── Internal ─────────────────────────────────────────────────────────

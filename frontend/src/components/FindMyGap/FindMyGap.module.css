@@ -1,5 +1,5 @@
 .wrap {
-  border: 1px solid #e9d5ff;
+  border: 1px solid #fef3c7;
   border-radius: 12px;
   overflow: hidden;
   margin-bottom: 20px;
@@ -11,11 +11,11 @@
   gap: 12px;
   padding: 14px 18px;
   background: #faf5ff;
-  border-bottom: 1px solid #e9d5ff;
+  border-bottom: 1px solid #fef3c7;
 }
 .headerIcon { font-size: 20px; }
-.headerTitle { font-size: 15px; font-weight: 700; color: #6d28d9; }
-.headerSub { font-size: 12px; color: #7c3aed; margin-top: 1px; }
+.headerTitle { font-size: 15px; font-weight: 700; color: #b45309; }
+.headerSub { font-size: 12px; color: #d97706; margin-top: 1px; }
 
 .loading {
   display: flex;
@@ -28,7 +28,7 @@
 .spinner {
   width: 18px; height: 18px;
   border: 2px solid #e2e8f0;
-  border-top-color: #7c3aed;
+  border-top-color: #d97706;
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
@@ -57,17 +57,17 @@
   border-radius: 20px;
   background: #fff;
   font-size: 13px;
-  color: #6d28d9;
+  color: #b45309;
   cursor: pointer;
   font-family: inherit;
   transition: all 0.15s;
   text-align: left;
 }
-.trigger:hover { background: #f5f3ff; }
+.trigger:hover { background: #fffbeb; }
 .triggerActive {
-  background: #7c3aed;
+  background: #d97706;
   color: #fff;
-  border-color: #7c3aed;
+  border-color: #d97706;
 }
 
 .card {

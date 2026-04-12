@@ -139,7 +139,7 @@ Nothing before or after the JSON.""";
             int difficulty, String questionType,
             boolean hasDiagram, String diagramType) {
         return buildGenerateUserPrompt(section, domain, skill, difficulty, questionType,
-                hasDiagram, diagramType, null);
+                hasDiagram, diagramType, null, null);
     }
 
     public static String buildGenerateUserPrompt(
@@ -147,9 +147,18 @@ Nothing before or after the JSON.""";
             int difficulty, String questionType,
             boolean hasDiagram, String diagramType,
             String diversityContext) {
+        return buildGenerateUserPrompt(section, domain, skill, difficulty, questionType,
+                hasDiagram, diagramType, diversityContext, null);
+    }
+
+    public static String buildGenerateUserPrompt(
+            String section, String domain, String skill,
+            int difficulty, String questionType,
+            boolean hasDiagram, String diagramType,
+            String diversityContext, String targetLetter) {
 
         if ("reading_writing".equals(section)) {
-            return buildGenerateUserPromptRW(domain, skill, difficulty);
+            return buildGenerateUserPromptRW(domain, skill, difficulty, targetLetter);
         }
 
         StringBuilder sb = new StringBuilder();
@@ -162,7 +171,26 @@ Nothing before or after the JSON.""";
 
         if (questionType.equals("mcq")) {
             sb.append("\nFor MCQ: provide optionA, optionB, optionC, optionD and correctAnswer (A/B/C/D).\n");
-            sb.append("Make exactly one option correct. The other three should be plausible distractors.\n");
+            sb.append("""
+QUESTION DESIGN — do this first, before writing options:
+1. Solve the problem yourself and obtain ONE specific answer (a number, expression, or statement).
+2. Design the stem so that answer is THE ONLY correct one. Avoid stems like "which of the following satisfies..."
+   or "which of the following is a valid..." where multiple values could independently satisfy the condition.
+   Instead use stems that demand one specific answer: "What is the value of x?", "What is the slope?",
+   "Which equation represents this relationship?" — questions with a unique solution.
+3. Write the correct option first, then construct the three wrong options as specific common mistakes
+   (sign error, wrong formula, arithmetic slip — each a different error type).
+
+DISTRACTOR RULES — verified before submitting:
+- Substitute each wrong option back into the problem. It must produce an INCORRECT result.
+- If you cannot show why an option is wrong, the stem is too broad — rewrite the stem to be more specific.
+- NEVER use a stem where an inequality, set membership, or property could be satisfied by more than one option.
+""");
+            if (targetLetter != null) {
+                sb.append("IMPORTANT: The correct answer MUST be option ").append(targetLetter)
+                  .append(". Design the question so that option ").append(targetLetter)
+                  .append(" is definitively correct and set correctAnswer to \"").append(targetLetter).append("\".\n");
+            }
         } else {
             sb.append("\nFor SPR: provide sprMin and sprMax (numeric range for accepted answers). No options needed.\n");
             sb.append("Set correctAnswer to the numeric answer as a string (e.g. \"48\" or \"3.5\") — NOT a letter.\n");
@@ -325,6 +353,11 @@ Return this exact JSON shape (all fields required unless marked optional):
   "optionC": "...",
   "optionD": "...",
   "correctAnswer": "A",
+  "distractorErrors": {
+    "X": "when substituted into the problem, option X gives [result] which is wrong because [reason]",
+    "Y": "when substituted into the problem, option Y gives [result] which is wrong because [reason]",
+    "Z": "when substituted into the problem, option Z gives [result] which is wrong because [reason]"
+  },
   "sprMin": null,
   "sprMax": null,
   "explanationShort": "One sentence.",
@@ -390,6 +423,10 @@ DIVERSITY RULES — strictly enforced:
     }
 
     private static String buildGenerateUserPromptRW(String domain, String skill, int difficulty) {
+        return buildGenerateUserPromptRW(domain, skill, difficulty, null);
+    }
+
+    private static String buildGenerateUserPromptRW(String domain, String skill, int difficulty, String targetLetter) {
         StringBuilder sb = new StringBuilder();
         sb.append("Generate one SAT Reading & Writing question with these exact specifications:\n\n");
         sb.append("section: reading_writing\n");
@@ -398,7 +435,26 @@ DIVERSITY RULES — strictly enforced:
         sb.append("difficulty: ").append(difficulty).append(" (scale 1=easy … 7=hard)\n");
         sb.append("questionType: mcq\n\n");
         sb.append("Provide optionA, optionB, optionC, optionD and correctAnswer (A/B/C/D).\n");
-        sb.append("Make exactly one option correct. The other three must be wrong for clear, articulable reasons.\n\n");
+        sb.append("""
+QUESTION DESIGN — do this first, before writing options:
+1. Identify the ONE specific meaning, choice, or completion the passage uniquely supports.
+2. Design the stem so only that one interpretation is correct. Avoid stems where multiple options
+   could plausibly complete the text or answer the question.
+3. Write the correct option, then construct three wrong options each representing a distinct failure:
+   too broad, contradicted by the passage, opposite meaning, or out of scope.
+
+DISTRACTOR RULES — verified before submitting:
+- Re-read each wrong option against the passage and confirm it is NOT supported.
+- If you cannot clearly explain why an option is wrong, rewrite the passage or stem to be more specific.
+- NEVER write options that are merely less precise — if it's accurate it's correct, not a distractor.
+- NEVER write two options that could both be argued as correct interpretations.
+""");
+        if (targetLetter != null) {
+            sb.append("IMPORTANT: The correct answer MUST be option ").append(targetLetter)
+              .append(". Set correctAnswer to \"").append(targetLetter).append("\" and make sure option ")
+              .append(targetLetter).append(" is the definitively correct choice.\n");
+        }
+        sb.append("\n");
 
         // Domain-specific passage instructions
         switch (domain == null ? "" : domain) {
@@ -449,6 +505,11 @@ Return this exact JSON shape:
   "optionC": "...",
   "optionD": "...",
   "correctAnswer": "A",
+  "distractorErrors": {
+    "X": "one sentence: why this wrong option is wrong — the specific mistake it represents",
+    "Y": "...",
+    "Z": "..."
+  },
   "explanationShort": "2-3 sentences: why the correct answer is right and why the best distractor fails.",
   "pool": "both",
   "diagram": null

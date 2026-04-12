@@ -1,0 +1,14 @@
+.shell {
+  display: flex;
+  min-height: 100vh;
+  background: #f5f0e8;
+  padding: 14px;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+}

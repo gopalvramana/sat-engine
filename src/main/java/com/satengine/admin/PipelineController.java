@@ -40,6 +40,14 @@ public class PipelineController {
         return ResponseEntity.ok(Map.of("jobId", jobId));
     }
 
+    // ─── POST /admin/pipeline/sync ────────────────────────────────────────
+
+    @PostMapping("/sync")
+    public ResponseEntity<Map<String, String>> sync() {
+        String jobId = pipelineJobService.startSyncJob();
+        return ResponseEntity.ok(Map.of("jobId", jobId));
+    }
+
     // ─── POST /admin/pipeline/run-all ─────────────────────────────────
 
     @PostMapping("/run-all")

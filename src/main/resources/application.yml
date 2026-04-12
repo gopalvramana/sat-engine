@@ -22,6 +22,15 @@ server:
 anthropic:
   api-key: ${ANTHROPIC_API_KEY:}
 
+# Neon sync — target DB for pushing approved questions from local to production.
+# Set these when running locally so the "Sync to Neon" button works.
+# Leave blank on Railway (syncing from Neon to itself is a no-op).
+neon:
+  jdbc:
+    url:      ${NEON_SYNC_URL:}
+    username: ${NEON_SYNC_USERNAME:}
+    password: ${NEON_SYNC_PASSWORD:}
+
 springdoc:
   swagger-ui:
     path: /swagger-ui.html

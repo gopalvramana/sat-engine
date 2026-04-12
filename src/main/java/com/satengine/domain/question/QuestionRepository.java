@@ -263,4 +263,7 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
           AND CAST(animation->>'eligible' AS boolean) = true
         """, nativeQuery = true)
     List<Question> findAllAnimationEligible();
+
+    /** Count questions by status — used by the pipeline dashboard stats endpoint. */
+    long countByStatus(String status);
 }

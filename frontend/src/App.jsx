@@ -1,71 +1,22 @@
-import { useSession } from './hooks/useSession'
-import HomePage     from './pages/HomePage'
+import { Routes, Route } from 'react-router-dom'
+import AppShell from './components/AppShell/AppShell'
+import DashboardPage from './pages/DashboardPage'
+import PracticeSetupPage from './pages/PracticeSetupPage'
 import PracticePage from './pages/PracticePage'
-import SummaryPage  from './pages/SummaryPage'
-import './App.css'
+import SummaryPage from './pages/SummaryPage'
 
 export default function App() {
-  const {
-    phase, question, feedback, sessionInfo, history,
-    studentAnswer, timeTaken, isReviewing, error,
-    startSession, submitAnswer, nextQuestion, goBack, endSession,
-  } = useSession()
-
-  function handleRestart() {
-    window.location.reload()
-  }
-
-  if (error) {
-    return (
-      <div style={{ padding: 40, textAlign: 'center', fontFamily: 'Inter, system-ui' }}>
-        <div style={{ fontSize: 18, fontWeight: 700, color: '#ef4444', marginBottom: 8 }}>
-          Something went wrong
-        </div>
-        <div style={{ fontSize: 14, color: '#64748b' }}>{error}</div>
-        <button
-          onClick={() => window.location.reload()}
-          style={{ marginTop: 20, padding: '8px 24px', background: '#7c3aed', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer', fontSize: 14 }}
-        >
-          Reload
-        </button>
-      </div>
-    )
-  }
-
-  if (phase === 'idle') {
-    return (
-      <HomePage
-        onStart={({ section, domainBandCounts }) =>
-          startSession('practice', section, domainBandCounts)
-        }
-      />
-    )
-  }
-
-  if (phase === 'summary') {
-    return (
-      <SummaryPage
-        sessionInfo={sessionInfo}
-        history={history}
-        onRestart={handleRestart}
-      />
-    )
-  }
-
   return (
-    <PracticePage
-      phase={phase}
-      question={question}
-      feedback={feedback}
-      sessionInfo={sessionInfo}
-      submitAnswer={submitAnswer}
-      nextQuestion={nextQuestion}
-      endSession={endSession}
-      onBack={goBack}
-      onHome={handleRestart}
-      studentAnswer={studentAnswer}
-      timeTaken={timeTaken}
-      isReviewing={isReviewing}
-    />
+    <Routes>
+      {/* Shell-wrapped pages (sidebar visible) */}
+      <Route element={<AppShell />}>
+        <Route index element={<DashboardPage />} />
+        <Route path="practice" element={<PracticeSetupPage />} />
+      </Route>
+
+      {/* Full-screen pages (no sidebar — focused practice mode) */}
+      <Route path="session/:sessionId" element={<PracticePage />} />
+      <Route path="session/:sessionId/summary" element={<SummaryPage />} />
+    </Routes>
   )
 }

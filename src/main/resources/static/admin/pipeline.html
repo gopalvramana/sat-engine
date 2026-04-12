@@ -576,6 +576,47 @@
     }
     .run-all-btn:hover:not(:disabled) { background: #f5f3ff; }
 
+    /* ── Sync to Neon card ───────────────────────────────────────── */
+    .sync-card {
+      background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      box-shadow: 0 4px 14px rgba(13,148,136,0.3);
+    }
+    .sync-card-left { flex: 1; }
+    .sync-card-title { font-size: 16px; font-weight: 700; color: #fff; }
+    .sync-card-sub   { font-size: 12px; color: rgba(255,255,255,0.75); margin-top: 2px; }
+    .sync-btn {
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+      padding: 10px 28px;
+      background: #fff;
+      color: #0f766e;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s, opacity 0.15s;
+      flex-shrink: 0;
+    }
+    .sync-btn:hover:not(:disabled) { background: #f0fdfa; }
+    .sync-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .sync-btn .spinner {
+      width: 14px; height: 14px;
+      border: 2px solid rgba(15,118,110,0.3);
+      border-top-color: #0f766e;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      display: none;
+    }
+    .sync-btn.running .spinner { display: block; }
+    .sync-btn.running .btn-icon { display: none; }
+
     /* ── Scrollbar styling for terminal ──────────────────────────── */
     .log-terminal::-webkit-scrollbar { width: 6px; }
     .log-terminal::-webkit-scrollbar-track { background: transparent; }
@@ -935,6 +976,19 @@
 
   </div><!-- /cards-grid -->
 
+  <!-- ── Sync to Neon ─────────────────────────────────────────── -->
+  <div class="sync-card">
+    <div class="sync-card-left">
+      <div class="sync-card-title">☁️ Sync Approved Questions to Neon</div>
+      <div class="sync-card-sub">Pushes all approved questions, answers &amp; reviews from local DB → Neon (production). Safe to re-run — uses upsert.</div>
+    </div>
+    <button class="sync-btn" id="btn-sync" onclick="runSync()">
+      <span class="spinner"></span>
+      <span class="btn-icon">↑</span>
+      Sync to Neon
+    </button>
+  </div>
+
   <!-- ── Job Log Panel ─────────────────────────────────────────── -->
   <div class="log-panel">
     <div class="log-header">
@@ -1110,7 +1164,7 @@ function stopPolling() {
 // ── UI state helpers ──────────────────────────────────────────────
 function setRunning(step) {
   activeStepId = step;
-  document.querySelectorAll('.run-btn').forEach(b => { b.disabled = true; });
+  document.querySelectorAll('.run-btn, .sync-btn').forEach(b => { b.disabled = true; });
   const btn = document.getElementById(`btn-${step}`);
   if (btn) btn.classList.add('running');
   document.querySelectorAll('.step-card').forEach(c => c.classList.remove('active'));
@@ -1121,6 +1175,8 @@ function setRunning(step) {
 
 function setIdle() {
   document.querySelectorAll('.run-btn').forEach(b => { b.disabled = false; b.classList.remove('running'); });
+  const syncBtn = document.getElementById('btn-sync');
+  if (syncBtn) { syncBtn.disabled = false; syncBtn.classList.remove('running'); }
   document.querySelectorAll('.step-card').forEach(c => c.classList.remove('active'));
   activeStepId = null;
 }
@@ -1205,11 +1261,35 @@ async function runAll() {
 
 function setRunningAll() {
   activeStepId = 'all';
-  document.querySelectorAll('.run-btn').forEach(b => { b.disabled = true; });
+  document.querySelectorAll('.run-btn, .sync-btn').forEach(b => { b.disabled = true; });
   const btn = document.getElementById('btn-all');
   if (btn) btn.classList.add('running');
   document.querySelectorAll('.step-card').forEach(c => c.classList.add('active'));
   showStatusBadge('running', 'RUNNING ALL');
+}
+
+// ── Sync to Neon ──────────────────────────────────────────────────
+async function runSync() {
+  if (currentJobId) return;
+
+  clearLog();
+  activeStepId = 'sync';
+  document.querySelectorAll('.run-btn, .sync-btn').forEach(b => { b.disabled = true; });
+  const btn = document.getElementById('btn-sync');
+  if (btn) btn.classList.add('running');
+  showStatusBadge('running', 'SYNCING');
+
+  try {
+    const res = await fetch('/admin/pipeline/sync', { method: 'POST' });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    currentJobId = data.jobId;
+    seenLogCount = 0;
+    startPolling();
+  } catch (err) {
+    appendLog(`ERROR starting sync: ${err.message}`, true);
+    setIdle();
+  }
 }
 
 // ── Help modal ────────────────────────────────────────────────────
