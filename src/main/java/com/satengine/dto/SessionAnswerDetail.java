@@ -4,7 +4,8 @@ import java.util.UUID;
 
 /**
  * Per-question answer detail for session review.
- * Includes the correct answer (safe to expose post-submission).
+ * Includes the correct answer (safe to expose post-submission) and full
+ * question data needed to render the review page.
  */
 public record SessionAnswerDetail(
         UUID questionId,
@@ -21,5 +22,14 @@ public record SessionAnswerDetail(
         String studentAnswer,
         Boolean isCorrect,
         Integer timeSpentSeconds,
-        String explanationShort
+        String explanationShort,
+        String explanationSteps,
+        String coreConceptJson,
+        String choiceExplanations,
+        String alternativeApproach,
+        String animationJson,
+        String diagramJson,
+        String passageText,
+        String passageSource,
+        String skillKey
 ) {}

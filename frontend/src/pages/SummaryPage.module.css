@@ -122,75 +122,55 @@
   font-size: 15px;
 }
 
-/* ── Per-question review list ───────────────────────────── */
-.reviewList {
+/* ── Question circle grid ───────────────────────────────── */
+.questionGrid {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
 }
-.reviewItem {
-  background: #fff;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 14px 16px;
-}
-.reviewCorrect { border-color: #bbf7d0; }
-.reviewWrong   { border-color: #fecaca; }
 
-.reviewHeader {
+.qCircle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-}
-.reviewNum {
+  justify-content: center;
   font-size: 12px;
   font-weight: 700;
-  color: #94a3b8;
-  width: 24px;
+  color: #fff;
+  text-decoration: none;
+  transition: transform 0.15s, box-shadow 0.15s;
   flex-shrink: 0;
 }
-.reviewBadge {
-  font-size: 12px;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 9999px;
+.qCircle:hover {
+  transform: scale(1.15);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
 }
-.badgeCorrect { background: #dcfce7; color: #16a34a; }
-.badgeWrong   { background: #fee2e2; color: #b91c1c; }
+.qCorrect { background: #22c55e; }
+.qWrong   { background: #ef4444; }
 
-.reviewTime {
-  font-size: 11px;
-  color: #94a3b8;
-  margin-left: auto;
-}
-
-.reviewStem {
-  font-size: 13px;
-  color: #1e293b;
-  line-height: 1.5;
-  margin-bottom: 8px;
-}
-
-.reviewAnswers {
-  font-size: 12px;
-  color: #475569;
-}
-.reviewAnswerLabel {
-  color: #94a3b8;
-  font-weight: 500;
-}
-.reviewAnswerCorrect { color: #16a34a; font-weight: 700; }
-.reviewAnswerWrong   { color: #ef4444; font-weight: 700; }
-
-.reviewExplanation {
-  margin-top: 8px;
+.gridLegend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 12px;
   color: #64748b;
-  line-height: 1.5;
+}
+.legendDot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.legendCorrect { background: #22c55e; }
+.legendWrong   { background: #ef4444; }
+.legendHint {
+  margin-left: 8px;
   font-style: italic;
-  border-top: 1px solid #f1f5f9;
-  padding-top: 8px;
+  color: #94a3b8;
 }
 
 /* ── Restart ────────────────────────────────────────────── */

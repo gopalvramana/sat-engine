@@ -7,6 +7,7 @@ import PracticeSetupPage from './pages/PracticeSetupPage'
 import PracticePage from './pages/PracticePage'
 import SummaryPage from './pages/SummaryPage'
 import SessionHistoryPage from './pages/SessionHistoryPage'
+import SessionReviewPage from './pages/SessionReviewPage'
 
 export default function App() {
   return (
@@ -26,6 +27,7 @@ export default function App() {
         {/* Full-screen pages (no sidebar — focused practice mode) */}
         <Route path="session/:sessionId" element={<PracticePage />} />
         <Route path="session/:sessionId/summary" element={<SummaryPage />} />
+        <Route path="session/:sessionId/review/:index" element={<SessionReviewPage />} />
       </Route>
     </Routes>
   )

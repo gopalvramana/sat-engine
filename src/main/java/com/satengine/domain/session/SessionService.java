@@ -404,7 +404,16 @@ public class SessionService {
                     sa.getStudentAnswer(),
                     sa.getIsCorrect(),
                     sa.getTimeSpentSeconds(),
-                    q != null ? q.getExplanationShort() : null
+                    q != null ? q.getExplanationShort() : null,
+                    q != null ? q.getExplanationSteps() : null,
+                    q != null ? q.getCoreConcept() : null,
+                    q != null ? q.getChoiceExplanations() : null,
+                    q != null ? q.getAlternativeApproach() : null,
+                    q != null ? q.getAnimation() : null,
+                    q != null ? q.getDiagram() : null,
+                    q != null ? q.getPassageText() : null,
+                    q != null ? q.getPassageSource() : null,
+                    q != null ? q.getSkillKey() : null
             );
         }).toList();
     }

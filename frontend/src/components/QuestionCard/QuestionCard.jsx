@@ -14,7 +14,7 @@ const LETTERS = ['A', 'B', 'C', 'D']
  *   onSubmit   — called with the chosen answer string (letter for MCQ, number for SPR)
  *   disabled   — true while submitting
  */
-export default function QuestionCard({ question, onSubmit, disabled, feedback, studentAnswer, timeTaken, isMarked, onMarkToggle }) {
+export default function QuestionCard({ question, onSubmit, disabled, feedback, studentAnswer, timeTaken, isMarked, onMarkToggle, reviewMode }) {
   const [selected, setSelected] = useState(null)
   const [sprValue, setSprValue] = useState('')
 
@@ -142,16 +142,18 @@ export default function QuestionCard({ question, onSubmit, disabled, feedback, s
         </div>
       )}
 
-      {/* ── Submit ────────────────────────────────────────────── */}
-      <div className={styles.submitRow}>
-        <button
-          className={styles.submitBtn}
-          onClick={handleSubmit}
-          disabled={disabled || (isMCQ && !selected) || (isSPR && !sprValue.trim())}
-        >
-          Confirm Answer
-        </button>
-      </div>
+      {/* ── Submit (hidden in review mode) ───────────────────── */}
+      {!reviewMode && (
+        <div className={styles.submitRow}>
+          <button
+            className={styles.submitBtn}
+            onClick={handleSubmit}
+            disabled={disabled || (isMCQ && !selected) || (isSPR && !sprValue.trim())}
+          >
+            Confirm Answer
+          </button>
+        </div>
+      )}
     </div>
   )
 }

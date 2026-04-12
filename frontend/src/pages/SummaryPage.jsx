@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams, Link } from 'react-router-dom'
 import { formatTime } from '../hooks/useTimer'
-import MathText from '../components/MathText/MathText'
 import styles from './SummaryPage.module.css'
 
 export default function SummaryPage() {
@@ -165,42 +164,26 @@ export default function SummaryPage() {
           </div>
         )}
 
-        {/* ── Per-question review (API mode only) ────────── */}
-        {!hasState && apiAnswers.length > 0 && (
+        {/* ── Question grid (circle per question) ────────── */}
+        {sessionId && apiAnswers.length > 0 && (
           <div className={styles.section}>
-            <h3 className={styles.sectionTitle}>Question Review</h3>
-            <div className={styles.reviewList}>
+            <h3 className={styles.sectionTitle}>Questions</h3>
+            <div className={styles.questionGrid}>
               {apiAnswers.map((a, i) => (
-                <div key={a.questionId} className={`${styles.reviewItem} ${a.isCorrect ? styles.reviewCorrect : styles.reviewWrong}`}>
-                  <div className={styles.reviewHeader}>
-                    <span className={styles.reviewNum}>Q{i + 1}</span>
-                    <span className={`${styles.reviewBadge} ${a.isCorrect ? styles.badgeCorrect : styles.badgeWrong}`}>
-                      {a.isCorrect ? '✓ Correct' : '✗ Incorrect'}
-                    </span>
-                    {a.timeSpentSeconds != null && (
-                      <span className={styles.reviewTime}>{a.timeSpentSeconds}s</span>
-                    )}
-                  </div>
-                  {a.questionStem && (
-                    <MathText text={a.questionStem} as="div" className={styles.reviewStem} />
-                  )}
-                  <div className={styles.reviewAnswers}>
-                    <span className={styles.reviewAnswerLabel}>Your answer:</span>
-                    <span className={a.isCorrect ? styles.reviewAnswerCorrect : styles.reviewAnswerWrong}>
-                      {a.studentAnswer ?? '—'}
-                    </span>
-                    {!a.isCorrect && a.correctAnswer && (
-                      <>
-                        <span className={styles.reviewAnswerLabel}> · Correct:</span>
-                        <span className={styles.reviewAnswerCorrect}> {a.correctAnswer}</span>
-                      </>
-                    )}
-                  </div>
-                  {!a.isCorrect && a.explanationShort && (
-                    <MathText text={a.explanationShort} as="div" className={styles.reviewExplanation} />
-                  )}
-                </div>
+                <Link
+                  key={a.questionId}
+                  to={`/session/${sessionId}/review/${i}`}
+                  className={`${styles.qCircle} ${a.isCorrect ? styles.qCorrect : styles.qWrong}`}
+                  title={`Q${i + 1}: ${a.isCorrect ? 'Correct' : 'Incorrect'}`}
+                >
+                  {i + 1}
+                </Link>
               ))}
+            </div>
+            <div className={styles.gridLegend}>
+              <span className={`${styles.legendDot} ${styles.legendCorrect}`} /> Correct
+              <span className={`${styles.legendDot} ${styles.legendWrong}`} /> Incorrect
+              <span className={styles.legendHint}>Click any circle to review</span>
             </div>
           </div>
         )}
