@@ -6,6 +6,7 @@ body {
   background: #f8fafc;
   color: #1e293b;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 #root {

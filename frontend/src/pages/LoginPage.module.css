@@ -6,6 +6,7 @@
   background: linear-gradient(135deg, #fafaf9 0%, #f1f5f9 100%);
   padding: 24px;
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  overflow-x: hidden;
 }
 
 .card {
@@ -20,6 +21,7 @@
   align-items: center;
   gap: 0;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  box-sizing: border-box;
 }
 
 /* Brand */
@@ -122,5 +124,21 @@
 }
 
 @media (max-width: 480px) {
-  .card { padding: 36px 24px; }
+  .page { padding: 16px; }
+  .card {
+    padding: 36px 24px;
+    border-radius: 16px;
+  }
+  .title    { font-size: 20px; }
+  .subtitle { font-size: 13px; margin-bottom: 24px; }
+  .googleBtn { font-size: 14px; padding: 12px 16px; }
+  .devBtn    { font-size: 12px; }
+}
+
+@media (max-width: 360px) {
+  .page { padding: 12px; }
+  .card { padding: 28px 18px; }
+  .brand { margin-bottom: 24px; }
+  .brandName { font-size: 16px; }
+  .title { font-size: 18px; }
 }
