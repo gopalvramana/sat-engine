@@ -23,6 +23,9 @@ export default defineConfig({
       '/admin': { target: 'http://localhost:8080', changeOrigin: true },
       '/css':   { target: 'http://localhost:8080', changeOrigin: true },
       '/js':    { target: 'http://localhost:8080', changeOrigin: true },
+      '/dev':   { target: 'http://localhost:8080', changeOrigin: true },
+      '/oauth2':{ target: 'http://localhost:8080', changeOrigin: true },
+      '/login': { target: 'http://localhost:8080', changeOrigin: true },
     },
   },
 })
