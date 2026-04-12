@@ -2,7 +2,7 @@
   min-height: 100vh;
   background: #f8fafc;
   padding: 40px 20px 60px;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }
 .inner { max-width: 680px; margin: 0 auto; }
 
@@ -24,11 +24,11 @@
   justify-content: center;
   width: 90px; height: 90px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #7c3aed, #a78bfa);
+  background: linear-gradient(135deg, #d97706, #fbbf24);
   flex-shrink: 0;
 }
 .scorePct { font-size: 24px; font-weight: 800; color: #fff; line-height: 1; }
-.scoreLabel { font-size: 11px; color: #e9d5ff; font-weight: 600; text-transform: uppercase; }
+.scoreLabel { font-size: 11px; color: #fef3c7; font-weight: 600; text-transform: uppercase; }
 
 .scoreTitle { font-size: 20px; font-weight: 800; color: #1e293b; margin-bottom: 6px; }
 .scoreSub   { font-size: 15px; color: #475569; }
@@ -109,10 +109,10 @@
 }
 
 /* ── Restart ────────────────────────────────────────────── */
-.restartRow { display: flex; justify-content: center; margin-top: 8px; }
+.restartRow { display: flex; justify-content: center; gap: 12px; margin-top: 8px; flex-wrap: wrap; }
 .restartBtn {
   padding: 13px 44px;
-  background: #7c3aed;
+  background: #d97706;
   color: #fff;
   border: none;
   border-radius: 10px;
@@ -122,4 +122,17 @@
   font-family: inherit;
   transition: background 0.15s;
 }
-.restartBtn:hover { background: #6d28d9; }
+.restartBtn:hover { background: #b45309; }
+.homeBtn {
+  padding: 13px 28px;
+  background: #fff;
+  color: #1c1008;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.15s, background 0.15s;
+}
+.homeBtn:hover { border-color: #d97706; background: #fffbeb; }

@@ -1,5 +1,6 @@
 package com.satengine.api.skill;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,7 @@ import java.nio.charset.StandardCharsets;
  * Serves static skill-content JSON files from classpath:/skill-content/{skillKey}.json.
  * No DB involved — content is bundled with the jar.
  */
+@Slf4j
 @RestController
 @RequestMapping("/api/skills")
 public class SkillContentController {
@@ -33,6 +35,7 @@ public class SkillContentController {
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(body);
         } catch (IOException e) {
+            log.error("Failed to read skill content file {} error={}", path, e.getMessage(), e);
             return ResponseEntity.internalServerError().build();
         }
     }

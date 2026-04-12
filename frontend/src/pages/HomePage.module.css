@@ -36,8 +36,8 @@
 
 .badge {
   display: inline-block;
-  background: #f5f3ff;
-  color: #7c3aed;
+  background: #fffbeb;
+  color: #d97706;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -85,7 +85,7 @@
 
 .seg:last-child { border-right: none; }
 .seg:hover:not(.segActive) { background: #f1f5f9; color: #1e293b; }
-.segActive { background: #7c3aed; color: #fff; }
+.segActive { background: #d97706; color: #fff; }
 
 /* ── Topic grid ─────────────────────────────────────────────────── */
 .topicGrid {
@@ -115,8 +115,8 @@
 }
 
 .topicCardActive {
-  border-color: #7c3aed;
-  box-shadow: 0 0 0 3px #ede9fe;
+  border-color: #d97706;
+  box-shadow: 0 0 0 3px #fef3c7;
 }
 
 /* Card header */
@@ -130,7 +130,7 @@
 }
 
 .topicCardActive .topicHeader {
-  background: #f5f3ff;
+  background: #fffbeb;
   border-bottom-color: #ddd6fe;
 }
 
@@ -154,8 +154,8 @@
 .topicTotal {
   font-size: 11px;
   font-weight: 700;
-  color: #7c3aed;
-  background: #ede9fe;
+  color: #d97706;
+  background: #fef3c7;
   padding: 1px 8px;
   border-radius: 999px;
 }
@@ -227,7 +227,7 @@
   transition: background 0.1s, color 0.1s;
 }
 
-.stepBtn:hover:not(:disabled) { background: #7c3aed; color: #fff; }
+.stepBtn:hover:not(:disabled) { background: #d97706; color: #fff; }
 .stepBtn:disabled { opacity: 0.3; cursor: not-allowed; }
 
 .stepVal {
@@ -292,7 +292,7 @@
 .totalVal {
   font-size: 22px;
   font-weight: 800;
-  color: #7c3aed;
+  color: #d97706;
   transition: color 0.15s;
   line-height: 1;
 }
@@ -316,7 +316,7 @@
 
 .startBtn {
   padding: 9px 28px;
-  background: #7c3aed;
+  background: #d97706;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -328,5 +328,5 @@
   white-space: nowrap;
 }
 
-.startBtn:hover:not(:disabled) { background: #6d28d9; }
+.startBtn:hover:not(:disabled) { background: #b45309; }
 .startBtn:disabled { opacity: 0.4; cursor: not-allowed; }

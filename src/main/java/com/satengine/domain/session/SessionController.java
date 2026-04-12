@@ -3,14 +3,17 @@ package com.satengine.domain.session;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.satengine.dto.*;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 import java.util.UUID;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/sessions")
 @RequiredArgsConstructor
@@ -25,10 +28,14 @@ public class SessionController {
      */
     @PostMapping
     public ResponseEntity<SessionResponse> createSession(
-            @Valid @RequestBody CreateSessionRequest request
+            @Valid @RequestBody CreateSessionRequest request,
+            HttpSession httpSession
     ) {
-        Session session = sessionService.createSession(request);
+        UUID userId = resolveUserId(httpSession);
+        Session session = sessionService.createSession(userId, request);
         int total = computeTotal(session.getDomainBandCounts());
+        log.info("session created id={} userId={} total={} section={}",
+                session.getId(), userId, total, session.getSection());
         SessionResponse response = new SessionResponse(
                 session.getId(),
                 session.getSessionType(),
@@ -59,6 +66,7 @@ public class SessionController {
      */
     @GetMapping("/{id}/next")
     public ResponseEntity<QuestionResponse> getNextQuestion(@PathVariable UUID id) {
+        log.debug("next question requested session={}", id);
         return sessionService.getNextQuestion(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.noContent().build());
@@ -74,7 +82,16 @@ public class SessionController {
             @Valid @RequestBody SubmitAnswerRequest request
     ) {
         AnswerFeedback feedback = sessionService.submitAnswer(id, request);
+        log.info("answer submitted session={} question={} correct={}",
+                id, request.questionId(), feedback.isCorrect());
         return ResponseEntity.ok(feedback);
+    }
+
+    /** Extract userId UUID from HTTP session, or null if not logged in. */
+    private UUID resolveUserId(HttpSession httpSession) {
+        String userIdStr = (String) httpSession.getAttribute("userId");
+        if (userIdStr == null) return null;
+        try { return UUID.fromString(userIdStr); } catch (Exception e) { return null; }
     }
 
     /** Sum all band counts from the stored JSON string, or 0 if none. */

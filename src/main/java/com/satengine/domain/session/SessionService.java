@@ -7,13 +7,20 @@ import com.satengine.domain.question.QuestionAnswer;
 import com.satengine.domain.question.QuestionAnswerRepository;
 import com.satengine.domain.question.QuestionRepository;
 import com.satengine.dto.*;
+import com.satengine.exception.DuplicateAnswerException;
+import com.satengine.exception.InvalidRequestException;
+import com.satengine.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SessionService {
@@ -31,15 +38,97 @@ public class SessionService {
         "hard",   new int[]{6, 7}
     );
 
+    // ── Dashboard ──────────────────────────────────────────────────────────
+
+    @Transactional(readOnly = true)
+    public DashboardResponse getDashboard(UUID userId) {
+        // Aggregate stats across all user answers
+        List<SessionAnswer> allAnswers = sessionAnswerRepository.findAllByUserId(userId);
+        long questionsAnswered = allAnswers.size();
+        long correct = allAnswers.stream().filter(a -> Boolean.TRUE.equals(a.getIsCorrect())).count();
+        Integer accuracyPct = questionsAnswered > 0
+                ? (int) Math.round(correct * 100.0 / questionsAnswered) : null;
+        Integer avgTimeSeconds = allAnswers.stream()
+                .map(SessionAnswer::getTimeSpentSeconds)
+                .filter(Objects::nonNull)
+                .mapToInt(Integer::intValue)
+                .average()
+                .isPresent()
+                ? (int) allAnswers.stream()
+                        .map(SessionAnswer::getTimeSpentSeconds)
+                        .filter(Objects::nonNull)
+                        .mapToInt(Integer::intValue)
+                        .average().getAsDouble()
+                : null;
+
+        long sessionsCompleted = sessionRepository.countCompletedByUser(userId);
+
+        // Recent sessions (last 10)
+        List<Session> sessions = sessionRepository.findByUserIdOrderByStartedAtDesc(userId);
+        // Group answers by session for per-session stats
+        Map<UUID, List<SessionAnswer>> bySession = allAnswers.stream()
+                .collect(Collectors.groupingBy(SessionAnswer::getSessionId));
+
+        DateTimeFormatter fmt = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+        List<DashboardResponse.RecentSession> recentSessions = sessions.stream()
+                .filter(s -> bySession.containsKey(s.getId()))   // exclude 0-answer sessions
+                .limit(10)
+                .map(s -> {
+                    List<SessionAnswer> sAnswers = bySession.getOrDefault(s.getId(), List.of());
+                    int sCorrect = (int) sAnswers.stream().filter(a -> Boolean.TRUE.equals(a.getIsCorrect())).count();
+                    Integer sAcc = sAnswers.isEmpty() ? null
+                            : (int) Math.round(sCorrect * 100.0 / sAnswers.size());
+                    return new DashboardResponse.RecentSession(
+                            s.getId().toString(),
+                            s.getSection(),
+                            sAnswers.size(),
+                            sCorrect,
+                            sAcc,
+                            s.getStartedAt() != null ? s.getStartedAt().format(fmt) : null
+                    );
+                })
+                .toList();
+
+        // Domain accuracy map: domain → accuracy pct
+        Map<String, Integer> domainAccuracy = new LinkedHashMap<>();
+        List<Object[]> domainRows = sessionAnswerRepository.getDomainAccuracyForUser(userId);
+        for (Object[] row : domainRows) {
+            String domain       = (String) row[0];
+            long   domainTotal  = ((Number) row[1]).longValue();
+            long   domainRight  = ((Number) row[2]).longValue();
+            if (domainTotal > 0) {
+                domainAccuracy.put(domain, (int) Math.round(domainRight * 100.0 / domainTotal));
+            }
+        }
+
+        log.info("dashboard computed userId={} sessions={} questions={} accuracy={} domains={}",
+                userId, sessionsCompleted, questionsAnswered, accuracyPct, domainAccuracy.size());
+        return new DashboardResponse(
+                sessionsCompleted, questionsAnswered, accuracyPct, avgTimeSeconds, recentSessions,
+                domainAccuracy);
+    }
+
+    // ── Session creation ───────────────────────────────────────────────────
+
     @Transactional
-    public Session createSession(CreateSessionRequest req) {
+    public Session createSession(UUID userId, CreateSessionRequest req) {
+        log.info("creating session userId={} section={} totalQuestions={}",
+                userId, req.section(), req.domainBandCounts() != null
+                        ? req.domainBandCounts().values().stream()
+                               .flatMap(m -> m.values().stream())
+                               .mapToInt(Integer::intValue).sum()
+                        : 0);
         String bandCountsJson = null;
         if (req.domainBandCounts() != null && !req.domainBandCounts().isEmpty()) {
             try {
                 bandCountsJson = objectMapper.writeValueAsString(req.domainBandCounts());
-            } catch (Exception e) { /* ignore */ }
+            } catch (Exception e) {
+                log.error("Failed to serialize domainBandCounts userId={} error={}", userId, e.getMessage(), e);
+                throw new InvalidRequestException("Invalid domainBandCounts format: " + e.getMessage());
+            }
         }
         Session session = Session.builder()
+                .userId(userId)
                 .sessionType(req.sessionType())
                 .section(req.section())
                 .domainBandCounts(bandCountsJson)
@@ -48,22 +137,41 @@ public class SessionService {
         return sessionRepository.save(session);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public Optional<QuestionResponse> getNextQuestion(UUID sessionId) {
         Session session = sessionRepository.findById(sessionId)
-                .orElseThrow(() -> new RuntimeException("Session not found: " + sessionId));
+                .orElseThrow(() -> new ResourceNotFoundException("Session", sessionId));
+
+        // Already completed — no more questions
+        if ("completed".equals(session.getStatus())) {
+            log.debug("next question requested on completed session={}", sessionId);
+            return Optional.empty();
+        }
 
         List<UUID> answeredIds = sessionAnswerRepository.findAnsweredQuestionIds(sessionId);
 
+        log.debug("picking next question session={} answered={} domainBandCounts={}",
+                sessionId, answeredIds.size(),
+                session.getDomainBandCounts() != null ? "present" : "absent");
+
+        Optional<QuestionResponse> result;
         if (session.getDomainBandCounts() != null) {
-            return getNextQuestionByBandQuota(session, answeredIds);
+            result = getNextQuestionByBandQuota(session, answeredIds);
+        } else {
+            // Fallback: random
+            Optional<Question> next = answeredIds.isEmpty()
+                    ? questionRepository.findNextQuestionNoExclusions("practice", session.getSection())
+                    : questionRepository.findNextQuestion("practice", session.getSection(), answeredIds);
+            result = next.map(QuestionResponse::from);
         }
 
-        // Fallback: random
-        Optional<Question> next = answeredIds.isEmpty()
-                ? questionRepository.findNextQuestionNoExclusions("practice", session.getSection())
-                : questionRepository.findNextQuestion("practice", session.getSection(), answeredIds);
-        return next.map(QuestionResponse::from);
+        if (result.isEmpty()) {
+            session.setStatus("completed");
+            session.setCompletedAt(OffsetDateTime.now());
+            sessionRepository.save(session);
+            log.info("session completed session={} answered={}", sessionId, answeredIds.size());
+        }
+        return result;
     }
 
     /**
@@ -78,6 +186,8 @@ public class SessionService {
             bandCounts = objectMapper.readValue(session.getDomainBandCounts(),
                     new TypeReference<Map<String, Map<String, Integer>>>() {});
         } catch (Exception e) {
+            log.error("Failed to parse domainBandCounts for session={} — falling back to empty. error={}",
+                    session.getId(), e.getMessage(), e);
             return Optional.empty();
         }
 
@@ -123,6 +233,8 @@ public class SessionService {
                 : questionRepository.findNextQuestionByDomainAndDifficulty(
                     "practice", session.getSection(), slot.domain(), answeredIds, slot.minDiff(), slot.maxDiff());
             if (q.isPresent()) return q.map(QuestionResponse::from);
+            log.debug("no question found for slot domain={} band={} (diff={}-{})",
+                    slot.domain(), difficultyToBand((short) slot.minDiff()), slot.minDiff(), slot.maxDiff());
         }
 
         return Optional.empty();
@@ -137,15 +249,19 @@ public class SessionService {
     @Transactional
     public AnswerFeedback submitAnswer(UUID sessionId, SubmitAnswerRequest req) {
         sessionRepository.findById(sessionId)
-                .orElseThrow(() -> new RuntimeException("Session not found: " + sessionId));
+                .orElseThrow(() -> new ResourceNotFoundException("Session", sessionId));
+
+        if (req.studentAnswer() == null || req.studentAnswer().isBlank()) {
+            throw new InvalidRequestException("studentAnswer must not be blank");
+        }
 
         sessionAnswerRepository.findBySessionIdAndQuestionId(sessionId, req.questionId())
                 .ifPresent(a -> {
-                    throw new RuntimeException("Already answered question " + req.questionId() + " in this session");
+                    throw new DuplicateAnswerException(sessionId, req.questionId());
                 });
 
         QuestionAnswer answer = questionAnswerRepository.findByQuestionId(req.questionId())
-                .orElseThrow(() -> new RuntimeException("Answer not found for question: " + req.questionId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Answer for question", req.questionId()));
 
         boolean isCorrect = answer.getCorrectAnswer()
                 .equalsIgnoreCase(req.studentAnswer().trim());
@@ -158,9 +274,15 @@ public class SessionService {
                 .timeSpentSeconds(req.timeSpentSeconds())
                 .build();
         sessionAnswerRepository.save(sessionAnswer);
+        log.info("answer recorded session={} question={} answer={} correct={} timeSecs={}",
+                sessionId, req.questionId(),
+                req.studentAnswer() != null
+                        ? req.studentAnswer().substring(0, Math.min(10, req.studentAnswer().length()))
+                        : "null",
+                isCorrect, req.timeSpentSeconds());
 
         Question question = questionRepository.findById(req.questionId())
-                .orElseThrow(() -> new RuntimeException("Question not found: " + req.questionId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Question", req.questionId()));
 
         return new AnswerFeedback(
                 req.questionId(),
@@ -174,7 +296,7 @@ public class SessionService {
     @Transactional(readOnly = true)
     public SessionResponse getSessionStatus(UUID sessionId) {
         Session session = sessionRepository.findById(sessionId)
-                .orElseThrow(() -> new RuntimeException("Session not found: " + sessionId));
+                .orElseThrow(() -> new ResourceNotFoundException("Session", sessionId));
 
         List<SessionAnswer> answers = sessionAnswerRepository.findBySessionId(sessionId);
         long correct = answers.stream()
@@ -202,6 +324,9 @@ public class SessionService {
             return map.values().stream()
                     .flatMap(bands -> bands.values().stream())
                     .mapToInt(Integer::intValue).sum();
-        } catch (Exception e) { return 0; }
+        } catch (Exception e) {
+            log.warn("Failed to parse domainBandCountsJson for total computation: {}", e.getMessage());
+            return 0;
+        }
     }
 }

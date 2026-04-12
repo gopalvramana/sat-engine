@@ -1,0 +1,273 @@
+.page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 40px 32px 60px;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+.header {
+  margin-bottom: 32px;
+}
+
+.title {
+  font-size: 26px;
+  font-weight: 800;
+  color: #1c1008;
+  margin: 0 0 6px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Stats */
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.statCard {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.statVal {
+  font-size: 24px;
+  font-weight: 800;
+  color: #1c1008;
+}
+
+.statLabel {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.statInsight {
+  font-size: 11px;
+  color: #64748b;
+  line-height: 1.4;
+  margin-top: 2px;
+  font-style: italic;
+}
+
+/* CTA card */
+.ctaCard {
+  background: linear-gradient(135deg, #1c1008 0%, #78350f 100%);
+  border-radius: 16px;
+  padding: 28px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 36px;
+}
+
+/* Personalized CTA variant — amber/orange gradient signals urgency */
+.ctaCardFocused {
+  background: linear-gradient(135deg, #92400e 0%, #b45309 100%);
+}
+
+.ctaLeft {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.ctaIcon {
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.ctaTitle {
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.ctaSub {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  max-width: 400px;
+  line-height: 1.5;
+}
+
+.ctaBtn {
+  background: #fff;
+  color: #1c1008;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 11px 22px;
+  border-radius: 9px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: opacity 0.15s;
+  flex-shrink: 0;
+}
+
+.ctaBtn:hover {
+  opacity: 0.9;
+}
+
+/* Domain accuracy */
+.domainGrid {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 8px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.domainRow {
+  padding: 10px 20px;
+  border-bottom: 1px solid #f1f5f9;
+}
+.domainRow:last-child { border-bottom: none; }
+
+.domainMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.domainName {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1c1008;
+}
+
+.domainPct {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.domainBarTrack {
+  height: 6px;
+  background: #f1f5f9;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.domainBarFill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.4s ease;
+}
+.barGood { background: #22c55e; }
+.barMid  { background: #f59e0b; }
+.barBad  { background: #ef4444; }
+
+/* Recent sessions */
+.section {
+  margin-top: 8px;
+}
+
+.sectionTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1c1008;
+  margin: 0 0 14px;
+}
+
+.emptyState {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 40px 24px;
+  text-align: center;
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+/* Session list */
+.sessionList {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.sessionRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  gap: 12px;
+}
+.sessionRow:last-child { border-bottom: none; }
+.sessionRow:hover { background: #fafaf9; }
+
+.sessionLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sessionSection {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1c1008;
+  text-transform: capitalize;
+}
+
+.sessionDate {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.sessionRight {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.sessionQuestions {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.sessionAccuracy {
+  font-size: 14px;
+  font-weight: 700;
+  min-width: 40px;
+  text-align: right;
+}
+.good { color: #16a34a; }
+.mid  { color: #d97706; }
+.bad  { color: #ef4444; }
+
+@media (max-width: 640px) {
+  .statsRow {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .ctaCard {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ctaBtn {
+    width: 100%;
+    text-align: center;
+  }
+}

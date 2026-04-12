@@ -90,7 +90,7 @@ export default function HomePage({ onStart }) {
       <div className={styles.header}>
         <div className={styles.headerInner}>
           <div className={styles.headerLeft}>
-            <span className={styles.badge}>SAT Practice</span>
+            <span className={styles.badge}>Aptify Practice</span>
             <h1 className={styles.title}>Build Your Session</h1>
           </div>
 

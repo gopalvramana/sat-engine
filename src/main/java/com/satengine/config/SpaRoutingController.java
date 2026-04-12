@@ -13,6 +13,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class SpaRoutingController {
 
+    /** Serve the login page (Spring Security reserves /login so forward to the static file). */
+    @GetMapping("/login")
+    public String login() {
+        return "forward:/login.html";
+    }
+
     @GetMapping({"/app", "/app/"})
     public String appRoot() {
         return "forward:/app/index.html";
@@ -26,6 +32,12 @@ public class SpaRoutingController {
 
     @GetMapping("/app/{path:[^\\.]*}/{sub:[^\\.]*}")
     public String appSubPath() {
+        return "forward:/app/index.html";
+    }
+
+    // Catch-all for /app/session/:sessionId/summary (3-level deep)
+    @GetMapping("/app/{p1:[^\\.]*}/{p2:[^\\.]*}/{p3:[^\\.]*}")
+    public String appSubSubPath() {
         return "forward:/app/index.html";
     }
 }

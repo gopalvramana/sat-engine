@@ -3,18 +3,26 @@
  *   dev  : Vite proxies /api → localhost:8080
  *   prod : same origin, Spring Boot serves everything
  */
+import log from '../lib/logger'
 
 async function request(method, url, body) {
+  log.debug('→ API', { method, url, body: body ? '(body)' : undefined })
+  const t0  = performance.now()
   const res = await fetch(url, {
     method,
     headers: body ? { 'Content-Type': 'application/json' } : {},
     body: body ? JSON.stringify(body) : undefined,
   })
-  if (res.status === 204) return null
+  if (res.status === 204) {
+    log.debug('← API 204', { method, url })
+    return null
+  }
   if (!res.ok) {
     const text = await res.text()
+    log.error('← API error', { method, url, status: res.status, body: text, ms: Math.round(performance.now() - t0) })
     throw new Error(`${method} ${url} → ${res.status}: ${text}`)
   }
+  log.debug('← API', { method, url, status: res.status, ms: Math.round(performance.now() - t0) })
   return res.json()
 }
 

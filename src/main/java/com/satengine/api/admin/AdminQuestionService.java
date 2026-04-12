@@ -2,6 +2,8 @@ package com.satengine.api.admin;
 
 import com.satengine.domain.question.*;
 import com.satengine.dto.AdminQuestionResponse;
+import com.satengine.exception.InvalidRequestException;
+import com.satengine.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,7 +80,7 @@ public class AdminQuestionService {
         Question q = findOrThrow(id);
         fields.forEach((key, value) -> {
             if (!PATCHABLE_FIELDS.contains(key))
-                throw new IllegalArgumentException("Field not patchable: " + key);
+                throw new InvalidRequestException("Field not patchable: " + key);
             switch (key) {
                 case "optionA"         -> q.setOptionA(value);
                 case "optionB"         -> q.setOptionB(value);
@@ -107,7 +109,7 @@ public class AdminQuestionService {
 
     private Question findOrThrow(UUID id) {
         return questionRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Question not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Question", id));
     }
 
     private AdminQuestionResponse toResponse(Question q) {

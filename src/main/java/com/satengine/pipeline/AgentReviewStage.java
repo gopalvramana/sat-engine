@@ -36,7 +36,11 @@ public class AgentReviewStage {
     private static final double MIN_CONF     = 0.85;
 
     public void run(boolean onlyFailed, String section, String domain) {
-        String status = QuestionStatus.GENERATED.lower();
+        // --only-failed: re-review questions that already have status=reviewed but pass=false
+        // Normal run:    review fresh questions with status=generated
+        String status = onlyFailed
+                ? QuestionStatus.REVIEWED.lower()
+                : QuestionStatus.GENERATED.lower();
 
         // Build candidate list scoped to section/domain if provided
         List<Question> candidates;
@@ -58,7 +62,8 @@ public class AgentReviewStage {
                 : candidates;
 
         if (queue.isEmpty()) {
-            log.info("No questions with status=generated to review (section={}, domain={}).", section, domain);
+            log.info("No questions with status={} to review (section={}, domain={}).",
+                    status, section, domain);
             return;
         }
 
@@ -168,6 +173,8 @@ public class AgentReviewStage {
         n.put("difficulty",       q.getDifficulty());
         n.put("questionType",     q.getQuestionType());
         n.put("questionStem",     q.getQuestionStem());
+        if (q.getPassageText()   != null) n.put("passageText",   q.getPassageText());
+        if (q.getPassageSource() != null) n.put("passageSource", q.getPassageSource());
         if (q.getOptionA() != null) n.put("optionA", q.getOptionA());
         if (q.getOptionB() != null) n.put("optionB", q.getOptionB());
         if (q.getOptionC() != null) n.put("optionC", q.getOptionC());

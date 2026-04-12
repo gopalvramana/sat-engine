@@ -31,9 +31,9 @@
   min-width: 60px;
 }
 .toolBtn:hover:not(:disabled) {
-  background: #f5f3ff;
-  border-color: #c4b5fd;
-  color: #7c3aed;
+  background: #fffbeb;
+  border-color: #fcd34d;
+  color: #d97706;
 }
 .toolBtn:disabled,
 .toolBtnDisabled {
@@ -202,7 +202,7 @@
 .refSectionTitle {
   font-size: 12px;
   font-weight: 700;
-  color: #7c3aed;
+  color: #d97706;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin: 0 0 4px;

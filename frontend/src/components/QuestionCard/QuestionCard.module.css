@@ -16,10 +16,10 @@
 .domain {
   font-size: 12px;
   font-weight: 600;
-  color: #7c3aed;
+  color: #d97706;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  background: #f5f3ff;
+  background: #fffbeb;
   padding: 3px 10px;
   border-radius: 20px;
 }
@@ -67,7 +67,7 @@
 
 .passage {
   background: #f8fafc;
-  border-left: 3px solid #7c3aed;
+  border-left: 3px solid #d97706;
   padding: 14px 16px;
   border-radius: 0 8px 8px 0;
   margin-bottom: 16px;
@@ -136,12 +136,12 @@
   font-size: 15px;
 }
 .choice:hover:not(:disabled) {
-  border-color: #a78bfa;
+  border-color: #fbbf24;
   background: #faf5ff;
 }
 .choiceSelected {
-  border-color: #7c3aed;
-  background: #f5f3ff;
+  border-color: #d97706;
+  background: #fffbeb;
 }
 .choice:disabled {
   cursor: not-allowed;
@@ -164,7 +164,7 @@
 
 .choiceLetter {
   font-weight: 700;
-  color: #7c3aed;
+  color: #d97706;
   font-size: 14px;
   min-width: 20px;
 }
@@ -200,7 +200,7 @@
   transition: border-color 0.15s;
   box-sizing: border-box;
 }
-.sprInput:focus { border-color: #7c3aed; }
+.sprInput:focus { border-color: #d97706; }
 
 /* SPR answer summary shown after submission */
 .sprFeedbackRow {
@@ -226,7 +226,7 @@
 .submitBtn {
   width: 100%;
   padding: 13px 28px;
-  background: #7c3aed;
+  background: #d97706;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -237,8 +237,8 @@
   transition: background 0.15s;
   letter-spacing: 0.01em;
 }
-.submitBtn:hover:not(:disabled) { background: #6d28d9; }
-.submitBtn:disabled { background: #c4b5fd; cursor: not-allowed; }
+.submitBtn:hover:not(:disabled) { background: #b45309; }
+.submitBtn:disabled { background: #fcd34d; cursor: not-allowed; }
 
 /* ── Mark for Review button ─────────────────────────────────── */
 .markBtn {
@@ -257,10 +257,10 @@
   flex-shrink: 0;
 }
 .markBtn:hover {
-  color: #7c3aed;
-  background: #f5f3ff;
-  border-color: #c4b5fd;
+  color: #d97706;
+  background: #fffbeb;
+  border-color: #fcd34d;
 }
 .markBtnActive {
-  color: #7c3aed;
+  color: #d97706;
 }

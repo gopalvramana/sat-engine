@@ -1,22 +1,30 @@
+import { useLocation, useNavigate } from 'react-router-dom'
 import { formatTime } from '../hooks/useTimer'
 import styles from './SummaryPage.module.css'
 
-export default function SummaryPage({ sessionInfo, history, onRestart }) {
+export default function SummaryPage() {
+  const location = useLocation()
+  const navigate  = useNavigate()
+
+  // History and session info are passed via router state from PracticePage
+  // On hard refresh the state is lost — we show what we can from sessionInfo
+  const history     = location.state?.history     ?? []
+  const sessionInfo = location.state?.sessionInfo ?? null
+
   const total   = sessionInfo?.questionsAnswered ?? history.length
-  const correct = sessionInfo?.correctCount ?? history.filter(h => h.feedback.isCorrect).length
+  const correct = sessionInfo?.correctCount ?? history.filter(h => h.feedback?.isCorrect).length
   const pct     = total > 0 ? Math.round((correct / total) * 100) : 0
   const totalSeconds = history.reduce((sum, h) => sum + (h.timeTaken ?? 0), 0)
 
   // Group by skill (fall back to domain label if skill not set)
   const skills = {}
   history.forEach(({ question, feedback }) => {
-    const key   = question.skill || domainLabel(question.domain)
+    const key = question.skill || domainLabel(question.domain)
     if (!skills[key]) skills[key] = { correct: 0, total: 0 }
     skills[key].total++
     if (feedback.isCorrect) skills[key].correct++
   })
 
-  // Sort: fully correct first, then by name
   const skillEntries = Object.entries(skills).sort(([, a], [, b]) => {
     const aPct = a.correct / a.total
     const bPct = b.correct / b.total
@@ -86,8 +94,11 @@ export default function SummaryPage({ sessionInfo, history, onRestart }) {
         )}
 
         <div className={styles.restartRow}>
-          <button className={styles.restartBtn} onClick={onRestart}>
+          <button className={styles.restartBtn} onClick={() => navigate('/practice')}>
             Practice Again
+          </button>
+          <button className={styles.homeBtn} onClick={() => navigate('/')}>
+            Back to Dashboard
           </button>
         </div>
 

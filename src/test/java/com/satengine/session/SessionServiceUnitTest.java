@@ -1,6 +1,8 @@
 package com.satengine.session;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.satengine.domain.question.Question;
+import com.satengine.domain.question.QuestionAnswer;
 import com.satengine.domain.question.QuestionAnswerRepository;
 import com.satengine.domain.question.QuestionRepository;
 import com.satengine.domain.session.Session;
@@ -10,12 +12,18 @@ import com.satengine.domain.session.SessionRepository;
 import com.satengine.domain.session.SessionService;
 import com.satengine.dto.CreateSessionRequest;
 import com.satengine.dto.SessionResponse;
+import com.satengine.dto.SubmitAnswerRequest;
+import com.satengine.exception.DuplicateAnswerException;
+import com.satengine.exception.InvalidRequestException;
+import com.satengine.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -30,23 +38,29 @@ import static org.mockito.Mockito.*;
  * Pure unit tests for SessionService business logic.
  *
  * All dependencies are mocked — no database or Spring context required.
+ * Runs in milliseconds.
  *
  * Covers:
- *  - computeTotal: null JSON, valid JSON, malformed JSON, multiple domains/bands
- *  - createSession: saves session with correct fields
- *  - submitAnswer: correct/wrong, case-insensitive, already-answered guard
- *  - getNextQuestion: session not found throws
- *  - getSessionStatus: correct/answered counts computed from answer list
+ *  - createSession: persists correct fields, serialises bandCounts, null bandCounts
+ *  - submitAnswer: correct/wrong, case-insensitive, trim, blank guard, duplicate guard,
+ *                  session not found, question answer not found, typed exceptions
+ *  - getNextQuestion: session not found throws ResourceNotFoundException
+ *  - getSessionStatus: correct/answered counts, totalQuestions from JSON,
+ *                      malformed JSON falls back to 0, session not found
+ *  - difficultyToBand: all 7 boundary values
  */
 @ExtendWith(MockitoExtension.class)
 class SessionServiceUnitTest {
 
-    @Mock private SessionRepository sessionRepository;
-    @Mock private SessionAnswerRepository sessionAnswerRepository;
-    @Mock private QuestionRepository questionRepository;
+    @Mock private SessionRepository        sessionRepository;
+    @Mock private SessionAnswerRepository  sessionAnswerRepository;
+    @Mock private QuestionRepository       questionRepository;
     @Mock private QuestionAnswerRepository questionAnswerRepository;
 
     private SessionService service;
+
+    // Shared test user ID — passed to every createSession call
+    private static final UUID TEST_USER = UUID.randomUUID();
 
     @BeforeEach
     void setUp() {
@@ -58,226 +72,320 @@ class SessionServiceUnitTest {
                 new ObjectMapper());
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // createSession
-    // ─────────────────────────────────────────────────────────────
+    // ═══════════════════════════════════════════════════════════════
+    //  createSession
+    // ═══════════════════════════════════════════════════════════════
 
-    @Test
-    @DisplayName("createSession — persists session with correct sessionType and section")
-    void createSession_savesCorrectFields() {
-        var req = new CreateSessionRequest("practice", "math", null);
-        var saved = Session.builder()
-                .id(UUID.randomUUID())
-                .sessionType("practice")
-                .section("math")
-                .status("active")
-                .build();
-        when(sessionRepository.save(any())).thenReturn(saved);
+    @Nested
+    @DisplayName("createSession")
+    class CreateSessionTests {
 
-        var result = service.createSession(req);
+        @Test
+        @DisplayName("persists session with correct sessionType and section")
+        void savesCorrectFields() {
+            var req = new CreateSessionRequest("practice", "math", null);
+            var saved = Session.builder()
+                    .id(UUID.randomUUID())
+                    .sessionType("practice")
+                    .section("math")
+                    .status("active")
+                    .build();
+            when(sessionRepository.save(any())).thenReturn(saved);
 
-        assertThat(result.getSessionType()).isEqualTo("practice");
-        assertThat(result.getSection()).isEqualTo("math");
-        assertThat(result.getStatus()).isEqualTo("active");
-        verify(sessionRepository).save(any(Session.class));
+            var result = service.createSession(TEST_USER, req);
+
+            assertThat(result.getSessionType()).isEqualTo("practice");
+            assertThat(result.getSection()).isEqualTo("math");
+            assertThat(result.getStatus()).isEqualTo("active");
+            verify(sessionRepository).save(any(Session.class));
+        }
+
+        @Test
+        @DisplayName("domainBandCounts serialised to JSON and stored on the entity")
+        void bandCountsSerialised() {
+            var bands = Map.of("algebra", Map.of("easy", 2, "medium", 3));
+            var req = new CreateSessionRequest("practice", "math", bands);
+
+            var captor = ArgumentCaptor.forClass(Session.class);
+            when(sessionRepository.save(captor.capture()))
+                    .thenAnswer(inv -> inv.getArgument(0));
+
+            service.createSession(TEST_USER, req);
+
+            String json = captor.getValue().getDomainBandCounts();
+            assertThat(json).isNotNull().contains("algebra").contains("easy");
+        }
+
+        @Test
+        @DisplayName("null domainBandCounts stores null (not empty JSON string)")
+        void nullBandCounts_storesNull() {
+            var req = new CreateSessionRequest("practice", "math", null);
+            var captor = ArgumentCaptor.forClass(Session.class);
+            when(sessionRepository.save(captor.capture()))
+                    .thenAnswer(inv -> inv.getArgument(0));
+
+            service.createSession(TEST_USER, req);
+
+            assertThat(captor.getValue().getDomainBandCounts()).isNull();
+        }
+
+        @Test
+        @DisplayName("stores the userId on the session entity")
+        void storesUserId() {
+            UUID userId = UUID.randomUUID();
+            var req = new CreateSessionRequest("practice", "math", null);
+            var captor = ArgumentCaptor.forClass(Session.class);
+            when(sessionRepository.save(captor.capture()))
+                    .thenAnswer(inv -> inv.getArgument(0));
+
+            service.createSession(userId, req);
+
+            assertThat(captor.getValue().getUserId()).isEqualTo(userId);
+        }
     }
 
-    @Test
-    @DisplayName("createSession — domainBandCounts serialised to JSON and stored")
-    void createSession_bandCountsSerialised() {
-        var bands = Map.of("algebra", Map.of("easy", 2, "medium", 3));
-        var req = new CreateSessionRequest("practice", "math", bands);
+    // ═══════════════════════════════════════════════════════════════
+    //  getSessionStatus
+    // ═══════════════════════════════════════════════════════════════
 
-        var savedCapture = org.mockito.ArgumentCaptor.forClass(Session.class);
-        when(sessionRepository.save(savedCapture.capture()))
-                .thenAnswer(inv -> inv.getArgument(0));
+    @Nested
+    @DisplayName("getSessionStatus")
+    class GetSessionStatusTests {
 
-        service.createSession(req);
+        @Test
+        @DisplayName("totalQuestions=0 when session has no domainBandCounts")
+        void noBandCounts_totalIsZero() {
+            var sessionId = UUID.randomUUID();
+            mockSession(sessionId, null);
+            when(sessionAnswerRepository.findBySessionId(sessionId)).thenReturn(List.of());
 
-        String json = savedCapture.getValue().getDomainBandCounts();
-        assertThat(json).isNotNull();
-        assertThat(json).contains("algebra");
-        assertThat(json).contains("easy");
+            SessionResponse resp = service.getSessionStatus(sessionId);
+
+            assertThat(resp.totalQuestions()).isEqualTo(0);
+        }
+
+        @Test
+        @DisplayName("totalQuestions sums all band counts across multiple domains")
+        void bandCounts_totalSumsCorrectly() throws Exception {
+            var sessionId = UUID.randomUUID();
+            // algebra: easy=2, medium=3  +  geometry: hard=1  =  total 6
+            String bandJson = new ObjectMapper().writeValueAsString(Map.of(
+                    "algebra",               Map.of("easy", 2, "medium", 3),
+                    "geometry_trigonometry", Map.of("hard", 1)));
+            mockSession(sessionId, bandJson);
+            when(sessionAnswerRepository.findBySessionId(sessionId)).thenReturn(List.of());
+
+            assertThat(service.getSessionStatus(sessionId).totalQuestions()).isEqualTo(6);
+        }
+
+        @Test
+        @DisplayName("malformed domainBandCounts JSON falls back to totalQuestions=0 (no exception)")
+        void malformedBandJson_totalIsZero() {
+            var sessionId = UUID.randomUUID();
+            mockSession(sessionId, "{not valid json{{");
+            when(sessionAnswerRepository.findBySessionId(sessionId)).thenReturn(List.of());
+
+            // Must not throw — graceful fallback
+            assertThat(service.getSessionStatus(sessionId).totalQuestions()).isEqualTo(0);
+        }
+
+        @Test
+        @DisplayName("questionsAnswered and correctCount derived from answer list")
+        void countsDerivedFromAnswers() {
+            var sessionId = UUID.randomUUID();
+            mockSession(sessionId, null);
+            when(sessionAnswerRepository.findBySessionId(sessionId))
+                    .thenReturn(List.of(answer(true), answer(true), answer(false)));
+
+            SessionResponse resp = service.getSessionStatus(sessionId);
+
+            assertThat(resp.questionsAnswered()).isEqualTo(3);
+            assertThat(resp.correctCount()).isEqualTo(2);
+        }
+
+        @Test
+        @DisplayName("session not found → ResourceNotFoundException")
+        void sessionNotFound_throws() {
+            var missingId = UUID.randomUUID();
+            when(sessionRepository.findById(missingId)).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> service.getSessionStatus(missingId))
+                    .isInstanceOf(ResourceNotFoundException.class)
+                    .hasMessageContaining("not found");
+        }
     }
 
-    @Test
-    @DisplayName("createSession — null domainBandCounts stores null (not empty JSON)")
-    void createSession_nullBandCounts_storesNull() {
-        var req = new CreateSessionRequest("practice", "math", null);
-        var savedCapture = org.mockito.ArgumentCaptor.forClass(Session.class);
-        when(sessionRepository.save(savedCapture.capture()))
-                .thenAnswer(inv -> inv.getArgument(0));
+    // ═══════════════════════════════════════════════════════════════
+    //  getNextQuestion
+    // ═══════════════════════════════════════════════════════════════
 
-        service.createSession(req);
+    @Nested
+    @DisplayName("getNextQuestion")
+    class GetNextQuestionTests {
 
-        assertThat(savedCapture.getValue().getDomainBandCounts()).isNull();
+        @Test
+        @DisplayName("session not found → ResourceNotFoundException")
+        void sessionNotFound_throws() {
+            var missingId = UUID.randomUUID();
+            when(sessionRepository.findById(missingId)).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> service.getNextQuestion(missingId))
+                    .isInstanceOf(ResourceNotFoundException.class)
+                    .hasMessageContaining("not found");
+        }
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // computeTotal (tested indirectly through getSessionStatus)
-    // ─────────────────────────────────────────────────────────────
+    // ═══════════════════════════════════════════════════════════════
+    //  submitAnswer
+    // ═══════════════════════════════════════════════════════════════
 
-    @Test
-    @DisplayName("getSessionStatus — totalQuestions=0 when session has no domainBandCounts")
-    void getSessionStatus_noBandCounts_totalIsZero() {
-        var sessionId = UUID.randomUUID();
-        var session = Session.builder()
-                .id(sessionId)
-                .sessionType("practice")
-                .section("math")
-                .status("active")
-                .domainBandCounts(null)
-                .build();
-        when(sessionRepository.findById(sessionId)).thenReturn(Optional.of(session));
-        when(sessionAnswerRepository.findBySessionId(sessionId)).thenReturn(List.of());
+    @Nested
+    @DisplayName("submitAnswer")
+    class SubmitAnswerTests {
 
-        SessionResponse resp = service.getSessionStatus(sessionId);
+        @Test
+        @DisplayName("session not found → ResourceNotFoundException")
+        void sessionNotFound_throws() {
+            var missingId = UUID.randomUUID();
+            when(sessionRepository.findById(missingId)).thenReturn(Optional.empty());
 
-        assertThat(resp.totalQuestions()).isEqualTo(0);
+            assertThatThrownBy(() -> service.submitAnswer(missingId,
+                    new SubmitAnswerRequest(UUID.randomUUID(), "A", null)))
+                    .isInstanceOf(ResourceNotFoundException.class)
+                    .hasMessageContaining("not found");
+        }
+
+        @Test
+        @DisplayName("blank studentAnswer → InvalidRequestException")
+        void blankAnswer_throws() {
+            var sessionId = UUID.randomUUID();
+            mockSession(sessionId, null);
+
+            assertThatThrownBy(() -> service.submitAnswer(sessionId,
+                    new SubmitAnswerRequest(UUID.randomUUID(), "   ", null)))
+                    .isInstanceOf(InvalidRequestException.class)
+                    .hasMessageContaining("studentAnswer");
+        }
+
+        @Test
+        @DisplayName("null studentAnswer → InvalidRequestException")
+        void nullAnswer_throws() {
+            var sessionId = UUID.randomUUID();
+            mockSession(sessionId, null);
+
+            assertThatThrownBy(() -> service.submitAnswer(sessionId,
+                    new SubmitAnswerRequest(UUID.randomUUID(), null, null)))
+                    .isInstanceOf(InvalidRequestException.class);
+        }
+
+        @Test
+        @DisplayName("already answered → DuplicateAnswerException")
+        void alreadyAnswered_throws() {
+            var sessionId  = UUID.randomUUID();
+            var questionId = UUID.randomUUID();
+            mockSession(sessionId, null);
+            when(sessionAnswerRepository.findBySessionIdAndQuestionId(sessionId, questionId))
+                    .thenReturn(Optional.of(new SessionAnswer()));
+
+            assertThatThrownBy(() -> service.submitAnswer(sessionId,
+                    new SubmitAnswerRequest(questionId, "A", null)))
+                    .isInstanceOf(DuplicateAnswerException.class)
+                    .hasMessageContainingAll("already answered");
+        }
+
+        @Test
+        @DisplayName("correct answer → isCorrect=true, correctAnswer returned")
+        void correctAnswer_returnsTrue() {
+            var sessionId  = UUID.randomUUID();
+            var questionId = UUID.randomUUID();
+            mockSession(sessionId, null);
+            when(sessionAnswerRepository.findBySessionIdAndQuestionId(any(), any()))
+                    .thenReturn(Optional.empty());
+            mockAnswer(questionId, "B");
+            mockQuestion(questionId);
+
+            var fb = service.submitAnswer(sessionId,
+                    new SubmitAnswerRequest(questionId, "B", null));
+
+            assertThat(fb.isCorrect()).isTrue();
+            assertThat(fb.correctAnswer()).isEqualTo("B");
+        }
+
+        @Test
+        @DisplayName("wrong answer → isCorrect=false, correctAnswer revealed")
+        void wrongAnswer_returnsFalse() {
+            var sessionId  = UUID.randomUUID();
+            var questionId = UUID.randomUUID();
+            mockSession(sessionId, null);
+            when(sessionAnswerRepository.findBySessionIdAndQuestionId(any(), any()))
+                    .thenReturn(Optional.empty());
+            mockAnswer(questionId, "B");
+            mockQuestion(questionId);
+
+            var fb = service.submitAnswer(sessionId,
+                    new SubmitAnswerRequest(questionId, "A", null));
+
+            assertThat(fb.isCorrect()).isFalse();
+            assertThat(fb.correctAnswer()).isEqualTo("B");
+        }
+
+        @Test
+        @DisplayName("answer comparison is case-insensitive")
+        void caseInsensitiveComparison() {
+            var sessionId  = UUID.randomUUID();
+            var questionId = UUID.randomUUID();
+            mockSession(sessionId, null);
+            when(sessionAnswerRepository.findBySessionIdAndQuestionId(any(), any()))
+                    .thenReturn(Optional.empty());
+            mockAnswer(questionId, "B");
+            mockQuestion(questionId);
+
+            var fb = service.submitAnswer(sessionId,
+                    new SubmitAnswerRequest(questionId, "b", null));
+
+            assertThat(fb.isCorrect()).isTrue();
+        }
+
+        @Test
+        @DisplayName("answer is trimmed before comparison — '  B  ' matches 'B'")
+        void answerTrimmed() {
+            var sessionId  = UUID.randomUUID();
+            var questionId = UUID.randomUUID();
+            mockSession(sessionId, null);
+            when(sessionAnswerRepository.findBySessionIdAndQuestionId(any(), any()))
+                    .thenReturn(Optional.empty());
+            mockAnswer(questionId, "B");
+            mockQuestion(questionId);
+
+            var fb = service.submitAnswer(sessionId,
+                    new SubmitAnswerRequest(questionId, "  B  ", null));
+
+            assertThat(fb.isCorrect()).isTrue();
+        }
+
+        @Test
+        @DisplayName("answer record not found in DB → ResourceNotFoundException")
+        void answerRecordMissing_throws() {
+            var sessionId  = UUID.randomUUID();
+            var questionId = UUID.randomUUID();
+            mockSession(sessionId, null);
+            when(sessionAnswerRepository.findBySessionIdAndQuestionId(any(), any()))
+                    .thenReturn(Optional.empty());
+            when(questionAnswerRepository.findByQuestionId(questionId))
+                    .thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> service.submitAnswer(sessionId,
+                    new SubmitAnswerRequest(questionId, "A", null)))
+                    .isInstanceOf(ResourceNotFoundException.class)
+                    .hasMessageContaining("not found");
+        }
     }
 
-    @Test
-    @DisplayName("getSessionStatus — totalQuestions sums all band counts correctly")
-    void getSessionStatus_bandCounts_totalSumsCorrectly() throws Exception {
-        var sessionId = UUID.randomUUID();
-        // algebra: easy=2, medium=3  + geometry: hard=1 = total 6
-        String bandJson = new ObjectMapper().writeValueAsString(Map.of(
-                "algebra",  Map.of("easy", 2, "medium", 3),
-                "geometry_trigonometry", Map.of("hard", 1)));
+    // ═══════════════════════════════════════════════════════════════
+    //  difficultyToBand — all 7 boundary values
+    // ═══════════════════════════════════════════════════════════════
 
-        var session = Session.builder()
-                .id(sessionId)
-                .sessionType("practice")
-                .section("math")
-                .status("active")
-                .domainBandCounts(bandJson)
-                .build();
-        when(sessionRepository.findById(sessionId)).thenReturn(Optional.of(session));
-        when(sessionAnswerRepository.findBySessionId(sessionId)).thenReturn(List.of());
-
-        SessionResponse resp = service.getSessionStatus(sessionId);
-
-        assertThat(resp.totalQuestions()).isEqualTo(6);
-    }
-
-    @Test
-    @DisplayName("getSessionStatus — malformed domainBandCounts JSON yields totalQuestions=0")
-    void getSessionStatus_malformedBandJson_totalIsZero() {
-        var sessionId = UUID.randomUUID();
-        var session = Session.builder()
-                .id(sessionId)
-                .sessionType("practice")
-                .section("math")
-                .status("active")
-                .domainBandCounts("{not valid json{{")
-                .build();
-        when(sessionRepository.findById(sessionId)).thenReturn(Optional.of(session));
-        when(sessionAnswerRepository.findBySessionId(sessionId)).thenReturn(List.of());
-
-        SessionResponse resp = service.getSessionStatus(sessionId);
-
-        // Should not throw — gracefully falls back to 0
-        assertThat(resp.totalQuestions()).isEqualTo(0);
-    }
-
-    // ─────────────────────────────────────────────────────────────
-    // getSessionStatus — answer counts
-    // ─────────────────────────────────────────────────────────────
-
-    @Test
-    @DisplayName("getSessionStatus — questionsAnswered and correctCount calculated from answers")
-    void getSessionStatus_countsDerivedFromAnswers() {
-        var sessionId = UUID.randomUUID();
-        var session = Session.builder()
-                .id(sessionId).sessionType("practice").section("math").status("active")
-                .build();
-        when(sessionRepository.findById(sessionId)).thenReturn(Optional.of(session));
-
-        var answers = List.of(
-                buildAnswer(true),
-                buildAnswer(true),
-                buildAnswer(false));
-        when(sessionAnswerRepository.findBySessionId(sessionId)).thenReturn(answers);
-
-        SessionResponse resp = service.getSessionStatus(sessionId);
-
-        assertThat(resp.questionsAnswered()).isEqualTo(3);
-        assertThat(resp.correctCount()).isEqualTo(2);
-    }
-
-    @Test
-    @DisplayName("getSessionStatus — session not found throws RuntimeException with 'not found'")
-    void getSessionStatus_sessionNotFound_throws() {
-        var missingId = UUID.randomUUID();
-        when(sessionRepository.findById(missingId)).thenReturn(Optional.empty());
-
-        assertThatThrownBy(() -> service.getSessionStatus(missingId))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("not found");
-    }
-
-    // ─────────────────────────────────────────────────────────────
-    // getNextQuestion — session not found
-    // ─────────────────────────────────────────────────────────────
-
-    @Test
-    @DisplayName("getNextQuestion — session not found throws RuntimeException")
-    void getNextQuestion_sessionNotFound_throws() {
-        var missingId = UUID.randomUUID();
-        when(sessionRepository.findById(missingId)).thenReturn(Optional.empty());
-
-        assertThatThrownBy(() -> service.getNextQuestion(missingId))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("not found");
-    }
-
-    // ─────────────────────────────────────────────────────────────
-    // submitAnswer
-    // ─────────────────────────────────────────────────────────────
-
-    @Test
-    @DisplayName("submitAnswer — session not found throws with 'not found'")
-    void submitAnswer_sessionNotFound_throws() {
-        var missingId = UUID.randomUUID();
-        when(sessionRepository.findById(missingId)).thenReturn(Optional.empty());
-
-        var req = new com.satengine.dto.SubmitAnswerRequest(UUID.randomUUID(), "A", null);
-
-        assertThatThrownBy(() -> service.submitAnswer(missingId, req))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("not found");
-    }
-
-    @Test
-    @DisplayName("submitAnswer — already answered throws with 'already answered'")
-    void submitAnswer_alreadyAnswered_throws() {
-        var sessionId = UUID.randomUUID();
-        var questionId = UUID.randomUUID();
-        var session = Session.builder().id(sessionId).sessionType("practice")
-                .section("math").status("active").build();
-        when(sessionRepository.findById(sessionId)).thenReturn(Optional.of(session));
-
-        // Simulate the question already being answered
-        var existingAnswer = new SessionAnswer();
-        when(sessionAnswerRepository.findBySessionIdAndQuestionId(sessionId, questionId))
-                .thenReturn(Optional.of(existingAnswer));
-
-        var req = new com.satengine.dto.SubmitAnswerRequest(questionId, "A", null);
-
-        assertThatThrownBy(() -> service.submitAnswer(sessionId, req))
-                .isInstanceOf(RuntimeException.class)
-                .message().containsIgnoringCase("already answered");
-    }
-
-    // ─────────────────────────────────────────────────────────────
-    // difficultyToBand — tested via band-quota path (indirectly)
-    // Direct tests via reflection or a subclass expose the private method
-    // ─────────────────────────────────────────────────────────────
-
-    /**
-     * We expose difficultyToBand boundary behaviour through a thin test subclass.
-     */
-    @ParameterizedTest(name = "difficulty {0} → band {1}")
+    @ParameterizedTest(name = "difficulty {0} → band \"{1}\"")
     @CsvSource({
             "1, easy",
             "2, easy",
@@ -287,8 +395,8 @@ class SessionServiceUnitTest {
             "6, hard",
             "7, hard"
     })
-    @DisplayName("difficultyToBand — boundary values map to correct band")
-    void difficultyToBand_allBoundaryValues(short difficulty, String expectedBand) {
+    @DisplayName("difficultyToBand — maps each difficulty value to correct band")
+    void difficultyToBand_allValues(short difficulty, String expectedBand) {
         var exposed = new ExposedSessionService(
                 sessionRepository, sessionAnswerRepository,
                 questionRepository, questionAnswerRepository,
@@ -297,18 +405,41 @@ class SessionServiceUnitTest {
         assertThat(exposed.exposeDifficultyToBand(difficulty)).isEqualTo(expectedBand);
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // HELPERS
-    // ─────────────────────────────────────────────────────────────
+    // ═══════════════════════════════════════════════════════════════
+    //  HELPERS
+    // ═══════════════════════════════════════════════════════════════
 
-    private SessionAnswer buildAnswer(boolean correct) {
+    private void mockSession(UUID sessionId, String bandCountsJson) {
+        var session = Session.builder()
+                .id(sessionId)
+                .sessionType("practice")
+                .section("math")
+                .status("active")
+                .domainBandCounts(bandCountsJson)
+                .build();
+        when(sessionRepository.findById(sessionId)).thenReturn(Optional.of(session));
+    }
+
+    private void mockAnswer(UUID questionId, String correctAnswer) {
+        var qa = new QuestionAnswer();
+        qa.setCorrectAnswer(correctAnswer);
+        when(questionAnswerRepository.findByQuestionId(questionId)).thenReturn(Optional.of(qa));
+    }
+
+    private void mockQuestion(UUID questionId) {
+        var q = new Question();
+        q.setId(questionId);
+        when(questionRepository.findById(questionId)).thenReturn(Optional.of(q));
+    }
+
+    private SessionAnswer answer(boolean correct) {
         var a = new SessionAnswer();
         a.setIsCorrect(correct);
         return a;
     }
 
     /**
-     * Thin subclass that exposes the private difficultyToBand method for testing.
+     * Thin subclass that exposes the private difficultyToBand method for boundary testing.
      */
     static class ExposedSessionService extends SessionService {
         ExposedSessionService(SessionRepository sr, SessionAnswerRepository sar,
@@ -318,11 +449,10 @@ class SessionServiceUnitTest {
         }
 
         String exposeDifficultyToBand(short d) {
-            // Access via reflection since it's private
             try {
-                var method = SessionService.class.getDeclaredMethod("difficultyToBand", short.class);
-                method.setAccessible(true);
-                return (String) method.invoke(this, d);
+                var m = SessionService.class.getDeclaredMethod("difficultyToBand", short.class);
+                m.setAccessible(true);
+                return (String) m.invoke(this, d);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

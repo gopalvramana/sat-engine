@@ -166,11 +166,28 @@ class IntegrationTest {
         }
 
         @Test
-        @DisplayName("GET /api/sessions/{id}/next — all answered → 204")
-        void nextQuestion_exhaustedPool_204() {
+        @DisplayName("GET /api/sessions/{id}/next — all answered → 204 and session marked completed")
+        void nextQuestion_exhaustedPool_marksCompleted() {
             UUID qId = data.insertMcqQuestion("IT-MCQ-003", "math", "algebra", 2, "B");
             String id = createSession("math");
             submitAnswer(id, qId, "B");
+
+            var r = rest.getForEntity("/api/sessions/" + id + "/next", Map.class);
+            assertThat(r.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+
+            // Session status must now be 'completed'
+            var status = rest.getForEntity("/api/sessions/" + id, Map.class).getBody();
+            assertThat(status.get("status")).isEqualTo("completed");
+        }
+
+        @Test
+        @DisplayName("GET /api/sessions/{id}/next — already completed → 204 (idempotent)")
+        void nextQuestion_alreadyCompleted_204() {
+            UUID qId = data.insertMcqQuestion("IT-MCQ-003b", "math", "algebra", 2, "B");
+            String id = createSession("math");
+            submitAnswer(id, qId, "B");
+            rest.getForEntity("/api/sessions/" + id + "/next", Map.class); // completes it
+            // Second call must also return 204 without error
             var r = rest.getForEntity("/api/sessions/" + id + "/next", Map.class);
             assertThat(r.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         }

@@ -236,16 +236,23 @@ public class GenerateStage {
         }
     }
 
+    private static final String[] MCQ_LETTERS = {"A", "B", "C", "D"};
+
     private JsonNode generateWithRetry(String section, String domain, String skill,
                                         int difficulty, String qtype,
                                         boolean hasDiagram, String diagramType,
                                         String diversityContext,
                                         int i, int total, String externalId) {
+        // For MCQ questions, pick a random target letter to prevent A/B bias
+        String targetLetter = "mcq".equalsIgnoreCase(qtype)
+                ? MCQ_LETTERS[new Random().nextInt(MCQ_LETTERS.length)]
+                : null;
+
         for (int attempt = 1; attempt <= MAX_RETRIES + 1; attempt++) {
             try {
                 String userPrompt = PromptLibrary.buildGenerateUserPrompt(
                         section, domain, skill, difficulty, qtype, hasDiagram, diagramType,
-                        diversityContext);
+                        diversityContext, targetLetter);
                 String raw = claudeClient.call(GENERATE_MODEL, MAX_TOKENS, PromptLibrary.getGenerateSystem(section), userPrompt, TEMPERATURE);
                 String fixed = fixLatexEscapes(extractJson(raw));
                 JsonNode data = objectMapper.readTree(fixed);
@@ -268,6 +275,19 @@ public class GenerateStage {
                     // Strip the bad diagram rather than save garbage
                     if (data instanceof com.fasterxml.jackson.databind.node.ObjectNode on) {
                         on.putNull("diagram");
+                    }
+                }
+
+                // MCQ uniqueness check — free structural validation, no extra API call
+                if ("mcq".equalsIgnoreCase(qtype)) {
+                    String uniquenessError = validateMcqUniqueness(data);
+                    if (uniquenessError != null) {
+                        if (attempt <= MAX_RETRIES) {
+                            log.warn("[{}/{}] {} MCQ uniqueness failed: {} (attempt {}) — retrying...", i, total, externalId, uniquenessError, attempt);
+                            continue;
+                        }
+                        log.warn("[{}/{}] {} MCQ uniqueness failed after {} retries — skipping", i, total, externalId, MAX_RETRIES);
+                        return null;
                     }
                 }
 
@@ -352,6 +372,88 @@ public class GenerateStage {
     }
 
     // ─── Helpers ──────────────────────────────────────────────────────────
+
+    /**
+     * Validates MCQ option uniqueness using only the data Claude already returned — no extra API call.
+     *
+     * Checks performed (all free):
+     * 1. All four option texts are distinct (normalised) — catches copy-paste duplicates.
+     * 2. distractorErrors is present and covers exactly 3 wrong options — if Claude couldn't
+     *    explain why an option is wrong, it may not actually be wrong.
+     * 3. None of the distractor error texts contain red-flag phrases that suggest the option
+     *    could also be correct ("also correct", "equivalent", "valid", "could be", "both").
+     *
+     * Returns null if everything looks fine, or a short error description to log.
+     * Fails open (returns null) for any parsing issue so generation is never blocked by infra errors.
+     */
+    private String validateMcqUniqueness(JsonNode data) {
+        try {
+            String correct = data.path("correctAnswer").asText("").toUpperCase().trim();
+            String[] letters = {"A", "B", "C", "D"};
+            Map<String, String> options = new LinkedHashMap<>();
+            options.put("A", normalizeOption(data.path("optionA").asText("")));
+            options.put("B", normalizeOption(data.path("optionB").asText("")));
+            options.put("C", normalizeOption(data.path("optionC").asText("")));
+            options.put("D", normalizeOption(data.path("optionD").asText("")));
+
+            // 1. All options must be present
+            for (String l : letters) {
+                if (options.get(l).isBlank()) return "option " + l + " is blank";
+            }
+
+            // 2. All four options must be distinct
+            long distinctCount = options.values().stream().distinct().count();
+            if (distinctCount < 4) return "duplicate options detected (" + distinctCount + " distinct out of 4)";
+
+            // 3. distractorErrors must cover exactly the 3 wrong options
+            JsonNode errors = data.path("distractorErrors");
+            if (errors.isMissingNode() || errors.isNull()) {
+                // Tolerate missing field — model may not always produce it
+                log.debug("  distractorErrors missing — skipping distractor text check");
+                return null;
+            }
+            List<String> errorKeys = new ArrayList<>();
+            errors.fieldNames().forEachRemaining(errorKeys::add);
+            if (errorKeys.size() != 3) {
+                return "distractorErrors has " + errorKeys.size() + " entries (expected 3)";
+            }
+            // All three error keys must be wrong options (not the correct answer)
+            for (String key : errorKeys) {
+                if (key.equalsIgnoreCase(correct)) {
+                    return "distractorErrors incorrectly includes the correct answer (" + correct + ")";
+                }
+            }
+
+            // 4. Red-flag phrases in distractor explanations
+            List<String> RED_FLAGS = List.of(
+                "also correct", "equivalent", "could also be", "both are", "valid answer",
+                "is also valid", "can also", "is correct too", "works as well"
+            );
+            for (String key : errorKeys) {
+                String explanation = errors.path(key).asText("").toLowerCase();
+                for (String flag : RED_FLAGS) {
+                    if (explanation.contains(flag)) {
+                        return "distractor " + key + " explanation contains red-flag phrase: \"" + flag + "\"";
+                    }
+                }
+            }
+
+            return null; // all checks passed
+        } catch (Exception e) {
+            log.debug("  validateMcqUniqueness error (skipping): {}", e.getMessage());
+            return null; // fail open
+        }
+    }
+
+    /** Normalises an option text for duplicate detection: lowercase, strip LaTeX/whitespace. */
+    private String normalizeOption(String text) {
+        if (text == null) return "";
+        return text.toLowerCase()
+                   .replaceAll("\\$|\\\\[a-zA-Z]+", " ") // strip LaTeX commands
+                   .replaceAll("[^a-z0-9.\\-]", " ")
+                   .replaceAll("\\s+", " ")
+                   .trim();
+    }
 
     /**
      * Returns true if {@code newStem} is a near-duplicate of any existing non-rejected

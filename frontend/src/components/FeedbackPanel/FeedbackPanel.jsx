@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import MathText from '../MathText/MathText'
 import AnimationPanel from '../AnimationPanel/AnimationPanel'
 import FindMyGap from '../FindMyGap/FindMyGap'
@@ -126,7 +126,7 @@ function StepNavigator({ steps, animUid, animFrames }) {
 }
 
 /* ── Main component ─────────────────────────────────────────── */
-export default function FeedbackPanel({ feedback, question, studentAnswer, onNext, isReviewing }) {
+export default function FeedbackPanel({ feedback, question, studentAnswer, onNext, isReviewing, isLastQuestion }) {
   const isCorrect = feedback.isCorrect
   const isMath    = MATH_DOMAINS.has(question.domain)
 
@@ -138,6 +138,20 @@ export default function FeedbackPanel({ feedback, question, studentAnswer, onNex
 
   // Animation uid — set by AnimationPanel once renderer mounts; used by StepNavigator to sync
   const [animUid, setAnimUid] = useState(null)
+
+  // Keyboard shortcut: Enter or Space advances to next question
+  useEffect(() => {
+    function handleKey(e) {
+      // Don't fire when user is typing in an input / textarea
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        onNext()
+      }
+    }
+    window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [onNext])
 
   // Parse enrichment data
   const steps    = parseJson(feedback.explanationSteps, [])
@@ -287,8 +301,9 @@ export default function FeedbackPanel({ feedback, question, studentAnswer, onNex
 
       {/* ── Next question button ──────────────────────────────── */}
       <div className={styles.nextRow}>
+        <span className={styles.keyHint}>Enter ↵</span>
         <button className={styles.nextBtn} onClick={onNext}>
-          {isReviewing ? 'Next →' : 'Next Question →'}
+          {isReviewing ? 'Next →' : isLastQuestion ? 'See Results →' : 'Next Question →'}
         </button>
       </div>
     </div>
