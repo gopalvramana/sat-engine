@@ -370,6 +370,45 @@ public class SessionService {
         );
     }
 
+    @Transactional(readOnly = true)
+    public List<com.satengine.dto.SessionAnswerDetail> getSessionAnswers(UUID sessionId) {
+        List<SessionAnswer> answers = sessionAnswerRepository.findBySessionId(sessionId);
+        if (answers.isEmpty()) return List.of();
+
+        List<UUID> questionIds = answers.stream().map(SessionAnswer::getQuestionId).toList();
+
+        Map<UUID, Question> questionMap = questionRepository.findAllById(questionIds)
+                .stream().collect(Collectors.toMap(Question::getId, q -> q));
+
+        Map<UUID, String> correctAnswerMap = questionAnswerRepository.findAllByQuestionIds(questionIds)
+                .stream().collect(Collectors.toMap(
+                        qa -> qa.getQuestion().getId(),
+                        com.satengine.domain.question.QuestionAnswer::getCorrectAnswer
+                ));
+
+        return answers.stream().map(sa -> {
+            Question q = questionMap.get(sa.getQuestionId());
+            String correct = correctAnswerMap.get(sa.getQuestionId());
+            return new com.satengine.dto.SessionAnswerDetail(
+                    sa.getQuestionId(),
+                    q != null ? q.getQuestionStem() : null,
+                    q != null ? q.getDomain() : null,
+                    q != null ? q.getSkill() : null,
+                    q != null ? q.getDifficulty() : null,
+                    q != null ? q.getQuestionType() : null,
+                    q != null ? q.getOptionA() : null,
+                    q != null ? q.getOptionB() : null,
+                    q != null ? q.getOptionC() : null,
+                    q != null ? q.getOptionD() : null,
+                    correct,
+                    sa.getStudentAnswer(),
+                    sa.getIsCorrect(),
+                    sa.getTimeSpentSeconds(),
+                    q != null ? q.getExplanationShort() : null
+            );
+        }).toList();
+    }
+
     private int computeTotal(String domainBandCountsJson) {
         if (domainBandCountsJson == null) return 0;
         try {

@@ -3,6 +3,7 @@ package com.satengine.domain.session;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.satengine.dto.*;
+import com.satengine.dto.SessionAnswerDetail;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -91,6 +92,20 @@ public class SessionController {
         return sessionService.getNextQuestion(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.noContent().build());
+    }
+
+    /**
+     * GET /api/sessions/{id}/answers
+     * Return all submitted answers for a session (for review after completion).
+     */
+    @GetMapping("/{id}/answers")
+    public ResponseEntity<List<SessionAnswerDetail>> getSessionAnswers(
+            @PathVariable UUID id,
+            HttpSession httpSession
+    ) {
+        UUID userId = requireAuth(httpSession);
+        sessionService.requireOwnership(id, userId);
+        return ResponseEntity.ok(sessionService.getSessionAnswers(id));
     }
 
     /**

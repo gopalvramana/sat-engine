@@ -108,6 +108,95 @@
   font-weight: 500;
 }
 
+/* ── Loading / error ────────────────────────────────────── */
+.loadingMsg {
+  padding: 60px 0;
+  text-align: center;
+  color: #64748b;
+  font-size: 15px;
+}
+.errorMsg {
+  padding: 40px 0 24px;
+  text-align: center;
+  color: #ef4444;
+  font-size: 15px;
+}
+
+/* ── Per-question review list ───────────────────────────── */
+.reviewList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.reviewItem {
+  background: #fff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.reviewCorrect { border-color: #bbf7d0; }
+.reviewWrong   { border-color: #fecaca; }
+
+.reviewHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.reviewNum {
+  font-size: 12px;
+  font-weight: 700;
+  color: #94a3b8;
+  width: 24px;
+  flex-shrink: 0;
+}
+.reviewBadge {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+.badgeCorrect { background: #dcfce7; color: #16a34a; }
+.badgeWrong   { background: #fee2e2; color: #b91c1c; }
+
+.reviewTime {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-left: auto;
+}
+
+.reviewStem {
+  font-size: 13px;
+  color: #1e293b;
+  line-height: 1.5;
+  margin-bottom: 8px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.reviewAnswers {
+  font-size: 12px;
+  color: #475569;
+}
+.reviewAnswerLabel {
+  color: #94a3b8;
+  font-weight: 500;
+}
+.reviewAnswerCorrect { color: #16a34a; font-weight: 700; }
+.reviewAnswerWrong   { color: #ef4444; font-weight: 700; }
+
+.reviewExplanation {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.5;
+  font-style: italic;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 8px;
+}
+
 /* ── Restart ────────────────────────────────────────────── */
 .restartRow { display: flex; justify-content: center; gap: 12px; margin-top: 8px; flex-wrap: wrap; }
 .restartBtn {
