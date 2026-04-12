@@ -1,5 +1,6 @@
 import { Component } from 'react'
 import log from '../../lib/logger'
+import { Sentry } from '../../lib/sentry.js'
 
 /**
  * Catches unhandled React render errors and logs them.
@@ -25,6 +26,11 @@ export default class ErrorBoundary extends Component {
       error: error.message,
       stack: error.stack?.split('\n').slice(0, 5).join(' | '),
       componentStack: info.componentStack?.split('\n').slice(0, 5).join(' | '),
+    })
+    // Forward to Sentry with full React component stack — safe no-op if Sentry not initialised
+    Sentry.withScope(scope => {
+      scope.setExtra('componentStack', info.componentStack)
+      Sentry.captureException(error)
     })
   }
 

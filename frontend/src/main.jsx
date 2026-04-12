@@ -1,3 +1,6 @@
+import { initSentry } from './lib/sentry.js'
+initSentry()   // must run before React renders so all errors are captured
+
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'

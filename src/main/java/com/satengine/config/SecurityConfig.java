@@ -29,7 +29,11 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
 
             // All paths open for now; ownership enforcement comes in Phase 2 (#5)
-            .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+            // /actuator/health must stay public even after auth is added — Railway + UptimeRobot need it
+            .authorizeHttpRequests(auth -> auth
+                    .requestMatchers("/actuator/health", "/actuator/info").permitAll()
+                    .anyRequest().permitAll()
+            )
 
             // Custom logout: clear session, redirect to /login
             .logout(logout -> logout

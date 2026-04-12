@@ -36,3 +36,27 @@ springdoc:
     path: /swagger-ui.html
     url: /api-docs/openapi.yaml
     disable-swagger-default-url: true
+
+# ── Actuator ──────────────────────────────────────────────────────────────────
+# Only expose /health — never expose /env, /beans, /heapdump (security risk)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+  endpoint:
+    health:
+      show-details: never   # don't leak DB URL / credentials in health response
+  info:
+    env:
+      enabled: true
+
+# ── Sentry ────────────────────────────────────────────────────────────────────
+# Set SENTRY_DSN on Railway. Leave blank locally — Sentry is a no-op when DSN absent.
+sentry:
+  dsn: ${SENTRY_DSN:}
+  environment: ${SENTRY_ENVIRONMENT:local}
+  traces-sample-rate: 0.0   # error capture is free; tracing costs quota — enable later
+  logging:
+    minimum-event-level: error          # only send ERROR logs to Sentry
+    minimum-breadcrumb-level: info      # attach INFO+ as breadcrumb context on errors
