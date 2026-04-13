@@ -24,6 +24,10 @@
 | 09 | [Competitive Analysis](09-competitive-analysis.md) | 8 players, 5 market gaps, your positioning |
 | 10 | [What Has Been Validated](10-validated.md) | Everything built and proven so far |
 | 11 | [Decision Log](11-decision-log.md) | All 41 decisions in one place |
+| 12 | [SAT Skill Taxonomy](12-sat-skill-taxonomy.md) | All 66 skills across 8 domains |
+| 14 | [Adaptive Learning Engine](14-adaptive-engine.md) | Diagnostic-first flow, mastery loop, session types, research backing |
+| 15 | [Prerequisite Graph](15-prerequisite-graph.md) | 5-level DAG for all 66 skills — Math chains + R&W chains |
+| 16 | [Question Pool Strategy](16-question-pool-strategy.md) | Two-pool model (drill vs test), pool size targets, generation priority |
 
 ---
 
