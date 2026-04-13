@@ -267,8 +267,8 @@
             },
             {
               "key": "unit_circle_radians",
-              "label": "Unit circle and radian measure",
-              "description": "Convert between degrees and radians; find sine and cosine values using the unit circle; understand periodicity"
+              "label": "Radian measure and arc length",
+              "description": "Convert between degrees and radians; know common radian values (π/6, π/4, π/3, π/2, π); apply radian measure to arc length and sector area; does NOT include unit circle sin/cos reading or periodicity (not tested on Digital SAT)"
             },
             {
               "key": "circle_properties",
@@ -375,7 +375,7 @@
             {
               "key": "boundaries",
               "label": "Sentence boundaries",
-              "description": "Correct run-on sentences and fragments; use punctuation (period, semicolon, comma + conjunction) to join or separate clauses"
+              "description": "Correct run-on sentences, comma splices, and fragments; join independent clauses with period, semicolon, or comma+FANBOYS; use colons and single dashes to introduce lists or explanations (must follow a complete clause); use paired commas or paired dashes to set off non-restrictive elements; recognize when NO punctuation is needed (between subject and verb, between verb and object, in restrictive that-clauses)"
             },
             {
               "key": "subject_verb_agreement",

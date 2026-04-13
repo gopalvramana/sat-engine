@@ -219,8 +219,6 @@ public class GenerateStage {
             // Use the explicitly requested domain, or fall back to weighted random
             String  domain     = (domainArg != null && !domainArg.isBlank()) ? domainArg : pickDomain(section);
             String  qtype      = pickQuestionType(section);
-            boolean hasDiagram   = pickHasDiagram(section, domain);
-            String  diagramType  = hasDiagram ? pickDiagramType(domain) : null;
 
             String sectionCode = SECTION_CODES.get(section);
             String domainCode  = DOMAIN_CODES.get(domain);
@@ -241,11 +239,16 @@ public class GenerateStage {
                 continue;
             }
 
-            // Pick skill first so difficulty balancing can use it
+            // Resolve skill first — diagram and difficulty decisions both depend on it
             String resolvedSkill = (skillKeyArg != null && !skillKeyArg.isBlank())
                     ? skillKeyArg
                     : pickLeastCoveredSkill(domain);
-            int     difficulty = difficultyArg != null ? difficultyArg : pickDifficultyForSkill(domain, resolvedSkill);
+            int     difficulty   = difficultyArg != null ? difficultyArg : pickDifficultyForSkill(domain, resolvedSkill);
+            // command_evidence_quantitative always needs a chartjs graphic; all other R&W = no diagram
+            boolean hasDiagram   = pickHasDiagram(section, domain, resolvedSkill);
+            String  diagramType  = hasDiagram
+                    ? ("command_evidence_quantitative".equals(resolvedSkill) ? "chartjs" : pickDiagramType(domain))
+                    : null;
 
             // Build diversity context from existing questions in same domain+skill
             String diversityContext = buildDiversityContext(domain, resolvedSkill);
@@ -721,7 +724,9 @@ public class GenerateStage {
         return random.nextInt(100) < 80 ? "mcq" : "spr";
     }
 
-    private boolean pickHasDiagram(String section, String domain) {
+    private boolean pickHasDiagram(String section, String domain, String skill) {
+        // command_evidence_quantitative always needs a chartjs chart alongside the passage
+        if ("command_evidence_quantitative".equals(skill)) return true;
         if (!"math".equals(section)) return false;
         double prob = DIAGRAM_PROBS.getOrDefault(domain, 0.0);
         return random.nextDouble() < prob;

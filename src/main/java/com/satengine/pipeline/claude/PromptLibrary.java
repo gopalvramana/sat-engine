@@ -458,28 +458,95 @@ DISTRACTOR RULES — verified before submitting:
 
         // Domain-specific passage instructions
         switch (domain == null ? "" : domain) {
-            case "information_ideas" -> sb.append("""
+            case "information_ideas" -> {
+                if ("command_evidence_quantitative".equals(skill)) {
+                    sb.append("""
+QUANTITATIVE EVIDENCE FORMAT — this skill always pairs a short passage with a data chart.
+Write an original 2–4 sentence passage that makes a claim referencing data without stating the specific numbers \
+(e.g. "Researchers found that urban areas showed the highest participation rates across all age groups").
+The diagram field MUST contain a chartjs bar or line chart with 3–6 labelled data points whose values support exactly one answer.
+questionStem must be: "Which choice most effectively uses data from the graph to complete the statement?" \
+followed by an incomplete sentence from the passage.
+The four options each cite a different specific value or comparison from the chart. \
+Exactly one correctly completes the passage claim. The other three cite real chart values that are irrelevant, \
+contradictory, or support a different conclusion.
+VERIFY: after writing the chart data and options, confirm only option [correctAnswer] supports the passage claim.
+passageText must be non-null. diagram must be non-null.
+REQUIRED CHART FORMAT:
+"diagram": {
+  "diagramType": "chartjs",
+  "chartConfig": {
+    "chartType": "bar",
+    "title": "...",
+    "categories": ["A", "B", "C", "D"],
+    "xAxis": { "label": "..." },
+    "yAxis": { "min": 0, "max": 100, "stepSize": 20, "label": "..." },
+    "datasets": [{ "label": "...", "data": [40, 75, 55, 30], "color": "#2563eb" }]
+  }
+}
+""");
+                } else {
+                    sb.append("""
 PASSAGE REQUIRED — this domain always tests comprehension of a text.
 Write an original 3–6 sentence passage on any academic topic (science, history, social science, humanities).
 The passage must clearly and unambiguously support the correct answer.
-The question tests one of: central idea, key detail, textual evidence, quantitative evidence, inference, or cross-text connection.
+The question tests one of: central idea, key detail, textual evidence, or inference.
 passageText must be non-null.
 """);
-            case "craft_structure" -> sb.append("""
+                }
+            }
+            case "craft_structure" -> {
+                if ("cross_text_connections".equals(skill)) {
+                    sb.append("""
+TWO-PASSAGE FORMAT — cross_text_connections always uses two separate short texts.
+Write two original passages on the same topic from distinct perspectives (each 2–4 sentences).
+Format passageText exactly as: "Text 1\\n\\n[content of Text 1]\\n\\nText 2\\n\\n[content of Text 2]"
+The questionStem must compare the two authors — e.g. \
+"Based on the texts, how would the author of Text 2 most likely respond to the claim made in Text 1?"
+The correct answer must be clearly and unambiguously supported by reading both texts together.
+The three wrong answers must each misrepresent one author's position or invent a view not present in the texts.
+passageText must be non-null and MUST contain both "Text 1" and "Text 2".
+""");
+                } else {
+                    sb.append("""
 PASSAGE REQUIRED — this domain always tests how and why an author wrote a text.
 Write an original 3–5 sentence passage with clear rhetorical choices (word choice, structure, tone, purpose).
-The question tests one of: vocabulary in context, text structure/purpose, or author's perspective/rhetorical choice.
+For words_in_context: questionStem must be \
+"As used in the text, what does the word ___ most nearly mean?" — choose a single word whose meaning is context-dependent.
+For text_structure_purpose: questionStem asks the author's main purpose or the function of a specific sentence.
 The correct vocabulary answer must be the word that best fits the passage's specific context and tone — not just any synonym.
 passageText must be non-null.
 """);
-            case "expression_ideas" -> sb.append("""
-PASSAGE / NOTES REQUIRED — this domain always provides source material.
-For rhetorical_synthesis: provide 3–5 bullet-point notes as passageText (format: "• Note one\\n• Note two\\n...").
-  The question asks the student to select which sentence best synthesizes the notes for a specific purpose.
-For transitions: provide a short 2–3 sentence passage with a blank [BLANK] where the transition word/phrase goes.
-  The options are competing transition words/phrases. Exactly one fits the logical relationship.
+                }
+            }
+            case "expression_ideas" -> {
+                if ("transitions".equals(skill)) {
+                    sb.append("""
+TRANSITIONS FORMAT:
+passageText must be 2–3 sentences where the transition blank appears at the start of a sentence, shown as ______.
+questionStem MUST be exactly: "Which choice completes the text with the most logical transition?"
+The four options are transition words/phrases only \
+(e.g. "However,", "Therefore,", "For instance,", "Furthermore,", "In contrast,", "As a result,").
+Exactly one transition correctly expresses the logical relationship between the ideas in the sentences.
+The three wrong options must represent distinct wrong relationship types \
+(e.g. contrast when the logic is cause-effect, addition when the logic is contrast).
 passageText must be non-null.
 """);
+                } else {
+                    sb.append("""
+RHETORICAL SYNTHESIS FORMAT:
+passageText must be 3–5 bullet-point notes (format: "• Note one\\n• Note two\\n...").
+The questionStem must state a specific rhetorical goal — e.g. \
+"Which choice most effectively uses the information in the notes to emphasize a contrast?" or \
+"...to support the argument with specific evidence?"
+The four options are complete sentences each combining different notes in different ways.
+Only one option achieves the stated rhetorical goal using only information from the notes.
+The three wrong options must each fail the goal in a distinct way: \
+wrong emphasis, inaccurate combination, or irrelevant detail.
+passageText must be non-null.
+""");
+                }
+            }
             case "standard_english" -> sb.append("""
 PASSAGE REQUIRED — Standard English questions always provide a sentence for the student to complete.
 passageText must be a single sentence (or 2 short sentences for context) containing ___ where the answer goes.
@@ -652,6 +719,15 @@ Perform ALL of the following checks:
                      passageText must be present and must directly support the correct answer.
                      Flag as critical if passageText is null or does not clearly support the answer.
                      For standard_english: passageText should be a single sentence with ___ — flag as critical if null.
+5b. SKILL_FORMAT   — Check the "skill" field and apply these additional rules:
+                     • cross_text_connections: passageText MUST contain both "Text 1" and "Text 2" as two separate passages.
+                       Flag as critical if only one passage is present.
+                     • command_evidence_quantitative: diagram must be non-null and contain a chartjs chart with data.
+                       Flag as critical if diagram is null or not chartjs type.
+                     • transitions: questionStem MUST be exactly "Which choice completes the text with the most logical transition?"
+                       Flag as critical if the stem is different.
+                     • rhetorical_synthesis: passageText must contain bullet-point notes (lines starting with •).
+                       Flag as critical if no bullet points are found.
 6. STEM_CLARITY    — Is the question stem unambiguous and grammatically correct?
 7. SCHEMA          — Are all required fields present and non-empty
                      (questionStem, optionA-D, correctAnswer, explanationShort)?
@@ -799,7 +875,6 @@ Rules:
             "    slope-intercept form  → math: \"y = mx + b\"\n" +
             "    distance formula      → math: \"d = \\\\sqrt{(x_2-x_1)^2+(y_2-y_1)^2}\"\n" +
             "    midpoint formula      → math: \"M = \\\\left(\\\\frac{x_1+x_2}{2}, \\\\frac{y_1+y_2}{2}\\\\right)\"\n" +
-            "    law of sines          → math: \"\\\\frac{a}{\\\\sin A} = \\\\frac{b}{\\\\sin B}\"\n" +
             "    completing the square → show the completed form in math\n" +
             "    discriminant          → math: \"b^2 - 4ac\"\n" +
             "    vertex formula        → math: \"x = -\\\\frac{b}{2a}\"\n" +
