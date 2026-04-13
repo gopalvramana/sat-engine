@@ -5,87 +5,117 @@
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }
 
-.header {
-  margin-bottom: 32px;
-}
+/* ── Header ──────────────────────────────────────────────── */
+.header { margin-bottom: 28px; }
 
 .title {
   font-size: 26px;
   font-weight: 800;
   color: #1c1008;
-  margin: 0 0 6px;
+  margin: 0 0 5px;
+  letter-spacing: -0.02em;
 }
 
 .subtitle {
   font-size: 14px;
-  color: #64748b;
+  color: #94a3b8;
   margin: 0;
 }
 
-/* Stats */
+/* ── Stat cards ──────────────────────────────────────────── */
 .statsRow {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin-bottom: 28px;
+  gap: 14px;
+  margin-bottom: 24px;
 }
 
 .statCard {
   background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 20px 18px;
+  border-radius: 14px;
+  padding: 18px 18px 16px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.statCard:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.07);
+  transform: translateY(-1px);
+}
+
+.statTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.statIconBox {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .statVal {
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 800;
   color: #1c1008;
+  letter-spacing: -0.02em;
+  line-height: 1;
 }
 
 .statLabel {
-  font-size: 12px;
+  font-size: 11.5px;
+  font-weight: 600;
   color: #94a3b8;
-  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: 2px;
 }
 
-.statInsight {
+.statSub {
   font-size: 11px;
   color: #64748b;
   line-height: 1.4;
-  margin-top: 2px;
-  font-style: italic;
+  margin-top: 4px;
 }
 
+/* Trend badge inside stat card */
 .trendBadge {
-  display: inline-block;
   font-size: 10px;
   font-weight: 700;
   padding: 2px 7px;
   border-radius: 9999px;
-  margin-top: 4px;
   letter-spacing: 0.02em;
 }
 .trendUp   { background: #dcfce7; color: #15803d; }
 .trendDown { background: #fee2e2; color: #b91c1c; }
 .trendFlat { background: #f1f5f9; color: #64748b; }
 
-/* CTA card */
+/* ── CTA card ────────────────────────────────────────────── */
 .ctaCard {
   background: linear-gradient(135deg, #1c1008 0%, #78350f 100%);
   border-radius: 16px;
-  padding: 28px 32px;
+  padding: 24px 28px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
-  margin-bottom: 36px;
+  gap: 20px;
+  margin-bottom: 32px;
+  box-shadow: 0 4px 20px rgba(28, 16, 8, 0.25);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.ctaCard:hover {
+  box-shadow: 0 8px 30px rgba(28, 16, 8, 0.32);
+  transform: translateY(-1px);
 }
 
-/* Personalized CTA variant — amber/orange gradient signals urgency */
 .ctaCardFocused {
   background: linear-gradient(135deg, #92400e 0%, #b45309 100%);
 }
@@ -93,204 +123,269 @@
 .ctaLeft {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 18px;
 }
 
 .ctaIcon {
-  width: 48px;
-  height: 48px;
+  width: 46px;
+  height: 46px;
   background: rgba(255, 255, 255, 0.12);
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
+  font-size: 20px;
   flex-shrink: 0;
 }
 
 .ctaTitle {
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 700;
   color: #fff;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
+  letter-spacing: -0.01em;
 }
 
 .ctaSub {
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.7);
-  max-width: 400px;
+  color: rgba(255, 255, 255, 0.65);
+  max-width: 380px;
   line-height: 1.5;
 }
 
+/* Pill-shaped CTA button */
 .ctaBtn {
   background: #fff;
   color: #1c1008;
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 700;
-  padding: 11px 22px;
-  border-radius: 9px;
+  padding: 11px 24px;
+  border-radius: 9999px;
   text-decoration: none;
   white-space: nowrap;
-  transition: opacity 0.15s;
   flex-shrink: 0;
+  transition: opacity 0.15s, transform 0.15s;
+  letter-spacing: -0.01em;
 }
-
 .ctaBtn:hover {
-  opacity: 0.9;
+  opacity: 0.92;
+  transform: scale(1.03);
+}
+.ctaBtn:active { transform: scale(0.98); }
+
+/* ── Section heading ─────────────────────────────────────── */
+.section { margin-bottom: 28px; }
+
+.sectionLabel {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  margin: 0 0 12px;
 }
 
-/* Domain accuracy */
-.domainGrid {
+/* ── Domain accuracy list ────────────────────────────────── */
+.domainList {
   background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 8px 0;
-  display: flex;
-  flex-direction: column;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
 }
 
 .domainRow {
-  padding: 10px 20px;
-  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 18px;
+  border-bottom: 1px solid #f8fafc;
+  transition: background 0.12s;
 }
 .domainRow:last-child { border-bottom: none; }
+.domainRow:hover { background: #fafaf9; }
+
+.domainIconBox {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  flex-shrink: 0;
+  font-style: normal;
+}
 
 .domainMeta {
+  flex: 1;
+  min-width: 0;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 6px;
+  flex-direction: column;
+  gap: 5px;
 }
 
 .domainName {
   font-size: 13px;
   font-weight: 600;
-  color: #1c1008;
-}
-
-.domainPct {
-  font-size: 13px;
-  font-weight: 700;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .domainBarTrack {
-  height: 6px;
+  height: 5px;
   background: #f1f5f9;
   border-radius: 9999px;
   overflow: hidden;
 }
-
 .domainBarFill {
   height: 100%;
   border-radius: 9999px;
-  transition: width 0.4s ease;
+  transition: width 0.5s ease;
 }
-.barGood { background: #22c55e; }
-.barMid  { background: #f59e0b; }
-.barBad  { background: #ef4444; }
+.good { background: #22c55e; }
+.mid  { background: #f59e0b; }
+.bad  { background: #ef4444; }
 
-/* Recent sessions */
-.section {
-  margin-top: 8px;
-}
-
-.sectionTitle {
-  font-size: 16px;
+/* Accuracy pill */
+.accPill {
+  font-size: 12px;
   font-weight: 700;
-  color: #1c1008;
-  margin: 0 0 14px;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
+.pillGood { background: #dcfce7; color: #16a34a; }
+.pillMid  { background: #fef3c7; color: #b45309; }
+.pillBad  { background: #fee2e2; color: #dc2626; }
 
-.emptyState {
+/* Practice / Review buttons */
+.practiceBtn,
+.reviewBtn {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.15s, transform 0.15s;
+  border: 1.5px solid #e2e8f0;
+  color: #475569;
   background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 40px 24px;
-  text-align: center;
-  font-size: 14px;
-  color: #94a3b8;
+}
+.practiceBtn:hover,
+.reviewBtn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  transform: scale(1.03);
 }
 
-/* Session list */
+/* ── Session list ─────────────────────────────────────────── */
 .sessionList {
   background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border-radius: 14px;
   overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
 }
 
 .sessionRow {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 14px 20px;
-  border-bottom: 1px solid #f1f5f9;
   gap: 12px;
+  padding: 13px 18px;
+  border-bottom: 1px solid #f8fafc;
+  transition: background 0.12s;
 }
 .sessionRow:last-child { border-bottom: none; }
 .sessionRow:hover { background: #fafaf9; }
 
-.sessionLeft {
+.sessionIconBox {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.sessionMeta {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
 .sessionSection {
-  font-size: 14px;
-  font-weight: 600;
-  color: #1c1008;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
   text-transform: capitalize;
 }
 
 .sessionDate {
-  font-size: 12px;
+  font-size: 11.5px;
   color: #94a3b8;
 }
 
-.sessionRight {
-  display: flex;
-  align-items: center;
-  gap: 16px;
+/* ── Skeleton loader ─────────────────────────────────────── */
+.skeleton {
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+}
+.skeletonRow {
+  height: 60px;
+  background: linear-gradient(90deg, #f1f5f9 25%, #e9eef4 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-bottom: 1px solid #f8fafc;
+}
+.skeletonRow:last-child { border-bottom: none; }
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
-.sessionQuestions {
-  font-size: 13px;
-  color: #64748b;
-}
-
-.sessionAccuracy {
+/* ── Empty state ─────────────────────────────────────────── */
+.emptyState {
+  background: #fff;
+  border-radius: 14px;
+  padding: 40px 24px;
+  text-align: center;
   font-size: 14px;
-  font-weight: 700;
-  min-width: 40px;
-  text-align: right;
+  color: #94a3b8;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
 }
-.good { color: #16a34a; }
-.mid  { color: #d97706; }
-.bad  { color: #ef4444; }
 
+/* ── Responsive ──────────────────────────────────────────── */
 @media (max-width: 767px) {
-  .page {
-    padding: 24px 0 40px; /* AppShell.main already has 16px side padding */
-  }
-
+  .page { padding: 24px 0 40px; }
   .title { font-size: 22px; }
+  .statsRow { grid-template-columns: repeat(2, 1fr); gap: 12px; }
 }
 
 @media (max-width: 640px) {
-  .statsRow {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
   .ctaCard {
     flex-direction: column;
     align-items: flex-start;
     padding: 20px;
-    gap: 16px;
+    gap: 14px;
   }
-
-  .ctaBtn {
-    width: 100%;
-    text-align: center;
-  }
+  .ctaBtn { width: 100%; text-align: center; padding: 12px; }
+  .practiceBtn { display: none; }
 }

@@ -3,17 +3,19 @@ import { LayoutDashboard, PenLine, BookMarked, TrendingUp, ClipboardList, Histor
 import { useAuth } from '../../context/AuthContext'
 import styles from './Sidebar.module.css'
 
-const NAV_ITEMS = [
-  { path: '/',         label: 'Dashboard',       Icon: LayoutDashboard, exact: true },
-  { path: '/practice', label: 'Practice Exams',  Icon: PenLine,         exact: false },
-  { path: '/history',  label: 'History',         Icon: History,         exact: false },
-  { path: null,        label: 'Question Bank',   Icon: BookMarked,      soon: true },
-  { path: null,        label: 'Score Predictor', Icon: TrendingUp,      soon: true },
-  { path: null,        label: 'Full Tests',      Icon: ClipboardList,   soon: true },
+const MAIN_ITEMS = [
+  { path: '/',         label: 'Dashboard',      Icon: LayoutDashboard, exact: true  },
+  { path: '/practice', label: 'Practice Exams', Icon: PenLine,         exact: false },
+  { path: '/history',  label: 'History',        Icon: History,         exact: false },
 ]
 
-// Only the active nav items shown in bottom bar (no "soon" items — too cramped)
-const BOTTOM_NAV_ITEMS = NAV_ITEMS.filter(i => !i.soon)
+const SOON_ITEMS = [
+  { path: null, label: 'Question Bank',   Icon: BookMarked    },
+  { path: null, label: 'Score Predictor', Icon: TrendingUp    },
+  { path: null, label: 'Full Tests',      Icon: ClipboardList },
+]
+
+const BOTTOM_NAV_ITEMS = MAIN_ITEMS
 
 export default function Sidebar({ drawerOpen = false, onClose }) {
   const { user, logout } = useAuth()
@@ -21,6 +23,7 @@ export default function Sidebar({ drawerOpen = false, onClose }) {
   return (
     <>
     <aside className={`${styles.sidebar} ${drawerOpen ? styles.drawerOpen : ''}`}>
+
       {/* Logo */}
       <div className={styles.logo}>
         <svg className={styles.logoMark} viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -31,48 +34,50 @@ export default function Sidebar({ drawerOpen = false, onClose }) {
             </linearGradient>
           </defs>
           <rect width="36" height="36" rx="10" fill="url(#ag)"/>
-          {/* A — left leg */}
           <path d="M18 8L8 28" stroke="white" strokeWidth="3.5" strokeLinecap="round"/>
-          {/* A — right leg */}
           <path d="M18 8L28 28" stroke="white" strokeWidth="3.5" strokeLinecap="round"/>
-          {/* A — crossbar */}
           <path d="M12.5 21H23.5" stroke="white" strokeWidth="3" strokeLinecap="round"/>
-          {/* spark dot above peak */}
           <circle cx="18" cy="6" r="2" fill="#fcd34d"/>
         </svg>
         <span className={styles.logoText}><strong>Aptify</strong></span>
       </div>
 
-      {/* Nav */}
+      {/* Main nav */}
       <nav className={styles.nav}>
-        {NAV_ITEMS.map(item => {
-          if (item.soon) {
-            return (
-              <div key={item.label} className={styles.itemDisabled}>
-                <item.Icon size={16} className={styles.itemIcon} />
-                <span className={styles.itemLabel}>{item.label}</span>
-                <span className={styles.soon}>Soon</span>
-              </div>
-            )
-          }
-          return (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              end={item.exact}
-              onClick={onClose}
-              className={({ isActive }) =>
-                `${styles.item} ${isActive ? styles.itemActive : ''}`
-              }
-            >
-              <item.Icon size={16} className={styles.itemIcon} />
-              <span className={styles.itemLabel}>{item.label}</span>
-            </NavLink>
-          )
-        })}
+        {MAIN_ITEMS.map(item => (
+          <NavLink
+            key={item.path}
+            to={item.path}
+            end={item.exact}
+            onClick={onClose}
+            className={({ isActive }) =>
+              `${styles.item} ${isActive ? styles.itemActive : ''}`
+            }
+          >
+            <span className={styles.iconBox}>
+              <item.Icon size={14} />
+            </span>
+            <span className={styles.itemLabel}>{item.label}</span>
+          </NavLink>
+        ))}
+
+        {/* Section separator */}
+        <div className={styles.separator}>
+          <span className={styles.separatorLabel}>Coming Soon</span>
+        </div>
+
+        {SOON_ITEMS.map(item => (
+          <div key={item.label} className={styles.itemDisabled}>
+            <span className={styles.iconBox}>
+              <item.Icon size={14} />
+            </span>
+            <span className={styles.itemLabel}>{item.label}</span>
+            <span className={styles.soon}>Soon</span>
+          </div>
+        ))}
       </nav>
 
-      {/* User widget at bottom */}
+      {/* User widget */}
       <div className={styles.userWidget}>
         {user ? (
           <>
@@ -94,7 +99,7 @@ export default function Sidebar({ drawerOpen = false, onClose }) {
       </div>
     </aside>
 
-    {/* Bottom navigation — visible only on mobile (CSS handles show/hide) */}
+    {/* Mobile bottom nav */}
     <nav className={styles.bottomNav}>
       {BOTTOM_NAV_ITEMS.map(item => (
         <NavLink
