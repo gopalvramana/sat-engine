@@ -266,11 +266,6 @@
               "description": "SOH-CAH-TOA; find missing sides and angles using sine, cosine, tangent; apply to word problems (angles of elevation/depression)"
             },
             {
-              "key": "law_sines_cosines",
-              "label": "Law of sines and cosines",
-              "description": "Apply law of sines and law of cosines to non-right triangles; determine which law to use"
-            },
-            {
               "key": "unit_circle_radians",
               "label": "Unit circle and radian measure",
               "description": "Convert between degrees and radians; find sine and cosine values using the unit circle; understand periodicity"
@@ -324,11 +319,6 @@
               "key": "inferences",
               "label": "Inferences",
               "description": "Draw logical inferences from the passage; understand what the text implies but does not state directly"
-            },
-            {
-              "key": "cross_text_connections",
-              "label": "Cross-text connections",
-              "description": "Compare two passages; identify agreements, disagreements, or relationships between authors' ideas"
             }
           ]
         },
@@ -350,9 +340,9 @@
               "description": "Identify how a text is organized; understand the author's purpose; analyze how a specific sentence or paragraph functions"
             },
             {
-              "key": "rhetorical_devices",
-              "label": "Rhetorical devices and author's perspective",
-              "description": "Identify rhetorical strategies (contrast, analogy, counterargument); understand tone; interpret the author's point of view"
+              "key": "cross_text_connections",
+              "label": "Cross-text connections",
+              "description": "Compare two passages; identify agreements, disagreements, or relationships between authors' ideas"
             }
           ]
         },
@@ -411,6 +401,11 @@
               "key": "modifiers",
               "label": "Modifiers",
               "description": "Correct dangling and misplaced modifiers; ensure modifying phrases are adjacent to what they modify"
+            },
+            {
+              "key": "noun_number_possessives",
+              "label": "Noun number and possessives",
+              "description": "Distinguish singular vs. plural nouns; use apostrophes correctly for possessives; avoid confusion between its/it's, their/they're/there, and plural vs. possessive forms"
             }
           ]
         }

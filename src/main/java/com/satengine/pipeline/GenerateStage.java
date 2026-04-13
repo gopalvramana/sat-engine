@@ -52,7 +52,7 @@ public class GenerateStage {
     private static final Map<String, Integer> RW_DOMAIN_WEIGHTS = Map.of(
             "information_ideas", 26, "craft_structure", 28, "expression_ideas", 20, "standard_english", 26
     );
-    private static final int[] DIFFICULTY_WEIGHTS = {0, 5, 15, 20, 25, 20, 10, 5}; // index = difficulty 1-7
+    private static final int[] DIFFICULTY_WEIGHTS = {0, 5, 10, 20, 25, 25, 10, 5}; // index = difficulty 1-7; skewed hard for overtraining
     private static final Map<String, Double> DIAGRAM_PROBS = Map.of(
             "geometry_trigonometry", 1.00,  // every geometry question needs a figure
             "problem_solving_data",  0.70,  // most data questions need a chart/graph
@@ -136,6 +136,53 @@ public class GenerateStage {
         return chosen;
     }
 
+    /**
+     * Picks the difficulty level most under-represented for this skill, relative to the
+     * target distribution in DIFFICULTY_WEIGHTS. Falls back to random weighted pick if
+     * no data exists or the query fails.
+     */
+    private int pickDifficultyForSkill(String domain, String skill) {
+        if (domain == null || skill == null) return pickDifficulty();
+        try {
+            // Build a map of difficulty → current count for this skill
+            Map<Integer, Long> counts = new HashMap<>();
+            questionRepository.countBySkillAndDifficultyForDomain(domain)
+                    .stream()
+                    .filter(row -> skill.equals(row[0] != null ? row[0].toString() : ""))
+                    .forEach(row -> {
+                        int diff = row[1] != null ? ((Number) row[1]).intValue() : 0;
+                        long cnt = row[2] != null ? ((Number) row[2]).longValue() : 0L;
+                        if (diff >= 1 && diff <= 7) counts.put(diff, cnt);
+                    });
+
+            // Total weight sum
+            int totalWeight = 0;
+            for (int i = 1; i <= 7; i++) totalWeight += DIFFICULTY_WEIGHTS[i];
+
+            // Compute "deficit" per difficulty: target_ratio - actual_ratio
+            // Pick the difficulty with the highest deficit
+            long totalCount = counts.values().stream().mapToLong(Long::longValue).sum();
+            double maxDeficit = Double.NEGATIVE_INFINITY;
+            int best = -1;
+            for (int d = 1; d <= 7; d++) {
+                double targetRatio = (double) DIFFICULTY_WEIGHTS[d] / totalWeight;
+                double actualRatio = totalCount == 0 ? 0.0 : (double) counts.getOrDefault(d, 0L) / totalCount;
+                double deficit = targetRatio - actualRatio;
+                if (deficit > maxDeficit) {
+                    maxDeficit = deficit;
+                    best = d;
+                }
+            }
+            if (best >= 1) {
+                log.debug("Difficulty balance skill={}: picked {} (deficit={})", skill, best, maxDeficit);
+                return best;
+            }
+        } catch (Exception e) {
+            log.warn("Could not balance difficulty for domain={} skill={}: {}", domain, skill, e.getMessage());
+        }
+        return pickDifficulty();
+    }
+
     // ─── Public entry point ────────────────────────────────────────────────
 
     /**
@@ -171,7 +218,6 @@ public class GenerateStage {
                                      : pickSection(sectionArg);
             // Use the explicitly requested domain, or fall back to weighted random
             String  domain     = (domainArg != null && !domainArg.isBlank()) ? domainArg : pickDomain(section);
-            int     difficulty = difficultyArg != null ? difficultyArg : pickDifficulty();
             String  qtype      = pickQuestionType(section);
             boolean hasDiagram   = pickHasDiagram(section, domain);
             String  diagramType  = hasDiagram ? pickDiagramType(domain) : null;
@@ -195,10 +241,11 @@ public class GenerateStage {
                 continue;
             }
 
-            // If no skill specified, auto-pick the least-covered skill for even distribution
+            // Pick skill first so difficulty balancing can use it
             String resolvedSkill = (skillKeyArg != null && !skillKeyArg.isBlank())
                     ? skillKeyArg
                     : pickLeastCoveredSkill(domain);
+            int     difficulty = difficultyArg != null ? difficultyArg : pickDifficultyForSkill(domain, resolvedSkill);
 
             // Build diversity context from existing questions in same domain+skill
             String diversityContext = buildDiversityContext(domain, resolvedSkill);
@@ -642,7 +689,8 @@ public class GenerateStage {
 
     private String pickSection(String arg) {
         if (arg != null && !arg.isBlank()) return arg;
-        return random.nextBoolean() ? "math" : "reading_writing";
+        // SAT: 44 Math vs 54 R&W → ~45% Math, ~55% R&W
+        return random.nextInt(100) < 45 ? "math" : "reading_writing";
     }
 
     /** Deterministically maps a domain key to its section — no randomness. */

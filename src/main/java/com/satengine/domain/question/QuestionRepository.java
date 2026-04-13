@@ -243,9 +243,42 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
         FROM questions
         WHERE domain = :domain
           AND skill_key IS NOT NULL
+          AND status NOT IN ('rejected', 'failed_review')
         GROUP BY skill_key
         """, nativeQuery = true)
     List<Object[]> countBySkillKeyForDomain(@Param("domain") String domain);
+
+    /**
+     * Count usable questions (non-rejected) per skill+difficulty for a domain.
+     * Used for per-skill difficulty balancing during generation.
+     * Returns rows of [skill_key, difficulty, count].
+     */
+    @Query(value = """
+        SELECT skill_key, difficulty, COUNT(*) AS cnt
+        FROM questions
+        WHERE domain = :domain
+          AND skill_key IS NOT NULL
+          AND status NOT IN ('rejected', 'failed_review')
+        GROUP BY skill_key, difficulty
+        """, nativeQuery = true)
+    List<Object[]> countBySkillAndDifficultyForDomain(@Param("domain") String domain);
+
+    /**
+     * Full spread breakdown for the admin dashboard.
+     * Returns rows of [section, domain, skill_key, difficulty, usable_count, pending_count, failed_count].
+     * usable = approved/enriched/reviewed; pending = pending_review; failed = rejected/failed_review.
+     */
+    @Query(value = """
+        SELECT section, domain, skill_key, difficulty,
+          COUNT(*) FILTER (WHERE status IN ('approved', 'enriched', 'reviewed')) AS usable,
+          COUNT(*) FILTER (WHERE status IN ('pending_review', 'generated')) AS pending,
+          COUNT(*) FILTER (WHERE status IN ('rejected', 'failed_review')) AS failed
+        FROM questions
+        WHERE skill_key IS NOT NULL
+        GROUP BY section, domain, skill_key, difficulty
+        ORDER BY section, domain, skill_key, difficulty
+        """, nativeQuery = true)
+    List<Object[]> countSpreadForDashboard();
 
     /** Approved/enriched geometry questions with animation.eligible=true but no frames yet — for animation backfill. */
     @Query(value = """
