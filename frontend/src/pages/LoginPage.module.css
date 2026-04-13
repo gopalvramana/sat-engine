@@ -5,7 +5,7 @@
   justify-content: center;
   background: linear-gradient(135deg, #fafaf9 0%, #f1f5f9 100%);
   padding: 24px;
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
   overflow-x: hidden;
 }
 
@@ -47,8 +47,9 @@
 
 /* Heading */
 .title {
+  font-family: 'DM Serif Display', Georgia, serif;
   font-size: 22px;
-  font-weight: 800;
+  font-weight: 400;
   color: #1c1008;
   margin: 0 0 8px;
   text-align: center;

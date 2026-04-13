@@ -2,15 +2,16 @@
   max-width: 860px;
   margin: 0 auto;
   padding: 40px 32px 60px;
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
 }
 
 /* ── Header ──────────────────────────────────────────────── */
 .header { margin-bottom: 28px; }
 
 .title {
-  font-size: 26px;
-  font-weight: 800;
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: 28px;
+  font-weight: 400;
   color: #1c1008;
   margin: 0 0 5px;
   letter-spacing: -0.02em;
