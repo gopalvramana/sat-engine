@@ -72,11 +72,29 @@ These three can be done together — all taxonomy JSON changes:
 
 ---
 
-## Phase 1 — Diagnostic Test
+## Phase 1 — Diagnostic + Basic Plan
 
-**Deliverable:** A new student signs up, takes a 35-question diagnostic, and sees a skill map showing exactly where they are strong, developing, or weak.
+**Deliverable:** Student signs up → two-stage adaptive diagnostic → skill map with confidence levels → basic 3-skill drill plan. First student-facing feature.
 
 **This is the first student-facing feature. Everything before this is internal.**
+
+### Why Two-Stage?
+
+1 question per skill is too unreliable — a student can get lucky or make a careless mistake. The diagnostic tests at **domain level first**, then zooms into weak domains only.
+
+- **Stage 1:** 3Q × 8 domains = 24 questions → Strong / Developing / Weak per domain
+- **Stage 2:** Weak domains only → 2Q on 2–3 foundational skills per weak domain
+- **Total:** 30–44Q depending on performance · ~25 min average
+- Strong students finish faster · weak students get more signal where they need it
+
+**Skill map confidence levels:**
+
+| Label | Meaning |
+|---|---|
+| 🔴 Weak | Directly tested in Stage 2 — confident |
+| 🔴 Likely weak | Skill in a Weak domain, not directly tested |
+| ✅ Likely strong | Skill in a Strong domain, not directly tested |
+| ⬜ Not tested | Skill in a Developing domain |
 
 ### Sprint 3 (Weekend 3)
 
@@ -89,20 +107,32 @@ These three can be done together — all taxonomy JSON changes:
 
 | Issue | Task | Depends on |
 |---|---|---|
-| #65 | API: diagnostic session (start, answer, complete) | #64 |
-| #66 | API: skill map endpoint `GET /users/{id}/skill-map` | #64, #65 |
+| #65 | API: two-stage diagnostic session (Stage 1 domain triage → Stage 2 skill zoom) | #64 |
+| #66 | API: skill map endpoint with confidence levels | #64, #65 |
 
 ### Sprint 5 (Weekend 5)
 
 | Issue | Task | Depends on |
 |---|---|---|
-| #67 | UI: diagnostic test screen | #65 |
-| #68 | UI: skill map screen | #66 |
+| #67 | UI: diagnostic test screen (progress bar, no timer) | #65 |
+| #68 | UI: skill map with confidence badges | #66 |
+| new | UI: basic drill plan (top 3 weak skills in prereq order) | #66, #59 |
+
+**Basic plan logic — no formula yet:**
+```
+1. Take all Weak + Likely Weak skills
+2. Order by prerequisite depth (foundational first — respect HARD prereqs)
+3. Show top 3 with label: "Start here — these are your biggest gaps"
+```
 
 ```
 ★ MILESTONE — Phase 1 Launch
-  Student flow: Sign up → Diagnostic (35Q) → Skill Map
-  Content gate: #63 must have 200 approved diagnostic questions
+  Sign up → Two-stage diagnostic (30–44Q, ~25 min)
+  → Skill map (Measured / Inferred / Untested per skill)
+  → "Your plan this week: 3 skills — in the right order"
+  Content gate: 200 diagnostic questions approved (#63)
+  Stage 1 needs: 3Q per domain (24 questions across all 8 domains)
+  Stage 2 needs: 2Q per foundational skill in weak domains
 ```
 
 ---

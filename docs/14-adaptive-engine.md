@@ -53,17 +53,89 @@ flowchart TD
 
 The diagnostic is **not** a mini practice test. It is a triage instrument.
 
+### Why Not 1 Question Per Skill?
+
+66 skills × 1 question = 66 questions and still unreliable — a student can get lucky or make a careless mistake. Even 2 per skill = 132 questions, longer than a full SAT.
+
+The solution: **test at domain level first, zoom into weak domains only.**
+
+---
+
+### Two-Stage Adaptive Design
+
+#### Stage 1 — Domain Triage (24 questions, ~15 min)
+
+3 questions per domain × 8 domains = 24 questions. Each question is tagged to a skill, but the judgment at this stage is at **domain level**.
+
+| Domain score | Classification | Action |
+|---|---|---|
+| 3/3 correct | Strong | Skip — no Stage 2 for this domain |
+| 2/3 correct | Developing | Light zoom — 2 questions on weakest skill only |
+| 0–1/3 correct | Weak | Deep zoom — Stage 2 for this domain |
+
+3 questions is enough to reliably classify a domain. It is not enough to classify individual skills — that happens in Stage 2 and then in actual drill sessions.
+
+#### Stage 2 — Skill Zoom (weak domains only, ~10 min)
+
+For each **Weak** domain: ask 2 questions on each of the 2–3 most foundational skills in that domain (floor skills and Level 2 skills — not the full domain).
+
+**Example — Advanced Math domain is Weak (1/3 in Stage 1):**
+```
+Stage 2 tests:
+  equivalent_expressions: 2 questions → 0/2 → Weak (confirmed)
+  factoring:              2 questions → 1/2 → Developing
+  quadratic_equations:    2 questions → 0/2 → Weak (confirmed)
+
+Remaining Advanced Math skills → inferred weak (domain was weak, not directly tested)
+```
+
+#### Total Length by Performance
+
+| Student type | Stage 1 | Stage 2 | Total | Time |
+|---|---|---|---|---|
+| Strong (3+ strong domains) | 24Q | ~6Q | ~30Q | ~20 min |
+| Average (mixed performance) | 24Q | ~14Q | ~38Q | ~25 min |
+| Weak (most domains weak) | 24Q | ~20Q | ~44Q | ~30 min |
+
+Strong students finish faster. Weaker students get more signal exactly where they need it.
+
+---
+
+### Skill Map Confidence Levels
+
+After the diagnostic, every skill on the skill map carries a confidence level:
+
+| Confidence | Source | Label shown |
+|---|---|---|
+| **Measured** | Directly tested in Stage 2 (2 questions) | 🔴 Weak / ⚠️ Developing |
+| **Inferred weak** | Skill in a Weak domain, not directly tested | 🔴 Likely weak |
+| **Inferred strong** | Skill in a Strong domain, not directly tested | ✅ Likely strong |
+| **Untested** | Skill in a Developing domain, not tested | ⬜ Not tested yet |
+
+The skill map is honest about confidence. A student sees:
+```
+Systems of equations    🔴 Weak          ← 2 questions, confident
+Polynomial functions    🔴 Likely weak   ← inferred from domain
+Linear equations        ⬜ Not tested    ← domain was developing
+Lines and angles        ✅ Likely strong ← inferred from domain
+```
+
+**The map sharpens with every drill session.** After 20 questions on a skill, the mastery score is real data, not inference.
+
+---
+
+### Summary
+
 | Attribute | Value |
 |---|---|
-| Length | 35–40 questions |
-| Time | ~25 minutes |
-| Difficulty | d3–d4 (best discriminators — not too easy, not too hard) |
-| Coverage | All 8 domains, all 66 skills (1–2 questions each) |
-| Branching | Adaptive: poor performance in a domain triggers 1–2 follow-up questions |
-| Output | Per-skill mastery estimate (strong / weak / untested) |
+| Stage 1 | 24 questions · 3 per domain · domain-level classification |
+| Stage 2 | 0–20 questions · triggered only for Weak domains · skill-level zoom |
+| Total length | 30–44 questions · ~20–30 min |
+| Difficulty | d3–d4 throughout (best discriminators) |
 | Pool tag | `pool: practice` |
+| Output | Per-skill status with confidence level (measured / inferred / untested) |
 
-**Important framing:** The diagnostic produces a *rough map, not a precise score*. It is updated continuously as the student drills. The map gets sharper with every session.
+**Important framing:** The diagnostic produces a *starting map, not a precise score*. Confidence builds with every drill session. The map gets sharper over time.
 
 ---
 
