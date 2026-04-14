@@ -1,5 +1,5 @@
 {
-  "version": "1.0",
+  "version": "2.0",
   "source": "College Board SAT Suite / Khan Academy Digital SAT Math",
   "sections": [
     {
@@ -16,57 +16,112 @@
             {
               "key": "linear_eq_one_var",
               "label": "Linear equations in one variable",
-              "description": "Solve linear equations with one variable, including equations with variables on both sides, fractions, and parentheses"
+              "description": "Solve linear equations with one variable, including equations with variables on both sides, fractions, and parentheses",
+              "prerequisites": [],
+              "poolTarget": { "diagnostic": 3, "drill": 55, "test": 14 },
+              "hasConceptGuide": true
             },
             {
               "key": "linear_eq_word_problems",
               "label": "Linear equation word problems",
-              "description": "Translate real-world situations into linear equations and solve; interpret the solution in context"
+              "description": "Translate real-world situations into linear equations and solve; interpret the solution in context",
+              "prerequisites": [
+                { "skillKey": "linear_eq_one_var", "dependencyType": "HARD" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 55, "test": 14 },
+              "hasConceptGuide": true
             },
             {
               "key": "linear_eq_two_var",
               "label": "Linear equations in two variables",
-              "description": "Write, interpret, and solve linear equations in two variables; slope, intercepts, standard form, slope-intercept form, point-slope form"
+              "description": "Write, interpret, and solve linear equations in two variables; slope, intercepts, standard form, slope-intercept form, point-slope form",
+              "prerequisites": [
+                { "skillKey": "linear_eq_one_var", "dependencyType": "HARD" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 55, "test": 14 },
+              "hasConceptGuide": true
             },
             {
               "key": "graphs_linear",
               "label": "Graphs of linear equations and functions",
-              "description": "Interpret and create graphs of linear equations; identify slope, x-intercept, y-intercept from a graph; match graphs to equations"
+              "description": "Interpret and create graphs of linear equations; identify slope, x-intercept, y-intercept from a graph; match graphs to equations",
+              "prerequisites": [
+                { "skillKey": "linear_eq_two_var", "dependencyType": "HARD" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 55, "test": 14 },
+              "hasConceptGuide": true
             },
             {
               "key": "linear_functions",
               "label": "Linear functions",
-              "description": "Define and evaluate linear functions; understand rate of change and initial value; model linear relationships"
+              "description": "Define and evaluate linear functions; understand rate of change and initial value; model linear relationships",
+              "prerequisites": [
+                { "skillKey": "linear_eq_two_var", "dependencyType": "HARD" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 55, "test": 14 },
+              "hasConceptGuide": true
             },
             {
               "key": "linear_functions_word_problems",
               "label": "Linear function word problems",
-              "description": "Create and interpret linear functions from context; determine what the slope and intercept represent in the real world"
+              "description": "Create and interpret linear functions from context; determine what the slope and intercept represent in the real world",
+              "prerequisites": [
+                { "skillKey": "linear_functions", "dependencyType": "HARD" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 55, "test": 14 },
+              "hasConceptGuide": true
             },
             {
               "key": "systems_linear_eq",
               "label": "Systems of two linear equations",
-              "description": "Solve systems of two linear equations by substitution, elimination, or graphing; interpret number of solutions (one, none, infinite)"
+              "description": "Solve systems of two linear equations by substitution, elimination, or graphing; interpret number of solutions (one, none, infinite)",
+              "prerequisites": [
+                { "skillKey": "linear_eq_two_var", "dependencyType": "HARD" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 55, "test": 14 },
+              "hasConceptGuide": true
             },
             {
               "key": "systems_linear_word_problems",
               "label": "Systems of linear equations — word problems",
-              "description": "Model real-world problems with systems of two linear equations and solve; interpret solutions in context"
+              "description": "Model real-world problems with systems of two linear equations and solve; interpret solutions in context",
+              "prerequisites": [
+                { "skillKey": "systems_linear_eq", "dependencyType": "HARD" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 55, "test": 14 },
+              "hasConceptGuide": true
             },
             {
               "key": "linear_inequalities_one_var",
               "label": "Linear inequalities in one variable",
-              "description": "Solve and graph linear inequalities in one variable; interpret solution sets"
+              "description": "Solve and graph linear inequalities in one variable; interpret solution sets",
+              "prerequisites": [
+                { "skillKey": "linear_eq_one_var", "dependencyType": "HARD" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 55, "test": 14 },
+              "hasConceptGuide": true
             },
             {
               "key": "linear_inequalities_two_var",
               "label": "Linear inequalities in two variables",
-              "description": "Graph linear inequalities in two variables; determine which region satisfies the inequality; write inequalities from graphs"
+              "description": "Graph linear inequalities in two variables; determine which region satisfies the inequality; write inequalities from graphs",
+              "prerequisites": [
+                { "skillKey": "linear_eq_two_var", "dependencyType": "HARD" },
+                { "skillKey": "linear_inequalities_one_var", "dependencyType": "SOFT" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 55, "test": 14 },
+              "hasConceptGuide": true
             },
             {
               "key": "systems_linear_inequalities",
               "label": "Systems of linear inequalities",
-              "description": "Graph and interpret systems of linear inequalities; identify feasible regions; model constraints with inequality systems"
+              "description": "Graph and interpret systems of linear inequalities; identify feasible regions; model constraints with inequality systems",
+              "prerequisites": [
+                { "skillKey": "linear_inequalities_two_var", "dependencyType": "HARD" },
+                { "skillKey": "systems_linear_eq", "dependencyType": "SOFT" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 55, "test": 14 },
+              "hasConceptGuide": true
             }
           ]
         },
@@ -80,62 +135,126 @@
             {
               "key": "equivalent_expressions",
               "label": "Equivalent expressions",
-              "description": "Rewrite algebraic expressions in equivalent forms; factor, expand, simplify; recognize structure in expressions"
+              "description": "Rewrite algebraic expressions in equivalent forms; factor, expand, simplify; recognize structure in expressions",
+              "prerequisites": [
+                { "skillKey": "linear_eq_one_var", "dependencyType": "HARD" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 55, "test": 14 },
+              "hasConceptGuide": true
             },
             {
               "key": "polynomial_operations",
               "label": "Operations with polynomials",
-              "description": "Add, subtract, multiply, and divide polynomials; understand polynomial long division and synthetic division"
+              "description": "Add, subtract, multiply, and divide polynomials; understand polynomial long division and synthetic division",
+              "prerequisites": [
+                { "skillKey": "equivalent_expressions", "dependencyType": "HARD" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 55, "test": 14 },
+              "hasConceptGuide": true
             },
             {
               "key": "factoring",
               "label": "Factoring quadratic and polynomial expressions",
-              "description": "Factor quadratics (GCF, difference of squares, trinomial factoring); factor higher-degree polynomials; use factoring to solve equations"
+              "description": "Factor quadratics (GCF, difference of squares, trinomial factoring); factor higher-degree polynomials; use factoring to solve equations",
+              "prerequisites": [
+                { "skillKey": "polynomial_operations", "dependencyType": "HARD" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 55, "test": 14 },
+              "hasConceptGuide": true
             },
             {
               "key": "quadratic_equations",
               "label": "Solving quadratic equations",
-              "description": "Solve quadratic equations by factoring, completing the square, and the quadratic formula; determine number and nature of solutions"
+              "description": "Solve quadratic equations by factoring, completing the square, and the quadratic formula; determine number and nature of solutions",
+              "prerequisites": [
+                { "skillKey": "factoring", "dependencyType": "HARD" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 55, "test": 14 },
+              "hasConceptGuide": true
             },
             {
               "key": "quadratic_functions",
               "label": "Quadratic functions and graphs",
-              "description": "Interpret vertex, axis of symmetry, intercepts, and direction of parabolas; convert between standard, vertex, and factored forms"
+              "description": "Interpret vertex, axis of symmetry, intercepts, and direction of parabolas; convert between standard, vertex, and factored forms",
+              "prerequisites": [
+                { "skillKey": "quadratic_equations", "dependencyType": "HARD" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 55, "test": 14 },
+              "hasConceptGuide": true
             },
             {
               "key": "exponential_functions",
               "label": "Exponential functions",
-              "description": "Understand exponential growth and decay; percent change; interpret parameters in exponential models; compare linear vs. exponential growth"
+              "description": "Understand exponential growth and decay; percent change; interpret parameters in exponential models; compare linear vs. exponential growth",
+              "prerequisites": [
+                { "skillKey": "linear_functions", "dependencyType": "HARD" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 55, "test": 14 },
+              "hasConceptGuide": true
             },
             {
               "key": "polynomial_functions",
               "label": "Polynomial functions",
-              "description": "End behavior based on degree and leading coefficient; zeros and multiplicity; graph behavior; factor theorem"
+              "description": "End behavior based on degree and leading coefficient; zeros and multiplicity; graph behavior; factor theorem",
+              "prerequisites": [
+                { "skillKey": "factoring", "dependencyType": "HARD" },
+                { "skillKey": "quadratic_functions", "dependencyType": "SOFT" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 55, "test": 14 },
+              "hasConceptGuide": true
             },
             {
               "key": "radicals_rational_exponents",
               "label": "Radicals and rational exponents",
-              "description": "Simplify expressions with radicals and rational exponents; convert between radical and exponential notation; solve equations with radicals"
+              "description": "Simplify expressions with radicals and rational exponents; convert between radical and exponential notation; solve equations with radicals",
+              "prerequisites": [
+                { "skillKey": "equivalent_expressions", "dependencyType": "HARD" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 55, "test": 14 },
+              "hasConceptGuide": true
             },
             {
               "key": "rational_expressions",
               "label": "Rational expressions and equations",
-              "description": "Simplify, add, subtract, multiply, and divide rational expressions; solve rational equations; identify extraneous solutions"
+              "description": "Simplify, add, subtract, multiply, and divide rational expressions; solve rational equations; identify extraneous solutions",
+              "prerequisites": [
+                { "skillKey": "factoring", "dependencyType": "HARD" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 55, "test": 14 },
+              "hasConceptGuide": true
             },
             {
               "key": "radical_rational_abs_equations",
               "label": "Radical, rational, and absolute value equations",
-              "description": "Solve equations involving radicals, rational expressions, and absolute value; check for and eliminate extraneous solutions"
+              "description": "Solve equations involving radicals, rational expressions, and absolute value; check for and eliminate extraneous solutions",
+              "prerequisites": [
+                { "skillKey": "radicals_rational_exponents", "dependencyType": "HARD" },
+                { "skillKey": "rational_expressions", "dependencyType": "SOFT" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 55, "test": 14 },
+              "hasConceptGuide": true
             },
             {
               "key": "nonlinear_eq_systems",
               "label": "Systems of one linear and one nonlinear equation",
-              "description": "Solve systems where one equation is linear and one is quadratic or other nonlinear; interpret number of intersection points"
+              "description": "Solve systems where one equation is linear and one is quadratic or other nonlinear; interpret number of intersection points",
+              "prerequisites": [
+                { "skillKey": "systems_linear_eq", "dependencyType": "HARD" },
+                { "skillKey": "quadratic_equations", "dependencyType": "HARD" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 55, "test": 14 },
+              "hasConceptGuide": true
             },
             {
               "key": "function_notation",
               "label": "Function notation, composition, and transformations",
-              "description": "Evaluate and interpret function notation; compose functions; understand transformations (shifts, reflections, stretches)"
+              "description": "Evaluate and interpret function notation; compose functions; understand transformations (shifts, reflections, stretches)",
+              "prerequisites": [
+                { "skillKey": "linear_functions", "dependencyType": "HARD" },
+                { "skillKey": "quadratic_functions", "dependencyType": "SOFT" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 55, "test": 14 },
+              "hasConceptGuide": true
             }
           ]
         },
@@ -149,67 +268,129 @@
             {
               "key": "ratios_rates",
               "label": "Ratios and rates",
-              "description": "Set up and solve ratio problems; understand rates and unit rates; work with part-to-part and part-to-whole ratios"
+              "description": "Set up and solve ratio problems; understand rates and unit rates; work with part-to-part and part-to-whole ratios",
+              "prerequisites": [],
+              "poolTarget": { "diagnostic": 3, "drill": 40, "test": 14 },
+              "hasConceptGuide": false
             },
             {
               "key": "proportional_relationships",
               "label": "Proportional relationships",
-              "description": "Identify and use proportional relationships; solve proportions; understand direct and inverse proportionality"
+              "description": "Identify and use proportional relationships; solve proportions; understand direct and inverse proportionality",
+              "prerequisites": [
+                { "skillKey": "ratios_rates", "dependencyType": "HARD" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 40, "test": 14 },
+              "hasConceptGuide": false
             },
             {
               "key": "unit_conversion",
               "label": "Units and unit conversion",
-              "description": "Convert between units using dimensional analysis; work with derived units; interpret units in context"
+              "description": "Convert between units using dimensional analysis; work with derived units; interpret units in context",
+              "prerequisites": [
+                { "skillKey": "ratios_rates", "dependencyType": "SOFT" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 40, "test": 14 },
+              "hasConceptGuide": false
             },
             {
               "key": "percentages",
               "label": "Percentages",
-              "description": "Calculate percent of a quantity; percent increase and decrease; percent change; working backwards from a percentage"
+              "description": "Calculate percent of a quantity; percent increase and decrease; percent change; working backwards from a percentage",
+              "prerequisites": [],
+              "poolTarget": { "diagnostic": 3, "drill": 40, "test": 14 },
+              "hasConceptGuide": false
             },
             {
               "key": "data_center",
               "label": "Measures of center",
-              "description": "Calculate and interpret mean, median, and mode; effect of adding/removing data on measures of center"
+              "description": "Calculate and interpret mean, median, and mode; effect of adding/removing data on measures of center",
+              "prerequisites": [],
+              "poolTarget": { "diagnostic": 3, "drill": 40, "test": 14 },
+              "hasConceptGuide": false
             },
             {
               "key": "data_spread",
               "label": "Measures of spread",
-              "description": "Calculate and interpret range, interquartile range, and standard deviation; understand variability; compare distributions"
+              "description": "Calculate and interpret range, interquartile range, and standard deviation; understand variability; compare distributions",
+              "prerequisites": [
+                { "skillKey": "data_center", "dependencyType": "HARD" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 40, "test": 14 },
+              "hasConceptGuide": false
             },
             {
               "key": "data_distributions",
               "label": "Data distributions",
-              "description": "Interpret histograms, dot plots, box plots, and frequency tables; describe shape (symmetric, skewed); identify outliers"
+              "description": "Interpret histograms, dot plots, box plots, and frequency tables; describe shape (symmetric, skewed); identify outliers",
+              "prerequisites": [
+                { "skillKey": "data_center", "dependencyType": "SOFT" },
+                { "skillKey": "data_spread", "dependencyType": "SOFT" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 40, "test": 14 },
+              "hasConceptGuide": false
             },
             {
               "key": "scatterplots",
               "label": "Scatterplots and lines of best fit",
-              "description": "Interpret scatterplots; draw and use lines of best fit; understand positive/negative/no correlation; predict values"
+              "description": "Interpret scatterplots; draw and use lines of best fit; understand positive/negative/no correlation; predict values",
+              "prerequisites": [
+                { "skillKey": "linear_functions", "dependencyType": "HARD" },
+                { "skillKey": "data_distributions", "dependencyType": "SOFT" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 40, "test": 14 },
+              "hasConceptGuide": false
             },
             {
               "key": "two_var_models",
               "label": "Two-variable data models",
-              "description": "Determine whether a linear, quadratic, or exponential model best fits data; interpret the model in context"
+              "description": "Determine whether a linear, quadratic, or exponential model best fits data; interpret the model in context",
+              "prerequisites": [
+                { "skillKey": "scatterplots", "dependencyType": "HARD" },
+                { "skillKey": "linear_functions", "dependencyType": "HARD" },
+                { "skillKey": "quadratic_functions", "dependencyType": "SOFT" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 40, "test": 14 },
+              "hasConceptGuide": false
             },
             {
               "key": "probability",
               "label": "Probability",
-              "description": "Calculate theoretical and experimental probability; use sample spaces; understand complementary and mutually exclusive events"
+              "description": "Calculate theoretical and experimental probability; use sample spaces; understand complementary and mutually exclusive events",
+              "prerequisites": [],
+              "poolTarget": { "diagnostic": 3, "drill": 40, "test": 14 },
+              "hasConceptGuide": false
             },
             {
               "key": "conditional_probability",
               "label": "Conditional probability and two-way tables",
-              "description": "Calculate conditional probabilities from two-way tables; P(A|B) notation; independence; relative frequency"
+              "description": "Calculate conditional probabilities from two-way tables; P(A|B) notation; independence; relative frequency",
+              "prerequisites": [
+                { "skillKey": "probability", "dependencyType": "HARD" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 40, "test": 14 },
+              "hasConceptGuide": false
             },
             {
               "key": "inference_statistics",
               "label": "Inference from sample statistics",
-              "description": "Understand margin of error; make inferences about populations from samples; interpret confidence intervals"
+              "description": "Understand margin of error; make inferences about populations from samples; interpret confidence intervals",
+              "prerequisites": [
+                { "skillKey": "data_distributions", "dependencyType": "SOFT" },
+                { "skillKey": "probability", "dependencyType": "SOFT" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 40, "test": 14 },
+              "hasConceptGuide": false
             },
             {
               "key": "evaluating_claims",
               "label": "Evaluating statistical claims",
-              "description": "Distinguish observational studies from experiments; understand confounding variables, bias, and causation vs. correlation"
+              "description": "Distinguish observational studies from experiments; understand confounding variables, bias, and causation vs. correlation",
+              "prerequisites": [
+                { "skillKey": "inference_statistics", "dependencyType": "SOFT" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 40, "test": 14 },
+              "hasConceptGuide": false
             }
           ]
         },
@@ -223,67 +404,129 @@
             {
               "key": "area_2d",
               "label": "Area of 2D figures",
-              "description": "Calculate area of triangles, quadrilaterals (rectangles, parallelograms, trapezoids), and composite figures"
+              "description": "Calculate area of triangles, quadrilaterals (rectangles, parallelograms, trapezoids), and composite figures",
+              "prerequisites": [],
+              "poolTarget": { "diagnostic": 3, "drill": 45, "test": 14 },
+              "hasConceptGuide": true
             },
             {
               "key": "perimeter_2d",
               "label": "Perimeter and circumference",
-              "description": "Calculate perimeter of polygons and circumference of circles; work with arcs"
+              "description": "Calculate perimeter of polygons and circumference of circles; work with arcs",
+              "prerequisites": [],
+              "poolTarget": { "diagnostic": 3, "drill": 45, "test": 14 },
+              "hasConceptGuide": true
             },
             {
               "key": "volume_surface_area",
               "label": "Volume and surface area",
-              "description": "Calculate volume and surface area of prisms, cylinders, pyramids, cones, and spheres; composite 3D figures"
+              "description": "Calculate volume and surface area of prisms, cylinders, pyramids, cones, and spheres; composite 3D figures",
+              "prerequisites": [
+                { "skillKey": "area_2d", "dependencyType": "HARD" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 45, "test": 14 },
+              "hasConceptGuide": true
             },
             {
               "key": "lines_angles",
               "label": "Lines and angles",
-              "description": "Supplementary, complementary, vertical angles; angles formed by parallel lines cut by a transversal (corresponding, alternate interior, co-interior)"
+              "description": "Supplementary, complementary, vertical angles; angles formed by parallel lines cut by a transversal (corresponding, alternate interior, co-interior)",
+              "prerequisites": [],
+              "poolTarget": { "diagnostic": 3, "drill": 45, "test": 14 },
+              "hasConceptGuide": true
             },
             {
               "key": "triangles",
               "label": "Triangle properties",
-              "description": "Triangle angle sum; exterior angles; isosceles and equilateral triangles; triangle inequality"
+              "description": "Triangle angle sum; exterior angles; isosceles and equilateral triangles; triangle inequality",
+              "prerequisites": [
+                { "skillKey": "lines_angles", "dependencyType": "HARD" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 45, "test": 14 },
+              "hasConceptGuide": true
             },
             {
               "key": "similar_congruent_triangles",
               "label": "Similar and congruent triangles",
-              "description": "Similarity criteria (AA, SAS, SSS); congruence criteria; use proportions to find missing sides in similar figures"
-            },
-            {
-              "key": "special_right_triangles",
-              "label": "Special right triangles",
-              "description": "30-60-90 and 45-45-90 triangle side ratios; apply to find missing lengths without trigonometry"
+              "description": "Similarity criteria (AA, SAS, SSS); congruence criteria; use proportions to find missing sides in similar figures",
+              "prerequisites": [
+                { "skillKey": "triangles", "dependencyType": "HARD" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 45, "test": 14 },
+              "hasConceptGuide": true
             },
             {
               "key": "pythagorean_theorem",
               "label": "Pythagorean theorem",
-              "description": "Apply the Pythagorean theorem to find missing sides; Pythagorean triples; distance in the coordinate plane"
+              "description": "Apply the Pythagorean theorem to find missing sides; Pythagorean triples; distance in the coordinate plane",
+              "prerequisites": [
+                { "skillKey": "triangles", "dependencyType": "HARD" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 45, "test": 14 },
+              "hasConceptGuide": true
+            },
+            {
+              "key": "special_right_triangles",
+              "label": "Special right triangles",
+              "description": "30-60-90 and 45-45-90 triangle side ratios; apply to find missing lengths without trigonometry",
+              "prerequisites": [
+                { "skillKey": "pythagorean_theorem", "dependencyType": "HARD" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 45, "test": 14 },
+              "hasConceptGuide": true
             },
             {
               "key": "right_triangle_trig",
               "label": "Right triangle trigonometry",
-              "description": "SOH-CAH-TOA; find missing sides and angles using sine, cosine, tangent; apply to word problems (angles of elevation/depression)"
+              "description": "SOH-CAH-TOA; find missing sides and angles using sine, cosine, tangent; apply to word problems (angles of elevation/depression)",
+              "prerequisites": [
+                { "skillKey": "special_right_triangles", "dependencyType": "HARD" },
+                { "skillKey": "similar_congruent_triangles", "dependencyType": "SOFT" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 45, "test": 14 },
+              "hasConceptGuide": true
             },
             {
               "key": "unit_circle_radians",
               "label": "Radian measure and arc length",
-              "description": "Convert between degrees and radians; know common radian values (π/6, π/4, π/3, π/2, π); apply radian measure to arc length and sector area; does NOT include unit circle sin/cos reading or periodicity (not tested on Digital SAT)"
+              "description": "Convert between degrees and radians; know common radian values (π/6, π/4, π/3, π/2, π); apply radian measure to arc length and sector area; does NOT include unit circle sin/cos reading or periodicity (not tested on Digital SAT)",
+              "prerequisites": [
+                { "skillKey": "right_triangle_trig", "dependencyType": "SOFT" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 45, "test": 14 },
+              "hasConceptGuide": true
             },
             {
               "key": "circle_properties",
               "label": "Circle properties — arcs and angles",
-              "description": "Central angles and inscribed angles; arc length; sector area; arc and chord relationships"
+              "description": "Central angles and inscribed angles; arc length; sector area; arc and chord relationships",
+              "prerequisites": [
+                { "skillKey": "area_2d", "dependencyType": "HARD" },
+                { "skillKey": "lines_angles", "dependencyType": "SOFT" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 45, "test": 14 },
+              "hasConceptGuide": true
             },
             {
               "key": "circle_equations",
               "label": "Equation of a circle",
-              "description": "Write and interpret the standard equation of a circle (x-h)²+(y-k)²=r²; complete the square to find center and radius"
+              "description": "Write and interpret the standard equation of a circle (x-h)²+(y-k)²=r²; complete the square to find center and radius",
+              "prerequisites": [
+                { "skillKey": "coordinate_geometry", "dependencyType": "HARD" },
+                { "skillKey": "circle_properties", "dependencyType": "SOFT" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 45, "test": 14 },
+              "hasConceptGuide": true
             },
             {
               "key": "coordinate_geometry",
               "label": "Coordinate geometry",
-              "description": "Midpoint and distance formulas; slopes of parallel and perpendicular lines; geometric figures on the coordinate plane"
+              "description": "Midpoint and distance formulas; slopes of parallel and perpendicular lines; geometric figures on the coordinate plane",
+              "prerequisites": [
+                { "skillKey": "linear_eq_two_var", "dependencyType": "HARD" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 45, "test": 14 },
+              "hasConceptGuide": true
             }
           ]
         }
@@ -303,22 +546,40 @@
             {
               "key": "central_ideas",
               "label": "Central ideas and details",
-              "description": "Identify the main idea of a passage; distinguish central ideas from supporting details"
+              "description": "Identify the main idea of a passage; distinguish central ideas from supporting details",
+              "prerequisites": [],
+              "poolTarget": { "diagnostic": 3, "drill": 35, "test": 14 },
+              "hasConceptGuide": false
             },
             {
               "key": "command_evidence_textual",
               "label": "Command of evidence — textual",
-              "description": "Identify which quote or detail best supports a claim; evaluate evidence quality and relevance"
+              "description": "Identify which quote or detail best supports a claim; evaluate evidence quality and relevance",
+              "prerequisites": [
+                { "skillKey": "central_ideas", "dependencyType": "SOFT" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 35, "test": 14 },
+              "hasConceptGuide": false
             },
             {
               "key": "command_evidence_quantitative",
               "label": "Command of evidence — quantitative",
-              "description": "Interpret data from graphs, tables, or charts alongside a passage; select evidence from quantitative sources"
+              "description": "Interpret data from graphs, tables, or charts alongside a passage; select evidence from quantitative sources",
+              "prerequisites": [
+                { "skillKey": "central_ideas", "dependencyType": "SOFT" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 35, "test": 14 },
+              "hasConceptGuide": false
             },
             {
               "key": "inferences",
               "label": "Inferences",
-              "description": "Draw logical inferences from the passage; understand what the text implies but does not state directly"
+              "description": "Draw logical inferences from the passage; understand what the text implies but does not state directly",
+              "prerequisites": [
+                { "skillKey": "central_ideas", "dependencyType": "SOFT" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 35, "test": 14 },
+              "hasConceptGuide": false
             }
           ]
         },
@@ -332,17 +593,31 @@
             {
               "key": "words_in_context",
               "label": "Words in context",
-              "description": "Determine the meaning of a word or phrase as used in context; choose the most precise word for a given context"
+              "description": "Determine the meaning of a word or phrase as used in context; choose the most precise word for a given context",
+              "prerequisites": [],
+              "poolTarget": { "diagnostic": 3, "drill": 35, "test": 14 },
+              "hasConceptGuide": false
             },
             {
               "key": "text_structure_purpose",
               "label": "Text structure and purpose",
-              "description": "Identify how a text is organized; understand the author's purpose; analyze how a specific sentence or paragraph functions"
+              "description": "Identify how a text is organized; understand the author's purpose; analyze how a specific sentence or paragraph functions",
+              "prerequisites": [
+                { "skillKey": "central_ideas", "dependencyType": "SOFT" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 35, "test": 14 },
+              "hasConceptGuide": false
             },
             {
               "key": "cross_text_connections",
               "label": "Cross-text connections",
-              "description": "Compare two passages; identify agreements, disagreements, or relationships between authors' ideas"
+              "description": "Compare two passages; identify agreements, disagreements, or relationships between authors' ideas",
+              "prerequisites": [
+                { "skillKey": "text_structure_purpose", "dependencyType": "SOFT" },
+                { "skillKey": "central_ideas", "dependencyType": "SOFT" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 35, "test": 14 },
+              "hasConceptGuide": false
             }
           ]
         },
@@ -356,12 +631,21 @@
             {
               "key": "rhetorical_synthesis",
               "label": "Rhetorically effective synthesis",
-              "description": "Select information from notes or multiple sources to best accomplish a rhetorical goal; complete a sentence to support an argument"
+              "description": "Select information from notes or multiple sources to best accomplish a rhetorical goal; complete a sentence to support an argument",
+              "prerequisites": [
+                { "skillKey": "central_ideas", "dependencyType": "SOFT" },
+                { "skillKey": "transitions", "dependencyType": "SOFT" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 35, "test": 14 },
+              "hasConceptGuide": false
             },
             {
               "key": "transitions",
               "label": "Transitions",
-              "description": "Choose the transition word or phrase that best connects ideas between sentences or paragraphs (contrast, addition, cause/effect, sequence)"
+              "description": "Choose the transition word or phrase that best connects ideas between sentences or paragraphs (contrast, addition, cause/effect, sequence)",
+              "prerequisites": [],
+              "poolTarget": { "diagnostic": 3, "drill": 35, "test": 14 },
+              "hasConceptGuide": false
             }
           ]
         },
@@ -375,37 +659,60 @@
             {
               "key": "boundaries",
               "label": "Sentence boundaries",
-              "description": "Correct run-on sentences, comma splices, and fragments; join independent clauses with period, semicolon, or comma+FANBOYS; use colons and single dashes to introduce lists or explanations (must follow a complete clause); use paired commas or paired dashes to set off non-restrictive elements; recognize when NO punctuation is needed (between subject and verb, between verb and object, in restrictive that-clauses)"
+              "description": "Correct run-on sentences, comma splices, and fragments; join independent clauses with period, semicolon, or comma+FANBOYS; use colons and single dashes to introduce lists or explanations (must follow a complete clause); use paired commas or paired dashes to set off non-restrictive elements; recognize when NO punctuation is needed (between subject and verb, between verb and object, in restrictive that-clauses)",
+              "prerequisites": [],
+              "poolTarget": { "diagnostic": 3, "drill": 35, "test": 14 },
+              "hasConceptGuide": false
             },
             {
               "key": "subject_verb_agreement",
               "label": "Subject-verb agreement",
-              "description": "Ensure verbs agree with their subjects in number; handle tricky cases (intervening phrases, inverted sentences, collective nouns)"
+              "description": "Ensure verbs agree with their subjects in number; handle tricky cases (intervening phrases, inverted sentences, collective nouns)",
+              "prerequisites": [],
+              "poolTarget": { "diagnostic": 3, "drill": 35, "test": 14 },
+              "hasConceptGuide": false
             },
             {
               "key": "pronoun_agreement",
               "label": "Pronoun-antecedent agreement",
-              "description": "Ensure pronouns agree with their antecedents in number and gender; avoid ambiguous pronoun reference"
+              "description": "Ensure pronouns agree with their antecedents in number and gender; avoid ambiguous pronoun reference",
+              "prerequisites": [],
+              "poolTarget": { "diagnostic": 3, "drill": 35, "test": 14 },
+              "hasConceptGuide": false
             },
             {
               "key": "verb_tense_form",
               "label": "Verb tense and form",
-              "description": "Choose the correct verb tense (past, present, future, perfect) and form (infinitive, gerund, participle) for the context"
+              "description": "Choose the correct verb tense (past, present, future, perfect) and form (infinitive, gerund, participle) for the context",
+              "prerequisites": [],
+              "poolTarget": { "diagnostic": 3, "drill": 35, "test": 14 },
+              "hasConceptGuide": false
             },
             {
               "key": "punctuation",
               "label": "Punctuation",
-              "description": "Use commas, colons, semicolons, dashes, and apostrophes correctly; punctuate nonrestrictive and restrictive clauses"
+              "description": "Use commas, colons, semicolons, dashes, and apostrophes correctly; punctuate nonrestrictive and restrictive clauses",
+              "prerequisites": [
+                { "skillKey": "boundaries", "dependencyType": "SOFT" }
+              ],
+              "poolTarget": { "diagnostic": 3, "drill": 35, "test": 14 },
+              "hasConceptGuide": false
             },
             {
               "key": "modifiers",
               "label": "Modifiers",
-              "description": "Correct dangling and misplaced modifiers; ensure modifying phrases are adjacent to what they modify"
+              "description": "Correct dangling and misplaced modifiers; ensure modifying phrases are adjacent to what they modify",
+              "prerequisites": [],
+              "poolTarget": { "diagnostic": 3, "drill": 35, "test": 14 },
+              "hasConceptGuide": false
             },
             {
               "key": "noun_number_possessives",
               "label": "Noun number and possessives",
-              "description": "Distinguish singular vs. plural nouns; use apostrophes correctly for possessives; avoid confusion between its/it's, their/they're/there, and plural vs. possessive forms"
+              "description": "Distinguish singular vs. plural nouns; use apostrophes correctly for possessives; avoid confusion between its/it's, their/they're/there, and plural vs. possessive forms",
+              "prerequisites": [],
+              "poolTarget": { "diagnostic": 3, "drill": 35, "test": 14 },
+              "hasConceptGuide": false
             }
           ]
         }
