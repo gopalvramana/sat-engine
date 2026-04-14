@@ -28,19 +28,23 @@ flowchart TD
     E --> F{Mastery check}
 
     F -->|"mastery < 0.5"| G{Check prerequisites}
-    G -->|"prereq gap found"| H["📚 Foundations Micro-Lesson\n5 × d1–d2 questions"]
-    H --> I{Pass ≥ 3/5?}
-    I -->|No| H
-    I -->|Yes| J["🔗 2 Bridge Questions at d4\nImmediate application"]
-    J --> G
+    G -->|"HARD prereq unmet"| H["🚫 Blocked\nMust drill prerequisite first"]
+    G -->|"SOFT prereq unmet"| I["⚠️ Warning shown\nStudent may proceed"]
+    G -->|"All prereqs OK"| E
+    H --> J["📚 Foundations Micro-Lesson\n5 × d1–d2 questions"]
+    J --> K{Pass ≥ 3/5?}
+    K -->|No — repeat| J
+    K -->|Yes — marginal pass| J2["⚠️ Passed — revisit recommended"]
+    K -->|Yes — strong pass 4-5/5| L["🔗 2 Bridge Questions at d4\nImmediate application"]
+    J2 --> L
+    L --> G
 
-    G -->|"prerequisites OK"| E
-    F -->|"mastery ≥ 0.8"| K["✅ Skill Mastered"]
-    K --> L{All target\nskills done?}
-    L -->|No| D
-    L -->|Yes| M["📝 Full Practice Test\n98 questions · timed"]
-    M --> N["Score Report + Updated Skill Map"]
-    N --> D
+    F -->|"mastery ≥ 0.8"| M["✅ Skill Mastered"]
+    M --> N{All target\nskills done?}
+    N -->|No| D
+    N -->|Yes| O["📝 Full Practice Test\n98 questions · timed"]
+    O --> P["Score Report + Updated Skill Map"]
+    P --> D
 ```
 
 ---
@@ -79,29 +83,93 @@ The diagnostic is **not** a mini practice test. It is a triage instrument.
 ```mermaid
 flowchart TD
     A["Student selects skill X"] --> B["Load prerequisite graph"]
-    B --> C{Any prerequisite\nmastery < 0.6?}
+    B --> C{Check each prerequisite\nby dependency_type}
 
-    C -->|Yes| D["Foundations Micro-Lesson\non prerequisite skill"]
-    D --> E["5 × d1–d2 questions\nCore concept shown upfront\nExplanations auto-expanded"]
-    E --> F{Score ≥ 3/5?}
-    F -->|No| E
-    F -->|Yes| G["2 bridge questions at d4\nSame skill — immediate application"]
+    C -->|"HARD prereq\nmastery < 0.6"| D["Block — must drill\nprerequisite first"]
+    C -->|"SOFT prereq\nmastery < 0.6"| E["Show warning:\nYou may find X easier\nafter practicing prereq"]
+    C -->|"All HARD prereqs ≥ 0.6"| F["Start drill — Skill X\n20–30 questions"]
+
+    D --> G["Drill or micro-lesson\non prerequisite"]
     G --> C
 
-    C -->|No| H["Start drill — Skill X\n20–30 questions"]
-    H --> I["Adaptive difficulty\nRolling 4-question window"]
-    I --> J{3/4 correct\nat current difficulty?}
-    J -->|No| K["Drop difficulty\nShow trap explanation"]
-    K --> I
-    J -->|Yes — at d5+| L["✅ Session mastery achieved"]
-    L --> M{Long-term mastery\nscore ≥ 0.8?}
-    M -->|No| N["Schedule resurface\n7–14 days — spaced repetition"]
-    M -->|Yes| O["🏆 Skill mastered\nRemoved from drill plan"]
+    E --> F
+
+    F --> H["Adaptive difficulty\nRolling 4-question window"]
+    H --> I{3/4 correct at\ncurrent difficulty?}
+    I -->|No| J["Drop difficulty\nShow trap explanation"]
+    J --> H
+    I -->|"Yes — Math at d5+\nR&W at d4+"| K["✅ Session mastery achieved"]
+    K --> L{Long-term mastery\nscore ≥ 0.8?}
+    L -->|No| M["Schedule resurface\n7–14 days spaced repetition"]
+    L -->|Yes| N["🏆 Skill mastered\nRemoved from drill plan"]
 ```
 
 ### Why the 2 Bridge Questions Matter
 
 Research (Saga Education, Carnegie Mellon) shows that staying on easy remediation content too long creates a low-expectation loop. After passing a foundations micro-lesson, the student immediately applies the concept to a real d4 SAT question. This closes the gap between remediation and actual test performance.
+
+---
+
+## Prerequisite Dependency Types
+
+Not all prerequisites are equal. Math prerequisites are hard blockers; R&W prerequisites are softer guidance.
+
+| Type | Behaviour | Examples |
+|---|---|---|
+| `HARD` | Engine **blocks** the skill until prerequisite mastery ≥ 0.6 | `factoring` requires `equivalent_expressions` — you literally cannot factor without this |
+| `SOFT` | Engine shows a **recommendation warning** but lets student proceed | `inferences` benefits from `central_ideas` but a student can attempt inferences at mastery 0.5 |
+
+**Rule:** All Math prerequisites default to `HARD`. All R&W prerequisites default to `SOFT`. Exceptions are noted in `docs/15-prerequisite-graph.md`.
+
+This field is stored in the taxonomy as `dependency_type` on each prerequisite reference:
+```json
+"prerequisites": [
+  { "skillKey": "equivalent_expressions", "dependency_type": "HARD" }
+]
+```
+
+---
+
+## Mastery Declaration Threshold
+
+Mastery is declared when the student achieves **3/4 correct in a rolling window at the threshold difficulty**.
+
+| Section | Mastery threshold difficulty | Rationale |
+|---|---|---|
+| Math | d5 or above | SAT Math hard questions require solid conceptual depth |
+| R&W | d4 or above | SAT R&W peaks at d4; d5+ questions are rare in the real exam |
+| After micro-lesson | d4 (bridge questions) | Floor skill remediation targets real-SAT difficulty, not beyond |
+
+**Why d5 may be too high for some skills:** Skills like `words_in_context` or `noun_number_possessives` rarely appear above d4 on the real SAT. Requiring d5 mastery for these would over-train beyond what the exam tests. The R&W threshold of d4 addresses this.
+
+---
+
+## Mastery Score Calculation
+
+`masteryScore` in `user_skill_mastery` is a **recency-weighted accuracy** across all attempts at this skill.
+
+```
+masteryScore = Σ(result_i × weight_i) / Σ(weight_i)
+
+Where:
+  result_i = 1.0 (correct) or 0.0 (wrong)
+  weight_i = 0.8 ^ (position from most recent)
+             most recent attempt = position 0, weight = 1.0
+             2nd most recent     = position 1, weight = 0.8
+             3rd most recent     = position 2, weight = 0.64
+             ... and so on
+
+Cap at last 20 attempts (older attempts have negligible weight).
+```
+
+**Example:** Student answered: correct, wrong, correct, correct (most recent last)
+```
+weights:  0.51,  0.64,  0.80,  1.00   (oldest → newest)
+results:  1.0,   0.0,   1.0,   1.0
+score = (0.51 + 0 + 0.80 + 1.00) / (0.51 + 0.64 + 0.80 + 1.00) = 2.31 / 2.95 = 0.78
+```
+
+**Recalculated:** after every answer submitted in any session type.
 
 ---
 
@@ -124,9 +192,12 @@ Triggered when a student fails a **floor skill** (Level 1 in the prerequisite gr
 2. 5 questions, all d1–d2
 3. `explanationSteps` always auto-expanded (never hidden behind a click)
 4. No timer
-5. Pass threshold: 3/5
-6. On pass: 2 bridge questions at d4
-7. On fail: repeat with different d1–d2 questions from pool
+5. Pass thresholds:
+   - **2/5 or below** → repeat micro-lesson with different questions
+   - **3/5** → marginal pass — proceed to bridge questions with "Consider revisiting this skill soon" note
+   - **4/5 or 5/5** → strong pass — proceed to bridge questions, no caveat
+6. On any pass: 2 bridge questions at d4
+7. On fail: repeat with different d1–d2 questions from pool (never reuse in same day)
 
 ---
 
@@ -141,13 +212,13 @@ The engine adjusts difficulty based on a rolling 4-question window:
 | 3 correct | Hold, show harder next |
 | 4 correct | Increase one difficulty level |
 
-Mastery is declared when the student achieves 3/4 correct **at d5 or above**.
+**Mastery declared:** 3/4 correct at d5+ (Math) or d4+ (R&W).
 
 ---
 
 ## Error Classification
 
-Every wrong answer is classified by error type:
+Every wrong answer is classified by error type and stored in `session_answer.error_type`.
 
 | Type | Meaning |
 |---|---|
@@ -156,7 +227,69 @@ Every wrong answer is classified by error type:
 | `SETUP` | Can solve but sets up the problem incorrectly |
 | `CARELESS` | Arithmetic or reading error on a question they likely know |
 
-The dominant error type for each skill surfaces in the student's skill map and informs how the drill session structures feedback.
+### Mapping from trapCategory and GapAnalysisService
+
+The existing `trapCategory` on questions and `GapAnalysisService` gap tags map to error types as follows. This mapping lives in `MistakeClassifierService` (to be built in Phase 4).
+
+| trapCategory | Gap tag (GapAnalysisService) | errorType | Notes |
+|---|---|---|---|
+| `sign_error` | "I made a calculation mistake" | `CARELESS` | timeSpentSeconds < 30 strengthens signal |
+| `arithmetic` | "I made a calculation mistake" | `CARELESS` | |
+| `off_by_one` | "I made a calculation mistake" | `CARELESS` | |
+| `wrong_formula` | "I didn't know the formula/rule" | `CONCEPT` | |
+| `wrong_method` | "I didn't know the formula/rule" | `CONCEPT` | |
+| `misread_question` | "I confused X with Y" | `APPLICATION` | |
+| `incomplete_setup` | "I set up the equation wrong" | `SETUP` | |
+| `algebra_manipulation` | "I confused X with Y" | `APPLICATION` | |
+| `unit_error` | "I confused X with Y" | `APPLICATION` | |
+
+**CARELESS signal boost:** if `timeSpentSeconds < 30` AND the student has previously answered this skill correctly, bias toward `CARELESS` regardless of trap category.
+
+The dominant error type per skill (`user_skill_mastery.dominantErrorType`) is the **most frequent** `errorType` across all wrong answers for that skill. Recalculated after each session.
+
+---
+
+## Data Model Clarification
+
+`dominantErrorType` exists in two places with different meanings:
+
+| Field | Location | Meaning |
+|---|---|---|
+| `errorType` | `session_answer` | Per-attempt classification. Set once on wrong answer, null on correct. |
+| `dominantErrorType` | `user_skill_mastery` | Aggregate across all attempts for this skill. Most frequent `errorType`. Updated after each session. |
+
+These are not redundant — `session_answer.errorType` is the raw data; `user_skill_mastery.dominantErrorType` is the derived summary shown to the student.
+
+---
+
+## Weekly Drill Plan — Priority Formula
+
+The engine selects **3–4 skills per week** (not more — prevents overwhelm).
+
+**Priority score formula:**
+
+```
+priority = (1 - masteryScore) × domain_weight × time_factor
+
+domain_weight — based on % of real SAT questions:
+  Algebra:          3.5   (35% of Math section)
+  Advanced Math:    3.5
+  PS & Data:        1.5   (15% of Math section)
+  Geometry:         1.5
+  Craft & Structure: 2.8  (28% of R&W section)
+  Info & Ideas:     2.6
+  Standard English: 2.6
+  Expression:       2.0
+
+time_factor — adjusts for proximity to test date:
+  > 8 weeks to test:  1.0  (work from foundations up — follow prerequisite order)
+  4–8 weeks to test:  1.2  (boost high domain_weight skills)
+  < 4 weeks to test:  1.5  (prioritise highest-impact skills only, skip foundations)
+```
+
+**Selection:** Sort all weak skills (mastery < 0.7) by priority score descending. Take top 3–4. Skills in active spaced repetition resurface are added on top (not counted against the 3–4 limit).
+
+**Prerequisite ordering:** if a weak skill has an unmet HARD prerequisite, the prerequisite replaces the skill in the plan — a student never sees "drill quadratic functions" when `factoring` is still weak.
 
 ---
 
@@ -179,10 +312,6 @@ The diagnostic-first → adaptive drill → full test model is not experimental.
 - **PrepScholar** — 60-question diagnostic → adaptive study plan → skills retired when mastered
 - **Khan Academy Official SAT Practice** — PSAT-linked diagnostic → personalized plan → mastery-based progression
 
-### What Our Model Adds
-
-Khan Academy has PSAT data as their diagnostic input (effectively 800+ items of prior evidence). We build our signal from scratch with a purpose-built diagnostic, which means diagnostic quality is critical — it is the only information we have at the start.
-
 ---
 
 ## Session Data Model
@@ -193,17 +322,17 @@ user_skill_mastery
 ├── skillKey
 ├── attempts
 ├── correct
-├── dominantErrorType    ← CONCEPT / APPLICATION / SETUP / CARELESS
-├── masteryScore         ← 0.0 – 1.0
+├── dominantErrorType    ← most frequent errorType across all wrong answers for this skill
+├── masteryScore         ← recency-weighted accuracy (0.0–1.0), see formula above
 ├── lastAttemptedAt
-└── nextResurfaceAt      ← spaced repetition schedule
+└── nextResurfaceAt      ← set when mastery ≥ 0.8 for spaced repetition
 
 session_answer
 ├── sessionId
 ├── questionId
 ├── studentAnswer
 ├── isCorrect
-├── errorType            ← classified per wrong answer
+├── errorType            ← per-attempt classification (null when correct)
 ├── timeSpentSeconds
 └── answeredAt
 ```

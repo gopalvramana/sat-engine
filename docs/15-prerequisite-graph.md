@@ -6,8 +6,18 @@
 
 The SAT skill taxonomy is structured as a **5-level directed acyclic graph (DAG)**, not a flat list. Every skill has 0–3 direct prerequisites. When a student fails a skill, the engine checks whether prerequisite gaps are the root cause before drilling the skill itself.
 
-**Math dependencies are hard** — you literally cannot factor without understanding polynomials.
-**R&W dependencies are softer** — they are diagnostic hints, not strict blockers.
+### Dependency Types
+
+Every prerequisite link carries a `dependency_type`:
+
+| Type | Engine behaviour | Used for |
+|---|---|---|
+| `HARD` | **Blocks** the skill — student must reach mastery ≥ 0.6 on prerequisite first | All Math prerequisites by default |
+| `SOFT` | Shows a **recommendation warning** — student may proceed anyway | All R&W prerequisites by default |
+
+**Math:** dependencies are hard because the knowledge is truly sequential. You cannot factor without understanding equivalent expressions. You cannot solve a quadratic without knowing how to factor.
+
+**R&W:** dependencies are softer because reading skills develop in parallel. A student at `central_ideas` mastery 0.5 can still meaningfully attempt `inferences` — the dependency is a hint to the teacher, not a hard gate.
 
 ---
 
@@ -188,8 +198,17 @@ graph TD
 
 **DAG rules:**
 - Some skills have 2 parents (e.g. `circle_equations` needs both `coordinate_geometry` and `circle_properties`)
-- The engine checks **all** direct prerequisites before starting a drill
-- A prerequisite is considered clear when `masteryScore ≥ 0.6`
+- The engine checks **all** direct HARD prerequisites before starting a drill
+- A HARD prerequisite is considered clear when `masteryScore ≥ 0.6`
+- SOFT prerequisites show a warning but do not block
+
+### Skills With Two Parents — Intentional
+
+**`nonlinear_eq_systems`** appears in both Chain A and Chain B with different parents:
+- Chain A parent: `systems_linear_eq`
+- Chain B parent: `quadratic_equations`
+
+This is **intentional and correct** — solving nonlinear systems requires both understanding systems of linear equations (to know what a solution to a system means) AND quadratic equations (to handle the nonlinear component). The engine checks **both** prerequisites. Both are `HARD`.
 
 ---
 
