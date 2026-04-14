@@ -29,6 +29,9 @@
 | 15 | [Prerequisite Graph](15-prerequisite-graph.md) | 5-level DAG for all 66 skills — Math chains + R&W chains |
 | 16 | [Question Pool Strategy](16-question-pool-strategy.md) | Two-pool model (drill vs test), pool size targets, generation priority |
 | 17 | [Execution Plan](17-execution-plan.md) | 14-sprint plan, dependencies, content gates, launch milestones |
+| 18 | [Pipeline Architecture](18-pipeline-architecture.md) | 6-stage question generation pipeline — Generate → AgentReview → Enrich → Human Review, all Claude prompts, status state machine |
+| 19 | [Data Model](19-data-model.md) | Complete DB schema, all JSONB field schemas (diagram, animation, explanationSteps, coreConcept), Flyway migration history, planned tables |
+| 20 | [Frontend Architecture](20-frontend-architecture.md) | React component hierarchy, KaTeX rendering (2 paths), animation system, SkillDrawer, FeedbackPanel accordion, API layer |
 
 ---
 
