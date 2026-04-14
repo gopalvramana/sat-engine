@@ -28,6 +28,7 @@
 | 14 | [Adaptive Learning Engine](14-adaptive-engine.md) | Diagnostic-first flow, mastery loop, session types, research backing |
 | 15 | [Prerequisite Graph](15-prerequisite-graph.md) | 5-level DAG for all 66 skills — Math chains + R&W chains |
 | 16 | [Question Pool Strategy](16-question-pool-strategy.md) | Two-pool model (drill vs test), pool size targets, generation priority |
+| 17 | [Execution Plan](17-execution-plan.md) | 14-sprint plan, dependencies, content gates, launch milestones |
 
 ---
 
