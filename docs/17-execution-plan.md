@@ -11,14 +11,15 @@ The diagnostic and adaptive drills launch together as a single complete loop. A 
 
 ---
 
-## Two Parallel Tracks (throughout all phases)
+## Three Parallel Tracks (throughout all phases)
 
 | Track | When | What |
 |---|---|---|
 | **Build** | Weekends | APIs, UI, DB migrations |
-| **Content** | Weekday evenings | Generate → review → approve questions |
+| **Questions** | Weekday evenings | Generate → review → approve questions |
+| **Concept guides** | Weekday evenings | Curate JSON concept guides per skill |
 
-Question generation runs every evening regardless of which sprint is active. It is the most likely bottleneck for every phase launch.
+Both content tracks run every evening independently of code work. Questions and concept guides are the most likely bottlenecks for Phase 1 launch.
 
 ---
 
@@ -49,7 +50,7 @@ All taxonomy JSON changes — do together in one sitting.
 | Issue | Task | Depends on |
 |---|---|---|
 | #59 | Add prerequisite graph to `sat_taxonomy.json` | — |
-| #60 | Add `poolTarget` field per skill | — |
+| #60 | Add `poolTarget` + `hasConceptGuide` fields per skill | — |
 | #87 | Add `dependency_type` (HARD/SOFT) to prerequisite links | #59 |
 
 ### Sprint 2 (Weekend 2)
@@ -59,7 +60,7 @@ All taxonomy JSON changes — do together in one sitting.
 | #62 | `GenerateStage` mode flag: DIAGNOSTIC / DRILL / TEST | #59, #60, #87 |
 | #61 | Spread dashboard: two-pool view | #60 |
 
-### Content — starts Sprint 2, runs every evening
+### Content track A — Questions (starts Sprint 2, runs every evening)
 
 | Issue | Task | Gate for |
 |---|---|---|
@@ -67,11 +68,24 @@ All taxonomy JSON changes — do together in one sitting.
 | #75 | 600 drill questions (Algebra + Advanced Math) | Phase 1 launch |
 | #80 | 940 test-pool questions (all domains, `pool: test`) | Phase 2 launch |
 
+### Content track B — Concept Guides (starts Sprint 1, runs every evening)
+
+27 curated JSON files. SAT-filtered — no JEE-only content. See issue #91 for full checklist and schema.
+
+| Priority | Guides | Gate for |
+|---|---|---|
+| **P1** | Geometry (11 files): `circle_properties`, `circle_equations`, `special_right_triangles`, `right_triangle_trig`, `pythagorean_theorem`, `triangles`, `similar_congruent_triangles`, `lines_angles`, `area_2d`, `coordinate_geometry`, `unit_circle_radians` | Phase 1 launch |
+| **P1** | Algebra (5 files): `linear_functions`, `systems_linear_eq`, `linear_eq_two_var`, `linear_inequalities_two_var`, `equivalent_expressions` | Phase 1 launch |
+| **P2** | Advanced Math (5 files): `quadratic_equations`, `quadratic_functions`, `exponential_functions`, `function_notation`, `radicals_rational_exponents` | Phase 2 launch |
+| **P2** | PS & Data (3 files): `probability`, `scatterplots`, `inference_statistics` | Phase 2 launch |
+| **P2** | R&W (3 files): `boundaries`, `subject_verb_agreement`, `transitions` | Phase 2 launch |
+
 ```
 ★ Phase 0 complete when:
-  Taxonomy has prereq graph + dependency_type + poolTarget
+  Taxonomy has prereq graph + dependency_type + poolTarget + hasConceptGuide
   GenerateStage runs in DIAGNOSTIC / DRILL / TEST modes
   Spread dashboard shows drill vs test pool separately
+  concept-guides/ directory created with at least P1 guides (16 files)
 ```
 
 ---
@@ -236,21 +250,21 @@ Drill UIs — complete the loop.
 
 ## Sprint Summary
 
-| Sprint | Weekend | Build | Content milestone |
-|---|---|---|---|
-| 1 | W1 | #59, #60, #87 — taxonomy | Start generating |
-| 2 | W2 | #62, #61 — pipeline + dashboard | ~30Q generated |
-| 3 | W3 | #64, #72, #88 — all DB migrations | ~80Q generated |
-| 4 | W4 | #65, #69 — diagnostic + prereq APIs | ~130Q generated |
-| 5 | W5 | #66, #70, #71 — skill map + drill APIs | ~180Q generated |
-| 6 | W6 | #67, #68 — diagnostic + skill map UI | ~220Q + 100 drill Q |
-| 7 | W7 | #73, #74 — drill UIs → **Phase 1 launches** | **200Q + 600Q ✅** |
-| 8 | W8 | #76, #77 — test APIs | Continue test pool |
-| 9 | W9 | #78, #79 — test UIs → **Phase 2 launches** | **940Q test pool ✅** |
-| 10 | W10 | #89, #81 — classifier | Continue |
-| 11 | W11 | #82, #83 — error UIs → **Phase 3 launches** | Continue |
-| 12 | W12 | #90, #84 — smart plan | Continue |
-| 13 | W13 | #85, #86 — resurface + refresher → **Phase 4 launches** | Continue |
+| Sprint | Weekend | Build | Questions | Concept guides |
+|---|---|---|---|---|
+| 1 | W1 | #59, #60, #87 — taxonomy | — | Start P1 guides (Geometry) |
+| 2 | W2 | #62, #61 — pipeline + dashboard | Start generating | Continue Geometry |
+| 3 | W3 | #64, #72, #88 — all DB migrations | ~80Q | Complete Geometry (11 files) |
+| 4 | W4 | #65, #69 — diagnostic + prereq APIs | ~130Q | Start Algebra (5 files) |
+| 5 | W5 | #66, #70, #71 — skill map + drill APIs | ~180Q | Complete Algebra |
+| 6 | W6 | #67, #68 — diagnostic + skill map UI | ~220Q + 100 drill Q | **16 P1 guides done ✅** |
+| 7 | W7 | #73, #74 — drill UIs → **Phase 1 launches** | **200Q + 600Q ✅** | **16 P1 guides ✅** |
+| 8 | W8 | #76, #77 — test APIs | Continue test pool | Start P2 guides (AdvMath) |
+| 9 | W9 | #78, #79 — test UIs → **Phase 2 launches** | **940Q ✅** | **27 guides done ✅** |
+| 10 | W10 | #89, #81 — classifier | Continue | — |
+| 11 | W11 | #82, #83 — error UIs → **Phase 3 launches** | Continue | — |
+| 12 | W12 | #90, #84 — smart plan | Continue | — |
+| 13 | W13 | #85, #86 — resurface + refresher → **Phase 4 launches** | Continue | — |
 
 **13 weekends → full product (~3 months)**
 
@@ -258,10 +272,10 @@ Drill UIs — complete the loop.
 
 ## Content Gates
 
-| Launch | Questions needed | Pool | Notes |
+| Launch | Questions | Concept guides | Notes |
 |---|---|---|---|
-| Phase 1 | 200 diagnostic (d3–d4) + 600 drill (Algebra + AdvMath) | practice | Both needed together |
-| Phase 2 | 940 test-pool questions | test | All 8 domains |
-| Full product | ~3,390 drill questions | practice | All 66 skills × 50 |
+| Phase 1 | 200 diagnostic + 600 drill (Algebra + AdvMath) | 16 P1 guides (Geometry + Algebra) | All needed together |
+| Phase 2 | 940 test-pool questions | 27 guides complete | All 8 domains |
+| Full product | ~3,390 drill questions | 27 guides | All 66 skills × 50 |
 
-**Start generating today.** Content is the most likely bottleneck — not code.
+**Start both content tracks from Sprint 1.** Concept guides can be written on weekday evenings alongside question generation — they take ~20 min per skill to curate carefully.
