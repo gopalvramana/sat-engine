@@ -193,12 +193,11 @@ export default function SummaryPage() {
           <button className={styles.restartBtn} onClick={() => navigate('/practice')}>
             Practice Again
           </button>
-          {hasState ? (
-            <button className={styles.homeBtn} onClick={() => navigate('/')}>
-              Back to Dashboard
-            </button>
-          ) : (
-            <button className={styles.homeBtn} onClick={() => navigate('/history')}>
+          <button className={styles.homeBtn} onClick={() => navigate('/dashboard')}>
+            Dashboard
+          </button>
+          {!hasState && (
+            <button className={styles.historyBtn} onClick={() => navigate('/history')}>
               Back to History
             </button>
           )}
