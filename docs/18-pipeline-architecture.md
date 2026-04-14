@@ -12,71 +12,71 @@ The pipeline is a **6-stage CLI-driven process** that transforms a blank databas
 
 ```mermaid
 flowchart TD
-    A([🚀 Start: java -jar sat-engine.jar --job=generate]) --> B
+    A([Start: java -jar sat-engine.jar --job=generate]) --> B
 
-    subgraph STAGE1["Stage 1 — Generate (Haiku 4.5)"]
+    subgraph S1["Stage 1 — Generate (Haiku 4.5)"]
         B[Load sat_taxonomy.json] --> C[Pick least-covered skill]
         C --> D[Pick most-underrepresented difficulty]
-        D --> E[Build diversity context\nfetch all domain questions\nso Claude avoids duplicates]
-        E --> F[Call Claude Haiku\ntemp=0.8, max=4000]
-        F --> G{Artifact check\nJaccard duplicate\ndiagram format}
-        G -->|Fail, attempt < 2| F
-        G -->|Pass| H[Save Question + QuestionAnswer\nstatus: generated]
+        D --> E["Build diversity context\nfetch all domain questions\nso Claude avoids duplicates"]
+        E --> F["Call Claude Haiku\ntemp=0.8, max=4000"]
+        F --> G{"Artifact check\nJaccard duplicate\ndiagram format"}
+        G -->|"Fail, attempt < 2"| F
+        G -->|Pass| H["Save Question + QuestionAnswer\nstatus: generated"]
     end
 
     H --> I
 
-    subgraph STAGE2["Stage 2 — Render Normalize"]
-        I[Scan questions with status=generated] --> J[Fix LaTeX delimiters\n$ → \\( \\)]
+    subgraph S2["Stage 2 — Render Normalize"]
+        I["Scan questions with status=generated"] --> J["Fix LaTeX delimiters\ndollar signs to backslash-paren"]
         J --> K[status stays: generated]
     end
 
     K --> L
 
-    subgraph STAGE3["Stage 3 — Agent Review (Opus 4.5)"]
-        L[Load generated questions] --> M[Build slim question JSON\nstem + options + answer + diagram type]
-        M --> N[Call Claude Opus 4.5\nmax=1200]
-        N --> O[Receive: pass, confidence,\nsolvedAnswer, issues]
-        O --> P{solvedAnswer\nvalid?}
-        P -->|MCQ: A-D ✓| Q[Save QuestionReview]
-        P -->|SPR: numeric ✓| Q
-        P -->|Invalid prose| R[pass=false\ncritical issue added]
+    subgraph S3["Stage 3 — Agent Review (Opus 4.5)"]
+        L[Load generated questions] --> M["Build slim question JSON\nstem + options + answer + diagram type"]
+        M --> N["Call Claude Opus 4.5\nmax=1200"]
+        N --> O["Receive: pass, confidence,\nsolvedAnswer, issues"]
+        O --> P{"solvedAnswer\nvalid?"}
+        P -->|"MCQ: A-D"| Q[Save QuestionReview]
+        P -->|"SPR: numeric"| Q
+        P -->|Invalid prose| R["pass=false\ncritical issue added"]
         R --> Q
         Q --> S[status: reviewed]
     end
 
     S --> T
 
-    subgraph STAGE4["Stage 4 — Enrich (Opus 4.6)"]
-        T{Math or R&W?}
-        T -->|R&W| U[Skip enrichment\npool=both\nstatus: enriched]
-        T -->|Math| V[Call Claude Opus 4.6\nmax=3500]
-        V --> W[Receive: explanationSteps,\nalternativeApproach, coreConcept,\nprerequisites, animation,\nwrongAnswerExplanations,\nchoiceExplanations]
-        W --> X{Formula law\nvalidation}
-        X -->|formula mentioned\nbut math field empty| Y[Retry — max 2 attempts]
+    subgraph S4["Stage 4 — Enrich (Opus 4.6)"]
+        T{"Math or\nReading+Writing?"}
+        T -->|"Reading and Writing"| U["Skip enrichment\npool=both, status=enriched"]
+        T -->|Math| V["Call Claude Opus 4.6\nmax=3500"]
+        V --> W["Receive: explanationSteps,\nalternativeApproach, coreConcept,\nprerequisites, animation,\nchoiceExplanations"]
+        W --> X{"Formula law\nvalidation"}
+        X -->|"Formula named\nbut math field empty"| Y["Retry — max 2 attempts"]
         Y --> V
-        X -->|Pass| Z[Apply all fields to Question\nstatus: enriched]
-        Z --> AA[Run animation backfill\nfor questions missing frames]
+        X -->|Pass| Z["Apply all fields to Question\nstatus: enriched"]
+        Z --> AA["Run animation backfill\nfor questions missing frames"]
     end
 
     AA --> AB
 
-    subgraph STAGE5["Stage 5 — Visual Check"]
-        AB[Geometry questions only] --> AC{Diagram\nvalid?}
-        AC -->|Issues found + --fix flag| AD[Auto-patch fixable issues]
+    subgraph S5["Stage 5 — Visual Check"]
+        AB[Geometry questions only] --> AC{"Diagram\nvalid?"}
+        AC -->|"Issues found + fix flag"| AD[Auto-patch fixable issues]
         AC -->|Pass| AE[Log OK]
     end
 
     AE --> AF
 
-    subgraph STAGE6["Stage 6 — Human Review (validate.html)"]
-        AF[Admin opens validate.html] --> AG[View question with\nfull rendering]
+    subgraph S6["Stage 6 — Human Review (validate.html)"]
+        AF["Admin opens validate.html"] --> AG["View question with\nfull rendering"]
         AG --> AH{Decision}
-        AH -->|Approve| AI[status: approved\nquestion goes live]
-        AH -->|Reject| AJ[status: rejected\nnever served to students]
+        AH -->|Approve| AI["status: approved\nquestion goes live"]
+        AH -->|Reject| AJ["status: rejected\nnever served to students"]
     end
 
-    AI --> AK([✅ Question live in DB\nServed to students])
+    AI --> AK([Question live in DB — served to students])
 ```
 
 ---
@@ -155,11 +155,11 @@ RW-SE-008       →   section=reading_writing, domain=standard_english, sequence
 
 ```mermaid
 flowchart LR
-    A["Input: $x^2 + 1$"] --> B{Normalize}
-    B --> C["Output: \\(x^2 + 1\\)"]
+    A["Input: dollar-sign x^2 + 1 dollar-sign"] --> B{Normalize}
+    B --> C["Output: backslash-paren x^2 + 1 backslash-paren"]
 
-    D["Input: $$\\frac{a}{b}$$"] --> E{Normalize}
-    E --> F["Output: \\[\\frac{a}{b}\\]"]
+    D["Input: double-dollar frac a b double-dollar"] --> E{Normalize}
+    E --> F["Output: backslash-bracket frac a b backslash-bracket"]
 ```
 
 Flags: `--all` (check all statuses), `--dry-run` (report without writing), `--id` (single question).
@@ -231,7 +231,7 @@ flowchart TD
 flowchart TD
     A[Question with status=reviewed] --> B{Section?}
 
-    B -->|reading_writing| C[Skip enrichment\npool=both\nstatus=enriched\nLog: skipped R&W]
+    B -->|reading_writing| C["Skip enrichment\npool=both, status=enriched\nLog: skipped Reading+Writing"]
 
     B -->|math| D[Call Opus 4.6\nwith question + domain + difficulty]
     D --> E[Receive full enrichment JSON]
@@ -354,11 +354,11 @@ mindmap
   root((PromptLibrary))
     Generate
       GENERATE_SYSTEM_MATH
-        LaTeX rules inline \\( display \\[
+        LaTeX rules inline and display mode
         Table rules HTML only
         Verify answers before writing
         No stream-of-consciousness
-      GENERATE_SYSTEM_RW
+      GENERATE_SYSTEM_RandW
         Passage-based domains
         Sentence-level for Standard English
         Answer must be unambiguous
@@ -394,17 +394,17 @@ stateDiagram-v2
 
     generated --> reviewed: AgentReviewStage\nsaves QuestionReview\n(pass or fail — both advance)
 
-    reviewed --> reviewed: AgentReviewStage --only-failed\nre-reviews failed questions
+    reviewed --> reviewed: AgentReviewStage only-failed\nre-reviews failed questions
 
     reviewed --> enriched: EnrichStage adds\npedagogical content
 
     enriched --> enriched: AnimationBackfill adds\nmissing animation frames
 
-    enriched --> approved: Human approves\nin validate.html\n✅ LIVE TO STUDENTS
+    enriched --> approved: Human approves\nin validate.html\nLIVE TO STUDENTS
 
-    enriched --> rejected: Human rejects\nin validate.html\n❌ NEVER SERVED
+    enriched --> rejected: Human rejects\nin validate.html\nNEVER SERVED
 
-    approved --> enriched: EnrichStage --include-approved\nre-enriches if needed
+    approved --> enriched: EnrichStage include-approved\nre-enriches if needed
 
     approved --> rejected: Human re-rejects\nafter approval
 
