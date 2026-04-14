@@ -32,6 +32,7 @@
 | 18 | [Pipeline Architecture](18-pipeline-architecture.md) | 6-stage question generation pipeline — Generate → AgentReview → Enrich → Human Review, all Claude prompts, status state machine |
 | 19 | [Data Model](19-data-model.md) | Complete DB schema, all JSONB field schemas (diagram, animation, explanationSteps, coreConcept), Flyway migration history, planned tables |
 | 20 | [Frontend Architecture](20-frontend-architecture.md) | React component hierarchy, KaTeX rendering (2 paths), animation system, SkillDrawer, FeedbackPanel accordion, API layer |
+| 21 | [Deployment Architecture](21-deployment-architecture.md) | Railway + Supabase + Neon + Sentry setup, Spring profiles, all env vars, Flyway migration process, pipeline jobs in prod |
 
 ---
 
