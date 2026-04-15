@@ -409,6 +409,21 @@ Supported shape values and their key fields:
     universal:{label?,value?}  (draws enclosing rectangle = sample space)
     Use for probability set questions: P(A∩B), P(A∪B), P(A only), counting problems.
 
+  3d_shape — type, labels:{...}, width?, height?
+    Use for ANY 3D solid geometry question (volume, surface area, diagonals, etc.)
+    type values and their label keys:
+      "rectangular_prism" / "cube"  — labels:{length, width, height}
+      "cylinder"                    — labels:{height, radius}
+      "cone"                        — labels:{height, radius}
+      "pyramid"                     — labels:{base, height}   ← square base pyramid
+      "sphere"                      — labels:{radius}
+      "triangular_prism"            — labels:{base, height, length}
+      "frustum"                     — labels:{radius, topRadius, height}  ← truncated cone
+    Label values should be the actual numeric values from the question (e.g. labels:{base:"6", height:"3√2"})
+    Example:
+      "diagram": { "diagramType": "svg_programmatic", "svgConfig": { "shape": "3d_shape",
+        "type": "pyramid", "labels": { "base": "6", "height": "3\\u221a2" } } }
+
   rectangle / parallelogram / trapezoid — vertices:{A,B,C,D:{x,y}},
     sides:[{from,to,label}], angles:[{at,label}], showHeight, heightLabel
 
