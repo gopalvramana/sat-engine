@@ -2908,18 +2908,24 @@ function renderLineChart(canvasId, config) {
 
 // ── scatter chart ───────────────────────────────────────────────────
 function renderScatterChart(canvasId, config) {
-  const datasets = (config.datasets ?? []).map(ds => ({
-    type:            'scatter',
-    label:           ds.label ?? '',
-    data:            ds.points ?? ds.data ?? [],
-    parsing:         { xAxisKey: 'x', yAxisKey: 'y' },
-    borderColor:     ds.color ?? '#2563eb',
-    backgroundColor: hexAlpha(ds.color ?? '#2563eb', 0.75),
-    borderWidth:     1.5,
-    pointRadius:     ds.showPoints === false ? 0 : (ds.pointRadius ?? 5),
-    showLine:        ds.showLine ?? (ds.showPoints === false ? true : false),
-    tension:         0
-  }));
+  const datasets = (config.datasets ?? []).map(ds => {
+    // Auto-detect regression/trend line datasets: label hint OR exactly 2 points with showLine not set
+    const isLine = ds.showLine === true
+      || ds.showPoints === false
+      || /line|regression|trend/i.test(ds.label ?? '');
+    return {
+      type:            'scatter',
+      label:           ds.label ?? '',
+      data:            ds.points ?? ds.data ?? [],
+      parsing:         { xAxisKey: 'x', yAxisKey: 'y' },
+      borderColor:     ds.color ?? '#2563eb',
+      backgroundColor: isLine ? 'transparent' : hexAlpha(ds.color ?? '#2563eb', 0.75),
+      borderWidth:     isLine ? 2 : 1.5,
+      pointRadius:     isLine ? 0 : (ds.pointRadius ?? 5),
+      showLine:        isLine,
+      tension:         0
+    };
+  });
 
   // Best fit line
   if (config.bestFitLine?.show) {

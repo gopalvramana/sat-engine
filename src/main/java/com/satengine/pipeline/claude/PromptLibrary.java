@@ -475,7 +475,9 @@ REMINDER: if the question involves a mathematical function or equation graph, us
 SCATTER PLOT RULES — mandatory when chartType is "scatter":
 A scatter plot MUST have two separate datasets:
   1. "Data points" dataset — the raw observed data (8–12 points), with realistic scatter/variance
-  2. "Regression Line" dataset — exactly 2 points: the line's start and end (min x, max x)
+     Add "showLine": false to this dataset (default scatter appearance).
+  2. "Regression Line" dataset — exactly 2 points: the line's start and end (min x, max x).
+     MUST include "showLine": true and "showPoints": false so it renders as a line, not dots.
 
 CRITICAL — data points must NOT lie on the regression line:
 - Choose a slope (m) and intercept (b) for your regression line first: y = mx + b
