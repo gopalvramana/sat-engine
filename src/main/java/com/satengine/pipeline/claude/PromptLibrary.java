@@ -463,7 +463,8 @@ The diagram field MUST use this exact two-level structure — no exceptions:
   "diagram": {
     "diagramType": "chartjs",          ← always "chartjs", never "type"
     "chartConfig": {                   ← all chart fields go INSIDE chartConfig
-      "chartType": "bar",              ← "bar"|"histogram"|"line"|"scatter"|"pie"|"boxplot"|"dotplot"
+      "chartType": "bar",              ← "bar"|"histogram"|"line"|"pie"|"boxplot"|"dotplot"
+                                       ← NEVER use "scatter" — banned due to equation consistency issues
       "title": "Chart Title",
       "categories": ["A","B","C"],     ← bar/line x-axis labels — NOT "labels"
       "xAxis": { "label": "X label" },
