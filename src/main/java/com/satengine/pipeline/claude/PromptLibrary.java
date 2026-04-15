@@ -486,28 +486,55 @@ Multiple datasets in bar chart = grouped bars by default.
 REMINDER: if the question involves a mathematical function or equation graph, use svg_programmatic instead.
 
 SCATTER PLOT RULES — mandatory when chartType is "scatter":
-A scatter plot MUST have two separate datasets:
-  1. "Data points" dataset — the raw observed data (8–12 points), with realistic scatter/variance
+
+SCENARIO CONSTRAINT — use scatter plots ONLY for roughly linear real-world relationships:
+  GOOD: study hours vs test score, advertising spend vs sales, height vs weight
+  BAD: signal decay, population growth, cooling curves — these are curved/exponential.
+  If the real-world relationship is curved, do NOT use a scatter plot. Use a different question type.
+
+EQUATION IN STEM — mandatory:
+The question stem MUST state the regression equation explicitly.
+  GOOD: "A line of best fit modeled by y = 2.5x + 14 has been fitted to the data."
+  BAD:  "A trend line has been fitted to the data." ← never do this
+Without the equation, students must visually interpolate — making the question ambiguous and unanswerable with confidence.
+The student computes the answer from the equation, using the chart to understand the context only.
+
+ANSWER CHOICE SPACING — mandatory:
+The four answer choices must differ by at least 10% of the y-axis range.
+  Example: y-axis 0–100 → choices must be at least 10 units apart.
+  BAD: 38, 42, 35, 45 — too close, multiple answers defensible visually.
+  GOOD: 32, 42, 52, 28 — clearly spaced, only one is correct from the equation.
+
+DATASETS — two required:
+  1. "Data points" dataset — the raw observed data (8–12 points), with realistic scatter/variance.
      Add "showLine": false to this dataset (default scatter appearance).
   2. "Regression Line" dataset — exactly 2 points: the line's start and end (min x, max x).
      MUST include "showLine": true and "showPoints": false so it renders as a line, not dots.
+     The 2 points MUST be computed from your equation: (xMin, m*xMin+b) and (xMax, m*xMax+b).
 
-CRITICAL — data points must NOT lie on the regression line:
-- Choose a slope (m) and intercept (b) for your regression line first: y = mx + b
+DATA POINT RULES:
+- Choose slope (m) and intercept (b) for your regression line first: y = mx + b
 - For each data point, add a random residual of ±3 to ±10 units to the y value
   (some points above the line, some below — mix them up)
 - No more than 2 points should be within 1 unit of the line
-- The correct answer comes from the REGRESSION LINE at the target x, not from any data point
+- The correct answer comes from the EQUATION at the target x, not from any data point
+- Do NOT place a data point at the exact target x value
 
-WORKED EXAMPLE — a scatter plot where the regression line is y = 0.5x + 52:
-  Data points (with residuals):  (20,65), (25,62), (30,69), (35,66), (40,73), (45,71), (50,78), (55,79)
-  Regression line: (20,62) and (55,79.5)  ← just 2 points, start to end
-  Answer at x=40: 0.5*40 + 52 = 72  ← read from the LINE, not the nearest dot
+WORKED EXAMPLE — regression line y = 0.5x + 52, question asks for predicted value at x = 40:
+  Stem: "...A line of best fit modeled by \\(y = 0.5x + 52\\) has been fitted to the data.
+         Based on this equation, what is the predicted value at x = 40?"
+  Answer: 0.5(40) + 52 = 72
+  Data points (with residuals): (20,65),(25,62),(30,69),(35,66),(40,73),(45,71),(50,78),(55,79)
+                                  ← note: no point exactly at x=40
+  Regression line endpoints: (20, 62) and (55, 79.5)
+  Answer choices (spaced ≥10 apart): 62, 72, 82, 57  ← only 72 is correct
 
-SELF-CHECK before finalising scatter data:
-- Do the data points visibly scatter above and below the regression line? Must be YES.
-- Can I read the answer directly off a data point at the target x? Must be NO (no dot at target x).
-- Does the regression line pass cleanly through the scatter? Must be YES.
+SELF-CHECK before finalising:
+- Does the question stem state the regression equation? Must be YES.
+- Are answer choices at least 10% of the y-axis range apart? Must be YES.
+- Do data points scatter above and below the regression line? Must be YES.
+- Is the data roughly linear (not curved)? Must be YES.
+- Is there a data point at the exact target x? Must be NO.
 """);
             }
         } else {
