@@ -1,0 +1,83 @@
+.page {
+  min-height: 100vh;
+  background: #f1f5f9;
+  padding: 40px 32px;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.header {
+  margin-bottom: 36px;
+}
+.badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  background: #fef3c7;
+  color: #92400e;
+  border-radius: 4px;
+  padding: 2px 8px;
+  margin-bottom: 8px;
+}
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 4px;
+}
+.sub {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Two columns */
+.layout {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.colLabel {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  margin-bottom: 10px;
+}
+
+.burstRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+.burstCorrect, .burstWrong {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 600;
+  transition: opacity 0.15s;
+}
+.burstCorrect:hover, .burstWrong:hover { opacity: 0.85; }
+.burstCorrect { background: #dcfce7; color: #166534; }
+.burstWrong   { background: #fef2f2; color: #991b1b; }
+
+.reopen {
+  padding: 10px 20px;
+  background: #1e293b;
+  color: #f8fafc;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.reopen:hover { background: #334155; }

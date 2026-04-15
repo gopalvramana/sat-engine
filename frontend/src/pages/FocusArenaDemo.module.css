@@ -1,0 +1,300 @@
+/* ── Page shell — dark immersive background ─────────────── */
+.page {
+  min-height: 100vh;
+  background: #0f172a;              /* slate-900 — blue-focus per color science */
+  display: flex;
+  flex-direction: column;
+  font-family: 'Inter', system-ui, sans-serif;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* ── Top bar — ultra-minimal ─────────────────────────────── */
+.topBar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 24px 0;
+  flex-shrink: 0;
+}
+
+.backBtn, .endBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #475569;
+  padding: 6px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  transition: color 0.15s;
+}
+.backBtn:hover { color: #94a3b8; }
+.endBtn { color: #ef4444; }
+.endBtn:hover { color: #f87171; }
+
+.progressWrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.progressMeta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.qCount {
+  font-size: 12px;
+  color: #475569;
+}
+.qCount strong { color: #94a3b8; }
+
+.domainTag {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #0d9488;
+  background: rgba(13, 148, 136, 0.1);
+  border-radius: 4px;
+  padding: 1px 7px;
+}
+
+.correctCount {
+  font-size: 11px;
+  color: #334155;
+  margin-left: auto;
+}
+
+/* Slim 2px progress line */
+.progressTrack {
+  height: 2px;
+  background: #1e293b;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.progressFill {
+  height: 100%;
+  background: #0d9488;
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+
+/* ── Arena — centers the card(s) ─────────────────────────── */
+.arena {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 32px 24px 60px;
+  gap: 28px;
+}
+
+/* When feedback is visible, shift to two-column */
+.arenaFeedback {
+  justify-content: center;
+}
+
+/* ── Question card wrap ───────────────────────────────────── */
+.cardWrap {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  flex-shrink: 0;
+  transition: max-width 0.4s ease;
+}
+.arenaFeedback .cardWrap {
+  max-width: 520px;
+}
+.cardLocked .card {
+  opacity: 0.88;
+}
+
+/* Ambient topic watermark behind card */
+.watermark {
+  position: absolute;
+  top: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 80px;
+  font-weight: 800;
+  color: rgba(255,255,255,0.025);
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+  user-select: none;
+  pointer-events: none;
+  text-transform: uppercase;
+}
+
+/* The card itself — pure white float on dark */
+.card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.04),
+    0 4px 6px -1px rgba(0,0,0,0.4),
+    0 20px 60px -10px rgba(0,0,0,0.5);
+}
+
+/* Card header: difficulty pill + timer */
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.diffPill {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1.5px solid;
+  border-radius: 6px;
+  padding: 3px 10px;
+}
+
+/* Question stem */
+.stem {
+  font-size: 16px;
+  line-height: 1.65;
+  color: #1e293b;
+  margin: 0;
+}
+
+/* Choices */
+.choices {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.choice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: left;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  color: #334155;
+  transition: all 0.12s ease;
+  min-height: 48px;              /* accessibility: 48px tap target */
+  position: relative;
+}
+.choice:hover:not(:disabled) {
+  border-color: #0d9488;
+  background: #f0fdfa;
+  transform: translateX(2px);
+}
+
+.choiceSelected {
+  border-color: #0d9488;
+  background: #f0fdfa;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+}
+
+.choiceCorrect {
+  border-color: #0d9488;
+  background: #f0fdfa;
+}
+.choiceWrong {
+  border-color: #f43f5e;
+  background: #fff1f2;
+}
+.choice:disabled { cursor: default; }
+
+.choiceLetter {
+  width: 26px; height: 26px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 6px;
+  background: #e2e8f0;
+  font-size: 12px;
+  font-weight: 700;
+  color: #475569;
+  flex-shrink: 0;
+}
+.choiceSelected .choiceLetter { background: #0d9488; color: #fff; }
+.choiceCorrect  .choiceLetter { background: #0d9488; color: #fff; }
+.choiceWrong    .choiceLetter { background: #f43f5e; color: #fff; }
+
+.choiceText { flex: 1; }
+
+.choiceMark {
+  font-size: 14px;
+  font-weight: 700;
+  margin-left: auto;
+}
+.choiceCorrect .choiceMark { color: #0f766e; }
+.choiceWrong   .choiceMark { color: #be123c; }
+
+/* Submit zone */
+.submitZone {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 4px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.submitBtn {
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  background: #e2e8f0;
+  color: #94a3b8;
+}
+.submitBtnReady {
+  background: #0f172a;
+  color: #f8fafc;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.3);
+}
+.submitBtnReady:hover {
+  background: #1e293b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.4);
+}
+
+/* ── Insight panel ──────────────────────────────────────── */
+.insightWrap {
+  width: 320px;
+  flex-shrink: 0;
+  padding-top: 4px;
+}
+
+/* ── Dev label ──────────────────────────────────────────── */
+.devLabel {
+  text-align: center;
+  font-size: 10px;
+  color: #1e293b;
+  padding: 8px;
+  letter-spacing: 0.05em;
+}
+
+/* ── Responsive ─────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .arena, .arenaFeedback {
+    flex-direction: column;
+    align-items: center;
+  }
+  .arenaFeedback .cardWrap { max-width: 600px; }
+  .insightWrap { width: 100%; max-width: 600px; }
+  .watermark { font-size: 48px; }
+}

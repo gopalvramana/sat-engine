@@ -528,11 +528,17 @@ function buildView(q) {
        </span>` : '';
 
   /* ── Pool buttons ── */
-  const pool = q.pool || 'both';
-  const poolBtns = ['test','practice','both'].map(p => `
-    <button class="pool-btn ${pool === p ? 'active-' + p : ''}"
-            data-pool="${p}" id="pool-${p}">
-      ${p.charAt(0).toUpperCase() + p.slice(1)}
+  const pool = q.pool || 'drill';
+  const poolDefs = [
+    { val: 'diagnostic', label: 'Diagnostic', cls: 'active-diagnostic' },
+    { val: 'drill',      label: 'Drill',       cls: 'active-drill'      },
+    { val: 'test',       label: 'Test',        cls: 'active-test'       },
+    { val: 'drill+test', label: 'Drill+Test',  cls: 'active-drill-test' },
+  ];
+  const poolBtns = poolDefs.map(({ val, label, cls }) => `
+    <button class="pool-btn ${pool === val ? cls : ''}"
+            data-pool="${val}" id="pool-${val.replace('+','-')}">
+      ${label}
     </button>`).join('');
 
   /* ── Final HTML ── */
@@ -636,16 +642,23 @@ function wireEvents(q) {
     updateStats(); buildSidebar(); renderQuestion();
   });
 
-  ['test', 'practice', 'both'].forEach(p => {
-    document.getElementById(`pool-${p}`)?.addEventListener('click', async () => {
+  const poolDefs2 = [
+    { val: 'diagnostic', cls: 'active-diagnostic' },
+    { val: 'drill',      cls: 'active-drill'      },
+    { val: 'test',       cls: 'active-test'       },
+    { val: 'drill+test', cls: 'active-drill-test' },
+  ];
+  poolDefs2.forEach(({ val, cls }) => {
+    const elId = `pool-${val.replace('+','-')}`;
+    document.getElementById(elId)?.addEventListener('click', async () => {
       const prev = q.pool;
-      q.pool = p;
+      q.pool = val;
       try {
-        await apiPatch(`/api/admin/questions/${q.id}/pool`, { pool: p });
-        showToast(`Pool → ${p}`);
-        ['test','practice','both'].forEach(pp => {
-          const b = document.getElementById(`pool-${pp}`);
-          if (b) b.className = `pool-btn${pp === p ? ' active-' + pp : ''}`;
+        await apiPatch(`/api/admin/questions/${q.id}/pool`, { pool: val });
+        showToast(`Pool → ${val}`);
+        poolDefs2.forEach(({ val: pp, cls: cc }) => {
+          const b = document.getElementById(`pool-${pp.replace('+','-')}`);
+          if (b) b.className = `pool-btn${pp === val ? ' ' + cc : ''}`;
         });
       } catch (e) {
         q.pool = prev;

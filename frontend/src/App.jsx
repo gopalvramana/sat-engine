@@ -8,12 +8,16 @@ import PracticePage from './pages/PracticePage'
 import SummaryPage from './pages/SummaryPage'
 import SessionHistoryPage from './pages/SessionHistoryPage'
 import SessionReviewPage from './pages/SessionReviewPage'
+import UIDemo        from './pages/UIDemo'
+import FocusArenaDemo from './pages/FocusArenaDemo'
 
 export default function App() {
   return (
     <Routes>
       {/* Public */}
       <Route path="login" element={<LoginPage />} />
+      <Route path="demo"        element={<UIDemo />} />
+      <Route path="focus-demo"  element={<FocusArenaDemo />} />
 
       {/* Authenticated — all routes below require a valid session */}
       <Route element={<RequireAuth />}>

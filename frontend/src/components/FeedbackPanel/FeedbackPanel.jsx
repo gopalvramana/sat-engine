@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import MathText from '../MathText/MathText'
 import AnimationPanel from '../AnimationPanel/AnimationPanel'
 import FindMyGap from '../FindMyGap/FindMyGap'
 import SkillDrawer from '../SkillDrawer/SkillDrawer'
+import AnswerBurst from '../AnswerBurst/AnswerBurst'
 import styles from './FeedbackPanel.module.css'
 
 const MATH_DOMAINS = new Set([
@@ -139,6 +140,14 @@ export default function FeedbackPanel({ feedback, question, studentAnswer, onNex
   // Animation uid — set by AnimationPanel once renderer mounts; used by StepNavigator to sync
   const [animUid, setAnimUid] = useState(null)
 
+  // Burst key — increment each time a new question is answered to re-trigger the animation
+  const burstKeyRef = useRef(0)
+  const [burstKey, setBurstKey] = useState(0)
+  useEffect(() => {
+    burstKeyRef.current += 1
+    setBurstKey(burstKeyRef.current)
+  }, [feedback])
+
   // Keyboard shortcut: Enter or Space advances to next question
   useEffect(() => {
     function handleKey(e) {
@@ -202,6 +211,9 @@ export default function FeedbackPanel({ feedback, question, studentAnswer, onNex
 
   return (
     <div className={styles.wrap}>
+      {/* ── Emoji burst — fires once per answer ──────────────── */}
+      <AnswerBurst key={burstKey} isCorrect={isCorrect} />
+
       {/* ── Result banner ────────────────────────────────────── */}
       <div className={`${styles.banner} ${isCorrect ? styles.bannerCorrect : styles.bannerWrong}`}>
         <div className={`${styles.bannerIcon} ${isCorrect ? styles.bannerIconCorrect : styles.bannerIconWrong}`}>
