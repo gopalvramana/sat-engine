@@ -33,7 +33,9 @@ public class DevLoginController {
                 "Dev User",
                 null
         );
-        session.setAttribute("userId", user.getId().toString());
+        // Dev user always gets ADMIN in session — no DB write needed
+        session.setAttribute("userId",   user.getId().toString());
+        session.setAttribute("userRole", "ADMIN");
         log.info("Dev login: {} session={}", user.getEmail(), session.getId());
         return ResponseEntity.ok(AuthController.toMap(user));
     }

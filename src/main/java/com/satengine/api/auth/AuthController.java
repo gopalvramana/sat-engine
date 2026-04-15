@@ -46,8 +46,9 @@ public class AuthController {
         return Map.of(
                 "id",      u.getId().toString(),
                 "email",   u.getEmail(),
-                "name",    u.getName() != null    ? u.getName()    : "",
-                "picture", u.getPicture() != null ? u.getPicture() : ""
+                "name",    u.getName()    != null ? u.getName()    : "",
+                "picture", u.getPicture() != null ? u.getPicture() : "",
+                "role",    u.getRole()    != null ? u.getRole()    : "STUDENT"
         );
     }
 }

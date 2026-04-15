@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -28,8 +29,10 @@ public class SecurityConfig {
             // Disable CSRF for REST APIs — we use session cookies (same-origin only)
             .csrf(AbstractHttpConfigurer::disable)
 
-            // All paths open for now; ownership enforcement comes in Phase 2 (#5)
-            // /actuator/health must stay public even after auth is added — Railway + UptimeRobot need it
+            // AdminAuthFilter handles /admin/** role checks before Spring Security
+            .addFilterBefore(new AdminAuthFilter(), UsernamePasswordAuthenticationFilter.class)
+
+            // /actuator/health must stay public — Railway + UptimeRobot need it
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/actuator/health", "/actuator/info").permitAll()
                     .anyRequest().permitAll()

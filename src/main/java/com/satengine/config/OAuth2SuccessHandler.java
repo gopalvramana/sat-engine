@@ -32,11 +32,13 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         User user = userService.findOrCreate(email, name, picture);
 
-        // Store user ID in the HTTP session — read by AuthController /api/auth/me
-        request.getSession(true).setAttribute("userId", user.getId().toString());
+        // Store user ID and role in the HTTP session
+        var session = request.getSession(true);
+        session.setAttribute("userId",   user.getId().toString());
+        session.setAttribute("userRole", user.getRole());
 
-        log.info("OAuth2 login: {} ({})", email, user.getId());
+        log.info("OAuth2 login: {} ({}) role={}", email, user.getId(), user.getRole());
 
-        response.sendRedirect("/app/");
+        response.sendRedirect(user.getRole().equals("ADMIN") ? "/admin/pipeline.html" : "/app/");
     }
 }

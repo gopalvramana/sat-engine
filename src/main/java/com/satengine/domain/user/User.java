@@ -29,6 +29,10 @@ public class User {
     @Column
     private String picture;
 
+    @Column(length = 20, nullable = false)
+    @Builder.Default
+    private String role = "STUDENT";
+
     @Column(name = "created_at")
     private OffsetDateTime createdAt;
 
