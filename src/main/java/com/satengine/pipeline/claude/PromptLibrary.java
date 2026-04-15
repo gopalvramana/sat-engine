@@ -447,6 +447,28 @@ For scatter: datasets:[{ "label", "points":[{"x","y"}], "color" }]
 stacked:true — for stacked bar charts.
 Multiple datasets in bar chart = grouped bars by default.
 REMINDER: if the question involves a mathematical function or equation graph, use svg_programmatic instead.
+
+SCATTER PLOT RULES — mandatory when chartType is "scatter":
+A scatter plot MUST have two separate datasets:
+  1. "Data points" dataset — the raw observed data (8–12 points), with realistic scatter/variance
+  2. "Regression Line" dataset — exactly 2 points: the line's start and end (min x, max x)
+
+CRITICAL — data points must NOT lie on the regression line:
+- Choose a slope (m) and intercept (b) for your regression line first: y = mx + b
+- For each data point, add a random residual of ±3 to ±10 units to the y value
+  (some points above the line, some below — mix them up)
+- No more than 2 points should be within 1 unit of the line
+- The correct answer comes from the REGRESSION LINE at the target x, not from any data point
+
+WORKED EXAMPLE — a scatter plot where the regression line is y = 0.5x + 52:
+  Data points (with residuals):  (20,65), (25,62), (30,69), (35,66), (40,73), (45,71), (50,78), (55,79)
+  Regression line: (20,62) and (55,79.5)  ← just 2 points, start to end
+  Answer at x=40: 0.5*40 + 52 = 72  ← read from the LINE, not the nearest dot
+
+SELF-CHECK before finalising scatter data:
+- Do the data points visibly scatter above and below the regression line? Must be YES.
+- Can I read the answer directly off a data point at the target x? Must be NO (no dot at target x).
+- Does the regression line pass cleanly through the scatter? Must be YES.
 """);
             }
         } else {
