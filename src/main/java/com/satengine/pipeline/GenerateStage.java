@@ -745,7 +745,14 @@ public class GenerateStage {
         if ("chartjs".equals(dtype) && "geometry_trigonometry".equals(domain)) {
             return "chartjs forbidden for geometry_trigonometry domain — use svg_programmatic";
         }
-        if ("chartjs".equals(dtype)) return null; // chartjs valid for data/stats domains
+        if ("chartjs".equals(dtype)) {
+            // Scatter charts banned globally — equation consistency cannot be guaranteed at generation time
+            String chartType = diagram.path("chartConfig").path("chartType").asText("");
+            if ("scatter".equals(chartType)) {
+                return "scatter chartType banned — use bar/histogram/line/pie instead";
+            }
+            return null;
+        }
 
         JsonNode cfg = diagram.path("svgConfig");
         if (cfg.isNull() || cfg.isMissingNode()) return "svgConfig missing";
