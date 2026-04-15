@@ -302,6 +302,19 @@ DISTRACTOR RULES — verified before submitting:
 - Substitute each wrong option back into the problem. It must produce an INCORRECT result.
 - If you cannot show why an option is wrong, the stem is too broad — rewrite the stem to be more specific.
 - NEVER use a stem where an inequality, set membership, or property could be satisfied by more than one option.
+
+DUPLICATE OPTION CHECK — do this LAST before returning JSON:
+Read optionA, optionB, optionC, optionD. If any two are numerically equal, algebraically equivalent,
+or visually identical (e.g. both simplify to the same value), STOP and redesign.
+Every option must be a distinct value that no other option shares.
+Example of a VIOLATION: optionA = "\\(6\\)", optionC = "\\(6\\)" — identical, not allowed.
+Example of a VIOLATION: optionB = "\\(\\frac{4}{2}\\)", optionD = "\\(2\\)" — equivalent, not allowed.
+
+AI ARTIFACT CHECK — do this before returning JSON:
+Scan every field. Remove any text that starts with or contains:
+"As an AI", "I should note", "Note:", "Please note", "I've created", "Here's a question",
+"Let me", "I'll", "I cannot", "I apologize", "This question tests", or any first-person language.
+All content must read as a human teacher wrote it — authoritative, no hedging.
 """);
             if (targetLetter != null) {
                 sb.append("IMPORTANT: The correct answer MUST be option ").append(targetLetter)
@@ -614,6 +627,16 @@ DISTRACTOR RULES — verified before submitting:
 - If you cannot clearly explain why an option is wrong, rewrite the passage or stem to be more specific.
 - NEVER write options that are merely less precise — if it's accurate it's correct, not a distractor.
 - NEVER write two options that could both be argued as correct interpretations.
+
+DUPLICATE OPTION CHECK — do this LAST before returning JSON:
+Read optionA, optionB, optionC, optionD. If any two say the same thing (identical wording, same meaning,
+or one is a subset of another), STOP and redesign that option.
+Every option must be clearly distinct in both wording and meaning.
+
+AI ARTIFACT CHECK — do this before returning JSON:
+Scan every field. Remove any text containing: "As an AI", "I should note", "Note:", "Please note",
+"I've created", "Here's a question", "Let me", "I'll", "I cannot", "I apologize", or any first-person language.
+All content must read as a human teacher wrote it — authoritative, no hedging.
 """);
         if (targetLetter != null) {
             sb.append("IMPORTANT: The correct answer MUST be option ").append(targetLetter)

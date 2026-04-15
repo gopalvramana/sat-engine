@@ -234,6 +234,20 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
     List<String> findAllStemsForDomain(@Param("domain") String domain);
 
     /**
+     * Returns non-rejected question stems for a domain scoped to a specific pool.
+     * Used for diagnostic generation so the Jaccard check only compares against
+     * other diagnostic questions — not the entire drill/test pool.
+     */
+    @Query(value = """
+        SELECT question_stem
+        FROM questions
+        WHERE domain = :domain
+          AND pool = :pool
+          AND status != 'rejected'
+        """, nativeQuery = true)
+    List<String> findStemsForDomainAndPool(@Param("domain") String domain, @Param("pool") String pool);
+
+    /**
      * Returns question counts per skill_key for a domain.
      * Used by GenerateStage to pick the least-covered skill for even distribution.
      * Each Object[] is { skill_key (String), count (Long) }.

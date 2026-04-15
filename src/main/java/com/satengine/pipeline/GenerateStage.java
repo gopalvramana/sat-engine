@@ -64,14 +64,24 @@ public class GenerateStage {
     private static final double DUPLICATE_THRESHOLD = 0.85;
 
     private static final List<String> ARTIFACT_PHRASES = List.of(
+            // Stream-of-consciousness reasoning leakage
             "wait,", "wait —", "wait—", "let's recheck", "let me recheck",
             "let me recalculate", "let me re-read", "let me re-examine",
             "let me verify", "let me rewrite", "let me use", "let me try",
-            "let me reconsider", "let me recompute", "let me re-examine",
-            "hmm,", "hmm.", "actually,", "actually—", "actually ",
+            "let me reconsider", "let me recompute", "let me rethink",
+            "hmm,", "hmm.", "actually,", "actually—",
             "rechecking", "re-checking", "doesn't yield", "doesn't work",
             "i need to reconsider", "more likely", "intended answer",
-            "clean answer", "let me rethink"
+            "clean answer",
+            // AI self-referential language
+            "as an ai", "as an language model", "i'm an ai", "i am an ai",
+            "i should note", "please note that i", "note: i", "i've created",
+            "i have created", "here is a question", "here's a question",
+            "i apologize", "i cannot", "i'm unable", "i am unable",
+            "this question tests", "this question is designed",
+            "i'll create", "i will create", "i've designed",
+            // Placeholder text
+            "[insert", "[your", "[placeholder", "todo:", "fixme:"
     );
 
     private final Random random = new Random();
@@ -424,7 +434,7 @@ public class GenerateStage {
 
                 // Hard duplicate check — reject and retry if stem is too similar to an existing one
                 String generatedStem = data.path("questionStem").asText("");
-                if (!generatedStem.isBlank() && isDuplicateStem(generatedStem, domain)) {
+                if (!generatedStem.isBlank() && isDuplicateStem(generatedStem, domain, mode)) {
                     if (attempt <= MAX_RETRIES) {
                         log.warn("[{}/{}] {} Duplicate stem detected (attempt {}) — retrying...", i, total, externalId, attempt);
                         continue;
@@ -591,12 +601,19 @@ public class GenerateStage {
     /**
      * Returns true if {@code newStem} is a near-duplicate of any existing non-rejected
      * question in the same domain, using Jaccard word-set similarity.
+     *
+     * For DIAGNOSTIC mode: only compares against other diagnostic questions so that a
+     * valid diagnostic stem isn't rejected simply because a similar drill question exists.
+     * For other modes: compares against all questions in the domain.
+     *
      * Fails open (returns false) if the DB query fails, so generation is never
      * blocked by an infrastructure error.
      */
-    private boolean isDuplicateStem(String newStem, String domain) {
+    private boolean isDuplicateStem(String newStem, String domain, GenerationMode mode) {
         try {
-            List<String> existingStems = questionRepository.findAllStemsForDomain(domain);
+            List<String> existingStems = (mode == GenerationMode.DIAGNOSTIC)
+                    ? questionRepository.findStemsForDomainAndPool(domain, "diagnostic")
+                    : questionRepository.findAllStemsForDomain(domain);
             Set<String> newWords = wordSet(normalizeStem(newStem));
             if (newWords.isEmpty()) return false;
 
