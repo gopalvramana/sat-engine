@@ -407,6 +407,9 @@ Supported shape values and their key fields:
     POINT LABELING RULE: NEVER place a labeled point at the exact x-value the student is asked to find.
     Points should only label GIVEN information (e.g. a known intercept, a vertex stated in the problem).
     Labeling the answer point (e.g. "(3, 54)" when the question asks "find V(3)") gives away the answer.
+    FUNCTION LABEL RULE: NEVER set a function's label to its equation (e.g. "y = 8.5x") if the slope,
+    intercept, or any coefficient is what the question asks the student to find. Use a generic label
+    like "Line of best fit" or omit the label field entirely.
 
   normal_curve — mean, stdDev, xMin?, xMax?,
     shadedRegions:[{from,to,fillColor,label}],
