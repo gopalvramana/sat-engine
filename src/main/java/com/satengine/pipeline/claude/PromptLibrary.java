@@ -776,15 +776,21 @@ QUESTION JSON:
 
 Perform ALL of the following checks:
 
-1. MATH           — Solve the question yourself. Is the stated correctAnswer correct?
-                    Show your working in the "notes" field.
+1. MATH           — Solve the question yourself from the stem ONLY. Ignore any labels,
+                    annotations, or solution points in the diagram — they may be wrong.
+                    Show your full working in the "notes" field. Is the stated correctAnswer correct?
+                    If the correct answer is NOT one of the four options, flag as critical.
 2. ANSWER_KEY     — Does the correctAnswer letter ('A','B','C','D') map to the option
                     that contains the correct value?
 3. DISTRACTORS    — Are all four options distinct (no duplicates, no near-duplicates)?
 4. TRAP_QUALITY   — Are the wrong answers plausible (common student mistakes)?
 5. STEPS          — Are explanationSteps present with 2–4 entries? Is each step correct
                     and free of hedging language?
-6. DIAGRAM_MATCH  — If a diagram is present, does its shape/type match the question stem?
+6. DIAGRAM_MATCH  — If a diagram is present:
+                    a) Does the shape/type match the question stem?
+                    b) Do any labeled values or annotated points in the diagram match your
+                       independently computed answer? If a diagram labels a "solution" point
+                       or answer value that contradicts your MATH result, flag as critical.
 7. STEM_CLARITY   — Is the question stem unambiguous — exactly one option is defensible?
 8. SCHEMA         — Are all required fields present and non-empty?
                     Required for MCQ: questionStem, optionA, optionB, optionC, optionD,
@@ -826,13 +832,18 @@ QUESTION JSON:
 
 Perform ALL of the following checks:
 
-1. MATH           — Solve the question yourself. Verify that your answer falls within
-                    the sprMin–sprMax range. Show your working in the "notes" field.
+1. MATH           — Solve the question yourself from the stem ONLY. Ignore any labels,
+                    annotations, or solution points in the diagram — they may be wrong.
+                    Show your full working in the "notes" field. Verify your answer falls
+                    within the sprMin–sprMax range. If it does not, flag as critical.
 2. SPR_RANGE      — Is the sprMin–sprMax range correct and reasonable?
                     A single exact answer should have sprMin == sprMax.
 3. STEPS          — Are explanationSteps present with 2–4 entries? Is each step correct
                     and free of hedging language?
-4. DIAGRAM_MATCH  — If a diagram is present, does its shape/type match the question stem?
+4. DIAGRAM_MATCH  — If a diagram is present:
+                    a) Does the shape/type match the question stem?
+                    b) Do any labeled values or annotated points contradict your computed answer?
+                       If so, flag as critical.
 5. STEM_CLARITY   — Is the question stem unambiguous — exactly one numeric answer is defensible?
 6. SCHEMA         — Are all required fields present and non-empty?
                     Required for SPR: questionStem, sprMin, sprMax, explanationShort.
