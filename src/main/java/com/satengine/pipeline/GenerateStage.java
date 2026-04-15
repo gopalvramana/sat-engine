@@ -60,8 +60,10 @@ public class GenerateStage {
             "algebra",               0.25,  // coordinate planes, function graphs
             "advanced_math",         0.20   // function graphs, occasionally
     );
-    /** Jaccard word-overlap threshold above which a generated stem is considered a duplicate. */
-    private static final double DUPLICATE_THRESHOLD = 0.85;
+    /** Jaccard word-overlap threshold above which a generated stem is considered a duplicate.
+     *  0.95 = near-exact copy-paste only. Lower values cause false positives on template phrases
+     *  like "what is the value of" which appear across all SAT questions of the same type. */
+    private static final double DUPLICATE_THRESHOLD = 0.95;
 
     private static final List<String> ARTIFACT_PHRASES = List.of(
             // Stream-of-consciousness reasoning leakage
@@ -434,7 +436,7 @@ public class GenerateStage {
 
                 // Hard duplicate check — reject and retry if stem is too similar to an existing one
                 String generatedStem = data.path("questionStem").asText("");
-                if (!generatedStem.isBlank() && isDuplicateStem(generatedStem, domain, mode)) {
+                if (!generatedStem.isBlank() && isDuplicateStem(generatedStem, domain)) {
                     if (attempt <= MAX_RETRIES) {
                         log.warn("[{}/{}] {} Duplicate stem detected (attempt {}) — retrying...", i, total, externalId, attempt);
                         continue;
@@ -599,21 +601,17 @@ public class GenerateStage {
     }
 
     /**
-     * Returns true if {@code newStem} is a near-duplicate of any existing non-rejected
+     * Returns true if {@code newStem} is a near-exact copy of any existing non-rejected
      * question in the same domain, using Jaccard word-set similarity.
-     *
-     * For DIAGNOSTIC mode: only compares against other diagnostic questions so that a
-     * valid diagnostic stem isn't rejected simply because a similar drill question exists.
-     * For other modes: compares against all questions in the domain.
+     * Threshold is 0.95 — only catches copy-paste duplicates, not questions that merely
+     * share template phrasing ("what is the value of", "which of the following", etc.).
      *
      * Fails open (returns false) if the DB query fails, so generation is never
      * blocked by an infrastructure error.
      */
-    private boolean isDuplicateStem(String newStem, String domain, GenerationMode mode) {
+    private boolean isDuplicateStem(String newStem, String domain) {
         try {
-            List<String> existingStems = (mode == GenerationMode.DIAGNOSTIC)
-                    ? questionRepository.findStemsForDomainAndPool(domain, "diagnostic")
-                    : questionRepository.findAllStemsForDomain(domain);
+            List<String> existingStems = questionRepository.findAllStemsForDomain(domain);
             Set<String> newWords = wordSet(normalizeStem(newStem));
             if (newWords.isEmpty()) return false;
 
