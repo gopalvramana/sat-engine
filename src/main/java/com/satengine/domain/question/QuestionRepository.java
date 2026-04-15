@@ -299,4 +299,34 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
 
     /** Count questions by status — used by the pipeline dashboard stats endpoint. */
     long countByStatus(String status);
+
+    /**
+     * Count non-rejected questions per skill_key for a specific pool.
+     * Used by GenerateStage DIAGNOSTIC mode to pick the globally least-covered skill.
+     * Each Object[] is { skill_key (String), count (Long) }.
+     */
+    @Query(value = """
+        SELECT skill_key, COUNT(*) AS cnt
+        FROM questions
+        WHERE pool = :pool
+          AND skill_key IS NOT NULL
+          AND status NOT IN ('rejected', 'failed_review')
+        GROUP BY skill_key
+        """, nativeQuery = true)
+    List<Object[]> countBySkillKeyForPool(@Param("pool") String pool);
+
+    /**
+     * Count approved questions per skill_key grouped by pool.
+     * Used by the pool-spread admin dashboard endpoint.
+     * Each Object[] is { skill_key (String), pool (String), count (Long) }.
+     */
+    @Query(value = """
+        SELECT skill_key, pool, COUNT(*) AS cnt
+        FROM questions
+        WHERE skill_key IS NOT NULL
+          AND status = 'approved'
+        GROUP BY skill_key, pool
+        ORDER BY skill_key, pool
+        """, nativeQuery = true)
+    List<Object[]> countBySkillAndPoolApproved();
 }

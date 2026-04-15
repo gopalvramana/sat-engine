@@ -3,11 +3,13 @@ package com.satengine.admin;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.satengine.domain.question.QuestionRepository;
+import com.satengine.pipeline.GenerationMode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -33,13 +35,15 @@ public class PipelineController {
 
     @PostMapping("/run")
     public ResponseEntity<Map<String, String>> run(@RequestBody RunRequest req) {
+        GenerationMode mode = parseMode(req.mode());
         String jobId = pipelineJobService.startJob(
                 req.step(),
                 req.domain(),
                 req.section(),
                 req.difficulty(),
                 req.count() != null ? req.count() : 5,
-                req.onlyFailed() != null && req.onlyFailed()
+                req.onlyFailed() != null && req.onlyFailed(),
+                mode
         );
         return ResponseEntity.ok(Map.of("jobId", jobId));
     }
@@ -56,11 +60,13 @@ public class PipelineController {
 
     @PostMapping("/run-all")
     public ResponseEntity<Map<String, String>> runAll(@RequestBody RunRequest req) {
+        GenerationMode mode = parseMode(req.mode());
         String jobId = pipelineJobService.startAllJob(
                 req.domain(),
                 req.section(),
                 req.difficulty(),
-                req.count() != null ? req.count() : 5
+                req.count() != null ? req.count() : 5,
+                mode
         );
         return ResponseEntity.ok(Map.of("jobId", jobId));
     }
@@ -224,11 +230,102 @@ public class PipelineController {
         return ResponseEntity.ok(Map.of("skills", skills));
     }
 
+    // ─── GET /admin/pipeline/pool-spread ─────────────────────────────────────
+
+    /**
+     * Returns per-skill question counts by pool (drill/diagnostic/test) vs targets from taxonomy.
+     * drill count   = questions where pool IN ('drill','both')
+     * diagnostic count = questions where pool = 'diagnostic'
+     * test count    = questions where pool IN ('test','both')
+     */
+    @GetMapping("/pool-spread")
+    public ResponseEntity<Map<String, Object>> poolSpread() {
+        // Load taxonomy — get skills + poolTarget per skill
+        record SkillMeta(String label, String domain, String domainLabel, String section,
+                         int drillTarget, int diagnosticTarget, int testTarget) {}
+
+        Map<String, SkillMeta> skillMeta = new LinkedHashMap<>();
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream("taxonomy/sat_taxonomy.json")) {
+            if (is == null) return ResponseEntity.internalServerError().build();
+            JsonNode root = objectMapper.readTree(is);
+            for (JsonNode section : root.path("sections")) {
+                String sectionKey = section.path("key").asText();
+                for (JsonNode domain : section.path("domains")) {
+                    String domainKey   = domain.path("key").asText();
+                    String domainLabel = domain.path("label").asText();
+                    for (JsonNode skill : domain.path("skills")) {
+                        String skillKey = skill.path("key").asText();
+                        JsonNode pt = skill.path("poolTarget");
+                        skillMeta.put(skillKey, new SkillMeta(
+                                skill.path("label").asText(),
+                                domainKey, domainLabel, sectionKey,
+                                pt.path("drill").asInt(0),
+                                pt.path("diagnostic").asInt(0),
+                                pt.path("test").asInt(0)
+                        ));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+
+        // Load DB counts: skill_key, pool, count
+        // We map pool values: 'both' counts toward drill AND test; 'drill' toward drill only; etc.
+        Map<String, Long> drillCounts      = new HashMap<>();
+        Map<String, Long> diagnosticCounts = new HashMap<>();
+        Map<String, Long> testCounts       = new HashMap<>();
+        try {
+            for (Object[] row : questionRepository.countBySkillAndPoolApproved()) {
+                String sk   = row[0] != null ? row[0].toString() : "";
+                String pool = row[1] != null ? row[1].toString() : "";
+                long   cnt  = row[2] != null ? ((Number) row[2]).longValue() : 0L;
+                switch (pool) {
+                    case "both"       -> { drillCounts.merge(sk, cnt, Long::sum);
+                                          testCounts.merge(sk, cnt, Long::sum); }
+                    case "drill"      -> drillCounts.merge(sk, cnt, Long::sum);
+                    case "test"       -> testCounts.merge(sk, cnt, Long::sum);
+                    case "diagnostic" -> diagnosticCounts.merge(sk, cnt, Long::sum);
+                }
+            }
+        } catch (Exception e) {
+            // Return taxonomy data with zero counts
+        }
+
+        // Build response
+        List<Map<String, Object>> skills = new ArrayList<>();
+        for (Map.Entry<String, SkillMeta> entry : skillMeta.entrySet()) {
+            String sk = entry.getKey();
+            SkillMeta m = entry.getValue();
+            Map<String, Object> row = new LinkedHashMap<>();
+            row.put("skillKey",    sk);
+            row.put("label",       m.label());
+            row.put("domain",      m.domain());
+            row.put("domainLabel", m.domainLabel());
+            row.put("section",     m.section());
+            row.put("drill",       Map.of("count", drillCounts.getOrDefault(sk, 0L),      "target", m.drillTarget()));
+            row.put("diagnostic",  Map.of("count", diagnosticCounts.getOrDefault(sk, 0L), "target", m.diagnosticTarget()));
+            row.put("test",        Map.of("count", testCounts.getOrDefault(sk, 0L),        "target", m.testTarget()));
+            skills.add(row);
+        }
+
+        return ResponseEntity.ok(Map.of("skills", skills));
+    }
+
     // ─── Helpers ──────────────────────────────────────────────────────────
 
     private long toLong(Object v) {
         if (v == null) return 0L;
         return ((Number) v).longValue();
+    }
+
+    private GenerationMode parseMode(String mode) {
+        if (mode == null || mode.isBlank()) return GenerationMode.DRILL;
+        return switch (mode.toUpperCase()) {
+            case "DIAGNOSTIC" -> GenerationMode.DIAGNOSTIC;
+            case "TEST"       -> GenerationMode.TEST;
+            default           -> GenerationMode.DRILL;
+        };
     }
 
     // ─── Request DTO ──────────────────────────────────────────────────────
@@ -239,6 +336,7 @@ public class PipelineController {
             String section,
             String difficulty,
             Integer count,
-            Boolean onlyFailed
+            Boolean onlyFailed,
+            String mode
     ) {}
 }

@@ -12,10 +12,13 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --purple:    #7c3aed;
-      --purple-lt: #ede9fe;
+      --amber:     #d97706;
+      --amber-lt:  #fef3c7;
+      --amber-dk:  #b45309;
+      --dark:      #1c1008;
       --green:     #4ade80;
       --red:       #f87171;
+      --bg:        #f5f0e8;
       --slate-50:  #f8fafc;
       --slate-100: #f1f5f9;
       --slate-200: #e2e8f0;
@@ -33,16 +36,16 @@
 
     body {
       font-family: 'Inter', sans-serif;
-      background: var(--slate-50);
+      background: var(--bg);
       color: var(--slate-800);
       min-height: 100vh;
     }
 
     /* ── Header ──────────────────────────────────────────────────── */
     .header {
-      background: var(--white);
-      border-bottom: 1px solid var(--slate-200);
-      box-shadow: var(--shadow-sm);
+      background: #1c1008;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 2px 8px rgba(28,16,8,0.3);
       padding: 14px 24px;
       display: flex;
       align-items: center;
@@ -56,31 +59,37 @@
     .header-title {
       font-size: 16px;
       font-weight: 700;
-      color: var(--slate-900);
+      color: #ffffff;
     }
     .header-sub {
       font-size: 11px;
-      color: var(--slate-400);
+      color: rgba(255,255,255,0.45);
       font-weight: 500;
     }
-    .header-nav { display: flex; align-items: center; gap: 10px; }
+    .header-nav { display: flex; align-items: center; gap: 6px; }
     .header-nav a {
-      font-size: 13px;
-      color: var(--purple);
+      font-size: 12px;
+      color: rgba(255,255,255,0.6);
       text-decoration: none;
-      font-weight: 600;
-      padding: 6px 12px;
-      border: 1.5px solid var(--purple);
+      font-weight: 500;
+      padding: 5px 12px;
+      border: 1.5px solid transparent;
       border-radius: 6px;
-      transition: background 0.15s, color 0.15s;
+      transition: background 0.12s, border-color 0.12s, color 0.12s;
     }
-    .header-nav a:hover { background: var(--purple); color: var(--white); }
+    .header-nav a:hover { background: rgba(255,255,255,0.08); color: #fff; }
+    .header-nav a.active {
+      background: rgba(251,191,36,0.15);
+      border-color: rgba(251,191,36,0.4);
+      color: #fbbf24;
+      font-weight: 600;
+    }
     .help-btn {
       width: 32px; height: 32px;
       border-radius: 50%;
-      border: 1.5px solid var(--slate-300);
-      background: var(--white);
-      color: var(--slate-500);
+      border: 1.5px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.07);
+      color: rgba(255,255,255,0.6);
       font-size: 14px;
       font-weight: 700;
       cursor: pointer;
@@ -88,7 +97,7 @@
       transition: all 0.15s;
       flex-shrink: 0;
     }
-    .help-btn:hover { border-color: var(--purple); color: var(--purple); background: var(--purple-lt); }
+    .help-btn:hover { border-color: #fbbf24; color: #fbbf24; background: rgba(251,191,36,0.12); }
 
     /* ── Help modal ──────────────────────────────────────────────── */
     .modal-backdrop {
@@ -122,7 +131,7 @@
     .modal-head-left { display: flex; align-items: center; gap: 12px; }
     .modal-head-icon {
       width: 40px; height: 40px; border-radius: 10px;
-      background: var(--purple-lt);
+      background: var(--amber-lt);
       display: flex; align-items: center; justify-content: center;
       font-size: 20px; flex-shrink: 0;
     }
@@ -143,7 +152,7 @@
     .guide-section { display: flex; flex-direction: column; gap: 10px; }
     .guide-section-title {
       font-size: 13px; font-weight: 700;
-      color: var(--purple);
+      color: var(--amber);
       text-transform: uppercase; letter-spacing: 0.06em;
       display: flex; align-items: center; gap: 7px;
     }
@@ -159,7 +168,7 @@
     }
     .pipe-badge {
       width: 36px; height: 36px; border-radius: 50%;
-      background: var(--purple); color: #fff;
+      background: var(--amber); color: #fff;
       font-size: 13px; font-weight: 700;
       display: flex; align-items: center; justify-content: center;
     }
@@ -186,7 +195,7 @@
     .tag {
       display: inline-block; font-size: 11px; font-weight: 600;
       padding: 2px 8px; border-radius: 4px;
-      background: var(--purple-lt); color: var(--purple);
+      background: var(--amber-lt); color: var(--amber);
     }
     .guide-tip {
       background: #fefce8; border: 1px solid #fde68a;
@@ -203,7 +212,7 @@
     }
     .guide-step-num {
       width: 22px; height: 22px; border-radius: 50%;
-      background: var(--purple); color: #fff;
+      background: var(--amber); color: #fff;
       font-size: 11px; font-weight: 700;
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0; margin-top: 1px;
@@ -245,7 +254,7 @@
       color: var(--slate-900);
       font-variant-numeric: tabular-nums;
     }
-    .stat-card.approved .stat-value { color: var(--purple); }
+    .stat-card.approved .stat-value { color: var(--amber); }
 
     /* ── Step cards grid ─────────────────────────────────────────── */
     .cards-grid {
@@ -270,8 +279,8 @@
       transition: border-color 0.2s, box-shadow 0.2s;
     }
     .step-card.active {
-      border-color: var(--purple);
-      box-shadow: 0 0 0 3px rgba(124,58,237,0.12), var(--shadow);
+      border-color: var(--amber);
+      box-shadow: 0 0 0 3px rgba(217,119,6,0.12), var(--shadow);
     }
 
     .step-header { display: flex; align-items: center; gap: 10px; }
@@ -279,7 +288,7 @@
       width: 30px;
       height: 30px;
       border-radius: 50%;
-      background: var(--purple);
+      background: var(--amber);
       color: var(--white);
       font-size: 13px;
       font-weight: 700;
@@ -318,10 +327,10 @@
       transition: all 0.15s;
       user-select: none;
     }
-    .toggle-btn:hover { border-color: var(--purple); color: var(--purple); }
+    .toggle-btn:hover { border-color: var(--amber); color: var(--amber); }
     .toggle-btn.selected {
-      background: var(--purple);
-      border-color: var(--purple);
+      background: var(--amber);
+      border-color: var(--amber);
       color: var(--white);
     }
 
@@ -341,7 +350,7 @@
       padding: 2px 0;
     }
     .domain-check input[type="checkbox"] {
-      accent-color: var(--purple);
+      accent-color: var(--amber);
       width: 13px;
       height: 13px;
       cursor: pointer;
@@ -365,7 +374,7 @@
       outline: none;
       transition: border-color 0.15s;
     }
-    .count-input:focus { border-color: var(--purple); }
+    .count-input:focus { border-color: var(--amber); }
 
     /* Option checkboxes (onlyFailed, includeApproved) */
     .option-check {
@@ -377,7 +386,7 @@
       cursor: pointer;
     }
     .option-check input[type="checkbox"] {
-      accent-color: var(--purple);
+      accent-color: var(--amber);
       width: 14px;
       height: 14px;
       cursor: pointer;
@@ -391,7 +400,7 @@
       gap: 7px;
       width: 100%;
       padding: 10px 16px;
-      background: var(--purple);
+      background: var(--amber);
       color: var(--white);
       border: none;
       border-radius: 8px;
@@ -401,7 +410,7 @@
       transition: background 0.15s, opacity 0.15s;
       margin-top: auto;
     }
-    .run-btn:hover:not(:disabled) { background: #6d28d9; }
+    .run-btn:hover:not(:disabled) { background: #b45309; }
     .run-btn:disabled {
       opacity: 0.45;
       cursor: not-allowed;
@@ -511,7 +520,7 @@
 
     /* ── Run All banner ──────────────────────────────────────────── */
     .run-all-card {
-      background: linear-gradient(135deg, #6d28d9 0%, #7c3aed 100%);
+      background: linear-gradient(135deg, #b45309 0%, #d97706 100%);
       border-radius: 12px;
       padding: 20px 24px;
       margin-bottom: 20px;
@@ -519,7 +528,7 @@
       align-items: center;
       gap: 20px;
       flex-wrap: wrap;
-      box-shadow: 0 4px 14px rgba(124,58,237,0.3);
+      box-shadow: 0 4px 14px rgba(217,119,6,0.3);
     }
     .run-all-left { flex-shrink: 0; }
     .run-all-title { font-size: 16px; font-weight: 700; color: #fff; }
@@ -546,7 +555,7 @@
     .run-all-card .toggle-btn.selected {
       background: #fff;
       border-color: #fff;
-      color: #6d28d9;
+      color: #b45309;
     }
     .run-all-card .count-input {
       background: rgba(255,255,255,0.15);
@@ -565,12 +574,12 @@
       cursor: pointer;
       outline: none;
     }
-    .domain-select option { background: #6d28d9; color: #fff; }
+    .domain-select option { background: #b45309; color: #fff; }
     .run-all-btn {
       width: auto;
       padding: 10px 24px;
       background: #fff;
-      color: #6d28d9;
+      color: #b45309;
       flex-shrink: 0;
       font-size: 14px;
     }
@@ -621,6 +630,105 @@
     .log-terminal::-webkit-scrollbar { width: 6px; }
     .log-terminal::-webkit-scrollbar-track { background: transparent; }
     .log-terminal::-webkit-scrollbar-thumb { background: var(--slate-600); border-radius: 3px; }
+
+    /* ── Mode toggle colours ────────────────────────────────────── */
+    .mode-drill.selected      { background: var(--amber); border-color: var(--amber); color: #fff; }
+    .mode-diagnostic.selected { background: #0891b2; border-color: #0891b2; color: #fff; }
+    .mode-test.selected       { background: #16a34a; border-color: #16a34a; color: #fff; }
+    .mode-hint {
+      font-size: 11px; color: #0891b2;
+      background: #ecfeff; border: 1px solid #a5f3fc;
+      border-radius: 6px; padding: 6px 10px;
+      display: none;
+    }
+    .mode-hint.visible { display: block; }
+
+    /* ── Spread section ─────────────────────────────────────────── */
+    .spread-card {
+      background: var(--white);
+      border: 1.5px solid var(--slate-200);
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+    .spread-header {
+      padding: 14px 18px;
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+    .spread-header.open { border-bottom-color: var(--slate-200); }
+    .spread-title {
+      font-size: 14px; font-weight: 700; color: var(--slate-800);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .spread-chevron { font-size: 12px; color: var(--slate-400); transition: transform 0.2s; }
+    .spread-header.open .spread-chevron { transform: rotate(180deg); }
+    .spread-body { display: none; padding: 18px; }
+    .spread-body.open { display: block; }
+    .spread-controls {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap;
+    }
+    .spread-refresh-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 7px 16px;
+      background: var(--amber); color: #fff;
+      border: none; border-radius: 7px;
+      font-size: 13px; font-weight: 600;
+      cursor: pointer; font-family: 'Inter', sans-serif;
+      transition: background 0.15s;
+    }
+    .spread-refresh-btn:hover { background: #b45309; }
+    .spread-refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .spread-legend {
+      display: flex; gap: 14px; font-size: 11px; color: var(--slate-500);
+    }
+    .legend-dot {
+      display: inline-block; width: 9px; height: 9px;
+      border-radius: 2px; margin-right: 4px; vertical-align: middle;
+    }
+    .spread-table-wrap { overflow-x: auto; }
+    .spread-table {
+      width: 100%; border-collapse: collapse;
+      font-size: 12px;
+    }
+    .spread-table th {
+      text-align: left; padding: 7px 10px;
+      background: var(--slate-50); color: var(--slate-500);
+      font-size: 11px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.04em; border-bottom: 1px solid var(--slate-200);
+      position: sticky; top: 0;
+    }
+    .spread-table td {
+      padding: 7px 10px; border-bottom: 1px solid var(--slate-100);
+      color: var(--slate-700); vertical-align: middle;
+    }
+    .spread-table tr:last-child td { border-bottom: none; }
+    .spread-table .domain-row td {
+      background: var(--slate-50); font-weight: 700;
+      color: var(--slate-600); font-size: 11px;
+      text-transform: uppercase; letter-spacing: 0.05em;
+      padding: 5px 10px;
+    }
+    .pool-cell {
+      display: flex; align-items: center; gap: 6px;
+    }
+    .pool-bar-wrap {
+      flex: 1; height: 6px; background: var(--slate-100);
+      border-radius: 3px; overflow: hidden; min-width: 40px;
+    }
+    .pool-bar { height: 100%; border-radius: 3px; transition: width 0.4s; }
+    .bar-green  { background: #22c55e; }
+    .bar-yellow { background: #f59e0b; }
+    .bar-red    { background: #ef4444; }
+    .pool-count { font-size: 11px; font-weight: 600; white-space: nowrap; min-width: 40px; }
+    .count-green  { color: #16a34a; }
+    .count-yellow { color: #b45309; }
+    .count-red    { color: #dc2626; }
+    .spread-empty { color: var(--slate-400); font-style: italic; font-size: 13px; padding: 20px 0; text-align: center; }
   </style>
 </head>
 <body>
@@ -635,8 +743,10 @@
     </div>
   </div>
   <nav class="header-nav">
+    <a href="/admin/validate.html">Question Review</a>
+    <a href="/admin/pipeline.html" class="active">Pipeline</a>
+    <a href="/admin/spread.html">Spread</a>
     <button class="help-btn" onclick="openHelp()" title="How to use this dashboard">?</button>
-    <a href="/admin/validate.html">→ Validate Page</a>
   </nav>
 </header>
 
@@ -810,6 +920,14 @@
     </div>
     <div class="run-all-params">
       <div class="inline-field">
+        <span class="field-label">Mode</span>
+        <div class="toggle-group" id="mode-all">
+          <button class="toggle-btn mode-drill selected" data-value="drill">Drill</button>
+          <button class="toggle-btn mode-diagnostic" data-value="diagnostic">Diagnostic</button>
+          <button class="toggle-btn mode-test" data-value="test">Test</button>
+        </div>
+      </div>
+      <div class="inline-field" id="all-section-field">
         <span class="field-label">Section</span>
         <div class="toggle-group" id="section-all">
           <button class="toggle-btn selected" data-value="math">Math</button>
@@ -817,7 +935,7 @@
           <button class="toggle-btn" data-value="">Both</button>
         </div>
       </div>
-      <div class="inline-field">
+      <div class="inline-field" id="all-domain-field">
         <span class="field-label">Domain</span>
         <select class="domain-select" id="domain-all">
           <option value="">All domains</option>
@@ -831,7 +949,7 @@
           <option value="standard_english">Standard English</option>
         </select>
       </div>
-      <div class="inline-field">
+      <div class="inline-field" id="all-difficulty-field">
         <span class="field-label">Difficulty</span>
         <div class="toggle-group" id="difficulty-all">
           <button class="toggle-btn" data-value="easy">Easy</button>
@@ -842,7 +960,7 @@
       </div>
       <div class="inline-field">
         <span class="field-label">Count</span>
-        <input type="number" class="count-input" id="count-all" value="5" min="1" max="50">
+        <input type="number" class="count-input" id="count-all" value="5" min="1" max="200">
       </div>
     </div>
     <button class="run-btn run-all-btn" id="btn-all" onclick="runAll()">
@@ -863,6 +981,18 @@
       </div>
 
       <div class="field-group">
+        <div class="field-label">Mode</div>
+        <div class="toggle-group" id="mode-generate">
+          <button class="toggle-btn mode-drill selected" data-value="drill">Drill</button>
+          <button class="toggle-btn mode-diagnostic" data-value="diagnostic">Diagnostic</button>
+          <button class="toggle-btn mode-test" data-value="test">Test</button>
+        </div>
+        <div class="mode-hint" id="mode-hint-generate">
+          Picks skills globally (d3–d4 only). Count 195 = 3 per skill × 65 skills.
+        </div>
+      </div>
+
+      <div class="field-group" id="gen-section-field">
         <div class="field-label">Section</div>
         <div class="toggle-group" id="section-generate">
           <button class="toggle-btn selected" data-value="math">Math</button>
@@ -871,14 +1001,14 @@
         </div>
       </div>
 
-      <div class="field-group">
+      <div class="field-group" id="gen-domain-field">
         <div class="field-label">Domain</div>
         <div class="domain-grid" id="domains-generate">
           <!-- populated by JS -->
         </div>
       </div>
 
-      <div class="field-group">
+      <div class="field-group" id="gen-difficulty-field">
         <div class="field-label">Difficulty</div>
         <div class="toggle-group" id="difficulty-generate">
           <button class="toggle-btn" data-value="easy">Easy</button>
@@ -890,7 +1020,7 @@
 
       <div class="field-group">
         <div class="field-label">Count</div>
-        <input type="number" class="count-input" id="count-generate" value="5" min="1" max="50">
+        <input type="number" class="count-input" id="count-generate" value="5" min="1" max="200">
       </div>
 
       <button class="run-btn" id="btn-generate" onclick="runStep('generate')">
@@ -989,6 +1119,32 @@
     </button>
   </div>
 
+  <!-- ── Question Spread ──────────────────────────────────────── -->
+  <div class="spread-card">
+    <div class="spread-header" id="spreadHeader" onclick="toggleSpread()">
+      <div class="spread-title">
+        📊 Question Spread
+        <span style="font-size:11px;font-weight:500;color:var(--slate-400)">per skill × pool vs target</span>
+      </div>
+      <span class="spread-chevron" id="spreadChevron">▼</span>
+    </div>
+    <div class="spread-body" id="spreadBody">
+      <div class="spread-controls">
+        <button class="spread-refresh-btn" id="spreadRefreshBtn" onclick="loadSpread()">
+          ↻ Load Spread
+        </button>
+        <div class="spread-legend">
+          <span><span class="legend-dot" style="background:#22c55e"></span>≥ 100% target</span>
+          <span><span class="legend-dot" style="background:#f59e0b"></span>50–99%</span>
+          <span><span class="legend-dot" style="background:#ef4444"></span>&lt; 50%</span>
+        </div>
+      </div>
+      <div id="spreadContent">
+        <div class="spread-empty">Click "Load Spread" to view coverage.</div>
+      </div>
+    </div>
+  </div>
+
   <!-- ── Job Log Panel ─────────────────────────────────────────── -->
   <div class="log-panel">
     <div class="log-header">
@@ -1062,9 +1218,35 @@ document.querySelectorAll('.toggle-group').forEach(group => {
     btn.addEventListener('click', () => {
       group.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');
+      // Mode toggles have side effects
+      if (group.id === 'mode-generate') onGenerateModeChange(btn.dataset.value);
+      if (group.id === 'mode-all')      onAllModeChange(btn.dataset.value);
     });
   });
 });
+
+// ── Mode-change side effects ──────────────────────────────────────
+function onGenerateModeChange(mode) {
+  const isDiag = mode === 'diagnostic';
+  document.getElementById('gen-section-field').style.display    = isDiag ? 'none' : '';
+  document.getElementById('gen-domain-field').style.display     = isDiag ? 'none' : '';
+  document.getElementById('gen-difficulty-field').style.display = isDiag ? 'none' : '';
+  const hint = document.getElementById('mode-hint-generate');
+  hint.classList.toggle('visible', isDiag);
+  if (isDiag) document.getElementById('count-generate').value = 195;
+  else if (document.getElementById('count-generate').value === '195')
+    document.getElementById('count-generate').value = 5;
+}
+
+function onAllModeChange(mode) {
+  const isDiag = mode === 'diagnostic';
+  document.getElementById('all-section-field').style.display    = isDiag ? 'none' : '';
+  document.getElementById('all-domain-field').style.display     = isDiag ? 'none' : '';
+  document.getElementById('all-difficulty-field').style.display = isDiag ? 'none' : '';
+  if (isDiag) document.getElementById('count-all').value = 195;
+  else if (document.getElementById('count-all').value === '195')
+    document.getElementById('count-all').value = 5;
+}
 
 // ── Helpers to read UI state ──────────────────────────────────────
 function getSelectedToggle(groupId) {
@@ -1095,13 +1277,15 @@ async function runStep(step) {
   const domainMap = { generate: 'domains-generate', review: 'domains-review', enrich: 'domains-enrich' };
   const sectionMap = { generate: 'section-generate', review: 'section-review', enrich: 'section-enrich' };
 
-  const domain     = getSelectedDomains(domainMap[step]);
-  const section    = getSelectedToggle(sectionMap[step]) || null;
-  const difficulty = step === 'generate' ? (getSelectedToggle('difficulty-generate') || null) : null;
+  const mode       = step === 'generate' ? (getSelectedToggle('mode-generate') || 'drill') : null;
+  const isDiag     = mode === 'diagnostic';
+  const domain     = isDiag ? null : getSelectedDomains(domainMap[step]);
+  const section    = isDiag ? null : (getSelectedToggle(sectionMap[step]) || null);
+  const difficulty = (step === 'generate' && !isDiag) ? (getSelectedToggle('difficulty-generate') || null) : null;
   const count      = step === 'generate' ? (parseInt(document.getElementById('count-generate').value) || 5) : 5;
   const onlyFailed = step === 'review'   ? document.getElementById('onlyFailed-review').checked : false;
 
-  const body = { step, domain, section, difficulty, count, onlyFailed };
+  const body = { step, domain, section, difficulty, count, onlyFailed, mode };
 
   clearLog();
   setRunning(step);
@@ -1232,12 +1416,14 @@ async function fetchStats() {
 async function runAll() {
   if (currentJobId) return;
 
-  const domain     = document.getElementById('domain-all').value || null;
-  const section    = getSelectedToggle('section-all') || null;
-  const difficulty = getSelectedToggle('difficulty-all') || null;
+  const mode       = getSelectedToggle('mode-all') || 'drill';
+  const isDiag     = mode === 'diagnostic';
+  const domain     = isDiag ? null : (document.getElementById('domain-all').value || null);
+  const section    = isDiag ? null : (getSelectedToggle('section-all') || null);
+  const difficulty = isDiag ? null : (getSelectedToggle('difficulty-all') || null);
   const count      = parseInt(document.getElementById('count-all').value) || 5;
 
-  const body = { domain, section, difficulty, count };
+  const body = { domain, section, difficulty, count, mode };
 
   clearLog();
   setRunningAll();
@@ -1301,6 +1487,83 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeHelp();
 // Auto-show on first ever visit
 if (!localStorage.getItem('pipeline-guide-seen')) {
   setTimeout(() => { openHelp(); localStorage.setItem('pipeline-guide-seen', '1'); }, 400);
+}
+
+// ── Spread section ────────────────────────────────────────────────
+function toggleSpread() {
+  const header = document.getElementById('spreadHeader');
+  const body   = document.getElementById('spreadBody');
+  const chevron = document.getElementById('spreadChevron');
+  const isOpen = body.classList.contains('open');
+  header.classList.toggle('open', !isOpen);
+  body.classList.toggle('open', !isOpen);
+  chevron.textContent = isOpen ? '▼' : '▲';
+}
+
+async function loadSpread() {
+  const btn = document.getElementById('spreadRefreshBtn');
+  btn.disabled = true;
+  btn.textContent = '↻ Loading…';
+  try {
+    const res = await fetch('/admin/pipeline/pool-spread');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const { skills } = await res.json();
+    renderSpread(skills);
+  } catch (err) {
+    document.getElementById('spreadContent').innerHTML =
+      `<div class="spread-empty">Failed to load spread: ${err.message}</div>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '↻ Refresh';
+  }
+}
+
+function renderSpread(skills) {
+  if (!skills || !skills.length) {
+    document.getElementById('spreadContent').innerHTML =
+      '<div class="spread-empty">No skill data found.</div>';
+    return;
+  }
+
+  // Group by domain
+  const byDomain = {};
+  skills.forEach(s => {
+    if (!byDomain[s.domain]) byDomain[s.domain] = { label: s.domainLabel, skills: [] };
+    byDomain[s.domain].skills.push(s);
+  });
+
+  function poolCell(count, target) {
+    const pct = target > 0 ? Math.min(count / target, 1) : 0;
+    const cls = pct >= 1 ? 'green' : pct >= 0.5 ? 'yellow' : 'red';
+    const barW = Math.round(pct * 100);
+    return `<div class="pool-cell">
+      <span class="pool-count count-${cls}">${count}/${target}</span>
+      <div class="pool-bar-wrap"><div class="pool-bar bar-${cls}" style="width:${barW}%"></div></div>
+    </div>`;
+  }
+
+  let html = `<div class="spread-table-wrap"><table class="spread-table">
+    <thead><tr>
+      <th>Skill</th>
+      <th>Drill</th>
+      <th>Diagnostic</th>
+      <th>Test</th>
+    </tr></thead><tbody>`;
+
+  Object.entries(byDomain).forEach(([, domain]) => {
+    html += `<tr class="domain-row"><td colspan="4">${domain.label}</td></tr>`;
+    domain.skills.forEach(s => {
+      html += `<tr>
+        <td>${s.label}</td>
+        <td>${poolCell(s.drill.count, s.drill.target)}</td>
+        <td>${poolCell(s.diagnostic.count, s.diagnostic.target)}</td>
+        <td>${poolCell(s.test.count, s.test.target)}</td>
+      </tr>`;
+    });
+  });
+
+  html += '</tbody></table></div>';
+  document.getElementById('spreadContent').innerHTML = html;
 }
 
 // Load stats on page load

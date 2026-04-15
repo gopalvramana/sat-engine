@@ -52,7 +52,8 @@ public class GenerateStage {
     private static final Map<String, Integer> RW_DOMAIN_WEIGHTS = Map.of(
             "information_ideas", 26, "craft_structure", 28, "expression_ideas", 20, "standard_english", 26
     );
-    private static final int[] DIFFICULTY_WEIGHTS = {0, 5, 10, 20, 25, 25, 10, 5}; // index = difficulty 1-7; skewed hard for overtraining
+    private static final int[] DIFFICULTY_WEIGHTS      = {0, 5, 10, 20, 25, 25, 10, 5}; // index = difficulty 1-7; skewed hard for overtraining
+    private static final int[] TEST_DIFFICULTY_WEIGHTS = {0, 8, 15, 27, 27, 15, 6, 2};  // SAT-realistic distribution
     private static final Map<String, Double> DIAGRAM_PROBS = Map.of(
             "geometry_trigonometry", 1.00,  // every geometry question needs a figure
             "problem_solving_data",  0.70,  // most data questions need a chart/graph
@@ -76,7 +77,11 @@ public class GenerateStage {
     private final Random random = new Random();
 
     /** domain key → ordered list of skill keys, loaded from sat_taxonomy.json at startup */
-    private final Map<String, List<String>> taxonomySkills = new HashMap<>();
+    private final Map<String, List<String>> taxonomySkills   = new HashMap<>();
+    /** skill key → domain key */
+    private final Map<String, String>       skillToDomain    = new HashMap<>();
+    /** skill key → section key */
+    private final Map<String, String>       skillToSection   = new HashMap<>();
 
     @PostConstruct
     void loadTaxonomy() {
@@ -84,11 +89,15 @@ public class GenerateStage {
             JsonNode root = objectMapper.readTree(
                     new ClassPathResource("taxonomy/sat_taxonomy.json").getInputStream());
             for (JsonNode section : root.path("sections")) {
+                String sectionKey = section.path("key").asText();
                 for (JsonNode domain : section.path("domains")) {
                     String domainKey = domain.path("key").asText();
                     List<String> skills = new ArrayList<>();
                     for (JsonNode skill : domain.path("skills")) {
-                        skills.add(skill.path("key").asText());
+                        String skillKey = skill.path("key").asText();
+                        skills.add(skillKey);
+                        skillToDomain.put(skillKey, domainKey);
+                        skillToSection.put(skillKey, sectionKey);
                     }
                     taxonomySkills.put(domainKey, skills);
                 }
@@ -98,6 +107,43 @@ public class GenerateStage {
         } catch (Exception e) {
             log.error("Failed to load sat_taxonomy.json — skill balancing disabled: {}", e.getMessage());
         }
+    }
+
+    /**
+     * For DIAGNOSTIC mode: picks the skill with the fewest questions in the 'diagnostic' pool,
+     * globally across all 65 skills (not domain-scoped).
+     * Returns [skillKey, domainKey, sectionKey].
+     */
+    private String[] pickLeastCoveredSkillGlobal(String pool) {
+        Map<String, Long> counts = new HashMap<>();
+        try {
+            questionRepository.countBySkillKeyForPool(pool)
+                    .forEach(row -> counts.put(
+                            row[0] != null ? row[0].toString() : "",
+                            row[1] != null ? ((Number) row[1]).longValue() : 0L));
+        } catch (Exception e) {
+            log.warn("Could not query skill counts for pool={}: {}", pool, e.getMessage());
+        }
+
+        Set<String> allSkills = skillToDomain.keySet();
+        if (allSkills.isEmpty()) {
+            log.warn("Taxonomy not loaded — cannot pick global skill for pool={}", pool);
+            return new String[]{null, "algebra", "math"};
+        }
+
+        long minCount = allSkills.stream()
+                .mapToLong(s -> counts.getOrDefault(s, 0L))
+                .min().orElse(0L);
+
+        List<String> candidates = allSkills.stream()
+                .filter(s -> counts.getOrDefault(s, 0L) == minCount)
+                .collect(Collectors.toList());
+
+        String chosen = candidates.get(random.nextInt(candidates.size()));
+        log.debug("Global skill balance pool={}: picked '{}' (count={}, {} candidates at min)",
+                pool, chosen, minCount, candidates.size());
+
+        return new String[]{chosen, skillToDomain.get(chosen), skillToSection.get(chosen)};
     }
 
     /**
@@ -138,13 +184,11 @@ public class GenerateStage {
 
     /**
      * Picks the difficulty level most under-represented for this skill, relative to the
-     * target distribution in DIFFICULTY_WEIGHTS. Falls back to random weighted pick if
-     * no data exists or the query fails.
+     * target distribution in the supplied weights array. Falls back to random weighted pick.
      */
-    private int pickDifficultyForSkill(String domain, String skill) {
-        if (domain == null || skill == null) return pickDifficulty();
+    private int pickDifficultyForSkill(String domain, String skill, int[] weights) {
+        if (domain == null || skill == null) return pickDifficulty(weights);
         try {
-            // Build a map of difficulty → current count for this skill
             Map<Integer, Long> counts = new HashMap<>();
             questionRepository.countBySkillAndDifficultyForDomain(domain)
                     .stream()
@@ -155,17 +199,14 @@ public class GenerateStage {
                         if (diff >= 1 && diff <= 7) counts.put(diff, cnt);
                     });
 
-            // Total weight sum
             int totalWeight = 0;
-            for (int i = 1; i <= 7; i++) totalWeight += DIFFICULTY_WEIGHTS[i];
+            for (int i = 1; i <= 7; i++) totalWeight += weights[i];
 
-            // Compute "deficit" per difficulty: target_ratio - actual_ratio
-            // Pick the difficulty with the highest deficit
             long totalCount = counts.values().stream().mapToLong(Long::longValue).sum();
             double maxDeficit = Double.NEGATIVE_INFINITY;
             int best = -1;
             for (int d = 1; d <= 7; d++) {
-                double targetRatio = (double) DIFFICULTY_WEIGHTS[d] / totalWeight;
+                double targetRatio = (double) weights[d] / totalWeight;
                 double actualRatio = totalCount == 0 ? 0.0 : (double) counts.getOrDefault(d, 0L) / totalCount;
                 double deficit = targetRatio - actualRatio;
                 if (deficit > maxDeficit) {
@@ -180,46 +221,84 @@ public class GenerateStage {
         } catch (Exception e) {
             log.warn("Could not balance difficulty for domain={} skill={}: {}", domain, skill, e.getMessage());
         }
-        return pickDifficulty();
+        return pickDifficulty(weights);
+    }
+
+    /** Overload using default DRILL weights — kept for any internal callers. */
+    private int pickDifficultyForSkill(String domain, String skill) {
+        return pickDifficultyForSkill(domain, skill, DIFFICULTY_WEIGHTS);
     }
 
     // ─── Public entry point ────────────────────────────────────────────────
 
     /**
-     * @param sectionArg   "math" | "reading_writing" | null (random)
-     * @param domainArg    taxonomy domain key, e.g. "algebra" | null (weighted random)
-     * @param skillKeyArg  canonical slug from sat_taxonomy.json, e.g. "linear_functions" | null
-     * @param difficultyArg 1-7 | null (weighted random)
+     * Backward-compatible overload — defaults to DRILL mode.
      */
     public void run(int count, String sectionArg, String domainArg, String skillKeyArg, Integer difficultyArg) {
-        // Validate domain early — fail fast rather than generate garbage IDs
-        if (domainArg != null && !domainArg.isBlank() && !DOMAIN_CODES.containsKey(domainArg)) {
-            log.error("Unknown --domain value: '{}'. Valid domains: {}", domainArg, DOMAIN_CODES.keySet());
-            throw new IllegalArgumentException("Unknown domain: '" + domainArg + "'. Valid: " + DOMAIN_CODES.keySet());
-        }
-        if (sectionArg != null && !sectionArg.isBlank() && !SECTION_CODES.containsKey(sectionArg)) {
-            log.error("Unknown --section value: '{}'. Valid sections: {}", sectionArg, SECTION_CODES.keySet());
-            throw new IllegalArgumentException("Unknown section: '" + sectionArg + "'. Valid: " + SECTION_CODES.keySet());
+        run(count, sectionArg, domainArg, skillKeyArg, difficultyArg, GenerationMode.DRILL);
+    }
+
+    /**
+     * @param sectionArg    "math" | "reading_writing" | null (random; ignored in DIAGNOSTIC mode)
+     * @param domainArg     taxonomy domain key, e.g. "algebra" | null (ignored in DIAGNOSTIC mode)
+     * @param skillKeyArg   canonical slug from sat_taxonomy.json | null
+     * @param difficultyArg 1-7 | null (ignored in DIAGNOSTIC mode; uses TEST weights in TEST mode)
+     * @param mode          DRILL | DIAGNOSTIC | TEST
+     */
+    public void run(int count, String sectionArg, String domainArg, String skillKeyArg,
+                    Integer difficultyArg, GenerationMode mode) {
+        if (mode == null) mode = GenerationMode.DRILL;
+
+        // Validate domain/section early — only relevant for DRILL and TEST
+        if (mode != GenerationMode.DIAGNOSTIC) {
+            if (domainArg != null && !domainArg.isBlank() && !DOMAIN_CODES.containsKey(domainArg)) {
+                log.error("Unknown --domain value: '{}'. Valid domains: {}", domainArg, DOMAIN_CODES.keySet());
+                throw new IllegalArgumentException("Unknown domain: '" + domainArg + "'. Valid: " + DOMAIN_CODES.keySet());
+            }
+            if (sectionArg != null && !sectionArg.isBlank() && !SECTION_CODES.containsKey(sectionArg)) {
+                log.error("Unknown --section value: '{}'. Valid sections: {}", sectionArg, SECTION_CODES.keySet());
+                throw new IllegalArgumentException("Unknown section: '" + sectionArg + "'. Valid: " + SECTION_CODES.keySet());
+            }
         }
 
+        int[] diffWeights = (mode == GenerationMode.TEST) ? TEST_DIFFICULTY_WEIGHTS : DIFFICULTY_WEIGHTS;
+
         log.info("═".repeat(60));
-        log.info(" Generate Stage  count={} section={} domain={} skill={} difficulty={}",
-                count, sectionArg, domainArg, skillKeyArg, difficultyArg);
+        log.info(" Generate Stage  mode={} count={} section={} domain={} skill={} difficulty={}",
+                mode, count, sectionArg, domainArg, skillKeyArg, difficultyArg);
         log.info("═".repeat(60));
 
         int success = 0, failed = 0;
-        // Cache next seq per domain within this run
         Map<String, Integer> seqCache = new java.util.HashMap<>();
 
         for (int i = 1; i <= count; i++) {
-            // If domain is explicitly specified, infer section from it — never random-pick
-            String  section    = (domainArg != null && !domainArg.isBlank())
-                                     ? sectionForDomain(domainArg)
-                                     : pickSection(sectionArg);
-            // Use the explicitly requested domain, or fall back to weighted random
-            String  domain     = (domainArg != null && !domainArg.isBlank()) ? domainArg : pickDomain(section);
-            String  qtype      = pickQuestionType(section);
+            String section;
+            String domain;
+            String resolvedSkill;
 
+            if (mode == GenerationMode.DIAGNOSTIC) {
+                // ── DIAGNOSTIC: pick the globally least-covered skill ──────────
+                String[] sd = pickLeastCoveredSkillGlobal("diagnostic");
+                resolvedSkill = (skillKeyArg != null && !skillKeyArg.isBlank()) ? skillKeyArg : sd[0];
+                domain        = sd[1];
+                section       = sd[2];
+                if (domain == null || section == null) {
+                    log.warn("[{}/{}] Could not resolve domain/section for skill '{}' — skipping", i, count, resolvedSkill);
+                    failed++;
+                    continue;
+                }
+            } else {
+                // ── DRILL / TEST: normal domain-scoped flow ────────────────────
+                section       = (domainArg != null && !domainArg.isBlank())
+                                    ? sectionForDomain(domainArg)
+                                    : pickSection(sectionArg);
+                domain        = (domainArg != null && !domainArg.isBlank()) ? domainArg : pickDomain(section);
+                resolvedSkill = (skillKeyArg != null && !skillKeyArg.isBlank())
+                                    ? skillKeyArg
+                                    : pickLeastCoveredSkill(domain);
+            }
+
+            String qtype      = pickQuestionType(section);
             String sectionCode = SECTION_CODES.get(section);
             String domainCode  = DOMAIN_CODES.get(domain);
             String prefix      = sectionCode + "-" + domainCode + "-";
@@ -231,7 +310,6 @@ public class GenerateStage {
 
             String externalId = prefix + String.format("%03d", seq);
 
-            // Skip if already exists
             if (questionRepository.findByExternalId(externalId).isPresent()) {
                 log.info("[{}/{}] {} already exists — skipping", i, count, externalId);
                 seqCache.put(domain, seq + 1);
@@ -239,18 +317,21 @@ public class GenerateStage {
                 continue;
             }
 
-            // Resolve skill first — diagram and difficulty decisions both depend on it
-            String resolvedSkill = (skillKeyArg != null && !skillKeyArg.isBlank())
-                    ? skillKeyArg
-                    : pickLeastCoveredSkill(domain);
-            int     difficulty   = difficultyArg != null ? difficultyArg : pickDifficultyForSkill(domain, resolvedSkill);
-            // command_evidence_quantitative always needs a chartjs graphic; all other R&W = no diagram
-            boolean hasDiagram   = pickHasDiagram(section, domain, resolvedSkill);
-            String  diagramType  = hasDiagram
+            // Difficulty: DIAGNOSTIC always d3/d4; others use weighted balancing
+            int difficulty;
+            if (mode == GenerationMode.DIAGNOSTIC) {
+                difficulty = (difficultyArg != null) ? difficultyArg
+                        : (random.nextInt(2) == 0 ? 3 : 4);
+            } else {
+                difficulty = (difficultyArg != null) ? difficultyArg
+                        : pickDifficultyForSkill(domain, resolvedSkill, diffWeights);
+            }
+
+            boolean hasDiagram  = pickHasDiagram(section, domain, resolvedSkill);
+            String  diagramType = hasDiagram
                     ? ("command_evidence_quantitative".equals(resolvedSkill) ? "chartjs" : pickDiagramType(domain))
                     : null;
 
-            // Build diversity context from existing questions in same domain+skill
             String diversityContext = buildDiversityContext(domain, resolvedSkill);
 
             JsonNode generated = generateWithRetry(section, domain, resolvedSkill, difficulty, qtype, hasDiagram, diagramType, diversityContext, i, count, externalId);
@@ -259,7 +340,7 @@ public class GenerateStage {
                 continue;
             }
 
-            saveQuestion(generated, externalId, section, domain, resolvedSkill, difficulty, qtype);
+            saveQuestion(generated, externalId, section, domain, resolvedSkill, difficulty, qtype, mode);
             seqCache.put(domain, seq + 1);
             success++;
 
@@ -269,7 +350,7 @@ public class GenerateStage {
         }
 
         log.info("─".repeat(60));
-        log.info(" Results: {} saved  {} failed", success, failed);
+        log.info(" Results: {} saved  {} failed  mode={}", success, failed, mode);
     }
 
     // ─── Core generation logic ─────────────────────────────────────────────
@@ -369,7 +450,7 @@ public class GenerateStage {
 
     @Transactional
     public void saveQuestion(JsonNode data, String externalId, String section, String domain,
-                             String skillKey, int difficulty, String qtype) {
+                             String skillKey, int difficulty, String qtype, GenerationMode mode) {
         String correctAnswer = data.path("correctAnswer").asText(null);
 
         // skill_key: prefer the explicit arg; fall back to whatever the model returned
@@ -400,7 +481,9 @@ public class GenerateStage {
                 .coreConcept(toJsonString(data.path("coreConcept")))
                 .prerequisites(toJsonString(data.path("prerequisites")))
                 .animation(toJsonString(data.path("animation")))
-                .pool(data.path("pool").asText("both"))
+                .pool(mode == GenerationMode.DIAGNOSTIC ? "diagnostic"
+                    : mode == GenerationMode.TEST       ? "test"
+                    : data.path("pool").asText("both"))
                 .passageText(nullIfEmpty(data.path("passageText").asText(null)))
                 .passageSource(nullIfEmpty(data.path("passageSource").asText(null)))
                 .diagram(toJsonString(data.path("diagram")))
@@ -708,12 +791,16 @@ public class GenerateStage {
     }
 
     private int pickDifficulty() {
+        return pickDifficulty(DIFFICULTY_WEIGHTS);
+    }
+
+    private int pickDifficulty(int[] weights) {
         int total = 0;
-        for (int i = 1; i <= 7; i++) total += DIFFICULTY_WEIGHTS[i];
+        for (int i = 1; i <= 7; i++) total += weights[i];
         int r = random.nextInt(total);
         int cum = 0;
         for (int i = 1; i <= 7; i++) {
-            cum += DIFFICULTY_WEIGHTS[i];
+            cum += weights[i];
             if (r < cum) return i;
         }
         return 4;

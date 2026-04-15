@@ -3,34 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Question Spread — Aptify Admin</title>
+  <title>Question Spread — SAT Engine Admin</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=DM+Serif+Display&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     /* ── Brand tokens ───────────────────────────────────────────── */
     :root {
-      --amber:      #d97706;
-      --amber-light:#fef3c7;
-      --amber-mid:  #fbbf24;
-      --amber-dark: #92400e;
-      --ink:        #1c1008;
-      --ink-light:  #44311a;
-      --slate:      #64748b;
-      --border:     #e2e8f0;
-      --bg:         #f8f7f4;
-      --card:       #ffffff;
-      --green:      #16a34a;
-      --green-light:#dcfce7;
-      --red:        #dc2626;
-      --red-light:  #fee2e2;
-      --yellow:     #ca8a04;
+      --amber:       #d97706;
+      --amber-light: #fef3c7;
+      --amber-mid:   #fbbf24;
+      --amber-dark:  #b45309;
+      --dark:        #1c1008;
+      --ink:         #1c1008;
+      --ink-light:   #44311a;
+      --slate:       #64748b;
+      --border:      #e2e8f0;
+      --bg:          #f5f0e8;
+      --card:        #ffffff;
+      --green:       #16a34a;
+      --green-light: #dcfce7;
+      --red:         #dc2626;
+      --red-light:   #fee2e2;
+      --yellow:      #ca8a04;
       --yellow-light:#fef9c3;
+      --cyan:        #0891b2;
+      --cyan-light:  #ecfeff;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased; }
 
     /* ── Layout ─────────────────────────────────────────────────── */
@@ -39,9 +41,9 @@
 
     /* ── Header ─────────────────────────────────────────────────── */
     header {
-      background: var(--card);
-      border-bottom: 1px solid var(--border);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      background: var(--dark);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 2px 8px rgba(28,16,8,0.3);
       display: flex; align-items: center; justify-content: space-between;
       padding: 0 24px;
     }
@@ -52,60 +54,91 @@
       display: flex; align-items: center; justify-content: center;
       font-size: 14px; font-weight: 800; color: #fff;
     }
-    .header-title { font-size: 14px; font-weight: 700; color: var(--ink); }
-    .header-sub   { font-size: 11px; color: var(--slate); }
+    .header-title { font-size: 14px; font-weight: 700; color: #fff; }
+    .header-sub   { font-size: 11px; color: rgba(255,255,255,0.45); }
     .header-nav   { display: flex; gap: 6px; }
     .nav-link {
-      font-size: 12px; font-weight: 500; color: var(--slate);
+      font-size: 12px; font-weight: 500;
+      color: rgba(255,255,255,0.6);
       padding: 5px 12px; border-radius: 6px;
-      text-decoration: none; transition: background 0.12s, color 0.12s;
+      text-decoration: none;
+      border: 1.5px solid transparent;
+      transition: all 0.12s;
     }
-    .nav-link:hover  { background: #f1f5f9; color: var(--ink); }
-    .nav-link.active { background: var(--amber-light); color: var(--amber-dark); font-weight: 600; }
+    .nav-link:hover  { background: rgba(255,255,255,0.08); color: #fff; }
+    .nav-link.active {
+      background: rgba(251,191,36,0.15);
+      border-color: rgba(251,191,36,0.4);
+      color: #fbbf24; font-weight: 600;
+    }
     .header-refresh {
-      font-size: 12px; font-weight: 500; padding: 5px 12px; border-radius: 6px;
+      font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 6px;
       background: var(--amber); color: #fff; border: none; cursor: pointer;
       transition: background 0.12s;
     }
-    .header-refresh:hover { background: #b45309; }
+    .header-refresh:hover { background: var(--amber-dark); }
 
-    /* ── Progress summary bar ───────────────────────────────────── */
+    /* ── Summary cards ──────────────────────────────────────────── */
     .summary-bar {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;
     }
     .summary-card {
       background: var(--card); border-radius: 12px;
       padding: 18px 20px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
     }
-    .summary-label {
-      font-size: 11px; font-weight: 600; text-transform: uppercase;
-      letter-spacing: 0.08em; color: var(--slate); margin-bottom: 10px;
+    .summary-pool-label {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; margin-bottom: 12px;
+      display: flex; align-items: center; gap: 7px;
     }
-    .summary-counts { display: flex; gap: 20px; margin-bottom: 10px; }
+    .pool-dot {
+      width: 8px; height: 8px; border-radius: 50%; display: inline-block;
+    }
+    .summary-counts { display: flex; gap: 20px; margin-bottom: 12px; }
     .summary-count  { text-align: center; }
     .summary-count .num { font-size: 26px; font-weight: 800; color: var(--ink); line-height: 1; }
-    .summary-count .den { font-size: 12px; color: var(--slate); margin-top: 2px; }
-    .summary-count .lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--slate); margin-top: 1px; }
+    .summary-count .lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--slate); margin-top: 3px; }
     .progress-track {
-      height: 8px; background: #e2e8f0; border-radius: 99px; overflow: hidden;
+      height: 7px; background: #e2e8f0; border-radius: 99px; overflow: hidden;
     }
     .progress-fill {
-      height: 100%; border-radius: 99px;
-      background: linear-gradient(90deg, var(--amber), var(--amber-mid));
-      transition: width 0.5s ease;
+      height: 100%; border-radius: 99px; transition: width 0.5s ease;
     }
     .progress-pct { font-size: 11px; color: var(--slate); margin-top: 5px; text-align: right; }
 
-    /* ── Section tabs ───────────────────────────────────────────── */
-    .tabs { display: flex; gap: 6px; margin-bottom: 20px; }
+    /* ── Filter rows ────────────────────────────────────────────── */
+    .filter-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .tabs       { display: flex; gap: 6px; }
     .tab {
-      font-size: 12px; font-weight: 600; padding: 7px 18px; border-radius: 8px;
+      font-size: 12px; font-weight: 600; padding: 6px 16px; border-radius: 8px;
       border: 1.5px solid var(--border); background: var(--card);
       color: var(--slate); cursor: pointer; transition: all 0.12s;
     }
-    .tab:hover  { border-color: var(--amber); color: var(--amber-dark); }
-    .tab.active { background: var(--amber); border-color: var(--amber); color: #fff; }
+    .tab:hover { border-color: var(--amber); color: var(--amber-dark); }
+    .tab.active { border-color: var(--amber); background: var(--amber); color: #fff; }
+
+    /* Pool filter tabs */
+    .pool-tab { font-size: 12px; font-weight: 600; padding: 6px 16px; border-radius: 8px;
+      border: 1.5px solid var(--border); background: var(--card);
+      color: var(--slate); cursor: pointer; transition: all 0.12s; }
+    .pool-tab:hover { opacity: 0.85; }
+    .pool-tab.active-all      { background: var(--amber);  border-color: var(--amber);  color: #fff; }
+    .pool-tab.active-drill     { background: #d97706; border-color: #d97706; color: #fff; }
+    .pool-tab.active-diagnostic{ background: #0891b2; border-color: #0891b2; color: #fff; }
+    .pool-tab.active-test      { background: #16a34a; border-color: #16a34a; color: #fff; }
+
+    /* Summary card focus */
+    .summary-card.dimmed { opacity: 0.3; filter: grayscale(0.4); transition: all 0.2s; }
+    .summary-card { transition: all 0.2s; }
+
+    /* Legend */
+    .legend {
+      display: flex; gap: 14px; align-items: center;
+      font-size: 11px; color: var(--slate);
+    }
+    .legend-item { display: flex; align-items: center; gap: 5px; }
+    .legend-dot  { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
 
     /* ── Domain group ───────────────────────────────────────────── */
     .domain-group { margin-bottom: 28px; }
@@ -121,9 +154,7 @@
       font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 99px;
       background: var(--amber-light); color: var(--amber-dark);
     }
-    .domain-total {
-      font-size: 11px; color: var(--slate); font-weight: 500;
-    }
+    .domain-summary { font-size: 11px; color: var(--slate); font-weight: 500; }
 
     /* ── Skill table ────────────────────────────────────────────── */
     .skill-table {
@@ -133,53 +164,45 @@
     }
     .skill-table-header {
       display: grid;
-      grid-template-columns: 220px 1fr 90px 90px 90px 180px;
+      grid-template-columns: 210px 1fr 1fr 1fr;
       gap: 8px; padding: 8px 16px;
       background: #f8f7f4; border-bottom: 1px solid var(--border);
-      font-size: 10px; font-weight: 600; text-transform: uppercase;
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
       letter-spacing: 0.08em; color: var(--slate);
+    }
+    .skill-table-header .pool-hdr {
+      display: flex; align-items: center; gap: 5px;
     }
     .skill-row {
       display: grid;
-      grid-template-columns: 220px 1fr 90px 90px 90px 180px;
+      grid-template-columns: 210px 1fr 1fr 1fr;
       gap: 8px; padding: 10px 16px; align-items: center;
       border-bottom: 1px solid #f1f5f9; transition: background 0.1s;
     }
     .skill-row:last-child { border-bottom: none; }
     .skill-row:hover { background: #fafaf8; }
-
     .skill-name { font-size: 12px; font-weight: 500; color: var(--ink); line-height: 1.35; }
 
-    /* Progress bar in table */
-    .bar-wrap { display: flex; align-items: center; gap: 8px; }
-    .bar-track { flex: 1; height: 6px; background: #e2e8f0; border-radius: 99px; overflow: hidden; }
+    /* Pool cell */
+    .pool-cell {
+      display: flex; flex-direction: column; gap: 3px;
+    }
+    .pool-top {
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 11px;
+    }
+    .pool-count { font-weight: 700; }
+    .pool-target-lbl { color: var(--slate); }
+    .bar-track { height: 5px; background: #e2e8f0; border-radius: 99px; overflow: hidden; }
     .bar-fill  { height: 100%; border-radius: 99px; transition: width 0.4s ease; }
-    .bar-pct   { font-size: 10px; font-weight: 600; color: var(--slate); min-width: 30px; text-align: right; }
 
-    /* Status pills */
-    .pill {
-      display: inline-flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 600; border-radius: 99px;
-      padding: 2px 10px; min-width: 38px;
-    }
-    .pill-green  { background: var(--green-light); color: var(--green); }
-    .pill-yellow { background: var(--yellow-light); color: var(--yellow); }
-    .pill-red    { background: var(--red-light); color: var(--red); }
-    .pill-gray   { background: #f1f5f9; color: var(--slate); }
-
-    /* Difficulty mini-bar chart */
-    .diff-bars {
-      display: flex; gap: 2px; align-items: flex-end; height: 28px;
-    }
-    .diff-bar-col { display: flex; flex-direction: column; align-items: center; gap: 1px; }
-    .diff-bar {
-      width: 14px; border-radius: 3px 3px 0 0;
-      background: var(--amber); opacity: 0.85;
-      transition: height 0.4s ease;
-      min-height: 2px;
-    }
-    .diff-bar.empty { background: #e2e8f0; opacity: 1; }
-    .diff-label { font-size: 8px; color: var(--slate); }
+    /* Color states */
+    .col-green  { color: var(--green); }
+    .col-yellow { color: var(--yellow); }
+    .col-red    { color: var(--red); }
+    .fill-green  { background: var(--green); }
+    .fill-yellow { background: var(--yellow); }
+    .fill-red    { background: var(--red); }
 
     /* ── Loading / empty ────────────────────────────────────────── */
     .loading {
@@ -193,14 +216,6 @@
       margin: 0 auto 12px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ── Legend ─────────────────────────────────────────────────── */
-    .legend {
-      display: flex; gap: 16px; align-items: center;
-      font-size: 11px; color: var(--slate); margin-bottom: 16px;
-    }
-    .legend-item { display: flex; align-items: center; gap: 5px; }
-    .legend-dot  { width: 8px; height: 8px; border-radius: 50%; }
   </style>
 </head>
 <body>
@@ -210,16 +225,17 @@
   <!-- ══ HEADER ══════════════════════════════════════════════════ -->
   <header>
     <div class="header-brand">
-      <div class="header-logo">A</div>
+      <div class="header-logo">S</div>
       <div>
-        <div class="header-title">Aptify Admin</div>
-        <div class="header-sub">Question Spread</div>
+        <div class="header-title">SAT Engine Admin</div>
+        <div class="header-sub">Question Spread — Pool Coverage</div>
       </div>
     </div>
 
     <nav class="header-nav">
-      <a href="/admin/validate.html" class="nav-link">Question Review</a>
-      <a href="/admin/spread.html"   class="nav-link active">Spread</a>
+      <a href="/admin/validate.html"  class="nav-link">Question Review</a>
+      <a href="/admin/pipeline.html"  class="nav-link">Pipeline</a>
+      <a href="/admin/spread.html"    class="nav-link active">Spread</a>
     </nav>
 
     <button class="header-refresh" onclick="load()">↻ Refresh</button>
@@ -230,28 +246,36 @@
 
     <div id="loading" class="loading">
       <div class="loading-spinner"></div>
-      Loading spread data…
+      Loading pool coverage…
     </div>
 
     <div id="content" style="display:none">
 
-      <!-- Summary cards -->
+      <!-- Summary cards: one per pool -->
       <div class="summary-bar" id="summary-bar"></div>
 
-      <!-- Legend -->
-      <div class="legend">
-        <span style="font-size:11px; font-weight:600; color:var(--ink-light)">Key:</span>
-        <span class="legend-item"><span class="legend-dot" style="background:var(--green)"></span>Usable (approved/enriched)</span>
-        <span class="legend-item"><span class="legend-dot" style="background:var(--yellow)"></span>Pending review</span>
-        <span class="legend-item"><span class="legend-dot" style="background:var(--red)"></span>Failed/rejected</span>
-        <span class="legend-item"><span class="legend-dot" style="background:var(--amber)"></span>Difficulty bars (d1–d7)</span>
+      <!-- Pool filter row -->
+      <div class="filter-row">
+        <div class="tabs" id="pool-tabs">
+          <button class="pool-tab active-all"  onclick="setPool('all', this)">All Pools</button>
+          <button class="pool-tab"             onclick="setPool('drill', this)">Drill</button>
+          <button class="pool-tab"             onclick="setPool('diagnostic', this)">Diagnostic</button>
+          <button class="pool-tab"             onclick="setPool('test', this)">Test</button>
+        </div>
+        <div class="legend">
+          <span class="legend-item"><span class="legend-dot" style="background:var(--green)"></span>≥ 100%</span>
+          <span class="legend-item"><span class="legend-dot" style="background:var(--yellow)"></span>50–99%</span>
+          <span class="legend-item"><span class="legend-dot" style="background:var(--red)"></span>&lt; 50%</span>
+        </div>
       </div>
 
-      <!-- Section tabs -->
-      <div class="tabs">
-        <button class="tab active" onclick="setSection('all', this)">All Sections</button>
-        <button class="tab"        onclick="setSection('math', this)">Math</button>
-        <button class="tab"        onclick="setSection('reading_writing', this)">Reading &amp; Writing</button>
+      <!-- Section tabs row -->
+      <div class="filter-row" style="margin-bottom:20px">
+        <div class="tabs">
+          <button class="tab active" onclick="setSection('all', this)">All Sections</button>
+          <button class="tab"        onclick="setSection('math', this)">Math</button>
+          <button class="tab"        onclick="setSection('reading_writing', this)">Reading &amp; Writing</button>
+        </div>
       </div>
 
       <!-- Domain groups -->
@@ -265,23 +289,33 @@
 <script>
   let allSkills = [];
   let currentSection = 'all';
+  let currentPool = 'all';
 
-  // ── SAT domain order ──────────────────────────────────────────
   const DOMAIN_ORDER = [
     'algebra','advanced_math','problem_solving_data','geometry_trigonometry',
     'information_ideas','craft_structure','expression_ideas','standard_english'
   ];
-  const SECTION_TARGET = { math: 440, reading_writing: 540 };
-  const DOMAIN_SHARE   = {
-    algebra: 0.35, advanced_math: 0.35, problem_solving_data: 0.15, geometry_trigonometry: 0.15,
-    information_ideas: 0.26, craft_structure: 0.28, expression_ideas: 0.20, standard_english: 0.26
+
+  const DOMAIN_LABEL = {
+    algebra: 'Algebra', advanced_math: 'Advanced Math',
+    problem_solving_data: 'Problem Solving & Data',
+    geometry_trigonometry: 'Geometry & Trigonometry',
+    information_ideas: 'Information & Ideas', craft_structure: 'Craft & Structure',
+    expression_ideas: 'Expression of Ideas', standard_english: 'Standard English Conventions'
   };
+
+  // Pool display config
+  const POOLS = [
+    { key: 'drill',      label: 'Drill',      color: '#d97706', dotBg: '#d97706' },
+    { key: 'diagnostic', label: 'Diagnostic', color: '#0891b2', dotBg: '#0891b2' },
+    { key: 'test',       label: 'Test',       color: '#16a34a', dotBg: '#16a34a' },
+  ];
 
   async function load() {
     document.getElementById('loading').style.display = '';
     document.getElementById('content').style.display  = 'none';
     try {
-      const res = await fetch('/admin/pipeline/spread');
+      const res = await fetch('/admin/pipeline/pool-spread');
       if (!res.ok) throw new Error('HTTP ' + res.status);
       const data = await res.json();
       allSkills = data.skills || [];
@@ -290,15 +324,28 @@
       document.getElementById('content').style.display  = '';
     } catch(e) {
       document.getElementById('loading').innerHTML =
-        '<p style="color:#dc2626">Failed to load: ' + e.message + '</p>';
+        `<p style="color:#dc2626">Failed to load: ${e.message}</p>`;
     }
   }
 
   function setSection(sec, el) {
     currentSection = sec;
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    el.closest('.tabs').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     el.classList.add('active');
     render();
+  }
+
+  function setPool(pool, el) {
+    currentPool = pool;
+    document.querySelectorAll('.pool-tab').forEach(t => {
+      t.className = 'pool-tab';
+    });
+    el.classList.add('active-' + pool);
+    render();
+  }
+
+  function activePools() {
+    return currentPool === 'all' ? POOLS : POOLS.filter(p => p.key === currentPool);
   }
 
   function render() {
@@ -306,56 +353,56 @@
     renderDomains();
   }
 
+  // ── Summary cards — one per pool ─────────────────────────────
   function renderSummary() {
-    const bar = document.getElementById('summary-bar');
-    const sections = currentSection === 'all'
-      ? ['math','reading_writing']
-      : [currentSection];
+    const skills = currentSection === 'all'
+      ? allSkills
+      : allSkills.filter(s => s.section === currentSection);
 
-    bar.innerHTML = sections.map(sec => {
-      const skills = allSkills.filter(s => s.section === sec);
-      const totalUsable  = skills.reduce((a,s) => a + s.totalUsable,  0);
-      const totalPending = skills.reduce((a,s) => a + s.totalPending, 0);
-      const totalFailed  = skills.reduce((a,s) => a + s.totalFailed,  0);
-      const target = SECTION_TARGET[sec] || 0;
-      const pct = target > 0 ? Math.min(100, Math.round(totalUsable / target * 100)) : 0;
-      const label = sec === 'math' ? 'Math' : 'Reading & Writing';
+    document.getElementById('summary-bar').innerHTML = POOLS.map(pool => {
+      const dimmed = currentPool !== 'all' && currentPool !== pool.key;
+      const totalCount  = skills.reduce((a, s) => a + (s[pool.key]?.count  || 0), 0);
+      const totalTarget = skills.reduce((a, s) => a + (s[pool.key]?.target || 0), 0);
+      const pct = totalTarget > 0 ? Math.min(100, Math.round(totalCount / totalTarget * 100)) : 0;
+      const fillColor = pct >= 100 ? '#16a34a' : pct >= 50 ? '#ca8a04' : '#dc2626';
+      const skillsDone = skills.filter(s =>
+        (s[pool.key]?.target || 0) > 0 &&
+        (s[pool.key]?.count  || 0) >= (s[pool.key]?.target || 0)).length;
 
       return `
-        <div class="summary-card">
-          <div class="summary-label">${label}</div>
+        <div class="summary-card${dimmed ? ' dimmed' : ''}">
+          <div class="summary-pool-label" style="color:${pool.color}">
+            <span class="pool-dot" style="background:${pool.dotBg}"></span>
+            ${pool.label} Pool
+          </div>
           <div class="summary-counts">
             <div class="summary-count">
-              <div class="num" style="color:var(--green)">${totalUsable}</div>
-              <div class="lbl">Usable</div>
+              <div class="num" style="color:${fillColor}">${totalCount}</div>
+              <div class="lbl">Approved</div>
             </div>
             <div class="summary-count">
-              <div class="num" style="color:var(--yellow)">${totalPending}</div>
-              <div class="lbl">Pending</div>
-            </div>
-            <div class="summary-count">
-              <div class="num" style="color:var(--red)">${totalFailed}</div>
-              <div class="lbl">Failed</div>
-            </div>
-            <div class="summary-count">
-              <div class="num" style="color:var(--slate)">${target}</div>
+              <div class="num" style="color:var(--slate)">${totalTarget}</div>
               <div class="lbl">Target</div>
+            </div>
+            <div class="summary-count">
+              <div class="num" style="color:${fillColor}">${skillsDone}</div>
+              <div class="lbl">Skills Done</div>
             </div>
           </div>
           <div class="progress-track">
-            <div class="progress-fill" style="width:${pct}%"></div>
+            <div class="progress-fill" style="width:${pct}%; background:${fillColor}"></div>
           </div>
-          <div class="progress-pct">${pct}% of target (${totalUsable} / ${target})</div>
+          <div class="progress-pct">${pct}% of target (${totalCount} / ${totalTarget})</div>
         </div>`;
     }).join('');
   }
 
+  // ── Domain groups ─────────────────────────────────────────────
   function renderDomains() {
     const filtered = currentSection === 'all'
       ? allSkills
       : allSkills.filter(s => s.section === currentSection);
 
-    // Group by domain in correct order
     const byDomain = {};
     filtered.forEach(s => {
       if (!byDomain[s.domain]) byDomain[s.domain] = [];
@@ -364,87 +411,74 @@
 
     const orderedDomains = DOMAIN_ORDER.filter(d => byDomain[d]);
 
-    const container = document.getElementById('domains');
-    container.innerHTML = orderedDomains.map(domainKey => {
-      const skills = byDomain[domainKey];
-      const domainLabel = skills[0].domainLabel;
-      const sec = skills[0].section;
-      const secTarget = SECTION_TARGET[sec] || 0;
-      const share = DOMAIN_SHARE[domainKey] || 0.25;
-      const domainTarget = Math.round(secTarget * share);
-      const domainUsable  = skills.reduce((a,s) => a + s.totalUsable,  0);
-      const domainPending = skills.reduce((a,s) => a + s.totalPending, 0);
-      const pct = domainTarget > 0 ? Math.min(100, Math.round(domainUsable / domainTarget * 100)) : 0;
-      const secLabel = sec === 'math' ? 'Math' : 'R&W';
+    document.getElementById('domains').innerHTML = orderedDomains.map(domainKey => {
+      const skills    = byDomain[domainKey];
+      const secLabel  = skills[0].section === 'math' ? 'Math' : 'R&W';
+      const domLabel  = skills[0].domainLabel || DOMAIN_LABEL[domainKey] || domainKey;
+
+      // Domain-level pool totals (filtered to active pool)
+      const poolTotals = activePools().map(p => {
+        const count  = skills.reduce((a, s) => a + (s[p.key]?.count  || 0), 0);
+        const target = skills.reduce((a, s) => a + (s[p.key]?.target || 0), 0);
+        return `<span style="color:${p.color};font-weight:600">${p.label}</span> ${count}/${target}`;
+      }).join(' · ');
+
+      const pools = activePools();
+      const cols  = `210px ${pools.map(() => '1fr').join(' ')}`;
 
       return `
         <div class="domain-group">
           <div class="domain-header">
             <div class="domain-name">
-              ${domainLabel}
+              ${domLabel}
               <span class="domain-badge">${secLabel}</span>
             </div>
-            <div class="domain-total">
-              ${domainUsable} usable · ${domainPending} pending · target ${domainTarget} · ${pct}%
-            </div>
+            <div class="domain-summary">${poolTotals}</div>
           </div>
           <div class="skill-table">
-            <div class="skill-table-header">
+            <div class="skill-table-header" style="grid-template-columns:${cols}">
               <div>Skill</div>
-              <div>Progress</div>
-              <div>Usable</div>
-              <div>Pending</div>
-              <div>Failed</div>
-              <div>Difficulty d1–d7</div>
+              ${pools.map(p =>
+                `<div class="pool-hdr">
+                  <span class="pool-dot" style="background:${p.dotBg};width:7px;height:7px;border-radius:50%;display:inline-block"></span>
+                  ${p.label}
+                </div>`
+              ).join('')}
             </div>
-            ${skills.map(s => renderSkillRow(s)).join('')}
+            ${skills.map(s => renderSkillRow(s, pools, cols)).join('')}
           </div>
         </div>`;
     }).join('');
   }
 
-  function renderSkillRow(s) {
-    const pct = s.target > 0 ? Math.min(100, Math.round(s.totalUsable / s.target * 100)) : 0;
-    const barColor = pct >= 80 ? 'var(--green)' : pct >= 40 ? 'var(--amber)' : 'var(--red)';
+  // ── Skill row ─────────────────────────────────────────────────
+  function renderSkillRow(s, pools, cols) {
+    const poolCells = pools.map(pool => {
+      const count  = s[pool.key]?.count  || 0;
+      const target = s[pool.key]?.target || 0;
+      const pct    = target > 0 ? Math.min(1, count / target) : 0;
+      const barW   = Math.round(pct * 100);
+      const cls    = pct >= 1 ? 'green' : pct >= 0.5 ? 'yellow' : 'red';
 
-    const usablePill  = pillHtml(s.totalUsable,  'green');
-    const pendingPill = pillHtml(s.totalPending, 'yellow');
-    const failedPill  = pillHtml(s.totalFailed,  'red');
-
-    // Difficulty bars — max height 24px scaled to max count
-    const diffCounts = [1,2,3,4,5,6,7].map(d => s.usable['d'+d] || 0);
-    const maxCount = Math.max(1, ...diffCounts);
-    const diffBars = diffCounts.map((c, i) => {
-      const h = c > 0 ? Math.max(3, Math.round(c / maxCount * 24)) : 3;
-      const cls = c > 0 ? 'diff-bar' : 'diff-bar empty';
-      return `<div class="diff-bar-col">
-        <div class="${cls}" style="height:${h}px" title="d${i+1}: ${c} usable"></div>
-        <div class="diff-label">${i+1}</div>
+      return `<div class="pool-cell">
+        <div class="pool-top">
+          <span class="pool-count col-${cls}">${count}</span>
+          <span class="pool-target-lbl">/ ${target}</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill fill-${cls}" style="width:${barW}%"></div>
+        </div>
       </div>`;
     }).join('');
 
     return `
-      <div class="skill-row">
+      <div class="skill-row" style="grid-template-columns:${cols}">
         <div class="skill-name">${s.label}</div>
-        <div class="bar-wrap">
-          <div class="bar-track">
-            <div class="bar-fill" style="width:${pct}%; background:${barColor}"></div>
-          </div>
-          <div class="bar-pct">${pct}%</div>
-        </div>
-        <div>${usablePill}</div>
-        <div>${pendingPill}</div>
-        <div>${failedPill}</div>
-        <div class="diff-bars">${diffBars}</div>
+        ${poolCells}
       </div>`;
   }
 
-  function pillHtml(n, color) {
-    if (n === 0) return `<span class="pill pill-gray">0</span>`;
-    return `<span class="pill pill-${color}">${n}</span>`;
-  }
-
-  // Auto-load on page open
+  // Auto-load on open
   load();
 </script>
 

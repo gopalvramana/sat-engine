@@ -8,6 +8,122 @@ public final class PromptLibrary {
 
     private PromptLibrary() {}
 
+    // ─── Difficulty rubrics ───────────────────────────────────────────────────
+
+    private static String mathDifficultyRubric(int d) {
+        return switch (d) {
+            case 1 -> """
+DIFFICULTY CALIBRATION — d1 (Very Easy):
+- Single operation. Direct formula substitution with no setup.
+- E.g.: "Solve 3x = 12", "Evaluate f(2) given f(x) = 5x"
+- No word problem translation. No multi-step logic.
+- Self-check: Can a student answer this in one line? If not, it's too hard.
+""";
+            case 2 -> """
+DIFFICULTY CALIBRATION — d2 (Easy):
+- Two steps maximum. One concept applied directly.
+- E.g.: Solve a two-step linear equation, compute slope from two points.
+- Simple word problems where translation is obvious (1 sentence → 1 equation).
+- Self-check: Does the student know exactly what to do from the first line? If not, simplify.
+""";
+            case 3 -> """
+DIFFICULTY CALIBRATION — d3 (Medium-Easy):
+- 2–3 steps. One concept, clean numbers, approach is clear from the stem.
+- Student sees the method immediately but must execute it carefully.
+- E.g.: Solve a linear equation after one rearrangement, substitute into a system to find one variable.
+- Word problems: one clear translation step, then straightforward algebra.
+- Self-check: Is there exactly ONE non-obvious move? If zero, it's d2. If two, it's d4.
+""";
+            case 4 -> """
+DIFFICULTY CALIBRATION — d4 (Medium):
+- 3–4 steps. One concept requiring careful setup before solving.
+- Student must choose the right approach (not just execute).
+- E.g.: Solve a system of equations, find vertex of a quadratic by completing the square.
+- Word problems: 2-sentence setup, requires extracting two relationships.
+- Numbers may involve fractions or negatives that require careful arithmetic.
+- Self-check: Does the student need to decide on a strategy? If yes, d4. If it's purely mechanical, it's d3.
+""";
+            case 5 -> """
+DIFFICULTY CALIBRATION — d5 (Medium-Hard):
+- Multi-step. Requires recognizing which concept applies — approach is not obvious.
+- May combine two closely related ideas (e.g., quadratic + linear system).
+- E.g.: Find values of k for which a quadratic has no real solutions.
+- Self-check: Would a well-prepared student need 20+ seconds to identify the method? If yes, d5.
+""";
+            case 6 -> """
+DIFFICULTY CALIBRATION — d6 (Hard):
+- Cross-concept. Student must connect two distinct ideas to set up the problem.
+- Contains at least one deliberate trap (a common wrong-direction move).
+- E.g.: Exponential model + percentage interpretation, geometry + algebraic constraint.
+- Self-check: Is there a plausible wrong path that produces a clean-looking wrong answer? Must be yes.
+""";
+            default -> """
+DIFFICULTY CALIBRATION — d7 (Very Hard):
+- Non-obvious approach. Most students will not see the path without significant thought.
+- Abstract reasoning or creative setup required.
+- Multiple traps, complex multi-concept integration.
+- E.g.: Optimization with constraint, abstract function behavior, non-standard application.
+- Self-check: Would fewer than 20% of SAT takers get this right? If not, reduce difficulty.
+""";
+        };
+    }
+
+    private static String rwDifficultyRubric(int d) {
+        return switch (d) {
+            case 1 -> """
+DIFFICULTY CALIBRATION — d1 (Very Easy):
+- Answer is directly and explicitly stated in the passage. No inference needed.
+- Simple vocabulary, short passage (1–2 sentences).
+- Wrong options are clearly contradicted by the text.
+- Self-check: Is the correct answer a near-verbatim match to a phrase in the passage? It should be.
+""";
+            case 2 -> """
+DIFFICULTY CALIBRATION — d2 (Easy):
+- Answer requires at most light paraphrasing of what the passage says.
+- Passage is 2–3 sentences, straightforward vocabulary.
+- Wrong options are plausible at first glance but clearly wrong on close reading.
+- Self-check: Can a student find the answer by underlining one sentence? If yes, d2.
+""";
+            case 3 -> """
+DIFFICULTY CALIBRATION — d3 (Medium-Easy):
+- ONE inference step required — the answer is clearly implied but not stated.
+- Passage is 3–5 sentences, moderate vocabulary.
+- Wrong options represent single, identifiable errors: too broad, too narrow, or contradicted.
+- E.g.: Author implies a position through word choice; student identifies it.
+- Self-check: Is there exactly one logical inference between passage and correct answer? If two steps, it's d4.
+""";
+            case 4 -> """
+DIFFICULTY CALIBRATION — d4 (Medium):
+- Requires understanding tone, purpose, or a two-step logical inference.
+- Passage is 4–6 sentences with moderate-to-complex sentence structure.
+- Two wrong options must be genuinely tempting (close to correct but subtly off).
+- E.g.: Distinguishing what the author implies vs. what the author explicitly states.
+- Self-check: Do the two best-looking wrong options differ from the correct answer only in degree or scope? They should.
+""";
+            case 5 -> """
+DIFFICULTY CALIBRATION — d5 (Medium-Hard):
+- Subtle implication or nuanced rhetoric. Student must distinguish fine shades of meaning.
+- Complex passage structure; vocabulary may include less common academic words.
+- All four options look plausible to an unprepared reader.
+- Self-check: Can you articulate in one sentence exactly why each wrong option fails? If the distinction is vague, simplify.
+""";
+            case 6 -> """
+DIFFICULTY CALIBRATION — d6 (Hard):
+- Author's intent, rhetorical strategy, or cross-sentence synthesis required.
+- Passage uses irony, hedging, or figurative language.
+- Distractors target the most common misreading of the passage.
+- Self-check: Does the correct answer require holding two parts of the passage in mind simultaneously?
+""";
+            default -> """
+DIFFICULTY CALIBRATION — d7 (Very Hard):
+- Multiple levels of inference, abstract or comparative reasoning.
+- Passage may use dense academic or literary language.
+- The wrong options are sophisticated — each represents a coherent but ultimately flawed reading.
+- Self-check: Would fewer than 20% of SAT takers choose the correct answer? If not, reduce difficulty.
+""";
+        };
+    }
+
     // ─── Generate — Math ──────────────────────────────────────────────────────
 
     public static final String GENERATE_SYSTEM_MATH = """
@@ -168,6 +284,7 @@ Nothing before or after the JSON.""";
         if (skill != null && !skill.isBlank()) sb.append("skill: ").append(skill).append("\n");
         sb.append("difficulty: ").append(difficulty).append(" (scale 1=easy … 7=hard)\n");
         sb.append("questionType: ").append(questionType).append("\n");
+        sb.append("\n").append(mathDifficultyRubric(difficulty));
 
         if (questionType.equals("mcq")) {
             sb.append("\nFor MCQ: provide optionA, optionB, optionC, optionD and correctAnswer (A/B/C/D).\n");
@@ -434,6 +551,7 @@ DIVERSITY RULES — strictly enforced:
         if (skill != null && !skill.isBlank()) sb.append("skill: ").append(skill).append("\n");
         sb.append("difficulty: ").append(difficulty).append(" (scale 1=easy … 7=hard)\n");
         sb.append("questionType: mcq\n\n");
+        sb.append(rwDifficultyRubric(difficulty));
         sb.append("Provide optionA, optionB, optionC, optionD and correctAnswer (A/B/C/D).\n");
         sb.append("""
 QUESTION DESIGN — do this first, before writing options:

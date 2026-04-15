@@ -3,6 +3,7 @@ package com.satengine.admin;
 import com.satengine.pipeline.AgentReviewStage;
 import com.satengine.pipeline.EnrichStage;
 import com.satengine.pipeline.GenerateStage;
+import com.satengine.pipeline.GenerationMode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
@@ -68,7 +69,7 @@ public class PipelineJobService {
      * Logs from all three stages stream into the same log buffer.
      */
     public String startAllJob(String domain, String section,
-                              String difficulty, int count) {
+                              String difficulty, int count, GenerationMode mode) {
         evictOldJobs();
         String jobId = UUID.randomUUID().toString();
         ConcurrentLinkedDeque<String> logDeque = new ConcurrentLinkedDeque<>();
@@ -82,15 +83,17 @@ public class PipelineJobService {
             return t;
         });
 
+        GenerationMode resolvedMode = mode != null ? mode : GenerationMode.DRILL;
+
         CompletableFuture.runAsync(() -> {
             MDC.put("pipelineJobId", jobId);
             try {
-                log.info("══ Step 1/3 — Generate ══════════════════════════════");
-                runStep("generate", domain, section, difficulty, count, false);
+                log.info("══ Step 1/3 — Generate (mode={}) ════════════════════", resolvedMode);
+                runStep("generate", domain, section, difficulty, count, false, resolvedMode);
                 log.info("══ Step 2/3 — Agent Review ══════════════════════════");
-                runStep("review", domain, section, null, count, false);
+                runStep("review", domain, section, null, count, false, resolvedMode);
                 log.info("══ Step 3/3 — Enrich ════════════════════════════════");
-                runStep("enrich", domain, section, null, count, false);
+                runStep("enrich", domain, section, null, count, false, resolvedMode);
                 log.info("══ Pipeline complete ════════════════════════════════");
                 state.setStatus("DONE");
             } catch (Exception e) {
@@ -104,8 +107,13 @@ public class PipelineJobService {
         return jobId;
     }
 
+    /** Backward-compat overload — defaults to DRILL. */
+    public String startAllJob(String domain, String section, String difficulty, int count) {
+        return startAllJob(domain, section, difficulty, count, GenerationMode.DRILL);
+    }
+
     public String startJob(String step, String domain, String section,
-                           String difficulty, int count, boolean onlyFailed) {
+                           String difficulty, int count, boolean onlyFailed, GenerationMode mode) {
 
         // Evict old jobs before accepting new ones
         evictOldJobs();
@@ -126,21 +134,28 @@ public class PipelineJobService {
             return t;
         });
 
+        GenerationMode resolvedMode = mode != null ? mode : GenerationMode.DRILL;
+
         CompletableFuture.runAsync(() -> {
             MDC.put("pipelineJobId", jobId);
             try {
-                runStep(step, domain, section, difficulty, count, onlyFailed);
+                runStep(step, domain, section, difficulty, count, onlyFailed, resolvedMode);
                 state.setStatus("DONE");
             } catch (Exception e) {
                 log.error("Job {} failed: {}", jobId, e.getMessage(), e);
                 state.setStatus("FAILED");
             } finally {
                 MDC.remove("pipelineJobId");
-                // Keep the deque registered — caller reads it after DONE/FAILED
             }
         }, executor);
 
         return jobId;
+    }
+
+    /** Backward-compat overload — defaults to DRILL. */
+    public String startJob(String step, String domain, String section,
+                           String difficulty, int count, boolean onlyFailed) {
+        return startJob(step, domain, section, difficulty, count, onlyFailed, GenerationMode.DRILL);
     }
 
     public JobState getJob(String jobId) {
@@ -183,14 +198,13 @@ public class PipelineJobService {
     // ─── Internal ─────────────────────────────────────────────────────────
 
     private void runStep(String step, String domain, String section,
-                         String difficulty, int count, boolean onlyFailed) {
+                         String difficulty, int count, boolean onlyFailed, GenerationMode mode) {
         switch (step.toLowerCase()) {
             case "generate" -> {
                 Integer diff = mapDifficulty(difficulty);
-                // domain null means all domains (GenerateStage handles weighted random)
                 String domainArg  = (domain  != null && !domain.isBlank())  ? domain  : null;
                 String sectionArg = (section != null && !section.isBlank()) ? section : null;
-                generateStage.run(count, sectionArg, domainArg, null, diff);
+                generateStage.run(count, sectionArg, domainArg, null, diff, mode);
             }
             case "review" -> {
                 String domainArg  = (domain  != null && !domain.isBlank())  ? domain  : null;

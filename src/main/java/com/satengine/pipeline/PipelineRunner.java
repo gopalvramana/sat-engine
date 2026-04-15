@@ -8,6 +8,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Locale;
 
 /**
  * CLI entry point for pipeline stages.
@@ -83,10 +84,14 @@ import java.util.List;
  *
  * ── FLAGS ─────────────────────────────────────────────────────────────────
  * --count       Number of questions to generate (default: 10)
+ * --mode        drill | diagnostic | test (default: drill)
+ *               drill:      current behavior, pool=both
+ *               diagnostic: d3-d4 only, picks skills globally, pool=diagnostic
+ *               test:       SAT-realistic weights, pool=test
  * --section     math | reading_writing
  * --domain      e.g. algebra, geometry_trigonometry, standard_english
  * --skill       Canonical skill key — overrides auto-balance within domain
- * --difficulty  1–7 integer (default: random 2–6)
+ * --difficulty  1–7 integer (default: weighted random per mode)
  * --only-failed Re-review only previously failed questions
  * --include-approved  Re-enrich already-approved questions
  * --all         render-normalize: scan all statuses (default: generated only)
@@ -139,7 +144,17 @@ public class PipelineRunner implements ApplicationRunner {
         String  domain     = stringArg(args, "domain", null);
         String  skill      = stringArg(args, "skill", null);
         Integer difficulty = args.containsOption("difficulty") ? intArg(args, "difficulty", 4) : null;
-        generateStage.run(count, section, domain, skill, difficulty);
+        GenerationMode mode = modeArg(args);
+        generateStage.run(count, section, domain, skill, difficulty, mode);
+    }
+
+    private GenerationMode modeArg(ApplicationArguments args) {
+        String val = stringArg(args, "mode", "drill");
+        return switch (val.toLowerCase(Locale.ROOT)) {
+            case "diagnostic" -> GenerationMode.DIAGNOSTIC;
+            case "test"       -> GenerationMode.TEST;
+            default           -> GenerationMode.DRILL;
+        };
     }
 
     private void runEnrich(ApplicationArguments args) {
