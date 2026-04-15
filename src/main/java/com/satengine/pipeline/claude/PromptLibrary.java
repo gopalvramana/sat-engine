@@ -319,6 +319,12 @@ DISTRACTOR RULES — verified before submitting:
             sb.append("""
 
 DIAGRAM TYPE RULES — critical:
+
+DO NOT include a diagram if the question only asks to evaluate a function at a specific input
+(e.g. "What is f(3)?", "Find V(t) when t=2", "What is the value of g(−1)?").
+These questions test substitution/arithmetic — a graph adds no value and will reveal the answer.
+Set diagram to null for evaluation questions.
+
 Use svg_programmatic (coordinate_plane subtype) for ALL of these:
   - Any graph of a mathematical function: linear, quadratic, absolute value, etc.
   - System of equations / line intersections
@@ -385,6 +391,9 @@ Supported shape values and their key fields:
         xMin,xMax, fillColor, color1, color2, label}]
       Add regions[] to shade the area BETWEEN two curves on any subtype.
     points:[{x,y,label,color}], segments:[{from:{x,y},to:{x,y},color,style}]
+    POINT LABELING RULE: NEVER place a labeled point at the exact x-value the student is asked to find.
+    Points should only label GIVEN information (e.g. a known intercept, a vertex stated in the problem).
+    Labeling the answer point (e.g. "(3, 54)" when the question asks "find V(3)") gives away the answer.
 
   normal_curve — mean, stdDev, xMin?, xMax?,
     shadedRegions:[{from,to,fillColor,label}],
