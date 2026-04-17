@@ -3,7 +3,8 @@
 Last updated: 2026-04-16  
 Source of truth: `sat-engine/scripts/math_engine.py`
 
-**Coverage: 28 topics (96%) · 22 diagram types (88%)**
+**Coverage: 29 topics · 22 diagram types (88%)**  
+*Note: `linear_eq_two_var` (L2V) is partially implemented — Type 9 only (d4–d5). Types 1–8 pending.*
 
 ---
 
@@ -17,6 +18,7 @@ All 28 topics implement **D1–D5** fully. D6–D7 are not implemented (fall bac
 | Linear equation word problems | LWP | Algebra | ✓ | ✓ | ✓ | ✓ | ✓ | — |
 | Systems of linear equations | SLE | Algebra | ✓ | ✓ | ✓ | ✓ | ✓ | — |
 | Linear functions | LFN | Algebra | ✓ | ✓ | ✓ | ✓ | ✓ | — |
+| Linear equations (2 variables) | L2V | Algebra | — | — | — | ✓ | ✓ | D5 (Type 9B) |
 | Quadratic equations | QEQ | Algebra | ✓ | ✓ | ✓ | ✓ | ✓ | D4 (40%) |
 | Linear inequalities | LNI | Algebra | ✓ | ✓ | ✓ | ✓ | ✓ | — |
 | Absolute value | ABV | Algebra | ✓ | ✓ | ✓ | ✓ | ✓ | — |
@@ -84,6 +86,17 @@ Topics with no SPR column produce MCQ only at all difficulties.
 | D3 | Find x-intercept (where y = 0) | Coordinate plane + x-intercept |
 | D4 | Find y-intercept from two points | Coordinate plane + 2 points |
 | D5 | Y-intercept of parallel line through a given point | Coordinate plane + point |
+
+### Linear Equations — Two Variables (L2V)
+| D | Question Type | What is Asked | Status |
+|---|---|---|---|
+| D1 | Types 2, 4, 8 (simple) | Read slope from y=mx+b; interpret coefficient; read graph | Pending |
+| D2 | Types 6, 1 simple, 5 parallel | Write equation from slope+intercept; solve with given value | Pending |
+| D3 | Types 2, 5, 3 | Slope from two points; perpendicular slope; table match | Pending |
+| D4 | Type 9A — function_shift | Graph of y=f(x)+k shown; identify f(x); MCQ with f(x)=... choices | **Implemented** |
+| D5 | Type 9B — translate_intercept | Ax−By=C translated down k; find x-intercept; SPR | **Implemented** |
+
+Full design reference: `docs/24-linear-eq-two-var-analysis.md`
 
 ### Quadratic Equations (QEQ)
 | D | Form | What is Asked |
