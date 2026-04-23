@@ -174,6 +174,23 @@ For table-based questions: after building the table, compute the answer from YOU
 and verify it matches correctAnswer. Do NOT assume the answer is correct because you intended it to be.
 NEVER adjust the explanation to match a broken question — fix the question first.
 
+BACK-SUBSTITUTION RULE — mandatory for ALL math questions (word problems AND pure equations):
+Step 1: Choose or derive the answer value first.
+Step 2: For word problems — back-substitute that answer into EVERY constraint to derive ALL narrative
+        numbers (prices, totals, rates, distances). NEVER set those numbers independently.
+        Example: answer = 45 adult tickets → revenue = 12(45)+8(85) = $1,220 → write $1,220, not $1,040.
+Step 3: For equations — substitute the answer into the ORIGINAL equation (not a factored/simplified form).
+        Example: if stem has 120/x + 80/(x−2) = 50 and answer is x=4,
+        verify: 120/4 + 80/2 = 30+40 = 70 ≠ 50 → BROKEN. Fix the equation, not the answer.
+Step 4: Write the stem using ONLY numbers derived from Step 2 or verified by Step 3.
+
+EQUATION CONSISTENCY CHECK — mandatory self-check before returning JSON:
+Write down every equation and constraint stated in the questionStem.
+Substitute correctAnswer into EACH one. Every equation must be satisfied.
+If ANY equation is not satisfied, the question is broken — redesign before returning.
+Common failure: solving a transformed equation (e.g. factored quadratic) but not checking the original.
+ALWAYS check the original form.
+
 DIAGRAM DATA VERIFICATION — critical rules (applies when diagram is present):
 Every value in the diagram (bar heights, scatter points, function params, table cells) must be
 arithmetically consistent with the correct answer.
@@ -288,20 +305,38 @@ Nothing before or after the JSON.""";
 
         if (questionType.equals("mcq")) {
             sb.append("\nFor MCQ: provide optionA, optionB, optionC, optionD and correctAnswer (A/B/C/D).\n");
+            sb.append("CRITICAL OUTPUT FORMAT: correctAnswer MUST be exactly one uppercase letter — \"A\", \"B\", \"C\", or \"D\".\n");
+            sb.append("NEVER write the numeric value of the answer (e.g., \"540\" or \"7.5\") in correctAnswer.\n");
+            sb.append("The letter identifies which option slot is correct, not the value itself.\n");
             sb.append("""
 QUESTION DESIGN — do this first, before writing options:
 1. Solve the problem yourself and obtain ONE specific answer (a number, expression, or statement).
-2. Design the stem so that answer is THE ONLY correct one. Avoid stems like "which of the following satisfies..."
-   or "which of the following is a valid..." where multiple values could independently satisfy the condition.
-   Instead use stems that demand one specific answer: "What is the value of x?", "What is the slope?",
+2. Design the stem so that answer is THE ONLY correct one.
+   ONLY use stems that demand one specific answer: "What is the value of x?", "What is the slope?",
    "Which equation represents this relationship?" — questions with a unique solution.
+   NEVER use: "which of the following satisfies...", "which of the following is a valid...",
+   "which could be...", "which is possible..." — these allow multiple defensible answers.
 3. Write the correct option first, then construct the three wrong options as specific common mistakes
    (sign error, wrong formula, arithmetic slip — each a different error type).
 
-DISTRACTOR RULES — verified before submitting:
-- Substitute each wrong option back into the problem. It must produce an INCORRECT result.
-- If you cannot show why an option is wrong, the stem is too broad — rewrite the stem to be more specific.
-- NEVER use a stem where an inequality, set membership, or property could be satisfied by more than one option.
+DISTRACTOR RULES — each wrong option must be verified before submitting:
+- Substitute EACH wrong option back into the original equation/constraint in the stem.
+  It must produce an INCORRECT result. Write the verification next to each wrong option as you work.
+  Example: "Option B = 3: check 120/3 + 80/1 = 40+80 = 120 ≠ 50 ✓ (wrong, as required)"
+- If substituting a wrong option produces the CORRECT result, that option is actually correct —
+  the stem is broken. Rewrite the stem to make exactly one value satisfy all constraints.
+- NEVER use a stem where two or more options could independently satisfy the condition.
+
+NUMERIC OPTIONS RULE — for questions with numeric or algebraic answer choices:
+Before writing options as LaTeX, write the 4 raw values on a scratch line:
+  e.g. "Values: 9π, 12π, 6π, 18π"  OR  "Values: 4, 6, 8, 12"
+All 4 raw values must be numerically different. Only then format them as LaTeX.
+For expressions with π: the coefficient in front of π MUST differ across all 4 options.
+  VALID: 9π, 12π, 6π, 18π — all different coefficients.
+  INVALID: π, π, π, π — identical. INVALID: 9π, 9π, 12π, 6π — two identical.
+For geometry (area, circumference, volume): use specific numbers from your figure, not symbolic formulas.
+  VALID options for a circle with r=3: \\(9\\pi\\), \\(6\\pi\\), \\(12\\pi\\), \\(3\\pi\\)
+  INVALID: \\(\\pi r^2\\), \\(2\\pi r\\), \\(\\pi r\\), \\(r^2\\) — all symbolic, indistinguishable after stripping.
 
 DUPLICATE OPTION CHECK — do this LAST before returning JSON:
 Read optionA, optionB, optionC, optionD. If any two are numerically equal, algebraically equivalent,
@@ -422,8 +457,13 @@ Supported shape values and their key fields:
 
   venn_diagram — sets:[{label,color?,value?,regionLabel?},{label,color?,value?,regionLabel?}],
     intersection:{label?,value?,color?}, title?,
-    universal:{label?,value?}  (draws enclosing rectangle = sample space)
+    universal:{label?,value?}  (draws enclosing rectangle; value = total sample size e.g. 120),
+    outside?:number            (count of elements in NEITHER set — shown inside rect below circles),
+    outsideLabel?:string       (optional small label under the outside value, e.g. "Neither")
     Use for probability set questions: P(A∩B), P(A∪B), P(A only), counting problems.
+    For 2×2 contingency tables: sets[0].value=A_only, sets[1].value=B_only,
+    intersection.value=A∩B, outside=neither_count, universal.value=total_n.
+    regionLabel should describe the region only — never repeat the numeric value that is already in value.
 
   3d_shape — type, labels:{...}, width?, height?
     Use for ANY 3D solid geometry question (volume, surface area, diagonals, etc.)
@@ -489,56 +529,6 @@ stacked:true — for stacked bar charts.
 Multiple datasets in bar chart = grouped bars by default.
 REMINDER: if the question involves a mathematical function or equation graph, use svg_programmatic instead.
 
-SCATTER PLOT RULES — mandatory when chartType is "scatter":
-
-SCENARIO CONSTRAINT — use scatter plots ONLY for roughly linear real-world relationships:
-  GOOD: study hours vs test score, advertising spend vs sales, height vs weight
-  BAD: signal decay, population growth, cooling curves — these are curved/exponential.
-  If the real-world relationship is curved, do NOT use a scatter plot. Use a different question type.
-
-EQUATION IN STEM — mandatory:
-The question stem MUST state the regression equation explicitly.
-  GOOD: "A line of best fit modeled by y = 2.5x + 14 has been fitted to the data."
-  BAD:  "A trend line has been fitted to the data." ← never do this
-Without the equation, students must visually interpolate — making the question ambiguous and unanswerable with confidence.
-The student computes the answer from the equation, using the chart to understand the context only.
-
-ANSWER CHOICE SPACING — mandatory:
-The four answer choices must differ by at least 10% of the y-axis range.
-  Example: y-axis 0–100 → choices must be at least 10 units apart.
-  BAD: 38, 42, 35, 45 — too close, multiple answers defensible visually.
-  GOOD: 32, 42, 52, 28 — clearly spaced, only one is correct from the equation.
-
-DATASETS — two required:
-  1. "Data points" dataset — the raw observed data (8–12 points), with realistic scatter/variance.
-     Add "showLine": false to this dataset (default scatter appearance).
-  2. "Regression Line" dataset — exactly 2 points: the line's start and end (min x, max x).
-     MUST include "showLine": true and "showPoints": false so it renders as a line, not dots.
-     The 2 points MUST be computed from your equation: (xMin, m*xMin+b) and (xMax, m*xMax+b).
-
-DATA POINT RULES:
-- Choose slope (m) and intercept (b) for your regression line first: y = mx + b
-- For each data point, add a random residual of ±3 to ±10 units to the y value
-  (some points above the line, some below — mix them up)
-- No more than 2 points should be within 1 unit of the line
-- The correct answer comes from the EQUATION at the target x, not from any data point
-- Do NOT place a data point at the exact target x value
-
-WORKED EXAMPLE — regression line y = 0.5x + 52, question asks for predicted value at x = 40:
-  Stem: "...A line of best fit modeled by \\(y = 0.5x + 52\\) has been fitted to the data.
-         Based on this equation, what is the predicted value at x = 40?"
-  Answer: 0.5(40) + 52 = 72
-  Data points (with residuals): (20,65),(25,62),(30,69),(35,66),(40,73),(45,71),(50,78),(55,79)
-                                  ← note: no point exactly at x=40
-  Regression line endpoints: (20, 62) and (55, 79.5)
-  Answer choices (spaced ≥10 apart): 62, 72, 82, 57  ← only 72 is correct
-
-SELF-CHECK before finalising:
-- Does the question stem state the regression equation? Must be YES.
-- Are answer choices at least 10% of the y-axis range apart? Must be YES.
-- Do data points scatter above and below the regression line? Must be YES.
-- Is the data roughly linear (not curved)? Must be YES.
-- Is there a data point at the exact target x? Must be NO.
 """);
             }
         } else {
@@ -1092,6 +1082,18 @@ Rules:
 
             "QUESTION:\n" + questionJson + "\n\n" +
 
+            "═══════════════════════════════════════════════════════\n" +
+            "ANTI-ARTIFACT RULE — critical (output is student-facing; must be clean and confident):\n" +
+            "Write as an expert teacher. NEVER write internal reasoning monologue.\n" +
+            "Banned phrases (any of these = broken output):\n" +
+            "  \"Let me recheck\", \"Let me re-derive\", \"Let me check\", \"Actually\", \"Hmm\",\n" +
+            "  \"Wait\", \"let me verify\", \"let me recalculate\", \"I need to check\"\n" +
+            "NEVER write: \"per the key\", \"the stated correct answer\", \"perhaps there is a typo\",\n" +
+            "  \"the problem states the answer is\", \"given the answer is\"\n" +
+            "If you cannot independently compute the correct answer from the question stem:\n" +
+            "  DO NOT fabricate an explanation. Output explanationSteps with a single step:\n" +
+            "  { \"title\": \"VERIFY_FAILED\", \"content\": \"Cannot independently verify answer\", \"math\": null }\n" +
+            "  This signals a broken question — no further fields needed.\n" +
             "═══════════════════════════════════════════════════════\n" +
             "HARD LIMITS — these are rules, not suggestions:\n" +
             "  explanationSteps : MAX " + maxSteps + " steps  (difficulty " + difficulty + "/7)\n" +

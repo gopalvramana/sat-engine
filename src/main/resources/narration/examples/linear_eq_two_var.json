@@ -1,0 +1,464 @@
+[
+  {
+    "difficulty": "easy",
+    "stem": "A music store sells individual songs for $1 each and full albums for $12 each. The equation x + 12y = 84 represents this situation, where x is the number of individual songs sold and y is the number of full albums sold. If the store sold 6 full albums, how many individual songs were sold?",
+    "type": "T1 — word problem, substitute given value (SPR)",
+    "correct": "12",
+    "sat_key_phrases": ["represents this situation", "where x is the number of ... and y is the number of", "how many ... were sold"],
+    "why_this_difficulty": "Easy — equation given directly, one substitution step, integer answer, no setup required",
+    "distractor_rationales": null
+  },
+  {
+    "difficulty": "easy",
+    "stem": "A gym offers day passes for $12 each and monthly memberships for $45 each. The total revenue from x day passes and y monthly memberships is $540. Which equation represents this situation?\nA. 12x + 45y = 540\nB. 45x + 12y = 540\nC. 12x + 45y = 57\nD. (12 + 45)(x + y) = 540",
+    "type": "T1 — word problem, write equation from context (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["offers ... for $ each", "total revenue from x ... and y", "which equation represents this situation"],
+    "why_this_difficulty": "Easy — direct translation of two unit rates to one linear equation; no algebraic manipulation required",
+    "distractor_rationales": {
+      "B": "Swapped the prices for day passes and memberships",
+      "C": "Added the two rates together instead of using the given total",
+      "D": "Multiplied the combined rate by the combined count, which does not represent independent pricing"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "What is the slope of the graph of y = 8x − 3 in the xy-plane?\nA. −8\nB. −3\nC. 3\nD. 8",
+    "type": "T2 — read slope from slope-intercept equation (MCQ)",
+    "correct": "D",
+    "sat_key_phrases": ["What is the slope of the graph of", "in the xy-plane"],
+    "why_this_difficulty": "Easy — equation is already in slope-intercept form; slope is the coefficient of x",
+    "distractor_rationales": {
+      "A": "Negated the slope",
+      "B": "Identified the y-intercept constant as the slope",
+      "C": "Took the absolute value of the y-intercept constant"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "y = 2x − 5\nWhich table gives three values of x and their corresponding values of y for the given equation?\nA. x: 0, 1, 2 | y: −5, −3, −1\nB. x: 0, 1, 2 | y: 5, 7, 9\nC. x: 0, 1, 2 | y: −5, −4, −3\nD. x: 0, 1, 2 | y: −2, 0, 2",
+    "type": "T3 — match equation to table (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["Which table gives three values of x and their corresponding values of y for the given equation"],
+    "why_this_difficulty": "Easy — substitute x = 0, 1, 2 directly; no algebraic rearrangement needed",
+    "distractor_rationales": {
+      "B": "Used +5 as the y-intercept instead of −5",
+      "C": "Used slope 1 instead of slope 2",
+      "D": "Computed y = x − 2 instead of y = 2x − 5"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "A line in the xy-plane has a slope of −3 and a y-intercept of (0, 7). Which equation defines the line?\nA. y = 7x − 3\nB. y = 3x − 7\nC. y = −3x − 7\nD. y = −3x + 7",
+    "type": "T6 — write equation from slope and y-intercept (MCQ)",
+    "correct": "D",
+    "sat_key_phrases": ["A line in the xy-plane has a slope of", "a y-intercept of (0, ...)", "Which equation defines the line"],
+    "why_this_difficulty": "Easy — both slope and y-intercept given directly; direct substitution into y = mx + b",
+    "distractor_rationales": {
+      "A": "Swapped the roles of slope and y-intercept",
+      "B": "Negated the slope and the sign of the y-intercept",
+      "C": "Used the correct slope but the wrong sign on the y-intercept"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "What is the y-intercept of the graph of y = −9x + 4 in the xy-plane?\nA. (0, −9)\nB. (0, −4)\nC. (0, 4)\nD. (0, 9)",
+    "type": "T7 — read y-intercept from slope-intercept equation (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["What is the y-intercept of the graph of", "in the xy-plane"],
+    "why_this_difficulty": "Easy — equation is in slope-intercept form; y-intercept is the constant term; no calculation needed",
+    "distractor_rationales": {
+      "A": "Identified the slope coefficient as the y-intercept value",
+      "B": "Negated the y-intercept",
+      "D": "Took the absolute value of the slope"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "The graph in the xy-plane shows a line that passes through the points (0, 6) and (3, 0). Which table gives three values of x and their corresponding values of y for the relationship shown?\nA. x: 0, 1, 2 | y: 6, 4, 2\nB. x: 0, 1, 2 | y: 0, 3, 6\nC. x: 0, 1, 2 | y: 6, 7, 8\nD. x: 0, 1, 2 | y: −6, −4, −2",
+    "type": "T8 — match graph to table (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["The graph in the xy-plane shows", "Which table gives three values of x and their corresponding values of y for the relationship shown"],
+    "why_this_difficulty": "Easy — both intercepts labeled on graph; read slope from intercepts, then verify table values",
+    "distractor_rationales": {
+      "B": "Reversed x and y, reading the table for the inverse relationship",
+      "C": "Used the correct y-intercept but applied a positive slope instead of negative",
+      "D": "Negated all y-values"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "The graph in the xy-plane shows a line that passes through the points (−5, 0) and (0, 5). What is the y-intercept of the line?\nA. (−5, 0)\nB. (0, −5)\nC. (0, 5)\nD. (0, 10)",
+    "type": "T8 — read y-intercept from graph (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["The graph in the xy-plane shows a line", "What is the y-intercept of the line"],
+    "why_this_difficulty": "Easy — the line visibly crosses the y-axis at a labeled grid point; only requires reading the y-axis intersection directly from the graph",
+    "distractor_rationales": {
+      "A": "Identified the x-intercept (−5, 0) instead of the y-intercept",
+      "B": "Took the correct y-intercept value but negated it",
+      "D": "Selected a y-value visible on the line at x = 5 rather than the y-axis crossing at x = 0"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "A line is graphed in the xy-plane. The line passes through the points (0, 8) and (2, 9). What is the y-intercept of the line graphed?\nA. (0, −8)\nB. (0, 0)\nC. (0, 8)\nD. (8, 0)",
+    "type": "T8 — read y-intercept from graph, positive slope (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["A line is graphed in the xy-plane", "What is the y-intercept of the line graphed"],
+    "why_this_difficulty": "Easy — line clearly intersects the y-axis at a visible grid point; requires recognizing that the y-intercept is the point where x = 0",
+    "distractor_rationales": {
+      "A": "Negated the y-intercept value, changing (0, 8) to (0, −8)",
+      "B": "Chose the origin, which is not on this line",
+      "D": "Reversed the coordinates, writing (8, 0) instead of (0, 8)"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "Line k is defined by y = 3x − 4 in the xy-plane. Which of the following equations represents a line parallel to line k?\nA. y = −3x + 1\nB. y = 4x + 1\nC. y = 2x + 1\nD. y = 3x + 1",
+    "type": "T5 — parallel line from slope-intercept form (MCQ)",
+    "correct": "D",
+    "sat_key_phrases": ["Line k is defined by", "Which of the following equations represents a line parallel to line k"],
+    "why_this_difficulty": "Easy — parallel lines have the same slope; the student only needs to identify which choice has the same slope (3) as line k, regardless of the y-intercept",
+    "distractor_rationales": {
+      "A": "Negated the slope, confusing 'parallel' with a reflected or opposite-direction line",
+      "B": "Used slope 4 instead of 3, likely obtained by adding 1 to the coefficient rather than keeping it",
+      "C": "Used slope 2 instead of 3, perhaps subtracting 1 from the coefficient"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "Line p is defined by 4x + 2y = 6 in the xy-plane. Which of the following equations represents a line parallel to line p?\nA. y = −2x + 5\nB. y = 2x + 5\nC. y = 4x + 5\nD. y = −½x + 5",
+    "type": "T5 — parallel line from standard form, integer slope (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["Line p is defined by", "Which of the following equations represents a line parallel to line p"],
+    "why_this_difficulty": "Easy — converting 4x + 2y = 6 to slope-intercept gives slope −2; student picks the slope-intercept choice with the same slope and a different intercept",
+    "distractor_rationales": {
+      "B": "Negated the slope, confusing parallel with a reflected line",
+      "C": "Used the x-coefficient 4 from standard form directly as the slope without converting",
+      "D": "Used the reciprocal of the slope, which produces a perpendicular line"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "Line m is defined by 6x − 3y = 9 in the xy-plane. Which of the following equations represents a line parallel to line m?\nA. y = −2x + 1\nB. y = 2x + 1\nC. y = 6x + 1\nD. y = −6x + 1",
+    "type": "T5 — parallel line from standard form, positive integer slope (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["Line m is defined by", "Which of the following equations represents a line parallel to line m"],
+    "why_this_difficulty": "Easy — standard form 6x − 3y = 9 converts to slope 2 (positive, because the y-coefficient is negative); student must handle the sign correctly when converting",
+    "distractor_rationales": {
+      "A": "Negated the slope, likely from mishandling the minus sign on the y-term",
+      "C": "Used the x-coefficient 6 from standard form directly without converting",
+      "D": "Negated the x-coefficient, producing slope −6 instead of 2"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "Line h is defined by 9x + 3y = 15 in the xy-plane. Which of the following equations represents a line parallel to line h?\nA. y = 9x + 2\nB. y = 3x + 2\nC. y = −3x + 2\nD. y = 1/3x + 2",
+    "type": "T5 — parallel line from standard form, integer slope −3 (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["Line h is defined by", "Which of the following equations represents a line parallel to line h"],
+    "why_this_difficulty": "Easy — converting 9x + 3y = 15 gives slope −3; student must divide the x-coefficient by the y-coefficient and apply the negative sign",
+    "distractor_rationales": {
+      "A": "Used the x-coefficient 9 directly as the slope without converting",
+      "B": "Used the y-coefficient 3 as a positive slope instead of computing −9/3",
+      "D": "Inverted the ratio to 3/9 = 1/3 instead of computing −9/3 = −3"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "Line t is defined by 5x + 5y = 10 in the xy-plane. Which of the following equations represents a line parallel to line t?\nA. y = x + 3\nB. y = −x + 3\nC. y = 5x + 3\nD. y = −5x + 3",
+    "type": "T5 — parallel line from standard form, unit slope −1 (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["Line t is defined by", "Which of the following equations represents a line parallel to line t"],
+    "why_this_difficulty": "Easy — equal coefficients give slope −5/5 = −1; student must recognise the result is −1 and write the equation without an explicit coefficient on x",
+    "distractor_rationales": {
+      "A": "Dropped the negative sign, using slope +1 instead of −1",
+      "C": "Used the raw x-coefficient 5 as the slope without dividing",
+      "D": "Used −5 as the slope instead of computing −5/5 = −1"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "A line passes through the points (5, 11) and (9, 23) in the xy-plane. What is the slope of the line?",
+    "type": "T2 — slope from two points (SPR)",
+    "correct": "3",
+    "sat_key_phrases": ["A line passes through the points", "in the xy-plane", "What is the slope of the line"],
+    "why_this_difficulty": "Medium — requires applying the slope formula; both the numerator and denominator must be computed correctly from non-zero coordinates",
+    "distractor_rationales": null
+  },
+  {
+    "difficulty": "medium",
+    "stem": "What is the slope of the graph of 6x − 3y = 15 in the xy-plane?\nA. −5\nB. −2\nC. 2\nD. 6",
+    "type": "T2 — slope from standard form equation (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["What is the slope of the graph of", "in the xy-plane"],
+    "why_this_difficulty": "Medium — must rearrange standard form to slope-intercept form before reading the slope",
+    "distractor_rationales": {
+      "A": "Identified the y-intercept value (−5) as the slope",
+      "B": "Negated the correct slope",
+      "D": "Used the x-coefficient from standard form directly without converting"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "The table shows three values of x and their corresponding values of y, where n is a constant. There is a linear relationship between x and y.\nx: 0 | y: n + 10\nx: 3 | y: n + 4\nx: 6 | y: n − 2\nWhat is the slope of the line that represents this relationship in the xy-plane?\nA. −n/3\nB. −2\nC. (n − 2)/3\nD. −2n",
+    "type": "T3 — table with variable expressions, find slope (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["The table shows three values of x and their corresponding values of y, where n is a constant", "What is the slope of the line that represents this relationship in the xy-plane"],
+    "why_this_difficulty": "Medium — the n-expressions in the y-column look complicated, but n cancels when the slope formula is applied",
+    "distractor_rationales": {
+      "A": "Formed a ratio involving n without recognizing that n cancels in the numerator",
+      "C": "Used the y-value at x = 6 as the numerator without subtracting the y-value at x = 0",
+      "D": "Incorrectly included n as a factor in the slope"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "The equation 8p + 15q = 360 represents the total revenue, in dollars, earned by a bakery from selling plain donuts and glazed donuts in one day, where p is the number of plain donuts sold and q is the number of glazed donuts sold. Which is the best interpretation of 15 in this context?\nA. The total number of glazed donuts sold\nB. The total revenue from glazed donuts\nC. The price, in dollars, of each plain donut\nD. The price, in dollars, of each glazed donut",
+    "type": "T4 — interpret coefficient in word problem context (MCQ)",
+    "correct": "D",
+    "sat_key_phrases": ["represents the total ... in dollars", "where p is the number of ... and q is the number of", "Which is the best interpretation of ... in this context"],
+    "why_this_difficulty": "Medium — must distinguish between the coefficient (unit price) and the term 15q (total revenue from that item)",
+    "distractor_rationales": {
+      "A": "Confused the coefficient with the variable it multiplies",
+      "B": "Described the entire term 15q rather than the coefficient 15 alone",
+      "C": "Correct interpretation type (unit price) but applied to the wrong variable"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "Line k is defined by y = −3x + 8. Line j is perpendicular to line k in the xy-plane. What is the slope of line j?\nA. −3\nB. −1/3\nC. 1/3\nD. 3",
+    "type": "T5 — perpendicular slope from slope-intercept form (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["Line k is defined by", "Line j is perpendicular to line k in the xy-plane", "What is the slope of line j"],
+    "why_this_difficulty": "Medium — requires knowing that perpendicular slope is the negative reciprocal; slope must be read correctly from the equation first",
+    "distractor_rationales": {
+      "A": "Used the slope of line k rather than computing the perpendicular slope",
+      "B": "Took the reciprocal but omitted the sign change",
+      "D": "Negated the slope but forgot to take its reciprocal"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "Line m is defined by 4x + 3y = 12 in the xy-plane. Which of the following equations represents a line parallel to line m?\nA. 3x + 4y = 20\nB. 4x − 3y = 20\nC. 4x + 3y = 20\nD. 8x + 3y = 20",
+    "type": "T5 — parallel line from standard form equation (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["Line m is defined by", "Which of the following equations represents a line parallel to line m"],
+    "why_this_difficulty": "Medium — the equation is in standard form; the student must recognize that keeping the same x- and y-coefficients (with a different constant) preserves the slope and therefore produces a parallel line",
+    "distractor_rationales": {
+      "A": "Swapped the coefficients of x and y, producing slope −3/4 instead of −4/3",
+      "B": "Changed the sign of the y-coefficient, flipping the slope from −4/3 to +4/3",
+      "D": "Doubled only the x-coefficient, producing slope −8/3 instead of −4/3"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "A line in the xy-plane has a slope of 5 and passes through the point (2, 3). Which equation defines the line?\nA. y = 5x + 3\nB. y = 5x − 7\nC. y = 5x + 7\nD. y = 2x + 5",
+    "type": "T6 — write equation from slope and non-y-intercept point (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["A line in the xy-plane has a slope of", "passes through the point", "Which equation defines the line"],
+    "why_this_difficulty": "Medium — must substitute the given point into y = mx + b to find b; a common error is using the y-coordinate of the point directly as the y-intercept",
+    "distractor_rationales": {
+      "A": "Used the y-coordinate of the given point (3) directly as the y-intercept",
+      "C": "Added 5 × 2 and 3 but applied the wrong sign when isolating b",
+      "D": "Swapped the slope and the x-coordinate of the given point"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "The y-intercept of the graph of 3x + 5y = 30 in the xy-plane is (0, y). What is the value of y?",
+    "type": "T7 — find y-intercept from standard form equation (SPR)",
+    "correct": "6",
+    "sat_key_phrases": ["The y-intercept of the graph of", "in the xy-plane is (0, y)", "What is the value of y"],
+    "why_this_difficulty": "Medium — requires setting x = 0 and solving; not as direct as reading y-intercept from slope-intercept form",
+    "distractor_rationales": null
+  },
+  {
+    "difficulty": "medium",
+    "stem": "The graph in the xy-plane shows a line that passes through the points (0, 4) and (2, 0). What is an equation of the graph shown?\nA. y = −2x − 4\nB. y = 2x + 4\nC. y = −2x + 4\nD. y = 2x − 4",
+    "type": "T8 — match graph to equation, slope-intercept form (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["The graph in the xy-plane shows a line", "What is an equation of the graph shown"],
+    "why_this_difficulty": "Medium — must correctly identify both the slope and y-intercept from the graph; any sign error on either value produces a wrong answer",
+    "distractor_rationales": {
+      "A": "Correct slope but wrong sign on the y-intercept",
+      "B": "Negated the slope but kept the correct y-intercept",
+      "D": "Negated both the slope and y-intercept"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "A student has a set budget to buy hardcover books and paperback books. The graph in the xy-plane models the possible combinations of the number of hardcover books, x, and the number of paperback books, y, the student can purchase. The graph passes through the points (0, 20) and (15, 0). Which equation could represent this relationship?\nA. 4x + 3y = 20\nB. 3x + 4y = 60\nC. 4x + 3y = 60\nD. 4x + 3y = 15",
+    "type": "T8 — match graph to equation, standard form, real-world context (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["The graph in the xy-plane models the possible combinations of the number of", "Which equation could represent this relationship"],
+    "why_this_difficulty": "Medium — real-world axis labels require reading both intercepts to build the standard-form equation; the total constant must be verified using both intercept points",
+    "distractor_rationales": {
+      "A": "Used the y-intercept value (20) as the constant instead of computing the correct total (60)",
+      "B": "Swapped the coefficients of x and y",
+      "D": "Used the x-intercept value (15) as the constant instead of the correct total"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "A bakery uses a fixed daily supply of flour to make small cakes and large cakes, where small cakes require 1 cup of flour and large cakes require 2 cups. The graph in the xy-plane models the possible combinations of small cakes, x, and large cakes, y, that can be made. The graph passes through the points (0, 20) and (40, 0). Which equation could represent this relationship?\nA. x + 2y = 20\nB. 2x + y = 40\nC. x + 2y = 40\nD. x − 2y = 40",
+    "type": "T8 — match graph to equation, standard form, real-world context (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["The graph in the xy-plane models the possible combinations of", "Which equation could represent this relationship"],
+    "why_this_difficulty": "Medium — the coefficients in the standard-form equation correspond to the resource amounts per item; the constant comes from the total supply and must be verified with both intercepts",
+    "distractor_rationales": {
+      "A": "Used the y-intercept value (20) as the constant instead of the total supply (40)",
+      "B": "Swapped the coefficients of x and y",
+      "D": "Wrote a negative coefficient on y, which would allow negative cake counts and misrepresents the constraint"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "Line n is defined by 3x + 4y = 8 in the xy-plane. Which of the following equations represents a line parallel to line n?\nA. y = 4/3x + 5\nB. y = −4/3x + 5\nC. y = −3/4x + 5\nD. y = 3/4x + 5",
+    "type": "T5 — parallel line from standard form, fractional slope (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["Line n is defined by", "Which of the following equations represents a line parallel to line n"],
+    "why_this_difficulty": "Medium — converting 3x + 4y = 8 gives slope −3/4; student must get both the sign and the fraction correct before matching to a choice",
+    "distractor_rationales": {
+      "A": "Inverted the fraction and dropped the negative sign, giving +4/3",
+      "B": "Inverted the fraction but kept the negative sign, giving −4/3",
+      "D": "Correctly inverted to 3/4 but dropped the negative sign"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "Line r is defined by 5x + 2y = 14 in the xy-plane. Which of the following is an equation of a line parallel to line r?\nA. y = 5/2x + 3\nB. y = −2/5x + 3\nC. y = 2/5x + 3\nD. y = −5/2x + 3",
+    "type": "T5 — parallel line from standard form, improper fractional slope (MCQ)",
+    "correct": "D",
+    "sat_key_phrases": ["Line r is defined by", "Which of the following is an equation of a line parallel to line r"],
+    "why_this_difficulty": "Medium — the slope −5/2 is an improper fraction greater than 1 in magnitude; students often invert A and B or forget the negative sign when converting from standard form",
+    "distractor_rationales": {
+      "A": "Correctly formed 5/2 but omitted the negative sign",
+      "B": "Inverted the fraction and kept the negative sign, giving −2/5",
+      "C": "Inverted the fraction and omitted the negative sign, giving +2/5"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "Line k is defined by 4x − 6y = 12 in the xy-plane. Which of the following equations represents a line parallel to line k?\nA. y = 2/3x + 1\nB. y = −2/3x + 1\nC. y = 3/2x + 1\nD. y = −3/2x + 1",
+    "type": "T5 — parallel line from standard form, positive fractional slope (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["Line k is defined by", "Which of the following equations represents a line parallel to line k"],
+    "why_this_difficulty": "Medium — the negative y-coefficient makes the slope positive (−4/−6 = 2/3); students must track the double negative when converting and must simplify the fraction",
+    "distractor_rationales": {
+      "B": "Correctly simplified 2/3 but applied a negative sign, not accounting for the negative y-coefficient",
+      "C": "Inverted the fraction to 3/2 and kept the positive sign",
+      "D": "Inverted the fraction and applied a negative sign"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "Line w is defined by 2x + 5y = 10 in the xy-plane. Which of the following is an equation of a line parallel to line w?\nA. y = −2/5x + 4\nB. y = 2/5x + 4\nC. y = −5/2x + 4\nD. y = 5/2x + 4",
+    "type": "T5 — parallel line from standard form, simple proper fractional slope (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["Line w is defined by", "Which of the following is an equation of a line parallel to line w"],
+    "why_this_difficulty": "Medium — slope is −2/5, a proper fraction; common errors are inverting to −5/2 or dropping the negative sign",
+    "distractor_rationales": {
+      "B": "Kept the correct fraction 2/5 but omitted the negative sign",
+      "C": "Inverted the fraction and kept the negative sign, giving −5/2",
+      "D": "Inverted the fraction and dropped the negative sign, giving +5/2"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "Line p is defined by 6x + 4y = 11. Line q is perpendicular to line p in the xy-plane. What is the slope of line q?",
+    "type": "T5 — perpendicular slope from standard form equation (SPR)",
+    "correct": "2/3",
+    "sat_key_phrases": ["Line p is defined by", "Line q is perpendicular to line p in the xy-plane", "What is the slope of line q"],
+    "why_this_difficulty": "Hard — requires converting standard form to find the slope of p, then computing the negative reciprocal; two transformations needed in sequence",
+    "distractor_rationales": null
+  },
+  {
+    "difficulty": "hard",
+    "stem": "What is the y-coordinate of the y-intercept of the graph of 2x/3 = −3y/4 + 10 in the xy-plane?",
+    "type": "T7 — y-intercept from equation with fractional coefficients (SPR)",
+    "correct": "40/3",
+    "sat_key_phrases": ["What is the y-coordinate of the y-intercept of the graph of", "in the xy-plane"],
+    "why_this_difficulty": "Hard — fractional coefficients on both variables; setting x = 0 leaves a fractional equation requiring careful algebraic manipulation",
+    "distractor_rationales": null
+  },
+  {
+    "difficulty": "hard",
+    "stem": "The graph of y = f(x) + 7 is shown in the xy-plane. The graphed line has a slope of −3 and crosses the y-axis at (0, 4). Which equation defines function f?\nA. f(x) = −3x − 3\nB. f(x) = −3x + 4\nC. f(x) = −3x + 11\nD. f(x) = 3x − 3",
+    "type": "T9 — write equation of f(x) from graph of y = f(x) + k, function shift (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["The graph of y = f(x) + k is shown", "Which equation defines function f", "f(x) = ..."],
+    "why_this_difficulty": "Hard — the visible y-intercept (0, 4) belongs to y = f(x) + 7, not to f(x); the student must subtract k from the visible intercept to find f's true y-intercept",
+    "distractor_rationales": {
+      "B": "Used the visible y-intercept (4) directly as f's y-intercept, forgetting to subtract 7",
+      "C": "Added 7 to the visible y-intercept instead of subtracting (4 + 7 = 11)",
+      "D": "Correctly found the y-intercept of f but negated the slope"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "The graph of 4x − 5y = 7 is translated down 3 units in the xy-plane. What is the x-coordinate of the x-intercept of the resulting graph?",
+    "type": "T9 — x-intercept after vertical translation of standard-form line (SPR)",
+    "correct": "11/2",
+    "sat_key_phrases": ["The graph of ... is translated down ... units in the xy-plane", "What is the x-coordinate of the x-intercept of the resulting graph"],
+    "why_this_difficulty": "Hard — three-step problem: (1) translate down by replacing y with y + k to get the new equation, (2) simplify, (3) set y = 0 to find the x-intercept; answer is a non-integer fraction",
+    "distractor_rationales": null
+  },
+  {
+    "difficulty": "hard",
+    "stem": "The table shows two values of x and their corresponding values of y.\nx: t | y: 22\nx: t + 5 | y: 7\nThe y-intercept of the line is (t − 3, b), where t and b are constants. What is the value of b?",
+    "type": "T2/T7 — slope from symbolic table, then find y-intercept constant (SPR)",
+    "correct": "31",
+    "sat_key_phrases": ["The table shows two values of x and their corresponding values of y", "where t and b are constants", "What is the value of b"],
+    "why_this_difficulty": "Hard — slope must be computed using symbolic coordinates; the condition that the y-intercept has x-coordinate t − 3 = 0 must be recognized to find t, then the y-intercept is evaluated",
+    "distractor_rationales": null
+  },
+  {
+    "difficulty": "hard",
+    "stem": "Line j is defined by 9x + 6y = 5 in the xy-plane. Line k is defined by 3x + ny = 7, where n is a constant. If line k is parallel to line j, what is the value of n?\nA. 2\nB. 3\nC. 6\nD. 9",
+    "type": "T5 — find unknown y-coefficient for parallel standard-form lines (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["Line j is defined by", "where n is a constant", "If line k is parallel to line j, what is the value of n"],
+    "why_this_difficulty": "Hard — must set slopes equal: −9/6 = −3/n, then solve for n; requires converting both lines and solving a proportion",
+    "distractor_rationales": {
+      "B": "Used the x-coefficient of line k (3) rather than solving for n",
+      "C": "Used the y-coefficient of line j (6) rather than computing the proportion",
+      "D": "Used the x-coefficient of line j (9) rather than solving the proportion"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "Line p is defined by 2x + 3y = 5 in the xy-plane. Line q is defined by nx + 9y = 7, where n is a constant. If line q is parallel to line p, what is the value of n?\nA. 2\nB. 3\nC. 6\nD. 18",
+    "type": "T5 — find unknown x-coefficient for parallel standard-form lines (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["Line p is defined by", "where n is a constant", "If line q is parallel to line p, what is the value of n"],
+    "why_this_difficulty": "Hard — the unknown n is the x-coefficient of the second line; setting −n/9 = −2/3 and cross-multiplying gives n = 6; a student who sets up the ratio upside-down or forgets to cross-multiply will reach a wrong answer",
+    "distractor_rationales": {
+      "A": "Used the x-coefficient of line p (2) directly as n without solving the proportion",
+      "B": "Used the y-coefficient of line p (3) directly as n",
+      "D": "Multiplied 2 × 9 = 18 without dividing by 3, misapplying cross-multiplication"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "Line a is defined by 4x + 10y = 7 in the xy-plane. Line b is defined by 2x + ny = 3, where n is a constant. If line b is parallel to line a, what is the value of n?",
+    "type": "T5 — find unknown y-coefficient for parallel standard-form lines (SPR)",
+    "correct": "5",
+    "sat_key_phrases": ["Line a is defined by", "where n is a constant", "If line b is parallel to line a, what is the value of n"],
+    "why_this_difficulty": "Hard — SPR format; must set slopes equal: −4/10 = −2/n → n = 20/4 = 5; no choices to guide or eliminate, student must produce the answer independently",
+    "distractor_rationales": null
+  },
+  {
+    "difficulty": "hard",
+    "stem": "The graph in the xy-plane shows a linear relationship between x and y. The line passes through the points (0, 10) and (4, 0). Which equation represents this relationship, where R is a positive constant?\nA. Rx + 20y = 80\nB. 20x + Ry = 80\nC. Rx − 20y = 80\nD. 20x − Ry = 80",
+    "type": "T8 — match graph to equation, standard form with unknown constant R (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["The graph in the xy-plane shows a linear relationship between x and y", "Which equation represents this relationship, where R is a positive constant"],
+    "why_this_difficulty": "Hard — must identify which standard-form structure holds by substituting both intercept points; the unknown constant R must produce a positive value, eliminating sign-error choices",
+    "distractor_rationales": {
+      "A": "Substituting (0, 10) into Rx + 20y = 80 gives R(0) + 200 = 80, which is false for any R, so this equation cannot pass through the y-intercept",
+      "C": "Substituting (0, 10) into Rx − 20y = 80 gives R(0) − 200 = 80, which is also false regardless of R",
+      "D": "Substituting (0, 10) into 20x − Ry = 80 gives −R(10) = 80, yielding R = −8; since R must be positive, this choice is eliminated"
+    }
+  }
+]

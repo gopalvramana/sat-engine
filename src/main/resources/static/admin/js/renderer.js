@@ -2130,7 +2130,14 @@ function drawRegularPolygon(cfg) {
  * cfg.universal? — {label, value?} rectangle enclosing everything
  */
 function drawVennDiagram(cfg) {
-  const W = cfg.width ?? 300, H = cfg.height ?? 220;
+  // cfg.outside — count of elements in neither set (shown inside universal rect, below circles).
+  // Backward-compat: also accept cfg.universal.outside in case the model nests it there.
+  const outsideVal = cfg.outside ?? cfg.universal?.outside ?? null;
+  const hasOutside = outsideVal != null;
+
+  // Auto-expand height to accommodate the outside region below the circles.
+  const defaultH = hasOutside ? 270 : 220;
+  const W = cfg.width ?? 300, H = cfg.height ?? defaultH;
   const sets = cfg.sets ?? [{}, {}];
   const S1 = sets[0] ?? {}, S2 = sets[1] ?? {};
   const inter = cfg.intersection ?? {};
@@ -2148,8 +2155,9 @@ function drawVennDiagram(cfg) {
   if (cfg.universal) {
     const pad = 8;
     out += `<rect x="${pad}" y="${(cfg.title ? 22 : pad)}" width="${W - pad*2}" height="${H - (cfg.title ? 28 : pad*2)}" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="5,3" rx="4"/>`;
-    if (cfg.universal.label) {
-      out += svgText(W - pad - 4, cfg.title ? 32 : pad + 12, cfg.universal.label, { fontSize: 10, fill: '#64748b', textAnchor: 'end' });
+    // Show universal label only when there is no title — prevents text colliding with the title.
+    if (cfg.universal.label && !cfg.title) {
+      out += svgText(W - pad - 4, pad + 12, cfg.universal.label, { fontSize: 10, fill: '#64748b', textAnchor: 'end' });
     }
   }
 
@@ -2175,21 +2183,19 @@ function drawVennDiagram(cfg) {
 
   // Intersection overlay — brighter tint where both overlap
   const interColor = inter.color ?? '#a5f3fc';
-  // Draw right-circle clipped to left-circle to fill overlap region
   out += `<circle cx="${cx2.toFixed(2)}" cy="${cy.toFixed(2)}" r="${r.toFixed(2)}" fill="${interColor}" fill-opacity="0.55" stroke="none" clip-path="url(#cp1-${uid})"/>`;
 
-  // Labels for each region
+  // Label positions
   const leftX  = cx1 - r * 0.42;   // A-only
   const rightX = cx2 + r * 0.42;   // B-only
   const midX   = W / 2;            // intersection
 
-  // Set A label (above circle, left)
+  // Set labels — positioned above their respective circles (not concatenated into title)
   if (S1.label) {
-    out += svgText(cx1, cy - r - 8, S1.label, { fontSize: 12, bold: true, fill: '#1e3a8a' });
+    out += svgText(cx1, cy - r - 8, S1.label, { fontSize: 11, bold: true, fill: '#1e3a8a' });
   }
-  // Set B label (above circle, right)
   if (S2.label) {
-    out += svgText(cx2, cy - r - 8, S2.label, { fontSize: 12, bold: true, fill: '#14532d' });
+    out += svgText(cx2, cy - r - 8, S2.label, { fontSize: 11, bold: true, fill: '#14532d' });
   }
 
   // Region values
@@ -2203,20 +2209,45 @@ function drawVennDiagram(cfg) {
     out += svgText(rightX, cy + 4, String(S2.value), { fontSize: 13, bold: true, fill: '#14532d' });
   }
 
-  // Region text labels (e.g. "A only", "A∩B")
-  if (S1.regionLabel) {
-    out += svgText(leftX, cy + (S1.value != null ? 16 : 4), S1.regionLabel, { fontSize: 10, fill: '#475569' });
-  }
-  if (inter.label) {
-    out += svgText(midX, cy + (inter.value != null ? 16 : 4), inter.label, { fontSize: 10, fill: '#475569' });
-  }
-  if (S2.regionLabel) {
-    out += svgText(rightX, cy + (S2.value != null ? 16 : 4), S2.regionLabel, { fontSize: 10, fill: '#475569' });
+  // Region text labels — strip duplicate number when it duplicates the region value.
+  // Models sometimes set regionLabel:"Poor Sleep 12" or "12 Poor Sleep" while value:12.
+  function cleanRegionLabel(val, raw) {
+    if (!raw) return null;
+    let t = raw.trim();
+    if (val != null) {
+      const n = String(val);
+      if (t === n) return null;                                               // label is just the number
+      if (t.startsWith(n + ' ') || t.startsWith(n + '\n')) t = t.slice(n.length).trim(); // leading
+      else if (t.endsWith(' ' + n) || t.endsWith('\n' + n)) t = t.slice(0, t.length - n.length).trim(); // trailing
+    }
+    return t || null;
   }
 
-  // Universal set total (bottom right)
-  if (cfg.universal?.value != null) {
-    out += svgText(W - 14, H - 8, `Total: ${cfg.universal.value}`, { fontSize: 10, fill: '#64748b', textAnchor: 'end' });
+  const s1Lbl    = cleanRegionLabel(S1.value,    S1.regionLabel);
+  const interLbl = cleanRegionLabel(inter.value, inter.label);
+  const s2Lbl    = cleanRegionLabel(S2.value,    S2.regionLabel);
+
+  if (s1Lbl)    out += svgText(leftX,  cy + (S1.value    != null ? 17 : 4), s1Lbl,    { fontSize: 10, fill: '#475569' });
+  if (interLbl) out += svgText(midX,   cy + (inter.value != null ? 17 : 4), interLbl, { fontSize: 10, fill: '#475569' });
+  if (s2Lbl)    out += svgText(rightX, cy + (S2.value    != null ? 17 : 4), s2Lbl,    { fontSize: 10, fill: '#475569' });
+
+  // Outside/neither region — shown at bottom-centre inside the universal rectangle, below the circles.
+  // Vertically centred between circle bottom and rect bottom for clean spacing.
+  if (hasOutside) {
+    const circleBottom = cy + r;
+    const rectTopY     = cfg.title ? 22 : 8;
+    const rectBottom   = cfg.universal ? rectTopY + (H - (cfg.title ? 28 : 16)) : H - 8;
+    const outsideY     = Math.round((circleBottom + rectBottom) / 2) + 4;
+    out += svgText(W / 2, outsideY, String(Math.abs(outsideVal)), { fontSize: 12, bold: true, fill: '#64748b' });
+    if (cfg.outsideLabel) {
+      out += svgText(W / 2, outsideY + 13, cfg.outsideLabel, { fontSize: 9, fill: '#94a3b8' });
+    }
+  }
+
+  // Universal set total (bottom-right) — only rendered when outside value is not separately shown,
+  // to avoid double-counting confusion. Math.abs guards against model outputting a negative value.
+  if (cfg.universal?.value != null && !hasOutside) {
+    out += svgText(W - 14, H - 8, `Total: ${Math.abs(cfg.universal.value)}`, { fontSize: 10, fill: '#64748b', textAnchor: 'end' });
   }
 
   return svgWrap(W, H, out);

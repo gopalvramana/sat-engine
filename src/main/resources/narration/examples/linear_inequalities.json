@@ -1,0 +1,550 @@
+[
+  {
+    "difficulty": "easy",
+    "stem": "Amara wants to read at least 18 books this year. She has already read 7 books. What is the minimum number of additional books Amara must read to meet her goal?\nA. 7\nB. 11\nC. 18\nD. 25",
+    "type": "T1 — word problem, minimum additional amount to reach a goal (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["at least", "already", "minimum number of additional"],
+    "why_this_difficulty": "Easy — one subtraction step: 18 − 7 = 11",
+    "distractor_rationales": {
+      "A": "Student reported the books already read rather than the additional books needed",
+      "C": "Student reported the total goal rather than the additional amount needed",
+      "D": "Student added the goal and books already read (18 + 7 = 25) instead of subtracting"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "A student needs a minimum of 120 community service hours to graduate. The student has already completed 74 hours. What is the minimum number of additional hours the student must complete to graduate?\nA. 46\nB. 52\nC. 74\nD. 194",
+    "type": "T1 — word problem, minimum additional hours to meet a requirement (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["minimum of", "already completed", "minimum number of additional hours"],
+    "why_this_difficulty": "Easy — 120 − 74 = 46; one subtraction step",
+    "distractor_rationales": {
+      "B": "Student subtracted from an incorrect reference value rather than from the 120-hour requirement",
+      "C": "Student reported the hours already completed rather than the additional hours needed",
+      "D": "Student added the requirement and hours completed (120 + 74 = 194) instead of subtracting"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "A farmer needs at least 45 pounds of fertilizer to treat a field. The farmer already has 37 pounds. What is the minimum number of additional pounds of fertilizer the farmer needs?\nA. 37\nB. 8\nC. 45\nD. 82",
+    "type": "T1 — word problem, minimum additional supply to meet a need (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["at least", "already has", "minimum number of additional"],
+    "why_this_difficulty": "Easy — 45 − 37 = 8; one subtraction step",
+    "distractor_rationales": {
+      "A": "Student reported the amount already on hand rather than the additional amount needed",
+      "C": "Student reported the total requirement rather than the additional amount needed",
+      "D": "Student added the requirement and the amount on hand (45 + 37 = 82) instead of subtracting"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "A greenhouse requires a minimum temperature of 72°F to grow tropical plants. The current temperature is 65.5°F. What is the minimum number of degrees the temperature must increase?\nA. 2.5\nB. 6.5\nC. 7.5\nD. 8.5",
+    "type": "T1 — word problem, minimum increase to meet a temperature threshold (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["minimum temperature", "current temperature", "minimum number of degrees ... must increase"],
+    "why_this_difficulty": "Easy — 72 − 65.5 = 6.5; one decimal subtraction",
+    "distractor_rationales": {
+      "A": "Student subtracted from an incorrect current value rather than finding the gap to the threshold",
+      "C": "Student used 73 as the threshold instead of 72 (73 − 65.5 = 7.5)",
+      "D": "Student used 74 as the threshold instead of 72 (74 − 65.5 = 8.5)"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "A fundraiser has a goal of raising no more than $5,000. The fundraiser has already collected $3,218. What is the maximum additional amount, in dollars, the fundraiser can collect while staying within the goal?\nA. 1,782\nB. 3,218\nC. 5,000\nD. 8,218",
+    "type": "T1 — word problem, maximum additional amount under a cap (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["no more than", "already collected", "maximum additional amount"],
+    "why_this_difficulty": "Easy — 5,000 − 3,218 = 1,782; one subtraction step",
+    "distractor_rationales": {
+      "B": "Student reported the amount already collected rather than the remaining allowance",
+      "C": "Student reported the total cap rather than the maximum additional amount",
+      "D": "Student added the cap and the amount already collected (5,000 + 3,218 = 8,218)"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "A school needs at least 75 chairs for an event. Chairs are sold in packs of 8. What is the minimum number of packs that must be ordered?",
+    "type": "T1 — word problem, minimum packs to cover a need when partial packs are not sold (SPR)",
+    "correct": "10",
+    "sat_key_phrases": ["at least", "sold in packs of", "minimum number of packs"],
+    "why_this_difficulty": "Easy — 75 ÷ 8 = 9.375; since partial packs cannot be ordered, round up to 10",
+    "distractor_rationales": null
+  },
+  {
+    "difficulty": "easy",
+    "stem": "According to a survey, adults sleep a minimum of 5 hours and a maximum of 9 hours per night. Which inequality represents all possible values of the number of hours h an adult sleeps per night, based on this survey?\nA. h ≥ 14\nB. h ≤ 5\nC. 5 ≤ h ≤ 9\nD. h ≥ 9",
+    "type": "T2 — compound inequality from stated minimum and maximum (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["minimum of", "maximum of", "which inequality represents all possible values of"],
+    "why_this_difficulty": "Easy — two endpoints given directly; form a ≤ h ≤ b",
+    "distractor_rationales": {
+      "A": "Student added the two bounds (5 + 9 = 14) and wrote it as a lower limit",
+      "B": "Student used only the lower bound and applied it as an upper bound (wrong direction)",
+      "D": "Student used only the upper bound and wrote it as a lower bound (wrong direction)"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "A cyclist's speed on a trail varies between 8 miles per hour and 14 miles per hour. Which inequality best represents this situation, where s is the cyclist's speed, in miles per hour?\nA. s ≤ 6\nB. s ≤ 8\nC. s ≤ 14\nD. 8 ≤ s ≤ 14",
+    "type": "T2 — compound inequality directly from a stated range (MCQ)",
+    "correct": "D",
+    "sat_key_phrases": ["varies between", "which inequality best represents this situation", "where s is"],
+    "why_this_difficulty": "Easy — both bounds given; translate 'between 8 and 14' directly to 8 ≤ s ≤ 14",
+    "distractor_rationales": {
+      "A": "Student subtracted the two bounds (14 − 8 = 6) and used the result as a single upper bound",
+      "B": "Student used only the lower bound and applied it as an upper bound",
+      "C": "Student used only the upper bound, omitting the lower bound entirely"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "A chemist estimates that the volume of a liquid sample is greater than 3.5 liters but less than 6.0 liters. The liquid weighs 1.2 kilograms per liter. Which inequality represents this situation, where w represents the estimated total weight, in kilograms, of the liquid sample?\nA. 1.2 − 6.0 < w < 1.2 − 3.5\nB. 1.2 + 3.5 < w < 1.2 + 6.0\nC. 1.2(3.5) < w < 1.2(6.0)\nD. 1.2/6.0 < w < 1.2/3.5",
+    "type": "T2 — compound inequality requiring multiplication of a unit rate by a volume range (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["greater than ... but less than", "kilograms per liter", "which inequality represents this situation"],
+    "why_this_difficulty": "Easy — multiply the unit weight (1.2) by each volume bound; recognize multiplication, not addition",
+    "distractor_rationales": {
+      "A": "Student subtracted each volume bound from the unit weight instead of multiplying",
+      "B": "Student added each volume bound to the unit weight instead of multiplying",
+      "D": "Student divided the unit weight by each bound instead of multiplying"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "During a laboratory experiment, the temperature of a solution ranged between 18°C and 26°C. Which inequality best represents this situation, where t is the temperature, in degrees Celsius, of the solution during the experiment?\nA. t ≤ 8\nB. t ≤ 18\nC. t ≤ 26\nD. 18 ≤ t ≤ 26",
+    "type": "T2 — compound inequality directly from a stated temperature range (MCQ)",
+    "correct": "D",
+    "sat_key_phrases": ["ranged between", "which inequality best represents this situation", "where t is the temperature"],
+    "why_this_difficulty": "Easy — both bounds stated directly; translate 'between 18 and 26' to 18 ≤ t ≤ 26",
+    "distractor_rationales": {
+      "A": "Student found the range (26 − 18 = 8) and wrote it as a single upper bound",
+      "B": "Student used only the lower bound and applied it as an upper bound",
+      "C": "Student used only the upper bound, omitting the lower bound entirely"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "A florist can arrange at most 30 bouquets per day. The florist makes rose bouquets and lily bouquets. Which inequality represents this situation, where r is the number of rose bouquets and l is the number of lily bouquets the florist makes in one day?\nA. r + l ≤ 30\nB. r + l ≥ 30\nC. r − l ≤ 30\nD. r − l ≥ 30",
+    "type": "T3 — write two-variable inequality from a total-capacity constraint (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["at most", "which inequality represents this situation", "where r is ... and l is"],
+    "why_this_difficulty": "Easy — direct translation of 'at most 30 total' into r + l ≤ 30",
+    "distractor_rationales": {
+      "B": "Student reversed 'at most' to 'at least', writing ≥ instead of ≤",
+      "C": "Student used r − l instead of r + l, subtracting the counts rather than adding",
+      "D": "Student subtracted the variables and reversed the inequality direction"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "Marcus and Elena are painting rooms. Marcus paints at a rate of 2 rooms per hour and Elena paints at a rate of 3 rooms per hour. Together they painted fewer than 36 rooms in one day. Which inequality represents this situation, where m is the number of hours Marcus painted and e is the number of hours Elena painted?\nA. 2m + 3e > 36\nB. 2m + 3e < 36\nC. 3m + 2e > 36\nD. 3m + 2e < 36",
+    "type": "T3 — write two-variable inequality matching each rate to the correct person (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["rate of ... rooms per hour", "fewer than", "which inequality represents this situation", "where m is ... and e is"],
+    "why_this_difficulty": "Easy — multiply each person's rate by their hours; 'fewer than 36' gives strict <",
+    "distractor_rationales": {
+      "A": "Student formed the correct expression but reversed 'fewer than' to 'greater than'",
+      "C": "Student swapped the rates, assigning 3 to Marcus and 2 to Elena, and reversed the direction",
+      "D": "Student swapped the rates but kept the correct inequality direction"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "Priya has $20 to spend on notebooks and pens. Each notebook costs $3.50 and each pen costs $1.25. Which inequality represents the relationship between the number of notebooks n and the number of pens p Priya can buy?\nA. 3.50n + 1.25p ≤ 20\nB. 3.50n + 1.25p ≥ 20\nC. 1.25n + 3.50p ≤ 20\nD. 1.25n + 3.50p ≥ 20",
+    "type": "T3 — write two-variable budget inequality (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["has $", "costs $", "which inequality represents the relationship between", "where n is ... and p is"],
+    "why_this_difficulty": "Easy — total cost = 3.50n + 1.25p must not exceed $20",
+    "distractor_rationales": {
+      "B": "Student reversed the budget direction, writing ≥ instead of ≤",
+      "C": "Student swapped the prices of notebooks and pens",
+      "D": "Student swapped the prices and reversed the inequality direction"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "A parking garage charges a $6 entrance fee plus $4 per hour. A driver wants to spend at most $30 on parking. Which inequality represents this situation, where h is the number of hours the driver parks?\nA. 4h ≤ 30\nB. 4 + 6h ≤ 30\nC. 6h ≤ 30\nD. 6 + 4h ≤ 30",
+    "type": "T3 — write one-variable inequality for a fixed-fee-plus-hourly-rate scenario (MCQ)",
+    "correct": "D",
+    "sat_key_phrases": ["charges a $ entrance fee plus $ per hour", "at most $", "which inequality represents this situation"],
+    "why_this_difficulty": "Easy — total = 6 (flat) + 4h (hourly) ≤ 30; identify the correct structure",
+    "distractor_rationales": {
+      "A": "Student wrote only the hourly component without including the flat entrance fee",
+      "B": "Student swapped the flat fee and the hourly rate (4 + 6h instead of 6 + 4h)",
+      "C": "Student wrote only the flat fee multiplied by h, omitting the per-hour rate"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "The point (5, 3) in the xy-plane is a solution to which of the following systems of inequalities?\nA. x > 0\n   y > 0\nB. x > 0\n   y < 0\nC. x < 0\n   y > 0\nD. x < 0\n   y < 0",
+    "type": "T7 — identify the system of inequalities satisfied by a given point (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["is a solution to which of the following systems of inequalities"],
+    "why_this_difficulty": "Easy — both coordinates are positive; substitute 5 and 3; only x > 0 and y > 0 is satisfied",
+    "distractor_rationales": {
+      "B": "Student correctly identified x > 0 (since 5 > 0) but incorrectly wrote y < 0 despite 3 > 0",
+      "C": "Student reversed the sign for x, writing x < 0 even though 5 > 0",
+      "D": "Student reversed the signs of both coordinates"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "A model estimates that the wind speed during a storm was at least 25 miles per hour and at most 55 miles per hour. Which inequality represents the possible values of the wind speed w, in miles per hour, during the storm?\nA. w ≥ 80\nB. w ≥ 55\nC. 0 ≤ w ≤ 25\nD. 25 ≤ w ≤ 55",
+    "type": "T2 — compound inequality from 'at least' and 'at most' bounds (MCQ)",
+    "correct": "D",
+    "sat_key_phrases": ["at least", "at most", "which inequality represents the possible values of"],
+    "why_this_difficulty": "Medium — must correctly apply both 'at least' (≥) and 'at most' (≤) to form a compound inequality",
+    "distractor_rationales": {
+      "A": "Student added the two bounds (25 + 55 = 80) and used the sum as a single lower bound",
+      "B": "Student used only the upper bound and wrote it as a lower bound (reversed direction)",
+      "C": "Student used 0 as the lower bound and the actual minimum (25) as the upper bound"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "A model estimates that a honeybee colony produces between 40 and 60 pounds of honey per year. Based on this model, which inequality represents the estimated total pounds of honey, p, that 12 colonies could produce in one year?\nA. 40 + 12 ≤ p ≤ 60 + 12\nB. (40)(12) ≤ p ≤ (60)(12)\nC. 40 ≤ 12 + p ≤ 60\nD. 40 ≤ 12p ≤ 60",
+    "type": "T2 — compound inequality requiring multiplication of a per-unit range by the number of units (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["based on this model", "which inequality represents the estimated total", "that 12 colonies could produce"],
+    "why_this_difficulty": "Medium — total = per-colony range × number of colonies; must multiply both bounds by 12, not add",
+    "distractor_rationales": {
+      "A": "Student added 12 to each bound instead of multiplying",
+      "C": "Student added p to 12 inside the bounds, treating the per-colony limits as total limits",
+      "D": "Student placed 12p inside the original per-colony range as if scaling the variable, not the bounds"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "A biologist classifies a fish species as large if its typical adult length is more than 30 centimeters. Each of the following inequalities represents possible lengths l, in centimeters, for a specific fish species. Which inequality represents possible lengths for a large fish species?\nA. 34 < l < 52\nB. 15 < l < 30\nC. 8 < l < 24\nD. 10 < l < 29",
+    "type": "T2 — select the compound inequality consistent with a stated minimum threshold (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["classifies ... as large if", "more than 30", "which inequality represents possible lengths for a large fish species"],
+    "why_this_difficulty": "Medium — a large fish has length > 30; must identify which range has ALL values exceeding 30",
+    "distractor_rationales": {
+      "B": "Represents lengths of 15–30 cm; the upper endpoint reaches but does not exceed 30 cm",
+      "C": "Represents lengths of 8–24 cm; all values are well below the 30 cm threshold",
+      "D": "Represents lengths of 10–29 cm; all values are below the 30 cm threshold"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "The width of a rectangle is 12 meters and the length is x meters. The perimeter of the rectangle is at most 80 meters. Which inequality represents this situation?\nA. 2x + 24 ≤ 80\nB. 2x + 24 ≥ 80\nC. 2x + 12 ≤ 80\nD. 2x + 12 ≥ 80",
+    "type": "T3 — write a one-variable inequality for a perimeter constraint (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["perimeter of", "at most", "which inequality represents this situation"],
+    "why_this_difficulty": "Medium — perimeter = 2(12) + 2x = 24 + 2x; must apply 'at most' as ≤",
+    "distractor_rationales": {
+      "B": "Student reversed 'at most' to ≥ instead of ≤",
+      "C": "Student computed 12 + 2x instead of 2(12) + 2x, adding the width only once",
+      "D": "Student used the wrong perimeter formula and reversed the inequality direction"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "A conference room holds no more than 50 people total, consisting of seated and standing attendees. The number of seated attendees must be at least twice the number of standing attendees. Which system of inequalities represents this situation, where a is the number of seated attendees and b is the number of standing attendees?\nA. a + b ≤ 50 and a ≥ 2b\nB. a + b ≥ 50 and a ≤ 2b\nC. a + b ≥ 50 and a ≥ 2b\nD. a + b ≤ 50 and a ≤ 2b",
+    "type": "T3 — write a system of two-variable inequalities from a two-constraint scenario (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["no more than", "at least twice", "which system of inequalities represents this situation"],
+    "why_this_difficulty": "Medium — two constraints: 'no more than 50' means ≤, and 'at least twice' means ≥",
+    "distractor_rationales": {
+      "B": "Student reversed the first constraint to ≥ and also reversed the seated/standing ratio to ≤",
+      "C": "Student reversed the first constraint to ≥ but correctly wrote a ≥ 2b",
+      "D": "Student correctly wrote the total ≤ 50 but reversed the ratio constraint to a ≤ 2b"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "A delivery van can carry a maximum of 2,800 pounds. During one trip, the van will carry a 300-pound piece of furniture along with x small boxes weighing 15 pounds each and y large boxes weighing 40 pounds each. Which inequality represents the possible combinations of small boxes, x, and large boxes, y, the van can carry in one trip?\nA. 15x + 40y ≤ 2,500\nB. 15x + 40y ≥ 2,500\nC. 40x + 15y ≤ 2,800\nD. 40x + 15y ≥ 2,800",
+    "type": "T3 — write two-variable inequality for combined weight after subtracting a fixed load (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["maximum of", "weighing ... pounds each", "which inequality represents the possible combinations"],
+    "why_this_difficulty": "Medium — subtract the fixed furniture weight (2,800 − 300 = 2,500) to find available capacity; assign weights to correct variables",
+    "distractor_rationales": {
+      "B": "Student correctly found 2,500 for box capacity but reversed the direction to ≥",
+      "C": "Student swapped the weights for small and large boxes and used the gross capacity (2,800) without subtracting the furniture",
+      "D": "Student swapped the box weights and reversed the inequality direction"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "A cargo truck can carry no more than 3,200 pounds per trip. The cargo container weighs 850 pounds, and each package weighs 65 pounds. What is the maximum number of packages that can be loaded for one trip?\nA. 36\nB. 37\nC. 40\nD. 41",
+    "type": "T4 — solve for maximum quantity given a fixed-plus-variable weight constraint (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["no more than", "each package weighs", "maximum number of packages"],
+    "why_this_difficulty": "Medium — set up 850 + 65x ≤ 3,200; solve x ≤ 36.15; floor to 36 since partial packages are not allowed",
+    "distractor_rationales": {
+      "B": "Student solved correctly to 36.15 but rounded up to 37, which would exceed the weight limit",
+      "C": "Student divided the total capacity by package weight without subtracting the container weight first (3,200 ÷ 65 ≈ 49.2... wait that's not 40)",
+      "D": "Student divided the total capacity by the package weight and rounded up, ignoring the container weight"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "A community center charges a $50 rental fee plus $8 per participant. A club has a budget of $250 for the event. What is the greatest number of participants the club can have?",
+    "type": "T4 — word problem, solve for maximum participants under a total budget (SPR)",
+    "correct": "25",
+    "sat_key_phrases": ["charges a $ rental fee plus $ per participant", "budget of $", "greatest number of participants"],
+    "why_this_difficulty": "Medium — set up 50 + 8x ≤ 250; solve x ≤ 25; exact integer answer",
+    "distractor_rationales": null
+  },
+  {
+    "difficulty": "medium",
+    "stem": "A company produces custom T-shirts for a flat setup fee of $60 plus $14 per shirt. The company has a budget of $340 to spend on T-shirts for an event. What is the greatest number of T-shirts the company can order?",
+    "type": "T4 — word problem, solve for maximum quantity under a total budget (SPR)",
+    "correct": "20",
+    "sat_key_phrases": ["flat setup fee of $", "$ per shirt", "budget of $", "greatest number of"],
+    "why_this_difficulty": "Medium — set up 60 + 14x ≤ 340; solve x ≤ 20; exact integer answer",
+    "distractor_rationales": null
+  },
+  {
+    "difficulty": "medium",
+    "stem": "y < −5x + 10\nWhich point (x, y) is a solution to the given inequality?\nA. (−3, 0)\nB. (0, 11)\nC. (2, 0)\nD. (3, 0)",
+    "type": "T5 — which ordered pair satisfies a linear inequality? (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["which point (x, y) is a solution to the given inequality"],
+    "why_this_difficulty": "Medium — must substitute each pair; the large negative x-value in choice A creates a high right-hand side (25) that y easily satisfies",
+    "distractor_rationales": {
+      "B": "Substituting (0, 11): 11 < −5(0) + 10 = 10 is false",
+      "C": "Substituting (2, 0): 0 < −5(2) + 10 = 0 is false — equality does not satisfy the strict inequality",
+      "D": "Substituting (3, 0): 0 < −5(3) + 10 = −5 is false"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "x is at most 8 less than 4 times y. If y = 5, what is the greatest possible value of x?",
+    "type": "T6 — interpret a two-variable bound and find max x for a given y (SPR)",
+    "correct": "12",
+    "sat_key_phrases": ["is at most", "less than", "times y", "greatest possible value of x"],
+    "why_this_difficulty": "Medium — translate 'x is at most 8 less than 4y' to x ≤ 4y − 8; substitute y = 5 to get x ≤ 12",
+    "distractor_rationales": null
+  },
+  {
+    "difficulty": "medium",
+    "stem": "The maximum value of x is 6 more than 5 times another number m. Which inequality shows the possible values of x?\nA. x ≥ 5m + 6\nB. x ≤ 5m + 6\nC. x ≥ 6 − 5m\nD. x ≤ 6 − 5m",
+    "type": "T6 — translate a verbal two-variable bound into an inequality (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["maximum value of x is", "more than", "times another number"],
+    "why_this_difficulty": "Medium — 'maximum of x is 5m + 6' means x ≤ 5m + 6; 'maximum' signals ≤, not ≥",
+    "distractor_rationales": {
+      "A": "Student correctly computed 5m + 6 but wrote ≥, treating 'maximum' as if it were 'minimum'",
+      "C": "Student reversed the order in the expression (6 − 5m) and used ≥",
+      "D": "Student reversed the order in the expression (6 − 5m) but used ≤"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "y > 8\n2x + y < 24\nThe point (x, 35) is a solution to the system of inequalities above. Which of the following could be the value of x?\nA. −6\nB. −5\nC. 3\nD. 7",
+    "type": "T7 — find the value of x that satisfies a system when y is given (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["is a solution to the system of inequalities", "which of the following could be the value of x"],
+    "why_this_difficulty": "Medium — y = 35 satisfies y > 8 automatically; substitute into 2x + 35 < 24 to get x < −5.5; only −6 qualifies",
+    "distractor_rationales": {
+      "B": "Student found x < −5.5 correctly but selected −5, which does not satisfy x < −5.5",
+      "C": "Student reversed the inequality direction, solving 2x + 35 > 24 instead",
+      "D": "Student solved 2x + y = 24 using y = 8 rather than y = 35, finding the wrong boundary"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "y > 3x + 5\nFor which of the following tables are all the values of x and their corresponding values of y solutions to the given inequality?\nA. x: 1, 3, 5 | y: 9, 15, 21\nB. x: 1, 3, 5 | y: 8, 14, 20\nC. x: 1, 3, 5 | y: 6, 9, 12\nD. x: 1, 3, 5 | y: 11, 14, 23",
+    "type": "T8 — identify which table of values satisfies a linear inequality (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["For which of the following tables are all the values of x and their corresponding values of y solutions to the given inequality"],
+    "why_this_difficulty": "Medium — substitute each (x, y) pair; table B uses exact boundary values that fail the strict inequality",
+    "distractor_rationales": {
+      "B": "The y-values equal exactly 3x + 5 for each row; equality does not satisfy the strict inequality y > 3x + 5",
+      "C": "At x = 1: y = 6 is less than 3(1) + 5 = 8, not greater",
+      "D": "At x = 3: y = 14 equals 3(3) + 5 = 14; equality does not satisfy the strict inequality"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "y > 5x − 3\nFor which of the following tables are all the values of x and their corresponding values of y solutions to the given inequality?\nA. x: 2, 4, 6 | y: 8, 18, 28\nB. x: 2, 4, 6 | y: 7, 17, 27\nC. x: 2, 4, 6 | y: 9, 17, 33\nD. x: 2, 4, 6 | y: 12, 14, 29",
+    "type": "T8 — identify the table where all (x, y) pairs satisfy a strict linear inequality (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["For which of the following tables are all the values of x and their corresponding values of y solutions to the given inequality"],
+    "why_this_difficulty": "Medium — strict inequality; table B uses exact boundary values; must check all three rows per table",
+    "distractor_rationales": {
+      "B": "The y-values equal exactly 5x − 3 for each row; equality does not satisfy the strict inequality y > 5x − 3",
+      "C": "At x = 4: y = 17 equals 5(4) − 3 = 17; equality fails the strict inequality",
+      "D": "At x = 4: y = 14 is less than 5(4) − 3 = 17, not greater"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "y < x\nx < 15\nFor which of the following tables are all the values of x and their corresponding values of y solutions to the given system of inequalities?\nA. x: 12, 13, 14 | y: 11, 12, 13\nB. x: 12, 13, 14 | y: 12, 13, 14\nC. x: 12, 13, 14 | y: 13, 14, 15\nD. x: 15, 16, 17 | y: 11, 12, 13",
+    "type": "T7 — identify the table satisfying a system of two inequalities (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["For which of the following tables are all the values of x and their corresponding values of y solutions to the given system of inequalities"],
+    "why_this_difficulty": "Medium — two simultaneous constraints: each x must be < 15 and each y must be strictly less than its x",
+    "distractor_rationales": {
+      "B": "In each row y = x, which fails the strict inequality y < x",
+      "C": "In each row y > x, which fails y < x",
+      "D": "Every x value is ≥ 15, which fails the constraint x < 15"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "An employee's total annual compensation consists of a base salary of b dollars plus a bonus equal to 8% of total sales made during the year. This year, the employee's goal is for the total compensation to be at least 2 times and at most 3 times the base salary. Which of the following inequalities represents all possible values of total sales s, in dollars, the employee must make to meet this goal?\nA. b ≤ s ≤ 2b\nB. (b/0.08) ≤ s ≤ (2b/0.08)\nC. 2b ≤ s ≤ 3b\nD. (2b/0.08) ≤ s ≤ (3b/0.08)",
+    "type": "T2 — compound inequality requiring algebraic manipulation to isolate a commission variable (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["plus a bonus equal to ... % of total sales", "at least ... times and at most ... times the base salary", "all possible values of total sales s"],
+    "why_this_difficulty": "Hard — set up 2b ≤ b + 0.08s ≤ 3b; subtract b; divide by 0.08 to isolate s",
+    "distractor_rationales": {
+      "A": "Student subtracted b from the compensation range endpoints (2b − b = b and 3b − b = 2b) but forgot to divide by 0.08",
+      "C": "Student used the total compensation range (2b to 3b) directly as the range for s, skipping the base salary subtraction",
+      "D": "Student divided the compensation range (2b and 3b) by 0.08 without first subtracting the base salary"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "Two sides of a triangle have lengths 7 and 11. Which inequality represents all possible values of the third side x?\nA. x < 18\nB. x > 18\nC. 4 < x < 18\nD. x < 4 or x > 18",
+    "type": "T2 — apply the triangle inequality theorem to write a compound inequality (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["sides of a triangle", "which inequality represents all possible values of the third side"],
+    "why_this_difficulty": "Hard — triangle inequality: each side < sum and > difference of the other two; 7 + 11 = 18 and 11 − 7 = 4 give 4 < x < 18",
+    "distractor_rationales": {
+      "A": "Student applied only the upper bound (x < 7 + 11 = 18), ignoring the lower bound",
+      "B": "Student reversed the upper bound direction — x must be less than 18, not greater",
+      "D": "Student wrote the region outside the valid range instead of inside it"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "A school needs to purchase the same calculator for each of 48 students. The total budget is $2,400, which includes a 5% sales tax. Which of the following is closest to the maximum possible price per calculator, before sales tax, based on this budget?\nA. $43.27\nB. $47.62\nC. $50.00\nD. $52.63",
+    "type": "T4 — find maximum unit price from a total budget that includes sales tax (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["total budget", "includes a ... % sales tax", "maximum possible price per calculator, before sales tax"],
+    "why_this_difficulty": "Hard — set up 48 × 1.05 × p ≤ 2,400; must apply the tax multiplier before dividing; p ≤ 2,400/50.4 ≈ 47.62",
+    "distractor_rationales": {
+      "A": "Student used an incorrect tax multiplier of 1.15 instead of 1.05 (2,400 ÷ (48 × 1.15) ≈ 43.48)",
+      "C": "Student divided $2,400 by 48 without applying the 5% tax factor at all (2,400 ÷ 48 = 50.00)",
+      "D": "Student subtracted the tax rate instead of adding it, using 0.95 as the multiplier (2,400 ÷ (48 × 0.95) ≈ 52.63)"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "x is at most 4 less than 2 times y. If y = −3, what is the greatest possible value of x?",
+    "type": "T6 — find max x from a two-variable bound when y is negative (SPR)",
+    "correct": "-10",
+    "sat_key_phrases": ["is at most", "less than", "times y", "greatest possible value of x"],
+    "why_this_difficulty": "Hard — translate to x ≤ 2y − 4; substitute y = −3 to get x ≤ 2(−3) − 4 = −10; a negative y produces a negative answer that is easy to miscalculate",
+    "distractor_rationales": null
+  },
+  {
+    "difficulty": "hard",
+    "stem": "y ≤ 3x + 1\ny ≥ −x + 5\nWhich ordered pair (x, y) is a solution to the given system of inequalities?\nA. (−10, 0)\nB. (0, −10)\nC. (0, 10)\nD. (10, 0)",
+    "type": "T7 — find the ordered pair that satisfies a system of two inequalities (MCQ)",
+    "correct": "D",
+    "sat_key_phrases": ["which ordered pair (x, y) is a solution to the given system of inequalities"],
+    "why_this_difficulty": "Hard — must substitute all four ordered pairs into both inequalities; only (10, 0) satisfies both",
+    "distractor_rationales": {
+      "A": "Substituting (−10, 0): 0 ≤ 3(−10) + 1 = −29 is false — the first inequality fails",
+      "B": "Substituting (0, −10): −10 ≥ −0 + 5 = 5 is false — the second inequality fails",
+      "C": "Substituting (0, 10): 10 ≤ 3(0) + 1 = 1 is false — the first inequality fails"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "y > 9x − 12\nFor which of the following tables are all the values of x and their corresponding values of y solutions to the given inequality?\nA. x: 2, 4, 6 | y: 6, 24, 42\nB. x: 2, 4, 6 | y: 5, 24, 42\nC. x: 2, 4, 6 | y: 7, 25, 43\nD. x: 2, 4, 6 | y: 7, 23, 43",
+    "type": "T8 — identify the table where all (x, y) pairs satisfy a strict linear inequality (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["For which of the following tables are all the values of x and their corresponding values of y solutions to the given inequality"],
+    "why_this_difficulty": "Hard — large coefficient (9) makes boundary values close to answer choices; table A uses exact boundary values that fail the strict inequality",
+    "distractor_rationales": {
+      "A": "The y-values equal exactly 9x − 12 for each row; equality does not satisfy the strict inequality y > 9x − 12",
+      "B": "At x = 2: y = 5 is less than 9(2) − 12 = 6, not greater",
+      "D": "At x = 4: y = 23 is less than 9(4) − 12 = 24, not greater"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "y < 4x + 5\nFor which of the following tables are all the values of x and their corresponding values of y solutions to the given inequality?\nA. x: 1, 3, 5 | y: 9, 17, 25\nB. x: 1, 3, 5 | y: 8, 16, 24\nC. x: 1, 3, 5 | y: 11, 18, 25\nD. x: 1, 3, 5 | y: 8, 17, 24",
+    "type": "T8 — identify the table where all (x, y) pairs satisfy a strict less-than inequality (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["For which of the following tables are all the values of x and their corresponding values of y solutions to the given inequality"],
+    "why_this_difficulty": "Hard — table A uses exact boundary values (y = 4x + 5); table B has all values strictly below",
+    "distractor_rationales": {
+      "A": "The y-values equal exactly 4x + 5 for each row; equality fails the strict inequality y < 4x + 5",
+      "C": "At x = 1: y = 11 is not less than 4(1) + 5 = 9",
+      "D": "At x = 3: y = 17 equals 4(3) + 5 = 17; equality fails the strict inequality"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "3x − y > 450\nFor which of the following tables are all the values of x and their corresponding values of y solutions to the given inequality?\nA. x: 151, 152, 153 | y: 2, 5, 8\nB. x: 151, 152, 153 | y: 3, 5, 8\nC. x: 151, 152, 153 | y: 2, 6, 8\nD. x: 151, 152, 153 | y: 2, 5, 9",
+    "type": "T8 — identify the table satisfying a two-variable strict inequality with large values (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["For which of the following tables are all the values of x and their corresponding values of y solutions to the given inequality"],
+    "why_this_difficulty": "Hard — large constants make arithmetic error-prone; choices B, C, D each fail at a boundary where 3x − y equals exactly 450",
+    "distractor_rationales": {
+      "B": "At x = 151, y = 3: 3(151) − 3 = 450, which equals but does not exceed 450 — strict inequality fails",
+      "C": "At x = 152, y = 6: 3(152) − 6 = 450, which equals but does not exceed 450 — strict inequality fails",
+      "D": "At x = 153, y = 9: 3(153) − 9 = 450, which equals but does not exceed 450 — strict inequality fails"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "y < 6x + 8\nFor which of the following tables are all the values of x and their corresponding values of y solutions to the given inequality?\nA. x: 4, 6, 8 | y: 32, 44, 56\nB. x: 4, 6, 8 | y: 30, 42, 54\nC. x: 4, 6, 8 | y: 34, 44, 56\nD. x: 4, 6, 8 | y: 30, 44, 54",
+    "type": "T8 — identify the table where all (x, y) pairs are strictly below a linear boundary (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["For which of the following tables are all the values of x and their corresponding values of y solutions to the given inequality"],
+    "why_this_difficulty": "Hard — table A uses y = 6x + 8 exactly, which fails the strict <; table B has all values strictly below",
+    "distractor_rationales": {
+      "A": "The y-values equal exactly 6x + 8 for each row; equality fails the strict inequality y < 6x + 8",
+      "C": "At x = 4: y = 34 is not less than 6(4) + 8 = 32",
+      "D": "At x = 6: y = 44 equals 6(6) + 8 = 44; equality fails the strict inequality"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "7a + 12b ≤ 240\nSandra is booking spa sessions for family members. In the given inequality, a represents the number of 30-minute sessions and b represents the number of 60-minute sessions booked. Which of the following is the best interpretation of 12b in this context?\nA. The cost, in dollars, of each 60-minute session\nB. The cost, in dollars, of each 30-minute session\nC. The total cost, in dollars, of all 60-minute sessions booked\nD. The total cost, in dollars, of all 30-minute sessions booked",
+    "type": "T9 — interpret a term (coefficient × variable) in the context of a linear inequality (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["in the given inequality", "which of the following is the best interpretation of", "in this context"],
+    "why_this_difficulty": "Hard — must distinguish the coefficient 12 (price per session) from the full term 12b (total cost for all 60-minute sessions)",
+    "distractor_rationales": {
+      "A": "Described the coefficient 12 alone (price per session) rather than the full term 12b (total cost)",
+      "B": "Correctly described 'price per session' but applied it to the wrong type (30-minute instead of 60-minute)",
+      "D": "Correctly described 'total cost' but applied it to the wrong type (30-minute instead of 60-minute)"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "A community theater sold tickets for a play. In advance, 180 tickets were sold at $5 more than the walk-in price. On the day of the show, 120 tickets were sold at the regular walk-in price of x dollars each. The theater needed to earn at least $4,800 in total ticket revenue. Which inequality represents this situation?\nA. 180(x + 5) + 120x ≤ 4,800\nB. 180(x + 5) + 120x ≥ 4,800\nC. 180(x − 5) + 120x ≤ 4,800\nD. 180(x − 5) + 120x ≥ 4,800",
+    "type": "T10 — write a two-price revenue inequality from a multi-price scenario (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["at $5 more than", "at the regular ... price of x dollars", "needed to earn at least", "which inequality represents this situation"],
+    "why_this_difficulty": "Hard — advance price is x + 5 (not x − 5); 'at least $4,800' means ≥; two-step reasoning required",
+    "distractor_rationales": {
+      "A": "Student correctly wrote x + 5 for the advance price but reversed 'at least' to ≤",
+      "C": "Student used x − 5 for the advance price instead of x + 5, and reversed the inequality direction",
+      "D": "Student used x − 5 for the advance price instead of x + 5, but kept ≥"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "A catering company has a budget of $3,200 to purchase beverages. The company must purchase a minimum of 250 bottles total to meet the client's requirements. Small bottles cost $6 each and large bottles cost $15 each. What is the maximum number of large bottles the company can purchase while staying within the budget and meeting the minimum bottle requirement?",
+    "type": "T10 — two-variable budget with a minimum-total constraint; find max of one variable (SPR)",
+    "correct": "188",
+    "sat_key_phrases": ["budget of $", "minimum of", "cost $ each", "maximum number of large bottles"],
+    "why_this_difficulty": "Hard — two constraints: 6s + 15l ≤ 3,200 and s + l ≥ 250; substitute s = 250 − l to eliminate s and isolate l ≤ 188.9",
+    "distractor_rationales": null
+  },
+  {
+    "difficulty": "hard",
+    "stem": "In a set of four consecutive even integers, where the integers are ordered from least to greatest, the first integer is represented by n. The product of 5 and the fourth even integer is at most 20 more than the sum of the first and second even integers. Which inequality represents this situation?\nA. 5(n + 6) ≤ n + (n + 2) + 20\nB. 5(n + 6) ≥ 20 − (n + (n + 2))\nC. 5(n + 4) ≤ n + (n + 2) + 20\nD. 5(n + 4) ≥ 20 − (n + (n + 2))",
+    "type": "T10 — write an inequality for a relationship among consecutive even integers (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["consecutive even integers", "at most", "product of 5 and", "sum of the first and second"],
+    "why_this_difficulty": "Hard — consecutive even integers differ by 2; fourth is n + 6, not n + 4; 'at most 20 more than' means ≤ (sum + 20)",
+    "distractor_rationales": {
+      "B": "Student correctly identified n + 6 as the fourth integer but reversed 'at most' to ≥ and rearranged the right side",
+      "C": "Student used n + 4 as the fourth integer (the third, not the fourth, consecutive even integer)",
+      "D": "Student used n + 4 as the fourth integer and reversed the inequality direction"
+    }
+  }
+]

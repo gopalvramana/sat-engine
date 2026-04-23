@@ -32,10 +32,15 @@ public class GenerateStage {
     private final ClaudeClient claudeClient;
     private final ObjectMapper objectMapper;
 
-    private static final String GENERATE_MODEL = "claude-haiku-4-5-20251001";
-    private static final int    MAX_TOKENS      = 4000;
-    private static final double TEMPERATURE     = 0.8;
-    private static final int    MAX_RETRIES     = 2;
+    // Both sections use Sonnet for quality; verification uses Haiku (cross-model check)
+    private static final String GENERATE_MODEL_MATH = "claude-haiku-4-5-20251001";
+    private static final String GENERATE_MODEL_RW   = "claude-haiku-4-5-20251001";
+    // Verification always uses Haiku — different model from Sonnet math = true cross-check
+    private static final String VERIFY_MODEL        = "claude-haiku-4-5-20251001";
+    private static final int    MAX_TOKENS          = 4000;
+    private static final double TEMPERATURE_MATH    = 0.6;  // lower = more deterministic for math
+    private static final double TEMPERATURE_RW      = 0.8;
+    private static final int    MAX_RETRIES         = 3;    // extra retry budget for Sonnet
 
     private static final Map<String, String> SECTION_CODES = Map.of(
             "math", "MATH", "reading_writing", "RW"
@@ -396,7 +401,9 @@ public class GenerateStage {
                 String userPrompt = PromptLibrary.buildGenerateUserPrompt(
                         section, domain, skill, difficulty, qtype, hasDiagram, diagramType,
                         diversityContext, targetLetter);
-                String raw = claudeClient.call(GENERATE_MODEL, MAX_TOKENS, PromptLibrary.getGenerateSystem(section), userPrompt, TEMPERATURE);
+                String model = "math".equals(section) ? GENERATE_MODEL_MATH : GENERATE_MODEL_RW;
+                double temp  = "math".equals(section) ? TEMPERATURE_MATH    : TEMPERATURE_RW;
+                String raw = claudeClient.call(model, MAX_TOKENS, PromptLibrary.getGenerateSystem(section), userPrompt, temp);
                 String fixed = fixLatexEscapes(extractJson(raw));
                 JsonNode data = objectMapper.readTree(fixed);
 
@@ -434,6 +441,16 @@ public class GenerateStage {
                     }
                 }
 
+                // Math blind-solve check — soft flag only. Never blocks save.
+                // Mismatch is written into agentReview so the human reviewer sees it flagged.
+                if ("math".equals(section)) {
+                    String verifyError = verifyMathAnswer(data, externalId, i, total);
+                    if (verifyError != null) {
+                        log.warn("[{}/{}] {} Math verify mismatch (soft flag): {}", i, total, externalId, verifyError);
+                        flagBlindSolveMismatch(data, verifyError);
+                    }
+                }
+
                 // Hard duplicate check — reject and retry if stem is too similar to an existing one
                 String generatedStem = data.path("questionStem").asText("");
                 if (!generatedStem.isBlank() && isDuplicateStem(generatedStem, domain)) {
@@ -445,7 +462,11 @@ public class GenerateStage {
                     return null;
                 }
 
-                String diagramStr = hasDiagram ? (diagramType != null ? diagramType : "diagram") : "no diagram";
+                // Reflect actual saved state — diagram may have been nulled after format validation failure
+                boolean diagramSaved = hasDiagram && !data.path("diagram").isNull() && !data.path("diagram").isMissingNode();
+                String diagramStr = diagramSaved ? (diagramType != null ? diagramType : "diagram")
+                                  : hasDiagram   ? diagramType + "(nulled)"
+                                  : "no diagram";
                 log.info("[{}/{}] {} {} diff:{} {} {}", i, total, externalId, domain, difficulty, qtype, diagramStr);
                 return data;
 
@@ -479,7 +500,7 @@ public class GenerateStage {
                 .scenarioTag(nullIfEmpty(data.path("scenarioTag").asText(null)))
                 .difficulty((short) difficulty)
                 .questionType(qtype)
-                .questionStem(data.path("questionStem").asText(""))
+                .questionStem(normalizeLatexDelimiters(data.path("questionStem").asText("")))
                 .optionA(nullIfEmpty(sanitizeSingleLine(data.path("optionA").asText(null))))
                 .optionB(nullIfEmpty(sanitizeSingleLine(data.path("optionB").asText(null))))
                 .optionC(nullIfEmpty(sanitizeSingleLine(data.path("optionC").asText(null))))
@@ -495,7 +516,7 @@ public class GenerateStage {
                 .animation(toJsonString(data.path("animation")))
                 .pool(mode == GenerationMode.DIAGNOSTIC ? "diagnostic"
                     : mode == GenerationMode.TEST       ? "test"
-                    : data.path("pool").asText("both"))
+                    : "drill")   // DRILL mode always "drill"; validator promotes to drill+test if needed
                 .passageText(nullIfEmpty(data.path("passageText").asText(null)))
                 .passageSource(nullIfEmpty(data.path("passageSource").asText(null)))
                 .diagram(toJsonString(data.path("diagram")))
@@ -513,6 +534,156 @@ public class GenerateStage {
                     .correctAnswer(correctAnswer)
                     .build();
             questionAnswerRepository.save(qa);
+        }
+    }
+
+    // ─── Math blind-solve verification ────────────────────────────────────
+
+    /**
+     * Independently re-solves the question using only the stem and options (no explanationSteps,
+     * no correctAnswer). If the solver's answer differs from correctAnswer, returns an error string.
+     * Returns null if the answer matches or the check cannot be performed.
+     *
+     * This catches arithmetic mistakes where Haiku writes the wrong correctAnswer and then copies
+     * that wrong value into explanationSteps, which would otherwise anchor the agent reviewer.
+     */
+    private String verifyMathAnswer(JsonNode data, String externalId, int i, int total) {
+        try {
+            String correct = data.path("correctAnswer").asText("").trim();
+            if (correct.isBlank()) return null; // nothing to verify
+
+            String stem = data.path("questionStem").asText("").trim();
+            if (stem.isBlank()) return null;
+
+            String qtype = data.path("questionType").asText("mcq");
+            boolean isMcq = "mcq".equalsIgnoreCase(qtype);
+
+            // For MCQ: correctAnswer must be a letter A-D.
+            // If it's a number, the model put the answer value instead of the option letter.
+            // Auto-repair first: scan optionA-D for a value that matches, then set the letter.
+            // If no match found, fail so the question is retried.
+            if (isMcq) {
+                String ca = correct.toUpperCase().trim();
+                if (!ca.matches("[A-D]")) {
+                    // Attempt auto-repair: find which option text matches the numeric value
+                    String repaired = findOptionLetter(data, correct);
+                    if (repaired != null) {
+                        log.warn("[{}/{}] {} correctAnswer '{}' was numeric — auto-repaired to '{}'",
+                                i, total, externalId, correct, repaired);
+                        ((com.fasterxml.jackson.databind.node.ObjectNode) data).put("correctAnswer", repaired);
+                        correct = repaired;
+                    } else {
+                        return "correctAnswer '" + correct + "' is not a valid MCQ letter (expected A/B/C/D)";
+                    }
+                }
+            }
+
+            // Build minimal payload — stem + options only, no explanation
+            StringBuilder sb = new StringBuilder();
+            sb.append("Solve this SAT math question. ");
+            if (isMcq) {
+                sb.append("Return ONLY the answer letter: A, B, C, or D. No explanation.\n\n");
+            } else {
+                sb.append("Return ONLY the numeric answer (digits only, no units, no explanation).\n\n");
+            }
+            sb.append("Question: ").append(stem);
+            if (isMcq) {
+                sb.append("\n\nA) ").append(data.path("optionA").asText(""));
+                sb.append("\nB) ").append(data.path("optionB").asText(""));
+                sb.append("\nC) ").append(data.path("optionC").asText(""));
+                sb.append("\nD) ").append(data.path("optionD").asText(""));
+            }
+
+            String raw = claudeClient.call(VERIFY_MODEL, 50, "", sb.toString(), 0.0).strip();
+
+            // Extract just the letter or number
+            String solved;
+            if (isMcq) {
+                java.util.regex.Matcher m = java.util.regex.Pattern.compile("(?i)^[^A-Da-d]*([A-Da-d])").matcher(raw);
+                if (!m.find()) {
+                    log.debug("[{}/{}] {} verifyMath: could not parse solver response '{}'", i, total, externalId, raw);
+                    return null; // fail open — can't parse
+                }
+                solved = m.group(1).toUpperCase();
+                String correctNorm = correct.toUpperCase().trim();
+                if (!solved.equals(correctNorm)) {
+                    return "solver got " + solved + " but correctAnswer is " + correctNorm;
+                }
+            } else {
+                // SPR — compare numerically
+                java.util.regex.Matcher m = java.util.regex.Pattern.compile("-?\\d+(\\.\\d+)?").matcher(raw);
+                if (!m.find()) {
+                    log.debug("[{}/{}] {} verifyMath SPR: could not parse solver response '{}'", i, total, externalId, raw);
+                    return null; // fail open
+                }
+                solved = m.group(0);
+                try {
+                    double solvedVal  = Double.parseDouble(solved);
+                    double correctVal = Double.parseDouble(correct);
+                    // Allow ±0.01 absolute tolerance only (for decimal rounding like 1/3 = 0.333)
+                    // Do NOT use percentage tolerance — SPR grading is exact
+                    double tolerance = 0.01;
+                    if (Math.abs(solvedVal - correctVal) > tolerance) {
+                        return "solver got " + solved + " but correctAnswer is " + correct;
+                    }
+                } catch (NumberFormatException e) {
+                    return null; // fail open
+                }
+            }
+            return null; // passed
+        } catch (Exception e) {
+            log.debug("verifyMathAnswer error (skipping): {}", e.getMessage());
+            return null; // fail open — never block generation on infra errors
+        }
+    }
+
+    /**
+     * Auto-repair: when correctAnswer is a numeric string instead of a letter, scan optionA-D
+     * for an option whose text contains that value and return the matching letter.
+     * Returns null if no match found (caller should retry).
+     */
+    private String findOptionLetter(JsonNode data, String numericAnswer) {
+        String[] letters = {"A", "B", "C", "D"};
+        String[] keys    = {"optionA", "optionB", "optionC", "optionD"};
+        String target = numericAnswer.trim().replaceAll("\\s+", "");
+        for (int k = 0; k < keys.length; k++) {
+            String opt = data.path(keys[k]).asText("").replaceAll("\\s+", "");
+            if (opt.isBlank()) continue;
+            // Strip LaTeX wrappers and compare the numeric core
+            String optCore = opt.replaceAll("\\\\[a-zA-Z]+\\{?", "").replaceAll("[{}()\\[\\]]", "").trim();
+            if (optCore.equals(target) || opt.contains(target)) {
+                return letters[k];
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Attaches blind-solve mismatch info to the agentReview node so the human reviewer
+     * sees a warning without blocking the question from being saved.
+     */
+    private void flagBlindSolveMismatch(JsonNode data, String verifyError) {
+        try {
+            com.fasterxml.jackson.databind.node.ObjectNode root =
+                    (com.fasterxml.jackson.databind.node.ObjectNode) data;
+            com.fasterxml.jackson.databind.node.ObjectNode ar =
+                    objectMapper.createObjectNode();
+            ar.put("pass", false);
+            ar.put("blindSolveMismatch", true);
+            ar.put("blindSolveDetail", verifyError);
+            com.fasterxml.jackson.databind.node.ArrayNode issues =
+                    objectMapper.createArrayNode();
+            com.fasterxml.jackson.databind.node.ObjectNode issue =
+                    objectMapper.createObjectNode();
+            issue.put("check", "BLIND_SOLVE");
+            issue.put("severity", "critical");
+            issue.put("detail", "Independent solver disagreed: " + verifyError);
+            issues.add(issue);
+            ar.set("issues", issues);
+            ar.put("confidence", 0.0);
+            root.set("agentReview", ar);
+        } catch (Exception e) {
+            log.debug("flagBlindSolveMismatch failed: {}", e.getMessage());
         }
     }
 
@@ -590,11 +761,16 @@ public class GenerateStage {
         }
     }
 
-    /** Normalises an option text for duplicate detection: lowercase, strip LaTeX/whitespace. */
+    /** Normalises an option text for duplicate detection: lowercase, strip LaTeX/whitespace.
+     *  Preserves key math tokens (pi, sqrt, frac) so that 9π and 12π stay distinct,
+     *  instead of both collapsing to "" after stripping all LaTeX commands. */
     private String normalizeOption(String text) {
         if (text == null) return "";
         return text.toLowerCase()
-                   .replaceAll("\\$|\\\\[a-zA-Z]+", " ") // strip LaTeX commands
+                   .replaceAll("\\\\pi\\b",   "pi")   // \pi   → pi   (keep as token)
+                   .replaceAll("\\\\sqrt\\b",  "sqrt") // \sqrt → sqrt
+                   .replaceAll("\\\\frac\\b",  "frac") // \frac → frac
+                   .replaceAll("\\\\[a-zA-Z]+", " ")   // strip remaining LaTeX commands
                    .replaceAll("[^a-z0-9.\\-]", " ")
                    .replaceAll("\\s+", " ")
                    .trim();
@@ -886,7 +1062,24 @@ public class GenerateStage {
      */
     private String sanitizeSingleLine(String v) {
         if (v == null) return null;
-        return v.replace('\n', ' ').replace('\r', ' ').replaceAll(" {2,}", " ").trim();
+        return normalizeLatexDelimiters(v.replace('\n', ' ').replace('\r', ' ').replaceAll(" {2,}", " ").trim());
+    }
+
+    /**
+     * Normalises spaced LaTeX delimiters that Haiku sometimes generates.
+     * "\ (" → "\("  |  "\ )" → "\)"  |  "\ [" → "\["  |  "\ ]" → "\]"
+     */
+    private String normalizeLatexDelimiters(String v) {
+        if (v == null) return null;
+        return v.replace("\\ (", "\\(")
+                .replace("\\ )", "\\)")
+                .replace("\\ [", "\\[")
+                .replace("\\ ]", "\\]")
+                // Strip HTML tags that Sonnet sometimes inserts as paragraph separators
+                .replaceAll("<br\\s*/?>", " ")
+                .replaceAll("<[^>]{1,30}>", "")
+                .replaceAll("  +", " ")
+                .trim();
     }
 
     private BigDecimal parseBigDecimal(JsonNode node, String field) {

@@ -4,6 +4,7 @@ import com.satengine.pipeline.AgentReviewStage;
 import com.satengine.pipeline.EnrichStage;
 import com.satengine.pipeline.GenerateStage;
 import com.satengine.pipeline.GenerationMode;
+import com.satengine.pipeline.sympy.SymPyGenerateStage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
@@ -29,10 +30,11 @@ import java.util.concurrent.Executors;
 @RequiredArgsConstructor
 public class PipelineJobService {
 
-    private final GenerateStage    generateStage;
-    private final AgentReviewStage agentReviewStage;
-    private final EnrichStage      enrichStage;
-    private final NeonSyncService  neonSyncService;
+    private final GenerateStage      generateStage;
+    private final AgentReviewStage   agentReviewStage;
+    private final EnrichStage        enrichStage;
+    private final NeonSyncService    neonSyncService;
+    private final SymPyGenerateStage sympyGenerateStage;
 
     /** Job state store. Entries are evicted when older than 1 hour. */
     private final ConcurrentHashMap<String, JobState> jobs = new ConcurrentHashMap<>();
@@ -156,6 +158,95 @@ public class PipelineJobService {
     public String startJob(String step, String domain, String section,
                            String difficulty, int count, boolean onlyFailed) {
         return startJob(step, domain, section, difficulty, count, onlyFailed, GenerationMode.DRILL);
+    }
+
+    /**
+     * Diagnostic batch: generates d3 then d4 for all skills in one job.
+     * countPerDifficulty questions are generated per difficulty level.
+     */
+    public String startDiagnosticBatch(int countPerDifficulty) {
+        evictOldJobs();
+        String jobId = UUID.randomUUID().toString();
+        ConcurrentLinkedDeque<String> logDeque = new ConcurrentLinkedDeque<>();
+        JobLogAppender.JOB_LOGS.put(jobId, logDeque);
+        JobState state = new JobState(jobId, "sympy-diagnostic", "RUNNING", logDeque, Instant.now());
+        jobs.put(jobId, state);
+
+        Executor executor = Executors.newSingleThreadExecutor(r -> {
+            Thread t = new Thread(r, "sympy-diag-" + jobId.substring(0, 8));
+            t.setDaemon(true);
+            return t;
+        });
+
+        CompletableFuture.runAsync(() -> {
+            MDC.put("pipelineJobId", jobId);
+            try {
+                log.info("══ Diagnostic Batch — d3 × all skills × {} ══", countPerDifficulty);
+                sympyGenerateStage.run(null, 3, countPerDifficulty, "diagnostic");
+                log.info("══ Diagnostic Batch — d4 × all skills × {} ══", countPerDifficulty);
+                sympyGenerateStage.run(null, 4, countPerDifficulty, "diagnostic");
+                log.info("══ Diagnostic Batch complete ══");
+                state.setStatus("DONE");
+            } catch (Exception e) {
+                log.error("Diagnostic batch {} failed: {}", jobId, e.getMessage(), e);
+                state.setStatus("FAILED");
+            } finally {
+                MDC.remove("pipelineJobId");
+            }
+        }, executor);
+
+        return jobId;
+    }
+
+    /**
+     * Starts an async SymPy generate job. Logs stream into the shared job terminal.
+     * Backward-compat overload (no variant).
+     */
+    public String startSympyJob(String skill, int difficulty, int count, String pool, String template) {
+        return startSympyJob(skill, difficulty, count, pool, template, null);
+    }
+
+    /**
+     * Starts an async SymPy generate job with optional template + variant pin.
+     *
+     * When variant is non-null:   Path A — generates exactly 1 question of that variant.
+     * When template only:         Path B — generates one question per variant of that template.
+     * When neither:               Path C — generates `count` questions rotating templates.
+     */
+    public String startSympyJob(String skill, int difficulty, int count, String pool,
+                                 String template, String variant) {
+        evictOldJobs();
+        String jobId = UUID.randomUUID().toString();
+        ConcurrentLinkedDeque<String> logDeque = new ConcurrentLinkedDeque<>();
+        JobLogAppender.JOB_LOGS.put(jobId, logDeque);
+        JobState state = new JobState(jobId, "sympy-generate", "RUNNING", logDeque, Instant.now());
+        jobs.put(jobId, state);
+
+        Executor executor = Executors.newSingleThreadExecutor(r -> {
+            Thread t = new Thread(r, "sympy-job-" + jobId.substring(0, 8));
+            t.setDaemon(true);
+            return t;
+        });
+
+        CompletableFuture.runAsync(() -> {
+            MDC.put("pipelineJobId", jobId);
+            try {
+                log.info("══ SymPy Generate  skill={} diff=d{} count={} pool={} template={} variant={} ══",
+                         skill, difficulty, count, pool,
+                         template != null ? template : "all",
+                         variant  != null ? variant  : "-");
+                sympyGenerateStage.run(skill, difficulty, count, pool, template, variant);
+                log.info("══ SymPy Generate complete ══");
+                state.setStatus("DONE");
+            } catch (Exception e) {
+                log.error("SymPy job {} failed: {}", jobId, e.getMessage(), e);
+                state.setStatus("FAILED");
+            } finally {
+                MDC.remove("pipelineJobId");
+            }
+        }, executor);
+
+        return jobId;
     }
 
     public JobState getJob(String jobId) {

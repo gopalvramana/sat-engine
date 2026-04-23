@@ -1,0 +1,441 @@
+[
+  {
+    "difficulty": "easy",
+    "framing": "direct_solve",
+    "stem": "What value of p satisfies the equation 5p + 180 = 250?\nA. 14\nB. 65\nC. 86\nD. 250",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "This value of p satisfies 5p + 180 = 505, not the given equation",
+      "C": "Student added 180 to 250 and divided by 5: (250 + 180) / 5 = 86 instead of (250 − 180) / 5",
+      "D": "Student copied the right-hand side of the equation as the answer"
+    },
+    "solution_steps": [
+      "Subtract 180 from both sides: 5p = 70",
+      "Divide both sides by 5: p = 14"
+    ],
+    "why_this_difficulty": "Easy: straightforward two-step solve, integer coefficients and answer, no hidden operations.",
+    "sat_key_phrases": ["What value of ... satisfies the equation", "What is the solution to the given equation"]
+  },
+  {
+    "difficulty": "easy",
+    "framing": "direct_solve",
+    "stem": "8x = 88\nWhat value of x is the solution to the given equation?\nA. 11\nB. 80\nC. 96\nD. 704",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Solution to x + 8 = 88: student subtracted 8 instead of dividing by 8",
+      "C": "Solution to x − 8 = 88: student added 8 instead of dividing by 8",
+      "D": "Solution to x / 8 = 88: student multiplied by 8 instead of dividing"
+    },
+    "solution_steps": [
+      "Divide both sides by 8: x = 11"
+    ],
+    "why_this_difficulty": "Easy: one-step solve by dividing; distractors map to the three most common inverse-operation errors.",
+    "sat_key_phrases": ["What value of x is the solution to the given equation"]
+  },
+  {
+    "difficulty": "easy",
+    "framing": "direct_solve",
+    "stem": "w + 7 = 357\nWhat value of w is the solution to the given equation?\nA. 51\nB. 350\nC. 364\nD. 3,577",
+    "type": "mcq",
+    "correct": "B",
+    "distractor_rationales": {
+      "A": "Solution to 7w = 357: student divided by 7 instead of subtracting",
+      "C": "Solution to w − 7 = 357: student added 7 instead of subtracting",
+      "D": "May result from conceptual or calculation errors"
+    },
+    "solution_steps": [
+      "Subtract 7 from both sides: w = 350"
+    ],
+    "why_this_difficulty": "Easy: one-step solve by subtracting; distractors map to wrong inverse operations.",
+    "sat_key_phrases": ["What value of ... is the solution to the given equation"]
+  },
+  {
+    "difficulty": "easy",
+    "framing": "direct_solve",
+    "stem": "k + 12 = 336\nWhat is the solution to the given equation?\nA. 28\nB. 324\nC. 348\nD. 4,032",
+    "type": "mcq",
+    "correct": "B",
+    "distractor_rationales": {
+      "A": "Student divided 336 by 12 instead of subtracting",
+      "C": "Student added 12 to 336 instead of subtracting",
+      "D": "Student multiplied 336 by 12 instead of subtracting"
+    },
+    "solution_steps": [
+      "Subtract 12 from both sides: k = 324"
+    ],
+    "why_this_difficulty": "Easy: one-step solve; distractors represent dividing, adding, and multiplying instead of subtracting.",
+    "sat_key_phrases": ["What is the solution to the given equation"]
+  },
+  {
+    "difficulty": "easy",
+    "framing": "direct_solve",
+    "stem": "4x + 5 = 165\nWhat is the solution to the given equation?",
+    "type": "spr",
+    "correct": "40",
+    "distractor_rationales": null,
+    "solution_steps": [
+      "Subtract 5 from both sides: 4x = 160",
+      "Divide both sides by 4: x = 40"
+    ],
+    "why_this_difficulty": "Easy: standard two-step solve with integer answer.",
+    "sat_key_phrases": ["What is the solution to the given equation"]
+  },
+  {
+    "difficulty": "easy",
+    "framing": "direct_solve",
+    "stem": "x + 40 = 95\nWhat value of x is the solution to the given equation?",
+    "type": "spr",
+    "correct": "55",
+    "distractor_rationales": null,
+    "solution_steps": [
+      "Subtract 40 from both sides: x = 55"
+    ],
+    "why_this_difficulty": "Easy: one-step SPR; only subtraction required.",
+    "sat_key_phrases": ["What value of x is the solution to the given equation"]
+  },
+  {
+    "difficulty": "easy",
+    "framing": "direct_solve",
+    "stem": "3x + 5(x + 4) = 76\nWhat value of x is the solution to the given equation?\nA. 7\nB. 8\nC. 56\nD. 72",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Distribution error: student computed 5(x + 4) = 5x + 12 instead of 5x + 20, yielding 8x + 12 = 76 → x = 8",
+      "C": "Student solved correctly to 8x = 56 but reported the intermediate value rather than x",
+      "D": "Solution to x + 4 = 76, not the given equation"
+    },
+    "solution_steps": [
+      "Distribute: 3x + 5x + 20 = 76",
+      "Combine like terms: 8x + 20 = 76",
+      "Subtract 20: 8x = 56",
+      "Divide by 8: x = 7"
+    ],
+    "why_this_difficulty": "Easy: requires distribution and combining like terms before a two-step solve.",
+    "sat_key_phrases": ["What value of x is the solution to the given equation"]
+  },
+  {
+    "difficulty": "easy",
+    "framing": "find_expression_additive",
+    "stem": "If 3x − 8 = 7, what is the value of 3x + 8?\nA. −1\nB. 5\nC. 13\nD. 23",
+    "type": "mcq",
+    "correct": "D",
+    "distractor_rationales": {
+      "A": "Student subtracted 8 from the right-hand side instead of adding: 7 − 8 = −1",
+      "B": "This is the value of x, not 3x + 8",
+      "C": "Student found x = 5, then computed x + 8 = 13 instead of 3x + 8"
+    },
+    "solution_steps": [
+      "From 3x − 8 = 7, add 16 to both sides: 3x + 8 = 23",
+      "Alternatively: solve x = 5, then 3(5) + 8 = 23"
+    ],
+    "why_this_difficulty": "Easy: SAT shortcut is to add 16 to both sides directly; students who solve for x first also reach the correct answer.",
+    "sat_key_phrases": ["If ... = ..., what is the value of", "what is the value of"]
+  },
+  {
+    "difficulty": "easy",
+    "framing": "find_expression_additive",
+    "stem": "If x = 40, what is the value of x + 6?\nA. 34\nB. 40\nC. 46\nD. 64",
+    "type": "mcq",
+    "correct": "C",
+    "distractor_rationales": {
+      "A": "This is the value of x − 6, not x + 6",
+      "B": "This is the value of x itself, not x + 6",
+      "D": "This is the value of x + 24, not x + 6"
+    },
+    "solution_steps": [
+      "Substitute x = 40: x + 6 = 40 + 6 = 46"
+    ],
+    "why_this_difficulty": "Easy: x is given directly; the only step is substitution.",
+    "sat_key_phrases": ["If x = ..., what is the value of"]
+  },
+  {
+    "difficulty": "easy",
+    "framing": "find_expression_additive",
+    "stem": "If 3x − 27 = 24, what is the value of x − 9?\nA. 1\nB. 8\nC. 24\nD. 35",
+    "type": "mcq",
+    "correct": "B",
+    "distractor_rationales": {
+      "A": "May result from conceptual or calculation errors",
+      "C": "This is the value of 3x − 27 (the right-hand side), not x − 9",
+      "D": "May result from conceptual or calculation errors"
+    },
+    "solution_steps": [
+      "Divide both sides of 3x − 27 = 24 by 3: x − 9 = 8",
+      "No need to solve for x individually"
+    ],
+    "why_this_difficulty": "Easy: dividing both sides by 3 gives x − 9 directly in one step.",
+    "sat_key_phrases": ["If ... = ..., what is the value of"]
+  },
+  {
+    "difficulty": "easy",
+    "framing": "find_expression_additive",
+    "stem": "If x = 7, what is the value of x + 20?\nA. 13\nB. 20\nC. 27\nD. 34",
+    "type": "mcq",
+    "correct": "C",
+    "distractor_rationales": {
+      "A": "This is the value of x + 6, not x + 20",
+      "B": "This is the value of x + 13, not x + 20",
+      "D": "This is the value of x + 27, not x + 20"
+    },
+    "solution_steps": [
+      "Substitute x = 7: x + 20 = 7 + 20 = 27"
+    ],
+    "why_this_difficulty": "Easy: x is given directly; only substitution required.",
+    "sat_key_phrases": ["If x = ..., what is the value of"]
+  },
+  {
+    "difficulty": "easy",
+    "framing": "equivalent_equation",
+    "stem": "16x + 30 = 190\nWhich equation has the same solution as the given equation?\nA. 16x = 30\nB. 16x = 130\nC. 16x = 160\nD. 16x = 190",
+    "type": "mcq",
+    "correct": "C",
+    "distractor_rationales": {
+      "A": "Student set 16x equal to the constant 30 rather than subtracting it from 190",
+      "B": "May result from subtracting an incorrect value from 190",
+      "D": "Student dropped the +30 from the left side without subtracting it from the right side"
+    },
+    "solution_steps": [
+      "Subtract 30 from both sides: 16x = 160",
+      "The equation 16x = 160 has the same solution (x = 10)"
+    ],
+    "why_this_difficulty": "Easy: one transformation (subtract the constant); tests whether the student applies the same operation to both sides.",
+    "sat_key_phrases": ["Which equation has the same solution as the given equation"]
+  },
+  {
+    "difficulty": "easy",
+    "framing": "equivalent_equation",
+    "stem": "4x + 1 = 33\nWhich equation has the same solution as the given equation?\nA. 4x = 32\nB. 4x = 5\nC. 4x = 1\nD. 4x = −32",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "May result from conceptual or calculation errors",
+      "C": "May result from conceptual or calculation errors",
+      "D": "Student negated the result after subtracting: −(33 − 1) = −32"
+    },
+    "solution_steps": [
+      "Subtract 1 from both sides: 4x = 32",
+      "The equation 4x = 32 has the same solution (x = 8)"
+    ],
+    "why_this_difficulty": "Easy: one transformation (subtract 1); recognise the equivalent form without fully solving.",
+    "sat_key_phrases": ["Which equation has the same solution as the given equation"]
+  },
+  {
+    "difficulty": "easy",
+    "framing": "scale_expression",
+    "stem": "If 5x = 20, what is the value of 15x?\nA. 7\nB. 12\nC. 23\nD. 60",
+    "type": "mcq",
+    "correct": "D",
+    "distractor_rationales": {
+      "A": "May result from conceptual errors",
+      "B": "May result from conceptual errors",
+      "C": "May result from conceptual errors"
+    },
+    "solution_steps": [
+      "Multiply both sides of 5x = 20 by 3: 15x = 60",
+      "Alternatively: solve x = 4, then 15(4) = 60"
+    ],
+    "why_this_difficulty": "Easy: SAT shortcut is to multiply both sides by a factor without solving for x first.",
+    "sat_key_phrases": ["If ... = ..., what is the value of"]
+  },
+  {
+    "difficulty": "easy",
+    "framing": "scale_expression",
+    "stem": "If 4x + 2 = 12, what is the value of 16x + 8?\nA. 40\nB. 48\nC. 56\nD. 60",
+    "type": "mcq",
+    "correct": "B",
+    "distractor_rationales": {
+      "A": "Student found x = 2.5 but computed 16x = 40, forgetting to add 8",
+      "C": "Student dropped the +2: solved 4x = 12 → x = 3, then 16(3) + 8 = 56",
+      "D": "Student multiplied both sides by 5 instead of 4: 5(12) = 60"
+    },
+    "solution_steps": [
+      "Multiply both sides by 4: 4(4x + 2) = 4(12)",
+      "Simplify: 16x + 8 = 48"
+    ],
+    "why_this_difficulty": "Easy: SAT shortcut is to multiply both sides by 4 without solving for x.",
+    "sat_key_phrases": ["If ... = ..., what is the value of"]
+  },
+  {
+    "difficulty": "easy",
+    "framing": "scale_expression",
+    "stem": "If 2 + x = 60, what is the value of 16 + 8x?",
+    "type": "spr",
+    "correct": "480",
+    "distractor_rationales": null,
+    "solution_steps": [
+      "Multiply both sides by 8: 8(2 + x) = 8(60)",
+      "Simplify: 16 + 8x = 480"
+    ],
+    "why_this_difficulty": "Easy: multiply both sides of a simple equation by a scalar to reach the target expression directly.",
+    "sat_key_phrases": ["If ... = ..., what is the value of"]
+  },
+  {
+    "difficulty": "easy",
+    "framing": "infinite_solutions_simple",
+    "stem": "3x + 21 = 3x + k\nIn the given equation, k is a constant. The equation has infinitely many solutions. What is the value of k?",
+    "type": "spr",
+    "correct": "21",
+    "distractor_rationales": null,
+    "solution_steps": [
+      "For infinitely many solutions, both sides must be identical for every value of x",
+      "Subtract 3x from both sides: 21 = k",
+      "Therefore k = 21"
+    ],
+    "why_this_difficulty": "Easy: the 3x terms already match on both sides; only the constants need to be equated.",
+    "sat_key_phrases": ["In the given equation, k is a constant", "has infinitely many solutions", "What is the value of k"]
+  },
+  {
+    "difficulty": "easy",
+    "framing": "reciprocal_expression",
+    "stem": "\\(\\frac{x}{8} = 5\\)\nWhat is the value of \\(\\frac{8}{x}\\)?",
+    "type": "spr",
+    "correct": "1/5",
+    "distractor_rationales": null,
+    "solution_steps": [
+      "Since x/8 = 5/1, taking the reciprocal of both sides gives 8/x = 1/5",
+      "Alternatively: multiply both sides by 8 to get x = 40, then 8/40 = 1/5"
+    ],
+    "why_this_difficulty": "Easy: recognise that if a/b = c, then b/a = 1/c; or solve for x and substitute.",
+    "sat_key_phrases": ["what is the value of"]
+  },
+  {
+    "difficulty": "medium",
+    "framing": "isolate_expression",
+    "stem": "If 46 = 16 + 2(x − 8), what is the value of 2(x − 8)?\nA. 16\nB. 23\nC. 30\nD. 38",
+    "type": "mcq",
+    "correct": "C",
+    "distractor_rationales": {
+      "A": "Student reported the constant 16 from the right-hand side of the equation",
+      "B": "Student solved fully for x = 23 and reported x instead of 2(x − 8)",
+      "D": "Student subtracted 8 from 46 instead of subtracting 16"
+    },
+    "solution_steps": [
+      "Subtract 16 from both sides: 2(x − 8) = 30",
+      "No need to expand the parentheses or solve for x"
+    ],
+    "why_this_difficulty": "Medium: SAT shortcut is to isolate the compound expression 2(x − 8) in one step; recognising this avoids unnecessary expansion.",
+    "sat_key_phrases": ["If ... = ..., what is the value of"]
+  },
+  {
+    "difficulty": "medium",
+    "framing": "expression_as_unit",
+    "stem": "If 9(4 − 3x) + 2 = 8(4 − 3x) + 18, what is the value of 4 − 3x?\nA. −16\nB. −4\nC. 4\nD. 16",
+    "type": "mcq",
+    "correct": "D",
+    "distractor_rationales": {
+      "A": "May result from a sign error when collecting (4 − 3x) terms",
+      "B": "This is the value of x, not 4 − 3x",
+      "C": "Student reported the constant 4 from inside the expression rather than the full expression value"
+    },
+    "solution_steps": [
+      "Let u = 4 − 3x; the equation becomes 9u + 2 = 8u + 18",
+      "Subtract 8u from both sides: u + 2 = 18",
+      "Subtract 2: u = 16, so 4 − 3x = 16"
+    ],
+    "why_this_difficulty": "Medium: the key insight is to treat (4 − 3x) as a single unit and collect it from both sides, rather than expanding first.",
+    "sat_key_phrases": ["If ... = ..., what is the value of"]
+  },
+  {
+    "difficulty": "medium",
+    "framing": "scale_expression",
+    "stem": "\\(\\frac{6}{7}p + 18 = 54\\)\nWhat is the value of 7p?",
+    "type": "spr",
+    "correct": "294",
+    "distractor_rationales": null,
+    "solution_steps": [
+      "Subtract 18 from both sides: (6/7)p = 36",
+      "Multiply both sides by 7/6: p = 42",
+      "Multiply by 7: 7p = 294"
+    ],
+    "why_this_difficulty": "Medium: fractional coefficient requires working with fractions; two transformations needed before reaching 7p.",
+    "sat_key_phrases": ["what is the value of"]
+  },
+  {
+    "difficulty": "medium",
+    "framing": "fractional_common_factor",
+    "stem": "\\(\\frac{1}{3}(x + 6) - \\frac{1}{2}(x + 6) = -8\\)\nWhat value of x is the solution to the given equation?",
+    "type": "spr",
+    "correct": "42",
+    "distractor_rationales": null,
+    "solution_steps": [
+      "Factor out (x + 6): (x + 6)(1/3 − 1/2) = −8",
+      "Compute 1/3 − 1/2 = −1/6",
+      "(x + 6)(−1/6) = −8",
+      "x + 6 = 48",
+      "x = 42"
+    ],
+    "why_this_difficulty": "Medium: (x + 6) appears in both terms; factoring it out is the efficient path. Students who expand first must carefully combine fractional x-coefficients.",
+    "sat_key_phrases": ["What value of x is the solution to the given equation"]
+  },
+  {
+    "difficulty": "hard",
+    "framing": "expression_as_unit",
+    "stem": "\\(\\frac{x - 5}{7} = \\frac{x - 5}{9}\\)\nThe value of x − 5 is between which of the following pairs of values?\nA. −9 and −7\nB. −3 and 3\nC. 4.5 and 5.5\nD. 6.75 and 9.25",
+    "type": "mcq",
+    "correct": "B",
+    "distractor_rationales": {
+      "A": "May result from conceptual or calculation errors",
+      "C": "May result from conceptual or calculation errors",
+      "D": "May result from conceptual or calculation errors"
+    },
+    "solution_steps": [
+      "Multiply both sides by 63 (= 7 × 9): 9(x − 5) = 7(x − 5)",
+      "Subtract 7(x − 5) from both sides: 2(x − 5) = 0",
+      "Therefore x − 5 = 0, which lies between −3 and 3"
+    ],
+    "why_this_difficulty": "Hard: requires treating (x − 5) as a single unit; cross-multiplying reveals x − 5 = 0 without expanding.",
+    "sat_key_phrases": ["the value of x − ... is between which of the following pairs"]
+  },
+  {
+    "difficulty": "hard",
+    "framing": "no_solution",
+    "stem": "\\(3(kx + 13) = \\frac{48}{17}x + 36\\)\nIn the given equation, k is a constant. The equation has no solution. What is the value of k?",
+    "type": "spr",
+    "correct": "16/17",
+    "distractor_rationales": null,
+    "solution_steps": [
+      "Divide both sides by 3: kx + 13 = (16/17)x + 12",
+      "For no solution, x-coefficients must match but constants must differ",
+      "Set k = 16/17 (coefficients match) and verify 13 ≠ 12 (constants differ ✓)",
+      "Therefore k = 16/17"
+    ],
+    "why_this_difficulty": "Hard: requires knowing the no-solution condition, then isolating k after dividing by 3 to reveal the fractional target coefficient.",
+    "sat_key_phrases": ["In the given equation, k is a constant", "has no solution", "What is the value of k"]
+  },
+  {
+    "difficulty": "hard",
+    "framing": "direct_solve",
+    "stem": "0.8t − 0.46 = 8(t − 0.001) + 1.9\nWhat value of t is the solution to the given equation?",
+    "type": "spr",
+    "correct": "-49/150",
+    "distractor_rationales": null,
+    "solution_steps": [
+      "Distribute on the right: 0.8t − 0.46 = 8t − 0.008 + 1.9",
+      "Simplify right side: 0.8t − 0.46 = 8t + 1.892",
+      "Subtract 0.8t from both sides: −0.46 = 7.2t + 1.892",
+      "Subtract 1.892: −2.352 = 7.2t",
+      "Divide: t = −2.352 / 7.2 = −49/150 ≈ −0.3267"
+    ],
+    "why_this_difficulty": "Hard: decimal coefficients require careful distribution and multi-step arithmetic; the answer is a non-obvious fraction.",
+    "sat_key_phrases": ["What value of ... is the solution to the given equation"]
+  },
+  {
+    "difficulty": "hard",
+    "framing": "infinite_solutions_complex",
+    "stem": "\\(\\frac{12x + 28}{4} - \\frac{s}{13} = r(x - 8)\\)\nIn the given equation, s and r are constants, and s > 0. If the equation has infinitely many solutions, what is the value of s?",
+    "type": "spr",
+    "correct": "403",
+    "distractor_rationales": null,
+    "solution_steps": [
+      "Simplify the left side: (12x + 28)/4 = 3x + 7, so the equation becomes 3x + 7 − s/13 = r(x − 8)",
+      "Expand the right side: 3x + 7 − s/13 = rx − 8r",
+      "For infinitely many solutions, coefficients of x must match: r = 3",
+      "Constants must also match: 7 − s/13 = −8(3) = −24",
+      "Solve: s/13 = 31, so s = 403"
+    ],
+    "why_this_difficulty": "Hard: requires simplifying a compound fraction, then applying two simultaneous conditions for infinitely many solutions — coefficient match and constant match.",
+    "sat_key_phrases": ["In the given equation, ... are constants", "has infinitely many solutions", "what is the value of"]
+  }
+]

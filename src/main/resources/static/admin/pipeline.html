@@ -729,6 +729,91 @@
     .count-yellow { color: #b45309; }
     .count-red    { color: #dc2626; }
     .spread-empty { color: var(--slate-400); font-style: italic; font-size: 13px; padding: 20px 0; text-align: center; }
+
+    /* ── SymPy generate card ────────────────────────────────────── */
+    .sympy-card {
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 14px rgba(99,102,241,0.3);
+    }
+    .sympy-card-title { font-size: 16px; font-weight: 700; color: #fff; }
+    .sympy-card-sub   { font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 2px; margin-bottom: 16px; }
+    .sympy-card .field-label { color: rgba(255,255,255,0.75); }
+    .sympy-card .toggle-btn {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.25);
+      color: rgba(255,255,255,0.85);
+    }
+    .sympy-card .toggle-btn:hover {
+      background: rgba(255,255,255,0.2);
+      border-color: rgba(255,255,255,0.5);
+      color: #fff;
+    }
+    .sympy-card .toggle-btn.selected {
+      background: #fff;
+      border-color: #fff;
+      color: #4f46e5;
+    }
+    .sympy-card .count-input {
+      background: rgba(255,255,255,0.15);
+      border-color: rgba(255,255,255,0.3);
+      color: #fff;
+    }
+    .sympy-card .count-input::placeholder { color: rgba(255,255,255,0.5); }
+    .sympy-card .count-input:focus { border-color: #fff; }
+    .sympy-select {
+      padding: 5px 10px;
+      border-radius: 6px;
+      border: 1.5px solid rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      font-size: 12px;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      outline: none;
+      min-width: 160px;
+    }
+    .sympy-select option { background: #4f46e5; color: #fff; }
+    .sympy-run-btn {
+      background: #fff;
+      color: #4f46e5;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 28px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s, opacity 0.15s;
+      display: flex; align-items: center; gap: 7px;
+    }
+    .sympy-run-btn:hover:not(:disabled) { background: #ede9fe; }
+    .sympy-run-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .sympy-fields { display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-end; }
+    .sympy-field  { display: flex; flex-direction: column; gap: 6px; }
+
+    .section-divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 8px 0 18px;
+    }
+    .section-divider-label {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--slate-400); white-space: nowrap;
+    }
+    .section-divider-line { flex: 1; height: 1px; background: var(--slate-200); }
+
+    .sympy-toast {
+      position: fixed; bottom: 24px; right: 24px; z-index: 200;
+      background: #4f46e5; color: #fff;
+      border-radius: 10px; padding: 12px 20px;
+      font-size: 13px; font-weight: 600;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      opacity: 0; transform: translateY(10px);
+      transition: opacity 0.2s, transform 0.2s;
+      pointer-events: none;
+    }
+    .sympy-toast.show { opacity: 1; transform: translateY(0); }
   </style>
 </head>
 <body>
@@ -743,7 +828,8 @@
     </div>
   </div>
   <nav class="header-nav">
-    <a href="/admin/validate.html">Question Review</a>
+    <a href="/admin/validate.html">LLM Review</a>
+    <a href="/admin/sympy-review.html">SymPy Review</a>
     <a href="/admin/pipeline.html" class="active">Pipeline</a>
     <a href="/admin/spread.html">Spread</a>
     <button class="help-btn" onclick="openHelp()" title="How to use this dashboard">?</button>
@@ -765,9 +851,32 @@
     </div>
     <div class="modal-body">
 
-      <!-- The Pipeline -->
+      <!-- The Pipelines -->
       <div class="guide-section">
-        <div class="guide-section-title">🔄 How the Pipeline Works</div>
+        <div class="guide-section-title">⚗️ SymPy Pipeline (Math Questions)</div>
+        <div class="guide-pipeline">
+          <div class="pipe-step">
+            <div class="pipe-badge" style="background:#4f46e5;">1</div>
+            <div class="pipe-label">SymPy Generate</div>
+          </div>
+          <div class="pipe-arrow">→</div>
+          <div class="pipe-step">
+            <div class="pipe-badge" style="background:#4f46e5;">2</div>
+            <div class="pipe-label">SymPy Review</div>
+          </div>
+          <div class="pipe-arrow">→</div>
+          <div class="pipe-step">
+            <div class="pipe-badge" style="background:#4f46e5;">3</div>
+            <div class="pipe-label">Approve &amp; Promote</div>
+          </div>
+        </div>
+        <div class="guide-tip" style="background:#ede9fe; border-color:#c4b5fd;">
+          <strong style="color:#4f46e5;">Python + SymPy</strong> generates verified math objects (correct answer guaranteed). Haiku writes the question prose. You review at <a href="/admin/sympy-review.html" style="color:#4f46e5;">SymPy Review</a> and click "Approve &amp; Promote" to push to the production questions table.
+        </div>
+      </div>
+
+      <div class="guide-section">
+        <div class="guide-section-title">🔄 LLM Pipeline (Reading &amp; Writing)</div>
         <div class="guide-pipeline">
           <div class="pipe-step">
             <div class="pipe-badge">1</div>
@@ -796,13 +905,13 @@
 
       <!-- What each step does -->
       <div class="guide-section">
-        <div class="guide-section-title">⚙️ What Each Step Does</div>
+        <div class="guide-section-title">⚙️ What Each Step Does (LLM Pipeline)</div>
         <table class="guide-table">
           <thead><tr><th>Step</th><th>What it does</th><th>Status after</th></tr></thead>
           <tbody>
             <tr>
               <td>1 · Generate</td>
-              <td>Asks Claude to write new SAT questions for the domain/difficulty you choose</td>
+              <td>Asks Claude to write new R&amp;W questions for the domain/difficulty you choose</td>
               <td><span class="tag">generated</span></td>
             </tr>
             <tr>
@@ -812,7 +921,7 @@
             </tr>
             <tr>
               <td>3 · Enrich</td>
-              <td>Adds step-by-step explanations, trap analysis, core concept, and animations (Math only)</td>
+              <td>Adds step-by-step explanations, trap analysis, and core concept</td>
               <td><span class="tag">enriched</span></td>
             </tr>
             <tr>
@@ -863,24 +972,24 @@
         <div class="guide-section-title">🚀 Recommended Workflow</div>
         <div class="guide-steps">
           <div class="guide-step-row">
-            <div class="guide-step-num">1</div>
-            <div class="guide-step-text">Use the <strong>Stats bar</strong> at the top to see how many questions are in each stage. If a domain has 0 approved questions, that's your target.</div>
+            <div class="guide-step-num" style="background:#4f46e5;">1</div>
+            <div class="guide-step-text"><strong>For Math questions:</strong> Use the <strong>SymPy Generate</strong> panel at the top. Pick skill, difficulty, pool (diagnostic for first batch) and count. Generation runs async — check back in ~60 seconds.</div>
           </div>
           <div class="guide-step-row">
-            <div class="guide-step-num">2</div>
-            <div class="guide-step-text">Use <strong>Run All Steps</strong> (the purple banner) for the fastest workflow — pick domain, difficulty, count and it runs all 3 steps automatically.</div>
+            <div class="guide-step-num" style="background:#4f46e5;">2</div>
+            <div class="guide-step-text">Go to <a href="/admin/sympy-review.html" style="color:#4f46e5;font-weight:700;">SymPy Review</a> to read each generated math question. Click <strong>Approve &amp; Promote</strong> to push directly to the production questions table.</div>
           </div>
           <div class="guide-step-row">
             <div class="guide-step-num">3</div>
-            <div class="guide-step-text">Use <strong>individual step buttons</strong> when you need control — e.g. re-reviewing only failed questions, or enriching without generating new ones.</div>
+            <div class="guide-step-text"><strong>For R&amp;W questions:</strong> Use the stats bar + step cards in the LLM section below. Use <strong>Run All Steps</strong> for the fastest workflow.</div>
           </div>
           <div class="guide-step-row">
             <div class="guide-step-num">4</div>
-            <div class="guide-step-text">Watch the <strong>Job Log</strong> at the bottom. Each line shows what Claude generated. Lines in red are errors. A green <strong>✓ DONE</strong> badge means success.</div>
+            <div class="guide-step-text">Watch the <strong>Job Log</strong> at the bottom. Lines in red are errors. A green <strong>✓ DONE</strong> badge means success.</div>
           </div>
           <div class="guide-step-row">
             <div class="guide-step-num">5</div>
-            <div class="guide-step-text">After steps complete, go to the <strong>Validate Page</strong> to review and approve the enriched questions before they reach students.</div>
+            <div class="guide-step-text">After LLM steps complete, go to <a href="/admin/validate.html" style="color:#92400e;font-weight:700;">LLM Review</a> to approve R&amp;W questions before they reach students.</div>
           </div>
         </div>
       </div>
@@ -892,66 +1001,160 @@
 <!-- ══ MAIN ════════════════════════════════════════════════════════ -->
 <main class="main">
 
-  <!-- Stats bar -->
-  <div class="stats-bar" id="statsBar">
-    <div class="stat-card">
-      <div class="stat-label">Generated</div>
-      <div class="stat-value" id="statGenerated">—</div>
+  <!-- ══ Stats row ════════════════════════════════════════════════════ -->
+  <div style="margin-bottom:20px;">
+
+    <!-- Section label: SymPy -->
+    <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em;
+                color:var(--slate-400); margin-bottom:8px;">⚗️ SymPy Math Pipeline</div>
+    <div style="display:grid; grid-template-columns:repeat(4,1fr) 40px repeat(2,1fr); gap:10px; margin-bottom:16px;">
+      <div class="stat-card" style="border-left:3px solid #f59e0b;">
+        <div class="stat-label">Pending Review</div>
+        <div class="stat-value" id="statSympyPending" style="color:#d97706;">—</div>
+      </div>
+      <div class="stat-card" style="border-left:3px solid #22c55e;">
+        <div class="stat-label">Approved</div>
+        <div class="stat-value" id="statSympyApproved" style="color:#16a34a;">—</div>
+      </div>
+      <div class="stat-card" style="border-left:3px solid #ef4444;">
+        <div class="stat-label">Flagged</div>
+        <div class="stat-value" id="statSympyFlagged">—</div>
+      </div>
+      <div class="stat-card" style="border-left:3px solid #7c3aed;">
+        <div class="stat-label">Promoted →</div>
+        <div class="stat-value" id="statSympyPromoted" style="color:#7c3aed;">—</div>
+      </div>
+      <!-- spacer arrow -->
+      <div style="display:flex; align-items:center; justify-content:center;
+                  font-size:18px; color:var(--slate-300);">→</div>
+      <div class="stat-card" style="border-left:3px solid #4f46e5; grid-column:span 2;">
+        <div class="stat-label">In Production (total questions)</div>
+        <div class="stat-value" id="statProduction" style="color:#4f46e5;">—</div>
+      </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-label">Reviewed</div>
-      <div class="stat-value" id="statReviewed">—</div>
+
+    <!-- Reference archive pill -->
+    <div style="display:flex; align-items:center; gap:8px;">
+      <span style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:var(--slate-300);">
+        📦 Reference archive (test-run questions, not for students):
+      </span>
+      <span id="statReference" style="font-size:13px; font-weight:700; color:var(--slate-400);">—</span>
+      <a href="/admin/sympy-review.html" style="font-size:11px; color:var(--slate-400); text-decoration:underline;">view in SymPy Review</a>
     </div>
-    <div class="stat-card">
-      <div class="stat-label">Enriched</div>
-      <div class="stat-value" id="statEnriched">—</div>
-    </div>
-    <div class="stat-card approved">
-      <div class="stat-label">Approved</div>
-      <div class="stat-value" id="statApproved">—</div>
-    </div>
+
   </div>
 
-  <!-- Run All Steps banner -->
-  <div class="run-all-card">
+  <!-- ══ SymPy Pipeline (Math) ══════════════════════════════════════ -->
+  <div class="sympy-card">
+    <div class="sympy-card-title">⚗️ SymPy Math Pipeline — Generate</div>
+    <div class="sympy-card-sub">Python + SymPy generates verified math questions → Haiku narrates → staged for your review at <a href="/admin/sympy-review.html" style="color:rgba(255,255,255,0.85);text-decoration:underline;">SymPy Review</a></div>
+    <div class="sympy-fields">
+      <!-- Pool (always left) -->
+      <div class="sympy-field">
+        <span class="field-label">Pool</span>
+        <div class="toggle-group" id="sympy-pool">
+          <button class="toggle-btn selected" data-value="diagnostic" onclick="onSympyPoolChange('diagnostic')">Diagnostic</button>
+          <button class="toggle-btn" data-value="drill"      onclick="onSympyPoolChange('drill')">Drill</button>
+          <button class="toggle-btn" data-value="test"       onclick="onSympyPoolChange('test')">Test</button>
+          <button class="toggle-btn" data-value="reference"  onclick="onSympyPoolChange('reference')">Reference</button>
+        </div>
+      </div>
+
+      <!-- Diagnostic auto-info (shown only when pool=diagnostic) -->
+      <div class="sympy-field" id="sympy-diag-info">
+        <span class="field-label">Auto-config</span>
+        <div style="background:rgba(255,255,255,0.12); border-radius:7px; padding:6px 12px;
+                    font-size:12px; color:rgba(255,255,255,0.9); line-height:1.6;">
+          All 28 skills<br>d3 + d4 (auto)
+        </div>
+      </div>
+
+      <!-- Skill (shown for non-diagnostic) -->
+      <div class="sympy-field" id="sympy-skill-field" style="display:none;">
+        <span class="field-label">Skill</span>
+        <select class="sympy-select" id="sympy-skill" onchange="onSkillChange()">
+          <option value="">All skills</option>
+          <option value="linear_eq_one_var">L1V — Linear Eq (1 var)</option>
+          <option value="linear_eq_two_var">L2V — Linear Eq (2 var)</option>
+          <option value="linear_inequalities">LIN — Linear Inequalities</option>
+          <option value="systems_linear_eq">SLE — Systems (2 var)</option>
+          <option value="linear_functions">LFN — Linear Functions</option>
+        </select>
+      </div>
+
+      <!-- Template dropdown (shown once a skill is selected) -->
+      <div class="sympy-field" id="sympy-template-field" style="display:none;">
+        <span class="field-label">Template</span>
+        <select class="sympy-select" id="sympy-template" onchange="onTemplateSelect()"
+                style="min-width:220px;">
+          <option value="">— All templates —</option>
+        </select>
+      </div>
+
+      <!-- Variant dropdown (shown once a template is selected for skills that support variants) -->
+      <div class="sympy-field" id="sympy-variant-field" style="display:none;">
+        <span class="field-label">Variant</span>
+        <select class="sympy-select" id="sympy-variant" onchange="onVariantSelect()"
+                style="min-width:180px;">
+          <option value="">— All variants —</option>
+        </select>
+      </div>
+
+      <!-- Count (auto-computed for template/variant paths; editable for path C) -->
+      <div class="sympy-field">
+        <span class="field-label" id="sympy-count-label">Count / diff</span>
+        <input type="number" class="count-input" id="sympy-count" value="3" min="1" max="100">
+      </div>
+
+      <!-- Difficulty (always right, hidden for diagnostic) -->
+      <div class="sympy-field" id="sympy-diff-field" style="display:none;">
+        <span class="field-label">Difficulty</span>
+        <div class="toggle-group" id="sympy-difficulty">
+          <button class="toggle-btn" data-value="1">d1</button>
+          <button class="toggle-btn" data-value="2">d2</button>
+          <button class="toggle-btn selected" data-value="3">d3</button>
+          <button class="toggle-btn" data-value="4">d4</button>
+          <button class="toggle-btn" data-value="5">d5</button>
+        </div>
+      </div>
+
+      <div class="sympy-field">
+        <span class="field-label">&nbsp;</span>
+        <button class="sympy-run-btn" id="btn-sympy-gen" onclick="runSympyGenerate()">
+          ⚗️ Generate
+        </button>
+      </div>
+    </div>
+    <div id="sympy-status" style="margin-top:12px; font-size:12px; color:rgba(255,255,255,0.7); display:none;"></div>
+  </div>
+
+  <!-- Divider -->
+  <div class="section-divider">
+    <div class="section-divider-line"></div>
+    <div class="section-divider-label">LLM Pipeline — Reading &amp; Writing</div>
+    <div class="section-divider-line"></div>
+  </div>
+
+  <!-- R&W Generate card -->
+  <div class="run-all-card" style="margin-bottom:12px;">
     <div class="run-all-left">
-      <div class="run-all-title">🚀 Run All Steps</div>
-      <div class="run-all-sub">Generate → Agent Review → Enrich in one shot</div>
+      <div class="run-all-title">1 · Generate R&amp;W</div>
+      <div class="run-all-sub">LLM writes reading &amp; writing questions</div>
     </div>
     <div class="run-all-params">
       <div class="inline-field">
-        <span class="field-label">Mode</span>
-        <div class="toggle-group" id="mode-all">
-          <button class="toggle-btn mode-drill selected" data-value="drill">Drill</button>
-          <button class="toggle-btn mode-diagnostic" data-value="diagnostic">Diagnostic</button>
-          <button class="toggle-btn mode-test" data-value="test">Test</button>
-        </div>
-      </div>
-      <div class="inline-field" id="all-section-field">
-        <span class="field-label">Section</span>
-        <div class="toggle-group" id="section-all">
-          <button class="toggle-btn selected" data-value="math">Math</button>
-          <button class="toggle-btn" data-value="reading_writing">R&amp;W</button>
-          <button class="toggle-btn" data-value="">Both</button>
-        </div>
-      </div>
-      <div class="inline-field" id="all-domain-field">
         <span class="field-label">Domain</span>
-        <select class="domain-select" id="domain-all">
+        <select class="domain-select" id="domain-generate">
           <option value="">All domains</option>
-          <option value="algebra">Algebra</option>
-          <option value="advanced_math">Advanced Math</option>
-          <option value="problem_solving_data">Problem Solving</option>
-          <option value="geometry_trigonometry">Geometry &amp; Trig</option>
           <option value="information_ideas">Info &amp; Ideas</option>
           <option value="craft_structure">Craft &amp; Structure</option>
           <option value="expression_ideas">Expression of Ideas</option>
           <option value="standard_english">Standard English</option>
         </select>
       </div>
-      <div class="inline-field" id="all-difficulty-field">
+      <div class="inline-field">
         <span class="field-label">Difficulty</span>
-        <div class="toggle-group" id="difficulty-all">
+        <div class="toggle-group" id="difficulty-generate">
           <button class="toggle-btn" data-value="easy">Easy</button>
           <button class="toggle-btn" data-value="medium">Medium</button>
           <button class="toggle-btn" data-value="hard">Hard</button>
@@ -960,151 +1163,47 @@
       </div>
       <div class="inline-field">
         <span class="field-label">Count</span>
-        <input type="number" class="count-input" id="count-all" value="5" min="1" max="200">
+        <input type="number" class="count-input" id="count-generate" value="5" min="1" max="200">
       </div>
     </div>
-    <button class="run-btn run-all-btn" id="btn-all" onclick="runAll()">
+    <button class="run-btn run-all-btn" id="btn-generate" onclick="runRwGenerate()">
       <span class="spinner"></span>
-      <span class="btn-icon">▶▶</span>
-      Run All
+      <span class="btn-icon">▶</span>
+      Generate
     </button>
   </div>
 
-  <!-- Step cards -->
-  <div class="cards-grid">
-
-    <!-- ── Step 1: Generate ─────────────────────────── -->
-    <div class="step-card" id="card-generate">
-      <div class="step-header">
-        <div class="step-badge">1</div>
-        <div class="step-title">Generate</div>
-      </div>
-
-      <div class="field-group">
-        <div class="field-label">Mode</div>
-        <div class="toggle-group" id="mode-generate">
-          <button class="toggle-btn mode-drill selected" data-value="drill">Drill</button>
-          <button class="toggle-btn mode-diagnostic" data-value="diagnostic">Diagnostic</button>
-          <button class="toggle-btn mode-test" data-value="test">Test</button>
-        </div>
-        <div class="mode-hint" id="mode-hint-generate">
-          Picks skills globally (d3–d4 only). Count 195 = 3 per skill × 65 skills.
-        </div>
-      </div>
-
-      <div class="field-group" id="gen-section-field">
-        <div class="field-label">Section</div>
-        <div class="toggle-group" id="section-generate">
-          <button class="toggle-btn selected" data-value="math">Math</button>
-          <button class="toggle-btn" data-value="reading_writing">R&amp;W</button>
-          <button class="toggle-btn" data-value="">Both</button>
-        </div>
-      </div>
-
-      <div class="field-group" id="gen-domain-field">
-        <div class="field-label">Domain</div>
-        <div class="domain-grid" id="domains-generate">
-          <!-- populated by JS -->
-        </div>
-      </div>
-
-      <div class="field-group" id="gen-difficulty-field">
-        <div class="field-label">Difficulty</div>
-        <div class="toggle-group" id="difficulty-generate">
-          <button class="toggle-btn" data-value="easy">Easy</button>
-          <button class="toggle-btn" data-value="medium">Medium</button>
-          <button class="toggle-btn" data-value="hard">Hard</button>
-          <button class="toggle-btn selected" data-value="">All</button>
-        </div>
-      </div>
-
-      <div class="field-group">
-        <div class="field-label">Count</div>
-        <input type="number" class="count-input" id="count-generate" value="5" min="1" max="200">
-      </div>
-
-      <button class="run-btn" id="btn-generate" onclick="runStep('generate')">
-        <span class="spinner"></span>
-        <span class="btn-icon">▶</span>
-        Run Generate
-      </button>
+  <!-- R&W Agent Review card -->
+  <div class="run-all-card" style="margin-bottom:20px;">
+    <div class="run-all-left">
+      <div class="run-all-title">2 · Agent Review R&amp;W</div>
+      <div class="run-all-sub">Claude checks correctness &amp; SAT style</div>
     </div>
-
-    <!-- ── Step 2: Agent Review ─────────────────────── -->
-    <div class="step-card" id="card-review">
-      <div class="step-header">
-        <div class="step-badge">2</div>
-        <div class="step-title">Agent Review</div>
+    <div class="run-all-params">
+      <div class="inline-field">
+        <span class="field-label">Domain</span>
+        <select class="domain-select" id="domain-review">
+          <option value="">All domains</option>
+          <option value="information_ideas">Info &amp; Ideas</option>
+          <option value="craft_structure">Craft &amp; Structure</option>
+          <option value="expression_ideas">Expression of Ideas</option>
+          <option value="standard_english">Standard English</option>
+        </select>
       </div>
-
-      <div class="field-group">
-        <div class="field-label">Section</div>
-        <div class="toggle-group" id="section-review">
-          <button class="toggle-btn" data-value="math">Math</button>
-          <button class="toggle-btn" data-value="reading_writing">R&amp;W</button>
-          <button class="toggle-btn selected" data-value="">Both</button>
-        </div>
-      </div>
-
-      <div class="field-group">
-        <div class="field-label">Domain</div>
-        <div class="domain-grid" id="domains-review">
-          <!-- populated by JS -->
-        </div>
-      </div>
-
-      <div class="field-group">
-        <label class="option-check">
-          <input type="checkbox" id="onlyFailed-review">
-          Only re-review failed questions
+      <div class="inline-field">
+        <span class="field-label">&nbsp;</span>
+        <label class="option-check" style="color:rgba(255,255,255,0.8);">
+          <input type="checkbox" id="onlyFailed-review" style="accent-color:#fff;">
+          Only re-review failed
         </label>
       </div>
-
-      <button class="run-btn" id="btn-review" onclick="runStep('review')">
-        <span class="spinner"></span>
-        <span class="btn-icon">▶</span>
-        Run Review
-      </button>
     </div>
-
-    <!-- ── Step 3: Enrich ───────────────────────────── -->
-    <div class="step-card" id="card-enrich">
-      <div class="step-header">
-        <div class="step-badge">3</div>
-        <div class="step-title">Enrich</div>
-      </div>
-
-      <div class="field-group">
-        <div class="field-label">Section</div>
-        <div class="toggle-group" id="section-enrich">
-          <button class="toggle-btn" data-value="math">Math</button>
-          <button class="toggle-btn" data-value="reading_writing">R&amp;W</button>
-          <button class="toggle-btn selected" data-value="">Both</button>
-        </div>
-      </div>
-
-      <div class="field-group">
-        <div class="field-label">Domain</div>
-        <div class="domain-grid" id="domains-enrich">
-          <!-- populated by JS -->
-        </div>
-      </div>
-
-      <div class="field-group">
-        <label class="option-check">
-          <input type="checkbox" id="includeApproved-enrich">
-          Include already-approved questions
-        </label>
-      </div>
-
-      <button class="run-btn" id="btn-enrich" onclick="runStep('enrich')">
-        <span class="spinner"></span>
-        <span class="btn-icon">▶</span>
-        Run Enrich
-      </button>
-    </div>
-
-  </div><!-- /cards-grid -->
+    <button class="run-btn run-all-btn" id="btn-review" onclick="runRwReview()">
+      <span class="spinner"></span>
+      <span class="btn-icon">▶</span>
+      Review
+    </button>
+  </div>
 
   <!-- ── Sync to Neon ─────────────────────────────────────────── -->
   <div class="sync-card">
@@ -1165,88 +1264,15 @@
 </main>
 
 <script>
-// ── Domain definitions ────────────────────────────────────────────
-const DOMAINS = [
-  { value: 'algebra',              label: 'Algebra' },
-  { value: 'advanced_math',        label: 'Advanced Math' },
-  { value: 'problem_solving_data', label: 'Problem Solving' },
-  { value: 'geometry_trigonometry',label: 'Geometry' },
-  { value: 'information_ideas',    label: 'Info & Ideas' },
-  { value: 'craft_structure',      label: 'Craft & Structure' },
-  { value: 'expression_ideas',     label: 'Expression of Ideas' },
-  { value: 'standard_english',     label: 'Standard English' },
-];
-
-// ── Build domain checkboxes for each step card ────────────────────
-function buildDomainCheckboxes(containerId) {
-  const container = document.getElementById(containerId);
-
-  // "All" option
-  const allLabel = document.createElement('label');
-  allLabel.className = 'domain-check all-option';
-  allLabel.innerHTML = `<input type="checkbox" id="${containerId}-all" checked> All domains`;
-  container.appendChild(allLabel);
-
-  DOMAINS.forEach(d => {
-    const label = document.createElement('label');
-    label.className = 'domain-check';
-    label.innerHTML = `<input type="checkbox" class="domain-cb-${containerId}" value="${d.value}"> ${d.label}`;
-    container.appendChild(label);
-  });
-
-  // "All" checkbox logic
-  const allCb = document.getElementById(`${containerId}-all`);
-  allCb.addEventListener('change', () => {
-    if (allCb.checked) {
-      document.querySelectorAll(`.domain-cb-${containerId}`).forEach(cb => { cb.checked = false; });
-    }
-  });
-  document.querySelectorAll(`.domain-cb-${containerId}`).forEach(cb => {
-    cb.addEventListener('change', () => {
-      if (cb.checked) allCb.checked = false;
-      const anyChecked = [...document.querySelectorAll(`.domain-cb-${containerId}`)].some(c => c.checked);
-      if (!anyChecked) allCb.checked = true;
-    });
-  });
-}
-
-['domains-generate', 'domains-review', 'domains-enrich'].forEach(buildDomainCheckboxes);
-
 // ── Toggle button groups ─────────────────────────────────────────
 document.querySelectorAll('.toggle-group').forEach(group => {
   group.querySelectorAll('.toggle-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       group.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');
-      // Mode toggles have side effects
-      if (group.id === 'mode-generate') onGenerateModeChange(btn.dataset.value);
-      if (group.id === 'mode-all')      onAllModeChange(btn.dataset.value);
     });
   });
 });
-
-// ── Mode-change side effects ──────────────────────────────────────
-function onGenerateModeChange(mode) {
-  const isDiag = mode === 'diagnostic';
-  document.getElementById('gen-section-field').style.display    = isDiag ? 'none' : '';
-  document.getElementById('gen-domain-field').style.display     = isDiag ? 'none' : '';
-  document.getElementById('gen-difficulty-field').style.display = isDiag ? 'none' : '';
-  const hint = document.getElementById('mode-hint-generate');
-  hint.classList.toggle('visible', isDiag);
-  if (isDiag) document.getElementById('count-generate').value = 195;
-  else if (document.getElementById('count-generate').value === '195')
-    document.getElementById('count-generate').value = 5;
-}
-
-function onAllModeChange(mode) {
-  const isDiag = mode === 'diagnostic';
-  document.getElementById('all-section-field').style.display    = isDiag ? 'none' : '';
-  document.getElementById('all-domain-field').style.display     = isDiag ? 'none' : '';
-  document.getElementById('all-difficulty-field').style.display = isDiag ? 'none' : '';
-  if (isDiag) document.getElementById('count-all').value = 195;
-  else if (document.getElementById('count-all').value === '195')
-    document.getElementById('count-all').value = 5;
-}
 
 // ── Helpers to read UI state ──────────────────────────────────────
 function getSelectedToggle(groupId) {
@@ -1254,14 +1280,10 @@ function getSelectedToggle(groupId) {
   return btn ? btn.dataset.value : '';
 }
 
-function getSelectedDomains(containerId) {
-  const allCb = document.getElementById(`${containerId}-all`);
-  if (allCb && allCb.checked) return null;
-  const checked = [...document.querySelectorAll(`.domain-cb-${containerId}`)].filter(c => c.checked);
-  if (checked.length === 0) return null;
-  // If exactly one domain selected, return it as a string; otherwise return the first
-  // (the API accepts a single domain — multi-domain would need separate calls)
-  return checked[0].value;
+function setToggle(groupId, value) {
+  document.querySelectorAll(`#${groupId} .toggle-btn`).forEach(b => {
+    b.classList.toggle('selected', b.dataset.value === String(value));
+  });
 }
 
 // ── Job tracking state ────────────────────────────────────────────
@@ -1270,41 +1292,37 @@ let pollInterval   = null;
 let seenLogCount   = 0;
 let activeStepId   = null;
 
-// ── Run a pipeline step ───────────────────────────────────────────
-async function runStep(step) {
-  if (currentJobId) return; // guard: only one job at a time
-
-  const domainMap = { generate: 'domains-generate', review: 'domains-review', enrich: 'domains-enrich' };
-  const sectionMap = { generate: 'section-generate', review: 'section-review', enrich: 'section-enrich' };
-
-  const mode       = step === 'generate' ? (getSelectedToggle('mode-generate') || 'drill') : null;
-  const isDiag     = mode === 'diagnostic';
-  const domain     = isDiag ? null : getSelectedDomains(domainMap[step]);
-  const section    = isDiag ? null : (getSelectedToggle(sectionMap[step]) || null);
-  const difficulty = (step === 'generate' && !isDiag) ? (getSelectedToggle('difficulty-generate') || null) : null;
-  const count      = step === 'generate' ? (parseInt(document.getElementById('count-generate').value) || 5) : 5;
-  const onlyFailed = step === 'review'   ? document.getElementById('onlyFailed-review').checked : false;
-
-  const body = { step, domain, section, difficulty, count, onlyFailed, mode };
-
+// ── R&W Generate ──────────────────────────────────────────────────
+async function runRwGenerate() {
+  if (currentJobId) return;
+  const domain     = document.getElementById('domain-generate').value || null;
+  const difficulty = getSelectedToggle('difficulty-generate') || null;
+  const count      = parseInt(document.getElementById('count-generate').value) || 5;
+  const body = { step: 'generate', domain, section: 'reading_writing', difficulty, count, onlyFailed: false, mode: 'drill' };
   clearLog();
-  setRunning(step);
-
+  setRunning('generate');
   try {
-    const res = await fetch('/admin/pipeline/run', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
+    const res = await fetch('/admin/pipeline/run', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-    currentJobId = data.jobId;
-    seenLogCount = 0;
-    startPolling();
-  } catch (err) {
-    appendLog(`ERROR starting job: ${err.message}`, true);
-    setIdle();
-  }
+    currentJobId = data.jobId; seenLogCount = 0; startPolling();
+  } catch (err) { appendLog(`ERROR: ${err.message}`, true); setIdle(); }
+}
+
+// ── R&W Agent Review ──────────────────────────────────────────────
+async function runRwReview() {
+  if (currentJobId) return;
+  const domain     = document.getElementById('domain-review').value || null;
+  const onlyFailed = document.getElementById('onlyFailed-review').checked;
+  const body = { step: 'review', domain, section: 'reading_writing', difficulty: null, count: 5, onlyFailed, mode: 'drill' };
+  clearLog();
+  setRunning('review');
+  try {
+    const res = await fetch('/admin/pipeline/run', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    currentJobId = data.jobId; seenLogCount = 0; startPolling();
+  } catch (err) { appendLog(`ERROR: ${err.message}`, true); setIdle(); }
 }
 
 // ── Polling ───────────────────────────────────────────────────────
@@ -1329,7 +1347,7 @@ async function pollJob() {
       showStatusBadge('done', '✓ DONE');
       stopPolling();
       setIdle();
-      fetchStats(); // refresh stats after job completes
+      fetchStats();
     } else if (data.status === 'FAILED') {
       showStatusBadge('failed', '✗ FAILED');
       stopPolling();
@@ -1348,20 +1366,14 @@ function stopPolling() {
 // ── UI state helpers ──────────────────────────────────────────────
 function setRunning(step) {
   activeStepId = step;
-  document.querySelectorAll('.run-btn, .sync-btn').forEach(b => { b.disabled = true; });
-  const btn = document.getElementById(`btn-${step}`);
-  if (btn) btn.classList.add('running');
-  document.querySelectorAll('.step-card').forEach(c => c.classList.remove('active'));
-  const card = document.getElementById(`card-${step}`);
-  if (card) card.classList.add('active');
+  document.querySelectorAll('.run-btn, .sync-btn, .sympy-run-btn').forEach(b => { b.disabled = true; });
   showStatusBadge('running', 'RUNNING');
 }
 
 function setIdle() {
-  document.querySelectorAll('.run-btn').forEach(b => { b.disabled = false; b.classList.remove('running'); });
+  document.querySelectorAll('.run-btn, .sympy-run-btn').forEach(b => { b.disabled = false; b.classList.remove('running'); });
   const syncBtn = document.getElementById('btn-sync');
   if (syncBtn) { syncBtn.disabled = false; syncBtn.classList.remove('running'); }
-  document.querySelectorAll('.step-card').forEach(c => c.classList.remove('active'));
   activeStepId = null;
 }
 
@@ -1399,60 +1411,27 @@ function clearLog() {
 // ── Stats fetch ───────────────────────────────────────────────────
 async function fetchStats() {
   try {
-    const res = await fetch('/admin/pipeline/stats');
-    if (!res.ok) return;
-    const data = await res.json();
-    const sc = data.statusCounts || {};
-    document.getElementById('statGenerated').textContent = (sc.generated ?? 0).toLocaleString();
-    document.getElementById('statReviewed').textContent  = (sc.reviewed  ?? 0).toLocaleString();
-    document.getElementById('statEnriched').textContent  = (sc.enriched  ?? 0).toLocaleString();
-    document.getElementById('statApproved').textContent  = (sc.approved  ?? 0).toLocaleString();
-  } catch (_) {
-    // silently ignore
-  }
+    const [llmRes, sympyRes] = await Promise.all([
+      fetch('/admin/pipeline/stats'),
+      fetch('/api/admin/sympy/stats'),
+    ]);
+    const sympyData = sympyRes.ok ? await sympyRes.json() : {};
+    const llmData   = llmRes.ok  ? await llmRes.json()   : {};
+
+    // SymPy stats
+    document.getElementById('statSympyPending').textContent  = (sympyData.pendingReview ?? 0).toLocaleString();
+    document.getElementById('statSympyApproved').textContent = (sympyData.approved      ?? 0).toLocaleString();
+    document.getElementById('statSympyFlagged').textContent  = (sympyData.flagged       ?? 0).toLocaleString();
+    document.getElementById('statSympyPromoted').textContent = (sympyData.promoted      ?? 0).toLocaleString();
+    document.getElementById('statReference').textContent     = (sympyData.reference     ?? 0).toLocaleString() + ' questions';
+
+    // Production = LLM-approved + sympy-promoted
+    const sc = llmData.statusCounts || {};
+    const production = (sc.approved ?? 0) + (sympyData.promoted ?? 0);
+    document.getElementById('statProduction').textContent = production.toLocaleString();
+  } catch (_) {}
 }
 
-// ── Run All Steps ─────────────────────────────────────────────────
-async function runAll() {
-  if (currentJobId) return;
-
-  const mode       = getSelectedToggle('mode-all') || 'drill';
-  const isDiag     = mode === 'diagnostic';
-  const domain     = isDiag ? null : (document.getElementById('domain-all').value || null);
-  const section    = isDiag ? null : (getSelectedToggle('section-all') || null);
-  const difficulty = isDiag ? null : (getSelectedToggle('difficulty-all') || null);
-  const count      = parseInt(document.getElementById('count-all').value) || 5;
-
-  const body = { domain, section, difficulty, count, mode };
-
-  clearLog();
-  setRunningAll();
-
-  try {
-    const res = await fetch('/admin/pipeline/run-all', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    currentJobId = data.jobId;
-    seenLogCount = 0;
-    startPolling();
-  } catch (err) {
-    appendLog(`ERROR starting pipeline: ${err.message}`, true);
-    setIdle();
-  }
-}
-
-function setRunningAll() {
-  activeStepId = 'all';
-  document.querySelectorAll('.run-btn, .sync-btn').forEach(b => { b.disabled = true; });
-  const btn = document.getElementById('btn-all');
-  if (btn) btn.classList.add('running');
-  document.querySelectorAll('.step-card').forEach(c => c.classList.add('active'));
-  showStatusBadge('running', 'RUNNING ALL');
-}
 
 // ── Sync to Neon ──────────────────────────────────────────────────
 async function runSync() {
@@ -1564,6 +1543,244 @@ function renderSpread(skills) {
 
   html += '</tbody></table></div>';
   document.getElementById('spreadContent').innerHTML = html;
+}
+
+// ── SymPy pool mode switch ────────────────────────────────────────
+const SKILL_TEMPLATES = {
+  linear_eq_one_var: {
+    'd1 — Easy':   ['direct_solve_one_step','direct_solve_two_step','direct_solve_distribute',
+                    'find_expression_given_x','find_expression_shift','find_expression_divide',
+                    'equivalent_equation','infinite_solutions_simple','reciprocal_expression'],
+    'd2 — Medium': ['scale_simple','scale_compound','isolate_expression','fractional_common_factor'],
+    'd3 — Hard':   ['expression_as_unit','infinite_solutions_complex','no_solution'],
+  },
+  linear_eq_two_var: {
+    'd1 — Easy':   ['read_slope','read_y_intercept','match_graph_to_equation','parallel_slope','parallel_from_standard_form','word_problem_setup','interpret_slope_in_context','interpret_intercept_in_context','write_equation_slope_intercept','table_to_equation'],
+    'd2 — Medium': ['slope_from_two_points','perpendicular_slope','slope_from_standard_form','find_y_intercept_std','match_graph_to_equation','parallel_slope','parallel_from_standard_form','word_problem_rate_model','write_equation_slope_point','write_equation_two_points','find_x_intercept_standard_form'],
+    'd3 — Hard':   ['function_shift','translate_intercept','slope_complex_expr','match_graph_to_equation','parallel_from_standard_form','word_problem_hard','table_to_equation_hard'],
+  },
+  linear_inequalities: {
+    'd1 — Easy':   ['one_var_word_bound','compound_range','write_inequality_easy','system_quadrant'],
+    'd2 — Medium': ['compound_range_scaled','write_inequality_medium','solve_one_var',
+                    'point_satisfies','two_var_bound','system_solve_x','table_satisfies'],
+    'd3 — Hard':   ['compound_range_algebraic','solve_one_var_tax','two_var_bound_neg',
+                    'system_pair','table_satisfies_twovar','interpret_term','complex_word'],
+  },
+  systems_linear_eq: {
+    'd1 — Easy':   ['direct_substitution','sum_difference','graph_reading','word_problem_easy'],
+    'd2 — Medium': ['substitution_solve','solve_find_expression','no_solution_identify',
+                    'infinite_find_constant','word_problem_medium'],
+    'd3 — Hard':   ['no_solution_find_param','word_problem_hard',
+                    'linear_combination_trick','solve_find_xy_product'],
+  },
+  linear_functions: {
+    'd1 — Easy':   ['evaluate_integer','evaluate_fraction','interpret_slope_easy',
+                    'interpret_intercept_easy','graph_read_intercept',
+                    'word_equation_simple','inverse_evaluate_easy','match_graph_to_equation_table'],
+    'd2 — Medium': ['evaluate_compound','interpret_slope_medium','interpret_intercept_medium',
+                    'interpret_x_intercept','equation_from_two_pts','coefficient_from_table',
+                    'parameter_solve_simple','linear_model_word_solve','graph_intercept_computed',
+                    'parallel_slope_from_fn','arithmetic_nth_term'],
+    'd3 — Hard':   ['parameter_solve_compound','word_model_multistep','linear_model_three_pts_hard',
+                    'literal_formula_solve','interpret_shift_or_coeff'],
+  },
+};
+
+function onSkillChange() {
+  const skill = document.getElementById('sympy-skill').value;
+  const tmplField = document.getElementById('sympy-template-field');
+  const tmplSel   = document.getElementById('sympy-template');
+
+  // Reset template + variant selects
+  tmplSel.innerHTML = '<option value="">— All templates —</option>';
+  document.getElementById('sympy-variant').innerHTML = '<option value="">— All variants —</option>';
+  document.getElementById('sympy-variant-field').style.display = 'none';
+  const countInput = document.getElementById('sympy-count');
+  countInput.style.opacity = ''; countInput.style.pointerEvents = '';
+
+  if (skill && SKILL_TEMPLATES[skill]) {
+    Object.entries(SKILL_TEMPLATES[skill]).forEach(([label, templates]) => {
+      const group = document.createElement('optgroup');
+      group.label = label;
+      templates.forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t; opt.textContent = t;
+        group.appendChild(opt);
+      });
+      tmplSel.appendChild(group);
+    });
+    tmplField.style.display = '';
+  } else {
+    tmplField.style.display = 'none';
+  }
+  onTemplateSelect();
+}
+
+// Flat template → difficulty number, derived from SKILL_TEMPLATES
+const TEMPLATE_DIFFICULTY = (() => {
+  const map = {};
+  Object.values(SKILL_TEMPLATES).forEach(byDiff => {
+    Object.entries(byDiff).forEach(([label, templates]) => {
+      const d = parseInt(label[1]); // 'd1…' → 1
+      templates.forEach(t => { map[t] = d; });
+    });
+  });
+  return map;
+})();
+
+// Skills that expose variant metadata via /api/admin/sympy/variants
+const VARIANT_SUPPORTED_SKILLS = new Set(['linear_eq_one_var', 'linear_eq_two_var', 'linear_inequalities', 'systems_linear_eq', 'linear_functions']);
+
+async function onTemplateSelect() {
+  const tmplSel    = document.getElementById('sympy-template');
+  const tmpl       = tmplSel.value;
+  const pinned     = tmpl !== '';
+  const diffField  = document.getElementById('sympy-diff-field');
+  const varField   = document.getElementById('sympy-variant-field');
+  const varSel     = document.getElementById('sympy-variant');
+  const skill      = document.getElementById('sympy-skill').value;
+
+  diffField.style.opacity       = pinned ? '0.35' : '';
+  diffField.style.pointerEvents = pinned ? 'none'  : '';
+
+  // Reset variant dropdown
+  varSel.innerHTML = '<option value="">— All variants —</option>';
+  varField.style.display = 'none';
+
+  if (pinned) {
+    // Lock difficulty to the selected template's difficulty
+    const selectedOpt = tmplSel.options[tmplSel.selectedIndex];
+    const grpLabel = selectedOpt.parentElement ? selectedOpt.parentElement.label : '';
+    const d = grpLabel ? parseInt(grpLabel[1]) : TEMPLATE_DIFFICULTY[tmpl];
+    if (d) setToggle('sympy-difficulty', d);
+
+    // Fetch variants if this skill supports them
+    if (VARIANT_SUPPORTED_SKILLS.has(skill)) {
+      try {
+        const resp = await fetch(
+          `/api/admin/sympy/variants?skill=${encodeURIComponent(skill)}&difficulty=${d}&template=${encodeURIComponent(tmpl)}`
+        );
+        if (resp.ok) {
+          const data = await resp.json();
+          const variants = data.variants || [];
+          if (variants.length > 0) {
+            varField.style.display = '';
+            variants.forEach(v => {
+              const opt = document.createElement('option');
+              opt.value = v; opt.textContent = v;
+              varSel.appendChild(opt);
+            });
+          }
+        }
+      } catch (e) {
+        console.warn('Could not fetch variants:', e);
+      }
+    }
+    onVariantSelect(); // set count
+  } else {
+    // No template pinned: restore editable count
+    document.getElementById('sympy-count').style.opacity = '';
+    document.getElementById('sympy-count').style.pointerEvents = '';
+  }
+}
+
+function onVariantSelect() {
+  const variant    = document.getElementById('sympy-variant').value;
+  const tmpl       = document.getElementById('sympy-template').value;
+  const countInput = document.getElementById('sympy-count');
+  const varSel     = document.getElementById('sympy-variant');
+
+  if (variant !== '') {
+    // Path A: single variant → always 1 question
+    countInput.value = 1;
+    countInput.style.opacity = '0.4';
+    countInput.style.pointerEvents = 'none';
+  } else if (tmpl !== '') {
+    // Path B: all variants → count = number of variants listed
+    const numVariants = varSel.options.length - 1; // minus "— All variants —"
+    countInput.value = numVariants > 0 ? numVariants : 1;
+    countInput.style.opacity = '0.4';
+    countInput.style.pointerEvents = 'none';
+  } else {
+    // Path C: free count
+    countInput.style.opacity = '';
+    countInput.style.pointerEvents = '';
+  }
+}
+
+function onSympyPoolChange(pool) {
+  const isDiag = pool === 'diagnostic';
+  document.getElementById('sympy-diag-info').style.display   = isDiag ? '' : 'none';
+  document.getElementById('sympy-skill-field').style.display = isDiag ? 'none' : '';
+  document.getElementById('sympy-diff-field').style.display  = isDiag ? 'none' : '';
+  // Reset skill + template + variant when switching pools
+  document.getElementById('sympy-skill').value = '';
+  document.getElementById('sympy-template').innerHTML = '<option value="">— All templates —</option>';
+  document.getElementById('sympy-template-field').style.display = 'none';
+  document.getElementById('sympy-variant').innerHTML = '<option value="">— All variants —</option>';
+  document.getElementById('sympy-variant-field').style.display = 'none';
+  const diffField = document.getElementById('sympy-diff-field');
+  diffField.style.opacity = ''; diffField.style.pointerEvents = '';
+  const countInput = document.getElementById('sympy-count');
+  countInput.style.opacity = ''; countInput.style.pointerEvents = '';
+  const lbl = document.getElementById('sympy-count-label');
+  lbl.textContent = isDiag ? 'Count / diff' : 'Count';
+  countInput.value = isDiag ? 3 : 5;
+}
+
+// ── SymPy Generate ─────────────────────────────────────────────────
+async function runSympyGenerate() {
+  if (currentJobId) return;
+  const btn  = document.getElementById('btn-sympy-gen');
+  const stat = document.getElementById('sympy-status');
+  const skill      = document.getElementById('sympy-skill').value || null;
+  const difficulty = parseInt(getSelectedToggle('sympy-difficulty')) || 3;
+  const pool       = getSelectedToggle('sympy-pool') || 'diagnostic';
+  const count      = parseInt(document.getElementById('sympy-count').value) || 5;
+  const template   = document.getElementById('sympy-template').value.trim() || null;
+  const variant    = document.getElementById('sympy-variant').value.trim() || null;
+
+  btn.disabled = true; btn.textContent = '⏳ Starting…';
+  stat.style.display = 'block';
+  stat.textContent = 'Starting… watch the Job Log below.';
+
+  let url = `/api/admin/sympy/generate?difficulty=${difficulty}&count=${count}&pool=${pool}`;
+  if (skill)    url += `&skill=${encodeURIComponent(skill)}`;
+  if (template) url += `&template=${encodeURIComponent(template)}`;
+  if (variant)  url += `&variant=${encodeURIComponent(variant)}`;
+
+  clearLog();
+  setRunning('sympy-generate');
+
+  try {
+    const res = await fetch(url, { method: 'POST' });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    currentJobId = data.jobId; seenLogCount = 0;
+    const diffLabel = pool === 'diagnostic' ? 'd3+d4' : `d${data.difficulty}`;
+    const varLabel  = variant ? ` · ${variant}` : '';
+    stat.textContent = `Job started (${data.skill} · ${diffLabel} · ${data.pool} · ×${data.count}${varLabel})`;
+    startPolling();
+  } catch(e) {
+    stat.textContent = `✗ Error: ${e.message}`;
+    stat.style.color = '#fca5a5';
+    setIdle();
+  } finally {
+    btn.disabled = false; btn.textContent = '⚗️ Generate';
+  }
+}
+
+function showToast(msg) {
+  let t = document.getElementById('sympy-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'sympy-toast';
+    t.className = 'sympy-toast';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 4000);
 }
 
 // Load stats on page load

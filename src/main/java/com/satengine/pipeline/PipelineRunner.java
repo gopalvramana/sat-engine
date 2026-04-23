@@ -1,5 +1,6 @@
 package com.satengine.pipeline;
 
+import com.satengine.pipeline.sympy.SymPyGenerateStage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
@@ -112,6 +113,7 @@ public class PipelineRunner implements ApplicationRunner {
     private final EnrichStage            enrichStage;
     private final VisualCheckStage       visualCheckStage;
     private final RenderNormalizeStage   renderNormalizeStage;
+    private final SymPyGenerateStage     sympyGenerateStage;
 
     @Override
     public void run(ApplicationArguments args) {
@@ -127,15 +129,25 @@ public class PipelineRunner implements ApplicationRunner {
 
         switch (job) {
             case "generate"          -> runGenerate(args);
+            case "sympy-generate"    -> runSympyGenerate(args);
             case "agent-review"      -> runAgentReview(args);
             case "enrich"            -> runEnrich(args);
             case "visual-check"      -> runVisualCheck(args);
             case "render-normalize"  -> runRenderNormalize(args);
-            default -> log.warn("Unknown --job value: '{}'. Valid: generate, agent-review, enrich, visual-check, render-normalize", job);
+            default -> log.warn("Unknown --job value: '{}'. Valid: generate, sympy-generate, agent-review, enrich, visual-check, render-normalize", job);
         }
 
         // Exit after pipeline job — don't start web server
         System.exit(0);
+    }
+
+    private void runSympyGenerate(ApplicationArguments args) {
+        int     count      = intArg(args, "count", 10);
+        String  skill      = stringArg(args, "skill", null);
+        int     difficulty = intArg(args, "difficulty", 3);
+        String  pool       = stringArg(args, "pool", "drill");
+        String  template   = stringArg(args, "template", null);
+        sympyGenerateStage.run(skill, difficulty, count, pool, template);
     }
 
     private void runGenerate(ApplicationArguments args) {

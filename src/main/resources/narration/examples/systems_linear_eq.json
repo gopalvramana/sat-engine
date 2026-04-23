@@ -1,0 +1,632 @@
+[
+  {
+    "difficulty": "easy",
+    "stem": "What is the value of y in the system of equations?\n  12x = 84\n  y = 5x − 26\nA. 5\nB. 7\nC. 9\nD. 35",
+    "type": "direct_substitution — one variable isolated by division, substitute to find the other",
+    "correct": "C",
+    "sat_key_phrases": ["what is the value of y", "given system of equations"],
+    "why_this_difficulty": "Easy — first equation isolates x with one division (x = 7); second needs one substitution and subtraction (5 × 7 − 26 = 9)",
+    "distractor_rationales": {
+      "A": "Student used the coefficient 5 as the answer without computing 5x − 26",
+      "B": "Student solved for x = 7 correctly but reported x instead of y",
+      "C": "Correct: x = 7, y = 5(7) − 26 = 35 − 26 = 9",
+      "D": "Student computed 5x = 35 but forgot to subtract 26"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "What is the solution (x, y) to the system of equations?\n  x = 8\n  4x − 3y = 5\nA. (8, 9)\nB. (8, −9)\nC. (8, 3)\nD. (8, −3)",
+    "type": "direct_substitution — x is given numerically, substitute into the second equation",
+    "correct": "A",
+    "sat_key_phrases": ["solution (x, y)", "system of equations"],
+    "why_this_difficulty": "Easy — x = 8 is given directly; 4(8) − 3y = 5 → 32 − 3y = 5 → y = 9",
+    "distractor_rationales": {
+      "A": "Correct: 4(8) − 3y = 5 → 3y = 27 → y = 9, solution (8, 9)",
+      "B": "Student solved correctly for 3y = 27 but then wrote y = −9 (sign error)",
+      "C": "Student used the coefficient −3 as the y-value without computing",
+      "D": "Student used −3 from the equation without computing the actual y"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "What is the solution (x, y) to the system?\n  y = 6x − 11\n  y = 31\nA. (6, 31)\nB. (7, 31)\nC. (11, 31)\nD. (31, 7)",
+    "type": "direct_substitution — y given numerically, set equal to expression to solve for x",
+    "correct": "B",
+    "sat_key_phrases": ["solution (x, y)"],
+    "why_this_difficulty": "Easy — y = 31 is given; set 6x − 11 = 31 → 6x = 42 → x = 7",
+    "distractor_rationales": {
+      "A": "Student used the coefficient 6 as x without solving the equation",
+      "B": "Correct: 6x = 42, x = 7; solution is (7, 31)",
+      "C": "Student used the constant 11 from the equation as the x-value",
+      "D": "Student found x = 7 correctly but then swapped coordinates to (31, 7)"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "What is the value of y in the system of equations?\n  y = 4x\n  x + y = 15\nA. 3\nB. 9\nC. 12\nD. 15",
+    "type": "direct_substitution — substitution rule given explicitly, find a specific variable",
+    "correct": "C",
+    "sat_key_phrases": ["value of y", "system of equations"],
+    "why_this_difficulty": "Easy — substituting y = 4x into x + y = 15 gives 5x = 15, x = 3, then y = 4(3) = 12",
+    "distractor_rationales": {
+      "A": "Student found x = 3 but reported x instead of y",
+      "B": "Student computed 15 − x = 12 incorrectly, or confused an intermediate step",
+      "C": "Correct: x = 3, y = 12",
+      "D": "Student reported the constant from the second equation rather than computing y"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "What is the value of y?\n  x = 5\n  3x − y = 8\nA. 3\nB. 7\nC. 8\nD. 23",
+    "type": "direct_substitution — substitute given x-value, solve one-step for y",
+    "correct": "B",
+    "sat_key_phrases": ["what is the value of y"],
+    "why_this_difficulty": "Easy — one substitution: 3(5) − y = 8 → 15 − y = 8 → y = 7",
+    "distractor_rationales": {
+      "A": "Student divided 15 by 5 rather than solving the linear equation",
+      "B": "Correct: 15 − y = 8 → y = 7",
+      "C": "Student reported the constant 8 from the equation",
+      "D": "Student added: 3(5) + 8 = 23, confusing subtraction with addition"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "What is the value of x + y?\n  3x = 21\n  −4x + y = −5\nA. 7\nB. 23\nC. 28\nD. 30",
+    "type": "sum_difference — solve each equation in sequence then compute the sum",
+    "correct": "D",
+    "sat_key_phrases": ["what is the value of x + y"],
+    "why_this_difficulty": "Easy — first equation gives x = 7 by division; substituting into the second gives y = 23; x + y = 30",
+    "distractor_rationales": {
+      "A": "Student reported x = 7 alone, not the sum",
+      "B": "Student reported y = 23 alone, not the sum",
+      "C": "Student computed 4x = 28 and mistook it for the answer",
+      "D": "Correct: x = 7, y = 23, x + y = 30"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "What is the value of x − y?\n  2x + y = 17\n  x + 2y = 13\nA. −4\nB. 3\nC. 4\nD. 7",
+    "type": "sum_difference — subtract one equation from the other to find x − y directly",
+    "correct": "C",
+    "sat_key_phrases": ["what is the value of x − y"],
+    "why_this_difficulty": "Easy — subtracting the second equation from the first gives x − y = 4 in one step; or solve fully (x = 7, y = 3)",
+    "distractor_rationales": {
+      "A": "Student subtracted in the wrong order: (x + 2y) − (2x + y) = 13 − 17 = −4",
+      "B": "Student found y = 3 and reported y instead of x − y",
+      "C": "Correct: (2x + y) − (x + 2y) = 17 − 13 → x − y = 4",
+      "D": "Student found x = 7 and reported x instead of x − y"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "What is the value of x + y?\n  5x = 30\n  2x + y = 17\nA. 6\nB. 5\nC. 11\nD. 17",
+    "type": "sum_difference — first equation gives x, substitute to find y, then sum",
+    "correct": "C",
+    "sat_key_phrases": ["what is the value of x + y"],
+    "why_this_difficulty": "Easy — 5x = 30 gives x = 6; 2(6) + y = 17 gives y = 5; x + y = 11",
+    "distractor_rationales": {
+      "A": "Student reported x = 6 instead of x + y",
+      "B": "Student found y = 5 but reported y instead of the sum",
+      "C": "Correct: x = 6, y = 5, x + y = 11",
+      "D": "Student reported the constant from the second equation"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "The graphs of two linear equations are shown in the xy-plane, intersecting at a single point. What is the solution (x, y) to the system?\n[Coordinate grid: two lines crossing at (2, 2)]\nA. (−2, 2)\nB. (2, −2)\nC. (2, 2)\nD. (4, 0)",
+    "type": "graph_reading — identify the intersection point of two graphed lines",
+    "correct": "C",
+    "sat_key_phrases": ["graphs of two linear equations", "solution (x, y)", "shown in the xy-plane"],
+    "why_this_difficulty": "Easy — requires only reading the coordinates where the two lines cross",
+    "distractor_rationales": {
+      "A": "Student negated the x-coordinate, reading (−2, 2) instead of (2, 2)",
+      "B": "Student negated the y-coordinate, reading (2, −2) instead of (2, 2)",
+      "C": "Correct: the lines intersect at (2, 2)",
+      "D": "Student read an x-intercept rather than the intersection point of the two lines"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "Two linear equations are graphed in the xy-plane. What is the solution (x, y) to this system?\n[Coordinate grid: two lines crossing at (3, 4)]\nA. (−3, 4)\nB. (3, −4)\nC. (3, 4)\nD. (4, 3)",
+    "type": "graph_reading — read intersection coordinates directly from the graph",
+    "correct": "C",
+    "sat_key_phrases": ["solution (x, y)", "based on the graph"],
+    "why_this_difficulty": "Easy — the crossing point is clearly visible; errors come from negating a coordinate or swapping x and y",
+    "distractor_rationales": {
+      "A": "Student negated x, reading the reflection across the y-axis",
+      "B": "Student negated y, reading the reflection across the x-axis",
+      "C": "Correct: intersection at (3, 4)",
+      "D": "Student swapped x and y coordinates"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "The graph in the xy-plane shows the equations of two lines. What is the x-coordinate of the point where the two lines intersect?\n[Coordinate grid: two lines crossing at x = 4, y = −5]\nA. −5\nB. −4\nC. 4\nD. 5",
+    "type": "graph_reading — identify a single coordinate of the intersection point",
+    "correct": "C",
+    "sat_key_phrases": ["x-coordinate", "point where the two lines intersect"],
+    "why_this_difficulty": "Easy — only one coordinate is asked; directly readable from the graph; error is reading y as x or negating",
+    "distractor_rationales": {
+      "A": "Student read and reported the y-coordinate (−5) instead of the x-coordinate",
+      "B": "Student negated the x-coordinate: −4 instead of 4",
+      "C": "Correct: the intersection has x-coordinate 4",
+      "D": "Student read the y-intercept of one line rather than the x-value at the intersection"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "A bookcase holds paperback books and hardcover books. There are 3 times as many paperback books as hardcover books. The total number of books is 52. Which system of equations correctly models this situation, where p is the number of paperback books and h is the number of hardcover books?\nA. p = 3h  and  p + h = 52\nB. h = 3p  and  p + h = 52\nC. p = 52h  and  p + h = 3\nD. h = 52p  and  p + h = 3",
+    "type": "word_problem_easy — identify which system correctly represents a multiplicative ratio and a total",
+    "correct": "A",
+    "sat_key_phrases": ["3 times as many", "total", "which system of equations"],
+    "why_this_difficulty": "Easy — two simple facts (one ratio, one total) map directly to two equations; primary error is reversing which quantity is three times the other",
+    "distractor_rationales": {
+      "A": "Correct: 'three times as many paperbacks as hardcovers' → p = 3h; total → p + h = 52",
+      "B": "Student reversed the ratio: h = 3p means hardcovers are triple the paperbacks, the opposite of what is stated",
+      "C": "Student placed the total (52) inside the ratio equation, confusing the two relationships",
+      "D": "Student reversed both the ratio and the total, swapping which equation serves which purpose"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "A fruit bowl holds apples and oranges. The number of apples is 5 more than twice the number of oranges. Together there are 23 pieces of fruit. Which system of equations represents this situation, where a is the number of apples and g is the number of oranges?\nA. a = 2g + 5  and  a + g = 23\nB. a = 2g − 5  and  a + g = 23\nC. g = 2a + 5  and  a + g = 23\nD. a = 5g + 2  and  a + g = 23",
+    "type": "word_problem_easy — translate a two-part description into a system of equations",
+    "correct": "A",
+    "sat_key_phrases": ["5 more than twice", "together", "which system of equations"],
+    "why_this_difficulty": "Easy — two relationships map directly to two equations; error comes from misreading '5 more than twice' as subtraction or from swapping roles of a and g",
+    "distractor_rationales": {
+      "A": "Correct: '5 more than twice g' → a = 2g + 5; total → a + g = 23",
+      "B": "Student read '5 more' as '5 fewer', writing a = 2g − 5",
+      "C": "Student swapped a and g, making oranges the larger quantity",
+      "D": "Student reversed the 5 and 2: a = 5g + 2"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "At a parking lot, compact cars and full-size cars are counted. There are 7 more compact cars than full-size cars. There are 39 cars in total. Which system of equations represents this situation, where p is the number of compact cars and q is the number of full-size cars?\nA. p = q + 7  and  p + q = 39\nB. q = p + 7  and  p + q = 39\nC. p = 7q  and  p + q = 39\nD. p = q − 7  and  p + q = 39",
+    "type": "word_problem_easy — identify the system from a difference and total condition",
+    "correct": "A",
+    "sat_key_phrases": ["more than", "total", "which system of equations represents"],
+    "why_this_difficulty": "Easy — 'more than' maps to addition in the ratio equation; the total maps directly to p + q = 39",
+    "distractor_rationales": {
+      "A": "Correct: '7 more compact than full-size' → p = q + 7; total → p + q = 39",
+      "B": "Student reversed which type is more: q = p + 7 means full-size cars exceed compact",
+      "C": "Student misread '7 more' as '7 times more', writing p = 7q",
+      "D": "Student wrote p = q − 7, meaning compact cars are fewer than full-size (opposite of the given)"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "What is the value of x?\n  y = 3x + 4\n  y = −5x + 20\nA. −3\nB. 2\nC. 9\nD. 10",
+    "type": "substitution_solve — set two expressions for y equal and solve for x",
+    "correct": "B",
+    "sat_key_phrases": ["what is the value of x"],
+    "why_this_difficulty": "Medium — requires setting 3x + 4 = −5x + 20, combining like terms across both sides: 8x = 16, x = 2",
+    "distractor_rationales": {
+      "A": "Student made a sign error when combining: treated −5x as +5x and got an incorrect negative result",
+      "B": "Correct: 3x + 4 = −5x + 20 → 8x = 16 → x = 2",
+      "C": "Student found y = 3(2) + 4 = 10 but through arithmetic error arrived at 9",
+      "D": "Student computed y = 10 (the y-value at x = 2) and reported y instead of x"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "What is the value of y in the system of equations?\n  4x + 3y = 5\n  x + y = 3\nA. −4\nB. 3\nC. 5\nD. 7",
+    "type": "substitution_solve — isolate x from the simpler equation, substitute into the other",
+    "correct": "D",
+    "sat_key_phrases": ["value of y", "system of equations"],
+    "why_this_difficulty": "Medium — requires expressing x = 3 − y from the simpler equation and substituting: 4(3 − y) + 3y = 5 → −y = −7 → y = 7",
+    "distractor_rationales": {
+      "A": "Student found x = 3 − 7 = −4 and reported x instead of y",
+      "B": "Student used the constant 3 from the second equation as the answer",
+      "C": "Student used the constant 5 from the first equation as the answer",
+      "D": "Correct: x = 3 − y → 12 − 4y + 3y = 5 → y = 7"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "What is the value of x?\n  y − 5x = 4\n  y = 3x\nA. −6\nB. −2\nC. 3\nD. 6",
+    "type": "substitution_solve — substitute an explicit expression for y and solve",
+    "correct": "B",
+    "sat_key_phrases": ["value of x", "system"],
+    "why_this_difficulty": "Medium — substituting y = 3x into y − 5x = 4 gives 3x − 5x = 4 → −2x = 4 → x = −2",
+    "distractor_rationales": {
+      "A": "Student computed y = 3(−2) = −6 and reported y instead of x",
+      "B": "Correct: 3x − 5x = 4 → x = −2",
+      "C": "Student used the coefficient of y (3) as the answer",
+      "D": "Student made a sign error, solving −2x = −4 and getting x = 6 (positive)"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "What is the value of y in the system?\n  y = 3x\n  2x − y = −4\nA. −4\nB. 4\nC. 6\nD. 12",
+    "type": "substitution_solve — substitute expression for y, solve for x, then find y",
+    "correct": "D",
+    "sat_key_phrases": ["value of y", "system"],
+    "why_this_difficulty": "Medium — substituting y = 3x gives 2x − 3x = −4 → x = 4, then y = 3(4) = 12",
+    "distractor_rationales": {
+      "A": "Student used the constant −4 from the second equation as the answer",
+      "B": "Student solved for x = 4 and reported x instead of y",
+      "C": "Student may have computed 2x = 8 and subtracted without tracking the equation correctly",
+      "D": "Correct: x = 4, y = 3(4) = 12"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "What is the value of x + y?\n  4x = 20\n  −3x + y = −7\nA. −7\nB. 5\nC. 8\nD. 13",
+    "type": "solve_find_expression — solve sequentially then compute a sum",
+    "correct": "D",
+    "sat_key_phrases": ["what is the value of x + y"],
+    "why_this_difficulty": "Medium — two-step: solve the first equation for x = 5, substitute into the second to get y = 8, then compute x + y = 13",
+    "distractor_rationales": {
+      "A": "Student used the constant −7 from the second equation as the answer",
+      "B": "Student found x = 5 but reported x instead of x + y",
+      "C": "Student found y = 8 but reported y instead of x + y",
+      "D": "Correct: x = 5, y = 8, x + y = 13"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "What is the value of 5x?\n  y = 4x\n  3x + y = 35\nA. 5\nB. 20\nC. 25\nD. 35",
+    "type": "solve_find_expression — substitute to find x, then evaluate a multiple of x",
+    "correct": "C",
+    "sat_key_phrases": ["what is the value of 5x"],
+    "why_this_difficulty": "Medium — substituting y = 4x gives 7x = 35, x = 5; then 5x = 25 (not the same as x)",
+    "distractor_rationales": {
+      "A": "Student found x = 5 but reported x itself rather than 5x",
+      "B": "Student computed y = 4x = 20 and reported y instead of 5x",
+      "C": "Correct: x = 5, so 5x = 25",
+      "D": "Student reported the constant from the second equation"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "What is the value of 3x + y?\n  2x + y = 13\n  x + 3y = 14\nA. 8\nB. 13\nC. 15\nD. 18",
+    "type": "solve_find_expression — solve the system then evaluate a linear combination",
+    "correct": "D",
+    "sat_key_phrases": ["what is the value of 3x + y"],
+    "why_this_difficulty": "Medium — requires a full solve (x = 5, y = 3) before computing 3(5) + 3 = 18; students who stop at finding one variable miss the final step",
+    "distractor_rationales": {
+      "A": "Student computed x + y = 8 instead of 3x + y",
+      "B": "Student reported the constant from the first equation",
+      "C": "Student computed 3x = 15 but forgot to add y = 3",
+      "D": "Correct: x = 5, y = 3, so 3x + y = 15 + 3 = 18"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "Which system of equations has no solution?\nA. y = 3x + 4  and  y = 3x − 7\nB. y = 3x + 4  and  y = −3x + 4\nC. y = 3x + 4  and  y = 6x + 8\nD. y = 3x + 4  and  2y = 6x + 8",
+    "type": "no_solution_identify — recognize that parallel lines (same slope, different intercepts) produce no solution",
+    "correct": "A",
+    "sat_key_phrases": ["no solution", "which system"],
+    "why_this_difficulty": "Medium — requires comparing slopes across all choices; the trap is D, where 2y = 6x + 8 looks parallel but simplifies to y = 3x + 4 (same line → infinitely many solutions)",
+    "distractor_rationales": {
+      "A": "Correct: both lines have slope 3 but different y-intercepts (4 and −7) → parallel, no solution",
+      "B": "Slopes are 3 and −3 — different slopes → lines intersect at one point",
+      "C": "Slopes are 3 and 6 — different slopes → lines intersect at one point",
+      "D": "2y = 6x + 8 simplifies to y = 3x + 4 — identical to the first equation → infinitely many solutions, not zero"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "Which of the following systems of equations has no solution?\nA. 2x + y = 5  and  4x + 2y = 10\nB. 2x + y = 5  and  4x + 2y = 7\nC. 2x + y = 5  and  3x − y = 4\nD. 2x + y = 5  and  −2x − y = −5",
+    "type": "no_solution_identify — distinguish parallel lines from same line and intersecting lines in standard form",
+    "correct": "B",
+    "sat_key_phrases": ["no solution", "which of the following systems"],
+    "why_this_difficulty": "Medium — the key is distinguishing no solution (parallel) from infinitely many solutions (same line): A and D are the same line; only B has matching slopes but different constants",
+    "distractor_rationales": {
+      "A": "4x + 2y = 10 is exactly 2 times 2x + y = 5 — the same line, so infinitely many solutions (not no solution)",
+      "B": "Correct: dividing second equation by 2 gives 2x + y = 3.5 ≠ 2x + y = 5 — same slope, different constant → no solution",
+      "C": "Slopes are different (second equation: y = 3x − 4) — the lines intersect at one point",
+      "D": "−2x − y = −5 is the same as 2x + y = 5 — identical line → infinitely many solutions"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "Which system of equations has no solution?\nA. −2x + 3y = −9  and  2x − 3y = 9\nB. 2x − 3y = 9  and  −6x + 9y = −27\nC. −2x + 3y = 9  and  4x − 6y = −18\nD. −2x + 3y = 9  and  4x − 6y = 18",
+    "type": "no_solution_identify — identify the one choice where lines are parallel but not identical",
+    "correct": "D",
+    "sat_key_phrases": ["no solution", "which system"],
+    "why_this_difficulty": "Medium — all four choices involve equations with the same |slope|; A, B, C are the same line (infinitely many solutions); only D has matching slopes but different y-intercepts",
+    "distractor_rationales": {
+      "A": "Adding both equations gives 0 = 0 — the lines are identical (infinitely many solutions)",
+      "B": "−6x + 9y = −27 is −3 times 2x − 3y = 9 — the same line (infinitely many solutions)",
+      "C": "4x − 6y = −18 is −2 times −2x + 3y = 9 — the same line (infinitely many solutions)",
+      "D": "Correct: −2x + 3y = 9 gives slope 2/3; 4x − 6y = 18 → slope 2/3 but different intercept → parallel, no solution"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "The system of equations y = 4x − 6 and ky = 4kx − 6k has infinitely many solutions. Which of the following could be a second equation in a different system with y = 4x − 6 that also has infinitely many solutions?\nA. 2y = 8x − 6\nB. 2y = 8x + 6\nC. 2y = 8x − 12\nD. y = 4x + 6",
+    "type": "infinite_find_constant — identify which equation is a scalar multiple of the given line",
+    "correct": "C",
+    "sat_key_phrases": ["infinitely many solutions", "which equation", "system of equations"],
+    "why_this_difficulty": "Medium — an equation has infinitely many solutions with y = 4x − 6 only when it simplifies to the same line; must divide both sides by the same constant",
+    "distractor_rationales": {
+      "A": "2y = 8x − 6 simplifies to y = 4x − 3 — same slope but different y-intercept → parallel, no solution",
+      "B": "2y = 8x + 6 simplifies to y = 4x + 3 — different y-intercept → parallel, no solution",
+      "C": "Correct: 2y = 8x − 12 simplifies to y = 4x − 6 — identical to the original → infinitely many solutions",
+      "D": "y = 4x + 6 has the same slope but y-intercept +6 ≠ −6 → parallel, no solution"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "The system of equations −15x + 25y = 65 and −3x + ky = 13 has infinitely many solutions. What is the value of k?\nA. 3\nB. 5\nC. 13\nD. 25",
+    "type": "infinite_find_constant — find the coefficient that makes the second equation a scalar multiple of the first",
+    "correct": "B",
+    "sat_key_phrases": ["infinitely many solutions", "what is the value of k"],
+    "why_this_difficulty": "Medium — dividing the first equation by 5 gives −3x + 5y = 13, which matches the form of the second; so k = 5",
+    "distractor_rationales": {
+      "A": "Student used the x-coefficient from the second equation (3) as the answer",
+      "B": "Correct: −15/−3 = 5; so y-coefficient must also scale by 5 → k = 25/5 = 5",
+      "C": "Student used the constant 13 from the equation as the answer",
+      "D": "Student used the y-coefficient from the first equation without scaling"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "The system (2/3)x + (4/3)y = 5 and gx + ky = 15 has infinitely many solutions. What is the value of g/k?\nA. 1/6\nB. 1/3\nC. 1/2\nD. 2/3",
+    "type": "infinite_find_constant — find the ratio of coefficients from the scaled equation",
+    "correct": "C",
+    "sat_key_phrases": ["infinitely many solutions", "value of g/k"],
+    "why_this_difficulty": "Medium — for infinite solutions, second must be a scalar multiple of first; multiplying first by 3 gives 2x + 4y = 15, so g = 2 and k = 4, giving g/k = 1/2",
+    "distractor_rationales": {
+      "A": "Student used 2/(3 × 4) = 1/6, mixing coefficients and denominators incorrectly",
+      "B": "Student used the original denominator 3 as the divisor without scaling",
+      "C": "Correct: scaled first equation → 2x + 4y = 15, so g/k = 2/4 = 1/2",
+      "D": "Student reported (2/3) as the ratio, using the original x-coefficient before scaling"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "A venue sold adult tickets for $12 each and child tickets for $7 each. A total of 25 tickets were sold for $225 total. How many child tickets were sold?\nA. 10\nB. 12\nC. 15\nD. 25",
+    "type": "word_problem_medium — set up and solve a two-equation system from a quantity and revenue condition",
+    "correct": "C",
+    "sat_key_phrases": ["how many", "total", "sold"],
+    "why_this_difficulty": "Medium — requires setting up two equations (count and revenue), then substituting to eliminate one variable",
+    "distractor_rationales": {
+      "A": "Student solved correctly (c = 15, a = 10) but reported the number of adult tickets instead of child tickets",
+      "B": "Student may have divided 225 by some combination of prices incorrectly",
+      "C": "Correct: a + c = 25 and 12a + 7c = 225 → c = 15",
+      "D": "Student reported the total tickets rather than computing which type"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "A motorist drove 240 miles in 4 hours, traveling part of the way on a highway at 70 mph and the remainder on local roads at 30 mph. How many hours did the motorist spend on the highway?\nA. 1\nB. 2\nC. 3\nD. 4",
+    "type": "word_problem_medium — distance-rate-time system with two segments",
+    "correct": "C",
+    "sat_key_phrases": ["total", "miles", "hours", "miles per hour", "how many hours"],
+    "why_this_difficulty": "Medium — two equations required: one for total time (h + l = 4), one for total distance (70h + 30l = 240); substitution yields h = 3",
+    "distractor_rationales": {
+      "A": "Student found l = 1 (local road hours) and reported that instead of highway hours",
+      "B": "Student assumed an equal split of 2 hours each, ignoring the distance constraint",
+      "C": "Correct: 70h + 30(4 − h) = 240 → 40h = 120 → h = 3",
+      "D": "Student reported the total travel time rather than the highway portion"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "In an election, candidate A received 2 times as many votes as candidate B. There were 4,500 more votes for candidate A than candidate B. How many votes did candidate B receive?\nA. 2,250\nB. 3,000\nC. 4,500\nD. 9,000",
+    "type": "word_problem_medium — solve a two-equation system involving a ratio and a difference",
+    "correct": "C",
+    "sat_key_phrases": ["2 times as many", "more votes", "how many votes"],
+    "why_this_difficulty": "Medium — system: a = 2b and a − b = 4,500; substituting gives b = 4,500",
+    "distractor_rationales": {
+      "A": "Student divided 4,500 by 2, incorrectly treating the difference as twice the answer",
+      "B": "Student used an incorrect ratio relationship to arrive at a wrong value",
+      "C": "Correct: a = 2b and 2b − b = 4,500 → b = 4,500",
+      "D": "Student found a = 9,000 (candidate A's count) and reported that instead of candidate B's"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "At a coffee shop, 2 cups of coffee and 1 muffin cost $13.50. One cup of coffee and 4 muffins cost $19.00. What is the cost of one muffin, in dollars?\nA. 2.50\nB. 3.50\nC. 5.00\nD. 7.00",
+    "type": "word_problem_medium — solve a two-item pricing system to isolate one item's cost",
+    "correct": "B",
+    "sat_key_phrases": ["how much", "cost", "in dollars"],
+    "why_this_difficulty": "Medium — setting up 2c + m = 13.50 and c + 4m = 19.00 and solving by substitution gives m = 3.50",
+    "distractor_rationales": {
+      "A": "Student made an arithmetic error during substitution, arriving at an incorrect intermediate value",
+      "B": "Correct: c = 5.00, m = 3.50 (from 2(5) + m = 13.50 → m = 3.50)",
+      "C": "Student solved for the coffee price c = 5.00 and reported that instead of the muffin price",
+      "D": "Student doubled the muffin price instead of computing from the system"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "The system of equations 4x + 6y = 24 and kx + 9y = 15 has no solution. What is the value of k?\nA. 4\nB. 6\nC. 8\nD. 9",
+    "type": "no_solution_find_param — find the unknown coefficient that makes the lines parallel",
+    "correct": "B",
+    "sat_key_phrases": ["no solution", "what is the value of k"],
+    "why_this_difficulty": "Hard — requires setting up the proportionality condition for the x and y coefficients (4/k = 6/9) and verifying that the constants are NOT proportional",
+    "distractor_rationales": {
+      "A": "Student used the x-coefficient from the first equation without computing the required ratio",
+      "B": "Correct: 4/k = 6/9 = 2/3 → k = 6; check: 24/15 = 8/5 ≠ 2/3 ✓ (not the same line)",
+      "C": "Student doubled the original x-coefficient (2 × 4 = 8) without applying the ratio condition",
+      "D": "Student matched k to the y-coefficient of the second equation"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "The system of equations (1/2)x + 3y = 10 and hx + 12y = 5 has no solution. What is the value of h?\nA. 1/2\nB. 2\nC. 4\nD. 6",
+    "type": "no_solution_find_param — find the coefficient that makes the lines parallel with fractional coefficients",
+    "correct": "B",
+    "sat_key_phrases": ["no solution", "what is the value of h"],
+    "why_this_difficulty": "Hard — fractional coefficient in the first equation; must compute (1/2)/h = 3/12 = 1/4 → h = 2, then verify 10 × 4 = 40 ≠ 5",
+    "distractor_rationales": {
+      "A": "Student used the original x-coefficient 1/2 from the first equation without computing",
+      "B": "Correct: ratio 3/12 = 1/4; (1/2)/h = 1/4 → h = 2",
+      "C": "Student used the denominator of the y-coefficient ratio (4) without completing the proportion",
+      "D": "Student computed h = 6 from an incorrect proportion"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "The system of equations 3x + 2y = 12 and 9x + py = 48 has no solution. What is the value of p?",
+    "type": "no_solution_find_param — find the y-coefficient making lines parallel (SPR)",
+    "correct": "6",
+    "sat_key_phrases": ["no solution", "what is the value of p"],
+    "why_this_difficulty": "Hard — requires the proportion 3/9 = 2/p to give p = 6, then verify 12/48 = 1/4 ≠ 1/3 ✓ (parallel, not same line)",
+    "distractor_rationales": {
+      "4": "Student computed 12/3 = 4, matching the constant ratio rather than the coefficient ratio",
+      "3": "Student used the ratio 3/9 = 1/3 and set p = 1/3 × 9 = 3 incorrectly",
+      "2": "Student used the original y-coefficient 2 from the first equation without scaling",
+      "9": "Student used the x-coefficient from the second equation as the answer"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "The system of equations 2x − 5y = 8 and tx − 15y = 10 has no solution. What is the value of t?\nA. 3\nB. 5\nC. 6\nD. 15",
+    "type": "no_solution_find_param — set coefficient ratios equal, verify constant ratio differs",
+    "correct": "C",
+    "sat_key_phrases": ["no solution", "what is the value of t"],
+    "why_this_difficulty": "Hard — requires 2/t = 5/15 = 1/3, so t = 6; must verify 8/10 = 4/5 ≠ 1/3 ✓",
+    "distractor_rationales": {
+      "A": "Student used the denominator of the y-ratio (15 ÷ 5 = 3) as the answer",
+      "B": "Student used the y-coefficient from the first equation",
+      "C": "Correct: 2/t = 5/15 = 1/3 → t = 6",
+      "D": "Student used the y-coefficient from the second equation"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "A store sold jackets and sweaters. The number of jackets sold was 12 more than 4 times the number of sweaters sold. A total of 132 items were sold. How many sweaters were sold?",
+    "type": "word_problem_hard — translate a multi-step word problem into a two-equation system and solve (SPR)",
+    "correct": "24",
+    "sat_key_phrases": ["more than", "times", "total", "how many"],
+    "why_this_difficulty": "Hard — '12 more than 4 times' translates to j = 4s + 12; substituting gives 5s + 12 = 132 → s = 24; error is writing j = 4(s + 12)",
+    "distractor_rationales": {
+      "108": "Student found the number of jackets (j = 4×24 + 12 = 108) and reported that instead of sweaters",
+      "132": "Student reported the total without solving",
+      "12": "Student used the additive constant 12 as the answer",
+      "30": "Student solved incorrectly: 4s + 12 = 132 → s = 30, forgetting to include s in the total"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "A bakery sells loaves of bread and packages of rolls. One loaf and 3 packages of rolls cost $14.25. Two loaves and 1 package of rolls cost $13.50. What is the price, in dollars, of one package of rolls?\nA. 3.00\nB. 3.75\nC. 5.25\nD. 14.25",
+    "type": "word_problem_hard — two-item pricing system requiring elimination to isolate one item",
+    "correct": "A",
+    "sat_key_phrases": ["cost", "in dollars", "price of one"],
+    "why_this_difficulty": "Hard — requires eliminating b (bread) by multiplying first equation by 2 and subtracting, then solving 5r = 15 → r = 3.00",
+    "distractor_rationales": {
+      "A": "Correct: 2(b + 3r) − (2b + r) = 2(14.25) − 13.50 → 5r = 15.00 → r = 3.00",
+      "B": "Student made an arithmetic error during elimination, arriving at an incorrect value",
+      "C": "Student found b = 5.25 (bread price) and reported that instead of the roll package price",
+      "D": "Student reported the constant from the first equation"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "A wire is bent into two sections. The longer section is 5 centimeters more than twice the length of the shorter section. The total length of wire is 53 centimeters. What is the length, in centimeters, of the shorter section?",
+    "type": "word_problem_hard — set up and solve a two-equation system from a length relationship (SPR)",
+    "correct": "16",
+    "sat_key_phrases": ["more than twice", "total length", "length of the shorter section"],
+    "why_this_difficulty": "Hard — '5 more than twice' → L = 2S + 5; combined with L + S = 53 gives 3S + 5 = 53 → S = 16",
+    "distractor_rationales": {
+      "37": "Student found the longer section (2×16 + 5 = 37) and reported that instead of the shorter",
+      "53": "Student reported the total length rather than computing the shorter section",
+      "5": "Student used the additive constant in the relationship as the answer",
+      "24": "Student set up 2S + 5 = 53 (forgetting to add S) and solved incorrectly"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "What is the value of 4x + 6y?\n  x + 2y = 7\n  3x + 4y = 17\nA. 7\nB. 17\nC. 24\nD. 34",
+    "type": "linear_combination_trick — add both equations to directly obtain the required combination",
+    "correct": "C",
+    "sat_key_phrases": ["what is the value of 4x + 6y"],
+    "why_this_difficulty": "Hard — key insight is adding both equations: (x + 2y) + (3x + 4y) = 7 + 17 = 4x + 6y = 24; solving for x and y individually wastes time and invites errors",
+    "distractor_rationales": {
+      "A": "Student reported the right-hand side of the first equation",
+      "B": "Student reported the right-hand side of the second equation",
+      "C": "Correct: adding both equations gives 4x + 6y = 24 directly",
+      "D": "Student doubled the second equation's right-hand side"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "What is the value of 2x?\n  5x + 3y = 22\n  3x + 3y = 14\nA. 4\nB. 8\nC. 11\nD. 14",
+    "type": "linear_combination_trick — subtract equations to eliminate y and directly obtain the target",
+    "correct": "B",
+    "sat_key_phrases": ["what is the value of 2x"],
+    "why_this_difficulty": "Hard — subtracting the second from the first eliminates y immediately: 2x = 8; students who solve for x then report x = 4 (not 2x = 8) fall for the key distractor",
+    "distractor_rationales": {
+      "A": "Student solved correctly (2x = 8 → x = 4) but reported x instead of 2x",
+      "B": "Correct: (5x + 3y) − (3x + 3y) = 22 − 14 → 2x = 8",
+      "C": "Student added the constants and divided by 2: (22 + 14)/2 = 18/2... arithmetic error",
+      "D": "Student reported the right-hand side of the second equation"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "What is the value of 6x + 8y?\n  2x + 5y = 14\n  4x + 3y = 10\nA. 10\nB. 14\nC. 24\nD. 28",
+    "type": "linear_combination_trick — add both equations to directly obtain the required linear combination",
+    "correct": "C",
+    "sat_key_phrases": ["what is the value of 6x + 8y"],
+    "why_this_difficulty": "Hard — adding both equations: (2x + 5y) + (4x + 3y) = 14 + 10 → 6x + 8y = 24; requires recognizing the addition shortcut rather than solving the full system",
+    "distractor_rationales": {
+      "A": "Student reported the right-hand side of the second equation",
+      "B": "Student reported the right-hand side of the first equation",
+      "C": "Correct: adding both equations directly gives 6x + 8y = 24",
+      "D": "Student doubled the right-hand side of the first equation"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "What is the value of 2x + 2y?\n  x − 2y = 3\n  x + 4y = 9\nA. 3\nB. 6\nC. 9\nD. 12",
+    "type": "linear_combination_trick — add both equations to find the combination directly",
+    "correct": "D",
+    "sat_key_phrases": ["what is the value of 2x + 2y"],
+    "why_this_difficulty": "Hard — adding: (x − 2y) + (x + 4y) = 3 + 9 → 2x + 2y = 12; the trap is subtracting to find 6y = 6 and misidentifying the target expression",
+    "distractor_rationales": {
+      "A": "Student reported the constant from the first equation",
+      "B": "Student subtracted equations and got 6y = 6 → y = 1, then computed 2(1) = 2 incorrectly",
+      "C": "Student reported the constant from the second equation",
+      "D": "Correct: (x − 2y) + (x + 4y) = 3 + 9 → 2x + 2y = 12"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "What is the value of xy?\n  3x + y = 15\n  x − y = 1\nA. 3\nB. 4\nC. 12\nD. 15",
+    "type": "solve_find_xy_product — solve the system fully then compute the product xy",
+    "correct": "C",
+    "sat_key_phrases": ["what is the value of xy"],
+    "why_this_difficulty": "Hard — requires solving the full system (x = 4, y = 3) before multiplying; students who stop at finding one variable or who add instead of multiply get wrong answers",
+    "distractor_rationales": {
+      "A": "Student found y = 3 and reported y instead of xy",
+      "B": "Student found x = 4 and reported x instead of xy",
+      "C": "Correct: adding equations gives 4x = 16, x = 4; then y = 3; xy = 12",
+      "D": "Student reported the constant from the first equation"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "What is the value of xy?\n  2x − y = 3\n  x + y = 9\nA. 4\nB. 5\nC. 9\nD. 20",
+    "type": "solve_find_xy_product — eliminate to find both variables, then multiply",
+    "correct": "D",
+    "sat_key_phrases": ["what is the value of xy"],
+    "why_this_difficulty": "Hard — adding gives 3x = 12, x = 4; substituting gives y = 5; xy = 20; the challenge is completing all three steps without error",
+    "distractor_rationales": {
+      "A": "Student found x = 4 and reported x instead of xy",
+      "B": "Student found y = 5 and reported y instead of xy",
+      "C": "Student reported x + y = 9 (from the second equation) instead of the product",
+      "D": "Correct: x = 4, y = 5, xy = 20"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "What is the value of xy?\n  3x + 4y = 6\n  5x + 4y = 14\nA. −6\nB. −2\nC. 4\nD. 6",
+    "type": "solve_find_xy_product — subtract to isolate x, then find y, then compute product with a negative result",
+    "correct": "A",
+    "sat_key_phrases": ["what is the value of xy"],
+    "why_this_difficulty": "Hard — subtracting gives 2x = 8, x = 4; substituting back gives y = −3/2; xy = 4 × (−3/2) = −6; students who ignore the negative sign or stop early get wrong answers",
+    "distractor_rationales": {
+      "A": "Correct: x = 4, y = −3/2, xy = −6",
+      "B": "Student computed y = −3/2 and reported −2 from rounding or misreading",
+      "C": "Student found x = 4 and reported x instead of xy",
+      "D": "Student found xy = −6 but dropped the negative sign"
+    }
+  }
+]

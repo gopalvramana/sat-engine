@@ -575,6 +575,41 @@ function buildView(q) {
           ${statusBadge}
           ${enrichBadge}
         </div>
+
+        <!-- Inline editor — hidden until Edit is clicked -->
+        <div id="edit-panel" class="hidden mt-4 p-4 rounded-xl" style="border:1.5px solid #bfdbfe; background:#f0f7ff;">
+          <div class="text-xs font-bold mb-3" style="color:#1d4ed8;">✎ Edit Question</div>
+
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Question Stem</label>
+          <textarea id="edit-stem" rows="5" style="width:100%;font-size:12px;font-family:monospace;border:1px solid #cbd5e1;border-radius:8px;padding:8px;resize:vertical;margin-bottom:12px;">${escHtml(q.questionStem || '')}</textarea>
+
+          ${isMCQ ? `
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+            ${['A','B','C','D'].map(l => `
+            <div>
+              <label style="display:block;font-size:11px;font-weight:600;color:#475569;margin-bottom:4px;">Option ${l}</label>
+              <input id="edit-opt${l}" type="text" style="width:100%;font-size:12px;border:1px solid #cbd5e1;border-radius:8px;padding:6px;" value="${escHtml(q['option'+l] || '')}">
+            </div>`).join('')}
+          </div>
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-size:11px;font-weight:600;color:#475569;margin-bottom:4px;">Correct Answer</label>
+            <select id="edit-answer" style="font-size:12px;border:1px solid #cbd5e1;border-radius:8px;padding:6px;">
+              ${['A','B','C','D'].map(l => `<option value="${l}" ${q.correctAnswer===l?'selected':''}>${l}</option>`).join('')}
+            </select>
+          </div>` : `
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-size:11px;font-weight:600;color:#475569;margin-bottom:4px;">Correct Answer (numeric)</label>
+            <input id="edit-answer-spr" type="text" style="font-size:12px;border:1px solid #cbd5e1;border-radius:8px;padding:6px;width:120px;" value="${escHtml(q.correctAnswer || '')}">
+          </div>`}
+
+          <label style="display:block;font-size:11px;font-weight:600;color:#475569;margin-bottom:4px;">Short Explanation</label>
+          <input id="edit-expshort" type="text" style="width:100%;font-size:12px;border:1px solid #cbd5e1;border-radius:8px;padding:6px;margin-bottom:16px;" value="${escHtml(q.explanationShort || '')}">
+
+          <div style="display:flex;gap:8px;">
+            <button id="btn-edit-save" style="padding:6px 16px;font-size:12px;font-weight:600;border-radius:8px;background:#2563eb;color:white;border:none;cursor:pointer;">Save</button>
+            <button id="btn-edit-cancel" style="padding:6px 16px;font-size:12px;font-weight:600;border-radius:8px;background:#e2e8f0;color:#475569;border:none;cursor:pointer;">Cancel</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -587,6 +622,7 @@ function buildView(q) {
         <span class="text-xs font-semibold text-slate-400">Pool:</span>
         ${poolBtns}
         <span class="flex-1"></span>
+        <button class="btn-edit" id="btn-edit" title="Edit question stem, options and answer">✎ Edit</button>
         <button class="btn-approve ${status === 'approved' ? 'active' : ''}" id="btn-approve">
           ${status === 'approved' ? '✓ Approved' : '✓ Approve'}
         </button>
@@ -640,6 +676,81 @@ function wireEvents(q) {
       showToast(`Error: ${e.message}`, true);
     }
     updateStats(); buildSidebar(); renderQuestion();
+  });
+
+  /* ── Edit panel ── */
+  document.getElementById('btn-edit')?.addEventListener('click', () => {
+    const panel = document.getElementById('edit-panel');
+    if (panel) panel.classList.toggle('hidden');
+  });
+
+  document.getElementById('btn-edit-cancel')?.addEventListener('click', () => {
+    document.getElementById('edit-panel')?.classList.add('hidden');
+  });
+
+  document.getElementById('btn-edit-save')?.addEventListener('click', async () => {
+    const btn = document.getElementById('btn-edit-save');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+
+    const isMcq = (q.questionType || 'mcq').toLowerCase() === 'mcq';
+
+    // Collect field changes
+    const fields = {};
+    const stem = document.getElementById('edit-stem')?.value ?? null;
+    if (stem !== null && stem !== q.questionStem) fields.questionStem = stem;
+
+    const expShort = document.getElementById('edit-expshort')?.value ?? null;
+    if (expShort !== null && expShort !== (q.explanationShort || '')) fields.explanationShort = expShort;
+
+    if (isMcq) {
+      for (const l of ['A','B','C','D']) {
+        const val = document.getElementById(`edit-opt${l}`)?.value ?? null;
+        if (val !== null && val !== (q['option'+l] || '')) fields['option'+l] = val;
+      }
+    }
+
+    try {
+      // Patch text fields
+      if (Object.keys(fields).length > 0) {
+        await fetch(`/api/admin/questions/${q.id}/fields`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(fields)
+        }).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); });
+        // Update local object
+        Object.entries(fields).forEach(([k, v]) => {
+          if (k === 'questionStem')    q.questionStem    = v;
+          if (k === 'explanationShort') q.explanationShort = v;
+          if (k === 'optionA') q.optionA = v;
+          if (k === 'optionB') q.optionB = v;
+          if (k === 'optionC') q.optionC = v;
+          if (k === 'optionD') q.optionD = v;
+        });
+      }
+
+      // Patch correctAnswer
+      const newAnswer = isMcq
+        ? document.getElementById('edit-answer')?.value
+        : document.getElementById('edit-answer-spr')?.value;
+      if (newAnswer && newAnswer !== q.correctAnswer) {
+        await fetch(`/api/admin/questions/${q.id}/answer`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ correctAnswer: newAnswer })
+        }).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); });
+        q.correctAnswer = newAnswer;
+      }
+
+      showToast(`✎ ${q.externalId} saved`);
+      document.getElementById('edit-panel')?.classList.add('hidden');
+      renderQuestion(q);
+    } catch (e) {
+      showToast(`Save failed: ${e.message}`, true);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Save';
+    }
   });
 
   const poolDefs2 = [
@@ -791,6 +902,7 @@ function processText(text) {
     }
     return seg.t
       .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/&lt;br\s*\/?&gt;/gi,     '<br>')
       .replace(/&lt;(\/?)table&gt;/gi,  (_, a) => `<${a}table>`)
       .replace(/&lt;(\/?)thead&gt;/gi,  (_, a) => `<${a}thead>`)
       .replace(/&lt;(\/?)tbody&gt;/gi,  (_, a) => `<${a}tbody>`)
@@ -811,6 +923,12 @@ function processText(text) {
 
 function renderKaTeXIn(el) {
   if (window.renderMathInElement && el) {
+    // Normalize spaced LaTeX delimiters Haiku sometimes generates: "\ (" → "\("
+    el.innerHTML = el.innerHTML
+      .replace(/\\ \(/g, '\\(')
+      .replace(/\\ \)/g, '\\)')
+      .replace(/\\ \[/g, '\\[')
+      .replace(/\\ \]/g, '\\]');
     renderMathInElement(el, {
       delimiters: [
         // Only \(...\) and \[...\] — never $ or $$ which collide with currency text

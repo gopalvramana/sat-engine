@@ -57,6 +57,16 @@ sentry:
   dsn: ${SENTRY_DSN:}
   environment: ${SENTRY_ENVIRONMENT:local}
   traces-sample-rate: 0.0   # error capture is free; tracing costs quota — enable later
+
+# ── SymPy Pipeline ────────────────────────────────────────────────────────────
+sympy:
+  python:
+    # Path to Python interpreter with sympy installed.
+    # Override in application-local.yml to point at your venv, e.g.:
+    #   sympy.python.interpreter: /Users/you/SatEngine/venv/bin/python3
+    interpreter: ${SYMPY_PYTHON:python3}
+    # Absolute path to math_engine.py (defaults to scripts/ next to the working dir)
+    script: ${SYMPY_SCRIPT:scripts/math_engine.py}
   logging:
     minimum-event-level: error          # only send ERROR logs to Sentry
     minimum-breadcrumb-level: info      # attach INFO+ as breadcrumb context on errors

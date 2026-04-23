@@ -287,6 +287,14 @@
 }
 .btn-fix:hover { background: #dbeafe; }
 
+.btn-edit {
+  padding: 0.42rem 1rem; border-radius: 9999px; font-size: 0.82rem; font-weight: 700;
+  border: 1.5px solid #94a3b8; color: #475569; background: #f8fafc;
+  cursor: pointer; transition: all 0.15s;
+}
+.btn-edit:hover  { background: #f1f5f9; border-color: #64748b; }
+.btn-edit.active { background: #1e40af; color: #fff; border-color: #1d4ed8; }
+
 /* ── Nav buttons ──────────────────────────────────────────── */
 .nav-btn {
   display: inline-flex; align-items: center; gap: 0.35rem;

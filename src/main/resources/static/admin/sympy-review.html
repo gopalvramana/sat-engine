@@ -1,0 +1,2438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SymPy Review — SAT Engine Admin</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" href="css/validate.css?v=5">
+  <link rel="stylesheet" href="css/validate2.css?v=8">
+
+  <style>
+    body { background: #f5f0e8 !important; font-family: 'Inter', sans-serif; }
+
+    /* ── Header ────────────────────────────────────────────────── */
+    .sr-header {
+      background: #0e1c2f;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .nav-btn {
+      background: rgba(255,255,255,0.07);
+      border: 1.5px solid rgba(255,255,255,0.18);
+      color: rgba(255,255,255,0.75);
+      font-weight: 600;
+      padding: 5px 14px; border-radius: 7px;
+      font-size: 13px; cursor: pointer; text-decoration: none;
+      transition: background 0.12s, color 0.12s;
+    }
+    .nav-btn:hover { background: rgba(255,255,255,0.13); color: #fff; }
+
+    /* ── Toolbar ───────────────────────────────────────────────── */
+    .toolbar {
+      background: #fff;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 12px 24px;
+      display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+    }
+    .toolbar select, .toolbar input {
+      border: 1.5px solid #d1d5db; border-radius: 7px;
+      padding: 6px 10px; font-size: 13px; background: #fafafa;
+    }
+    .toolbar select:focus, .toolbar input:focus {
+      outline: none; border-color: #6366f1;
+    }
+    .toolbar label { font-size: 12px; font-weight: 600; color: #6b7280; }
+
+    /* ── Stats bar ─────────────────────────────────────────────── */
+    .stats-bar {
+      background: #0e1c2f; color: #fff;
+      padding: 8px 24px;
+      display: flex; gap: 24px; align-items: center; flex-wrap: wrap;
+      font-size: 13px;
+    }
+    .stat-pill {
+      display: flex; align-items: center; gap: 6px;
+    }
+    .stat-pill .badge {
+      font-weight: 700; padding: 2px 9px;
+      border-radius: 20px; font-size: 12px;
+    }
+
+    /* ── Question cards (legacy, kept for badge/button styles) ─── */
+    .q-card {
+      background: #fff;
+      border-radius: 12px;
+      border: 1.5px solid #e5e7eb;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      overflow: hidden;
+      transition: box-shadow 0.15s;
+    }
+    .q-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.10); }
+    .q-card.approved { border-color: #22c55e; }
+    .q-card.rejected { border-color: #ef4444; opacity: 0.7; }
+    .q-card.generated_flagged { border-color: #f59e0b; }
+
+    .q-card-header {
+      padding: 10px 14px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid #f3f4f6;
+      background: #f9fafb;
+    }
+    .q-id { font-size: 12px; font-weight: 700; color: #6366f1; font-family: monospace; }
+    .q-meta { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+
+    .badge-skill {
+      background: #ede9fe; color: #7c3aed;
+      font-size: 11px; font-weight: 600;
+      padding: 2px 8px; border-radius: 20px;
+    }
+    .badge-diff {
+      background: #fef3c7; color: #92400e;
+      font-size: 11px; font-weight: 700;
+      padding: 2px 8px; border-radius: 20px;
+    }
+    .badge-type {
+      background: #dbeafe; color: #1e40af;
+      font-size: 11px; font-weight: 600;
+      padding: 2px 8px; border-radius: 20px;
+    }
+    .badge-status {
+      font-size: 11px; font-weight: 600;
+      padding: 2px 8px; border-radius: 20px;
+    }
+    .badge-status.generated    { background: #e0f2fe; color: #0369a1; }
+    .badge-status.generated_flagged { background: #fef9c3; color: #a16207; }
+    .badge-status.approved     { background: #dcfce7; color: #15803d; }
+    .badge-status.rejected     { background: #fee2e2; color: #b91c1c; }
+    .badge-status.promoted     { background: #ede9fe; color: #6d28d9; }
+
+    .badge-pool {
+      font-size: 11px; font-weight: 600;
+      padding: 2px 8px; border-radius: 20px;
+    }
+    .badge-pool.diagnostic { background: #ede9fe; color: #7c3aed; }
+    .badge-pool.drill      { background: #dbeafe; color: #1e40af; }
+    .badge-pool.test       { background: #fef3c7; color: #92400e; }
+    .badge-pool.reference  { background: #f3f4f6; color: #4b5563; }
+
+    .q-card.promoted { border-color: #8b5cf6; }
+
+    .q-body { padding: 14px 16px; }
+
+    /* Question stem */
+    .q-stem {
+      font-size: 15px; line-height: 1.6; color: #111827;
+      margin-bottom: 14px;
+    }
+
+    /* Options */
+    .q-options { display: flex; flex-direction: column; gap: 7px; margin-bottom: 14px; }
+    .q-option {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 8px 11px; border-radius: 8px;
+      border: 1.5px solid #e5e7eb;
+      font-size: 14px; line-height: 1.5; color: #374151;
+      background: #fafafa;
+    }
+    .q-option.correct {
+      border-color: #22c55e;
+      background: #f0fdf4;
+    }
+    .q-option .opt-letter {
+      font-weight: 700; font-size: 12px;
+      color: #6b7280; min-width: 16px; padding-top: 1px;
+    }
+    .q-option.correct .opt-letter { color: #16a34a; }
+
+    /* SPR answer */
+    .spr-answer {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 11px; border-radius: 8px;
+      border: 1.5px solid #22c55e; background: #f0fdf4;
+      font-size: 14px; color: #15803d; font-weight: 600;
+      margin-bottom: 14px;
+    }
+
+    /* Explanation */
+    .q-explanation {
+      font-size: 13px; color: #6b7280; line-height: 1.5;
+      margin-bottom: 10px;
+    }
+
+    /* Diagram */
+    .q-diagram { margin: 10px 0; text-align: center; cursor: zoom-in; }
+    .q-diagram svg { max-width: 100%; }
+    .q-diagram:hover { opacity: 0.85; }
+
+    /* Diagram modal */
+    .diag-modal-overlay {
+      display: none; position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,0.6); backdrop-filter: blur(3px);
+      align-items: center; justify-content: center;
+    }
+    .diag-modal-overlay.open { display: flex; }
+    .diag-modal-box {
+      background: #fff; border-radius: 16px;
+      padding: 24px; max-width: 90vw; max-height: 90vh;
+      overflow: auto; position: relative;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+    .diag-modal-close {
+      position: absolute; top: 12px; right: 14px;
+      font-size: 20px; cursor: pointer; color: #6b7280;
+      background: none; border: none; line-height: 1;
+    }
+    .diag-modal-close:hover { color: #111; }
+    .diag-modal-title {
+      font-size: 13px; font-weight: 700; color: #6366f1;
+      font-family: monospace; margin-bottom: 16px;
+    }
+
+    /* Flag banner */
+    .flag-banner {
+      background: #fef9c3; border: 1px solid #fde047;
+      border-radius: 7px; padding: 7px 11px;
+      font-size: 12px; color: #a16207;
+      margin-bottom: 10px;
+      display: flex; gap: 6px; align-items: flex-start;
+    }
+
+    /* Debug panel */
+    .debug-panel {
+      background: #1e1e1e; color: #d4d4d4;
+      border-radius: 8px; font-size: 11px; font-family: monospace;
+      padding: 10px 12px; margin-top: 10px;
+      max-height: 200px; overflow-y: auto;
+      white-space: pre-wrap; word-break: break-all;
+      display: none;
+    }
+    .debug-panel.open { display: block; }
+
+    /* Actions */
+    .q-actions {
+      padding: 10px 14px;
+      border-top: 1px solid #f3f4f6;
+      display: flex; gap: 8px; align-items: center;
+      flex-wrap: wrap;
+    }
+    .btn-approve {
+      background: #22c55e; color: #fff;
+      border: none; border-radius: 7px;
+      padding: 6px 16px; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: background 0.12s;
+    }
+    .btn-approve:hover { background: #16a34a; }
+    .btn-reject {
+      background: #ef4444; color: #fff;
+      border: none; border-radius: 7px;
+      padding: 6px 16px; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: background 0.12s;
+    }
+    .btn-reject:hover { background: #dc2626; }
+    .btn-revert {
+      background: #f3f4f6; color: #374151;
+      border: 1.5px solid #d1d5db; border-radius: 7px;
+      padding: 6px 14px; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: background 0.12s;
+    }
+    .btn-revert:hover { background: #e5e7eb; }
+    .btn-promote {
+      background: #7c3aed; color: #fff;
+      border: none; border-radius: 7px;
+      padding: 6px 16px; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: background 0.12s;
+    }
+    .btn-promote:hover { background: #6d28d9; }
+    .btn-approve-only {
+      background: transparent; color: #15803d;
+      border: 1.5px solid #22c55e; border-radius: 7px;
+      padding: 5px 12px; font-size: 12px; font-weight: 600;
+      cursor: pointer; transition: background 0.12s;
+    }
+    .btn-approve-only:hover { background: #f0fdf4; }
+    .pool-override {
+      border: 1.5px solid #d1d5db; border-radius: 6px;
+      padding: 4px 8px; font-size: 12px; background: #fafafa;
+      cursor: pointer;
+    }
+    .pool-override:focus { outline: none; border-color: #7c3aed; }
+    .btn-debug {
+      margin-left: auto;
+      background: transparent; color: #9ca3af;
+      border: 1.5px solid #e5e7eb; border-radius: 7px;
+      padding: 5px 11px; font-size: 12px;
+      cursor: pointer; transition: color 0.1s;
+    }
+    .btn-debug:hover { color: #6366f1; border-color: #6366f1; }
+
+    /* Loading */
+    .loading-bar {
+      height: 3px; background: #6366f1;
+      animation: loading 1.2s ease-in-out infinite;
+      transform-origin: left;
+    }
+    @keyframes loading { 0%,100%{transform:scaleX(0.2)} 50%{transform:scaleX(0.9)} }
+
+    /* Two-panel layout */
+    .review-layout {
+      display: flex;
+      height: calc(100vh - 160px);
+      overflow: hidden;
+    }
+
+    /* Left sidebar */
+    .q-sidebar {
+      width: 300px;
+      min-width: 260px;
+      border-right: 1px solid #e5e7eb;
+      background: #f9fafb;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+    .sidebar-header {
+      padding: 10px 12px;
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.05em; color: #6b7280;
+      border-bottom: 1px solid #e5e7eb;
+      background: #fff;
+      position: sticky; top: 0; z-index: 1;
+    }
+    .sidebar-item {
+      padding: 9px 12px;
+      border-bottom: 1px solid #f3f4f6;
+      cursor: pointer;
+      display: flex; flex-direction: column; gap: 4px;
+      transition: background 0.1s;
+    }
+    .sidebar-item:hover { background: #ede9fe; }
+    .sidebar-item.active { background: #ede9fe; border-left: 3px solid #6366f1; }
+    .sidebar-item.active .si-id { color: #4f46e5; }
+    .si-id { font-size: 11px; font-weight: 700; color: #6b7280; font-family: monospace; }
+    .si-meta { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
+    .si-skill { font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 10px; background: #ede9fe; color: #7c3aed; }
+    .si-diff  { font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 10px; background: #fef3c7; color: #92400e; }
+    .si-status { font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 10px; }
+    .si-status.generated { background: #e0f2fe; color: #0369a1; }
+    .si-status.generated_flagged { background: #fef9c3; color: #a16207; }
+    .si-status.approved  { background: #dcfce7; color: #15803d; }
+    .si-status.rejected  { background: #fee2e2; color: #b91c1c; }
+    .si-status.promoted  { background: #ede9fe; color: #6d28d9; }
+
+    /* Right detail panel */
+    .q-detail {
+      flex: 1;
+      overflow-y: auto;
+      background: #f5f0e8;
+      padding: 24px;
+    }
+    .detail-empty {
+      display: flex; align-items: center; justify-content: center;
+      height: 100%; color: #9ca3af; font-size: 15px;
+    }
+
+    /* Detail card */
+    .detail-card {
+      background: #fff;
+      border-radius: 14px;
+      border: 1.5px solid #e5e7eb;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      overflow: hidden;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+    .detail-card.approved  { border-color: #22c55e; }
+    .detail-card.rejected  { border-color: #ef4444; opacity: 0.8; }
+    .detail-card.promoted  { border-color: #8b5cf6; }
+    .detail-card.generated_flagged { border-color: #f59e0b; }
+
+    .detail-header {
+      padding: 12px 18px;
+      background: #f9fafb;
+      border-bottom: 1px solid #f3f4f6;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 8px;
+    }
+    .detail-nav {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .nav-arrow {
+      background: #f3f4f6; border: 1.5px solid #d1d5db;
+      border-radius: 7px; padding: 4px 12px; font-size: 14px;
+      cursor: pointer; font-weight: 700;
+      transition: background 0.12s;
+    }
+    .nav-arrow:hover:not(:disabled) { background: #e5e7eb; }
+    .nav-arrow:disabled { opacity: 0.35; cursor: not-allowed; }
+    .nav-counter { font-size: 12px; color: #6b7280; font-weight: 600; min-width: 60px; text-align: center; }
+
+    .detail-body { padding: 20px 22px; }
+
+    /* Question stem */
+    .detail-stem {
+      font-size: 17px; line-height: 1.7; color: #111827;
+      margin-bottom: 18px;
+    }
+
+    /* Options */
+    .detail-options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+    .detail-option {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 10px 13px; border-radius: 9px;
+      border: 1.5px solid #e5e7eb;
+      font-size: 14px; line-height: 1.5; color: #374151;
+      background: #fafafa;
+    }
+    .detail-option.correct { border-color: #22c55e; background: #f0fdf4; }
+    .opt-letter { font-weight: 700; font-size: 12px; color: #6b7280; min-width: 18px; padding-top: 1px; }
+    .detail-option.correct .opt-letter { color: #16a34a; }
+
+    /* SPR */
+    .detail-spr {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 13px; border-radius: 9px;
+      border: 1.5px solid #22c55e; background: #f0fdf4;
+      font-size: 15px; color: #15803d; font-weight: 600;
+      margin-bottom: 18px;
+    }
+
+    /* Section blocks */
+    .detail-section {
+      border-top: 1px solid #f3f4f6;
+      padding: 14px 0 4px;
+      margin-bottom: 4px;
+    }
+    .detail-section-title {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; color: #9ca3af; margin-bottom: 10px;
+    }
+
+    /* Core concept */
+    .core-concept-box {
+      background: #ede9fe; border-radius: 8px;
+      padding: 10px 14px; font-size: 14px; color: #4c1d95; font-weight: 500;
+    }
+
+    /* Prerequisites */
+    .prereq-list { display: flex; gap: 7px; flex-wrap: wrap; }
+    .prereq-tag {
+      background: #dbeafe; color: #1e40af;
+      font-size: 12px; font-weight: 600;
+      padding: 3px 10px; border-radius: 20px;
+    }
+
+    /* Solution steps */
+    .steps-list { display: flex; flex-direction: column; gap: 10px; }
+    .step-row {
+      display: flex; gap: 12px; align-items: flex-start;
+    }
+    .step-num {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: #6366f1; color: #fff;
+      font-size: 11px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 2px;
+    }
+    .step-content { font-size: 14px; line-height: 1.6; color: #374151; }
+    .step-title { font-weight: 700; color: #111827; margin-bottom: 3px; font-size: 14px; }
+
+    /* Distractor rationale */
+    .distractor-list { display: flex; flex-direction: column; gap: 8px; }
+    .distractor-row {
+      display: flex; gap: 10px; align-items: flex-start;
+      padding: 8px 11px; background: #fff7ed; border-radius: 7px;
+      border: 1px solid #fed7aa; font-size: 13px;
+    }
+    .distractor-letter {
+      font-weight: 700; font-size: 12px; color: #ea580c;
+      min-width: 16px;
+    }
+
+    /* Alternative approach */
+    .alt-approach-box {
+      background: #f0fdf4; border-radius: 8px;
+      padding: 11px 14px; font-size: 14px; color: #166534; line-height: 1.6;
+      border: 1px solid #bbf7d0;
+    }
+
+    /* Flag banner (detail) */
+    .flag-banner {
+      background: #fef9c3; border: 1px solid #fde047;
+      border-radius: 7px; padding: 8px 12px;
+      font-size: 13px; color: #a16207;
+      margin-bottom: 14px;
+      display: flex; gap: 7px; align-items: flex-start;
+    }
+
+    /* Actions bar */
+    .detail-actions {
+      padding: 14px 18px;
+      border-top: 1px solid #f3f4f6;
+      display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+      background: #f9fafb;
+    }
+
+    /* Debug panel (detail) */
+    .debug-panel {
+      background: #1e1e1e; color: #d4d4d4;
+      border-radius: 8px; font-size: 11px; font-family: monospace;
+      padding: 10px 12px; margin-top: 10px;
+      max-height: 220px; overflow-y: auto;
+      white-space: pre-wrap; word-break: break-all;
+      display: none;
+    }
+    .debug-panel.open { display: block; }
+
+    /* Two-column detail body */
+    .detail-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      align-items: start;
+    }
+    .detail-left {
+      padding-right: 22px;
+      border-right: 1px solid #f3f4f6;
+    }
+    .detail-right {
+      padding-left: 22px;
+    }
+    .detail-right .detail-section:first-child {
+      border-top: none;
+      padding-top: 0;
+    }
+
+    /* Clickable stat pills */
+    .stat-pill { cursor: pointer; transition: opacity 0.15s; }
+    .stat-pill:hover { opacity: 0.75; }
+    .stat-pill.active-filter .badge { outline: 2px solid #fff; outline-offset: 1px; }
+  </style>
+
+  <script src="js/renderer.js?v=14"></script>
+</head>
+<body>
+
+<!-- ══ HEADER ══════════════════════════════════════════════════════════════ -->
+<header class="sr-header">
+  <div class="px-6 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <span style="font-size:18px; font-weight:800; color:#fff; letter-spacing:-0.5px;">
+        ⚗️ SymPy Review
+      </span>
+      <nav style="display:flex; gap:4px; margin-left:8px;">
+        <a href="validate.html" class="nav-btn" style="font-size:12px;">LLM Pipeline</a>
+        <a href="sympy-review.html" class="nav-btn"
+           style="background:rgba(99,102,241,0.2); border-color:rgba(99,102,241,0.5); color:#a5b4fc; font-size:12px;">
+          SymPy Pipeline
+        </a>
+        <a href="pipeline.html" class="nav-btn" style="font-size:12px;">Pipeline Jobs</a>
+        <a href="spread.html" class="nav-btn" style="font-size:12px;">Coverage</a>
+      </nav>
+    </div>
+    <div class="flex items-center gap-3">
+      <button id="btn-refresh" class="nav-btn" onclick="loadQuestions()">↻ Refresh</button>
+      <span id="count-badge" style="font-size:12px; color:rgba(255,255,255,0.5);"></span>
+    </div>
+  </div>
+</header>
+
+<!-- Loading bar -->
+<div id="loading-bar" class="loading-bar" style="display:none;"></div>
+
+<!-- ══ STATS BAR ════════════════════════════════════════════════════════════ -->
+<div class="stats-bar" id="stats-bar" style="display:none;">
+  <span style="font-weight:700; font-size:12px; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:0.5px;">
+    Summary
+  </span>
+  <div class="stat-pill" id="pill-generated" onclick="setStatusFilter('generated')" title="Show pending questions">
+    <span class="badge" style="background:#f59e0b;">Pending</span>
+    <span id="stat-total">—</span>
+  </div>
+  <div class="stat-pill" id="pill-approved" onclick="setStatusFilter('approved')" title="Show approved questions">
+    <span class="badge" style="background:#22c55e;">Approved</span>
+    <span id="stat-approved">—</span>
+  </div>
+  <div class="stat-pill" id="pill-generated_flagged" onclick="setStatusFilter('generated_flagged')" title="Show flagged questions">
+    <span class="badge" style="background:#f59e0b;">Flagged</span>
+    <span id="stat-flagged">—</span>
+  </div>
+  <div class="stat-pill" id="pill-rejected" onclick="setStatusFilter('rejected')" title="Show rejected questions">
+    <span class="badge" style="background:#ef4444;">Rejected</span>
+    <span id="stat-rejected">—</span>
+  </div>
+  <div class="stat-pill" id="pill-promoted" onclick="setStatusFilter('promoted')" title="Show promoted questions">
+    <span class="badge" style="background:#7c3aed;">Promoted</span>
+    <span id="stat-promoted">—</span>
+  </div>
+  <div class="stat-pill" id="pill-reference" onclick="setStatusFilter('reference')" title="Test-run questions archived in reference pool" style="opacity:0.55;">
+    <span class="badge" style="background:#6b7280;">Reference</span>
+    <span id="stat-reference">—</span>
+  </div>
+  <select id="filter-skill" onchange="loadQuestions()" style="margin-left:auto;">
+    <option value="">All skills</option>
+    <option value="linear_eq_one_var">L1V — Linear Eq (1 var)</option>
+    <option value="linear_eq_two_var">L2V — Linear Eq (2 var)</option>
+    <option value="linear_inequalities">LIN — Linear Inequalities</option>
+    <option value="systems_linear_eq">SLE — Systems (2 var)</option>
+  </select>
+</div>
+
+<!-- ══ DIAGRAM MODAL ══════════════════════════════════════════════════════════ -->
+<div class="diag-modal-overlay" id="diag-modal" onclick="closeDiagModal(event)">
+  <div class="diag-modal-box" id="diag-modal-box">
+    <button class="diag-modal-close" onclick="closeDiagModal()">✕</button>
+    <div class="diag-modal-title" id="diag-modal-title"></div>
+    <div id="diag-modal-content" style="display:flex; justify-content:center;"></div>
+    <div id="diag-modal-stem" style="margin-top:16px; padding-top:14px; border-top:1px solid #e5e7eb;
+         font-size:14px; color:#374151; line-height:1.6; max-width:540px;"></div>
+  </div>
+</div>
+
+<!-- ══ REVIEW LAYOUT ══════════════════════════════════════════════════════ -->
+<div class="review-layout">
+
+  <!-- Left sidebar: question list -->
+  <div class="q-sidebar" id="q-sidebar">
+    <div class="sidebar-header" id="sidebar-header">0 questions</div>
+    <div id="sidebar-list"></div>
+  </div>
+
+  <!-- Right: single question detail -->
+  <div class="q-detail" id="q-detail">
+    <div class="detail-empty" id="detail-empty">
+      <span>Select a question from the list, or generate new questions.</span>
+    </div>
+    <div id="detail-panel" style="display:none;"></div>
+  </div>
+
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════════════════════
+// Data + state
+// ════════════════════════════════════════════════════════════════════════════
+let allQuestions = [];
+let currentIndex = 0;
+let filteredQuestions = [];
+
+// ════════════════════════════════════════════════════════════════════════════
+// API helpers
+// ════════════════════════════════════════════════════════════════════════════
+async function apiGet(url) {
+  const r = await fetch(url);
+  if (!r.ok) throw new Error(`GET ${url} → ${r.status}`);
+  return r.json();
+}
+
+async function apiPatch(url) {
+  const r = await fetch(url, { method: 'PATCH' });
+  if (!r.ok) throw new Error(`PATCH ${url} → ${r.status}`);
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// Load
+// ════════════════════════════════════════════════════════════════════════════
+async function loadQuestions() {
+  const status    = currentStatus;
+  const skillKey  = document.getElementById('filter-skill').value;
+
+  let url = `/api/admin/sympy/questions?status=${status}`;
+  if (skillKey)   url += `&skillKey=${encodeURIComponent(skillKey)}`;
+
+  setLoading(true);
+  try {
+    allQuestions = await apiGet(url);
+    renderGrid(allQuestions);
+    updateCount(allQuestions.length);
+    await loadStats();
+  } catch (e) {
+    console.error(e);
+    showEmpty(`Error loading questions: ${e.message}`);
+  } finally {
+    setLoading(false);
+  }
+}
+
+async function loadStats() {
+  try {
+    const stats = await apiGet('/api/admin/sympy/stats');
+    document.getElementById('stat-total').textContent     = stats.pendingReview ?? 0;
+    document.getElementById('stat-approved').textContent  = stats.approved;
+    document.getElementById('stat-flagged').textContent   = stats.flagged;
+    document.getElementById('stat-rejected').textContent  = stats.rejected;
+    document.getElementById('stat-promoted').textContent  = stats.promoted  ?? 0;
+    document.getElementById('stat-reference').textContent = stats.reference ?? 0;
+
+    document.getElementById('stats-bar').style.display = 'flex';
+  } catch(e) { /* non-fatal */ }
+}
+
+
+function setStatusFilter(status) {
+  // 'reference' is a pool value, not a status — handle separately
+  if (status === 'reference') {
+    currentStatus = 'all';
+    currentPool = 'reference';
+  } else {
+    currentStatus = status;
+    currentPool = 'active';
+  }
+  // Highlight the active pill
+  document.querySelectorAll('.stat-pill').forEach(p => p.classList.remove('active-filter'));
+  const pill = document.getElementById('pill-' + status);
+  if (pill) pill.classList.add('active-filter');
+  loadQuestions();
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// Render
+// ════════════════════════════════════════════════════════════════════════════
+function renderGrid(questions) {
+  let filtered = questions;
+  if (currentPool === 'active') {
+    filtered = filtered.filter(q => q.pool !== 'reference');
+  } else if (currentPool) {
+    filtered = filtered.filter(q => q.pool === currentPool);
+  }
+
+  filteredQuestions = filtered;
+
+  const sidebarList = document.getElementById('sidebar-list');
+  const sidebarHeader = document.getElementById('sidebar-header');
+
+  if (filtered.length === 0) {
+    sidebarList.innerHTML = '<div style="padding:16px 12px; font-size:13px; color:#9ca3af;">No questions match the current filters.</div>';
+    sidebarHeader.textContent = '0 questions';
+    document.getElementById('detail-empty').style.display = 'flex';
+    document.getElementById('detail-panel').style.display = 'none';
+    return;
+  }
+
+  sidebarHeader.textContent = filtered.length + ' question' + (filtered.length !== 1 ? 's' : '');
+  sidebarList.innerHTML = filtered.map((q, i) => buildSidebarItem(q, i)).join('');
+
+  // Show first question
+  showQuestion(0);
+}
+
+function buildSidebarItem(q, index) {
+  const poolBadge = q.pool
+    ? `<span style="font-size:10px; font-weight:600; padding:1px 6px; border-radius:10px; background:#f3f4f6; color:#4b5563;">${q.pool}</span>`
+    : '';
+  return `
+    <div class="sidebar-item" id="si-${q.id}" onclick="showQuestion(${index})">
+      <span class="si-id">${escHtml(q.externalId || '—')}</span>
+      <div class="si-meta">
+        <span class="si-skill">${skillCode(q.skillKey)}</span>
+        <span class="si-diff">d${q.difficulty}</span>
+        ${poolBadge}
+        <span class="si-status ${q.status}">${statusLabel(q.status)}</span>
+      </div>
+    </div>`;
+}
+
+function showQuestion(index) {
+  if (filteredQuestions.length === 0) return;
+  index = Math.max(0, Math.min(index, filteredQuestions.length - 1));
+  currentIndex = index;
+  const q = filteredQuestions[index];
+
+  // Highlight active sidebar item
+  document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+  const activeItem = document.getElementById(`si-${q.id}`);
+  if (activeItem) {
+    activeItem.classList.add('active');
+    activeItem.scrollIntoView({ block: 'nearest' });
+  }
+
+  // Render detail panel
+  const panel = document.getElementById('detail-panel');
+  panel.style.display = 'block';
+  document.getElementById('detail-empty').style.display = 'none';
+  panel.innerHTML = buildDetailPanel(q);
+
+  // Render KaTeX
+  if (typeof renderMathInElement === 'function') {
+    panel.querySelectorAll('.detail-stem, .detail-option span:nth-child(2), .detail-spr span:nth-child(2), .step-content, .core-concept-box, .alt-approach-box, .distractor-row span:nth-child(2)').forEach(el => {
+      renderMathInElement(el, {
+        delimiters: [
+          { left: '\\[', right: '\\]', display: true  },  // new questions (primary)
+          { left: '\\(', right: '\\)', display: false },   // new questions (primary)
+          { left: '$$',  right: '$$',  display: true  },  // legacy reference pool
+        ],
+        throwOnError: false
+      });
+    });
+  }
+
+  // Render diagram
+  if (q.diagram) {
+    try {
+      const spec = typeof q.diagram === 'string' ? JSON.parse(q.diagram) : q.diagram;
+      const host = document.getElementById(`diagram-${q.id}`);
+      if (host && spec) renderSympyDiagram(spec, host);
+    } catch(e) { console.warn('Diagram render error:', e); }
+  }
+
+  // Update nav counter
+  const counter = panel.querySelector('.nav-counter');
+  if (counter) counter.textContent = (index + 1) + ' / ' + filteredQuestions.length;
+  const btnPrev = panel.querySelector('.nav-prev');
+  const btnNext = panel.querySelector('.nav-next');
+  if (btnPrev) btnPrev.disabled = index === 0;
+  if (btnNext) btnNext.disabled = index === filteredQuestions.length - 1;
+}
+
+function navPrev() { showQuestion(currentIndex - 1); }
+function navNext() { showQuestion(currentIndex + 1); }
+
+function buildDetailPanel(q) {
+  const isMCQ = q.questionType === 'mcq';
+  const isSPR = q.questionType === 'spr';
+  const isFlagged = q.status === 'generated_flagged';
+
+  // Flag banner
+  const flagHtml = isFlagged && q.reviewNotes ? `
+    <div class="flag-banner">
+      <span style="font-size:14px;">⚠️</span>
+      <span><strong>Sonnet flagged:</strong> ${escHtml(q.reviewNotes)}</span>
+    </div>` : '';
+
+  // Diagram
+  const diagHtml = q.diagram ? `
+    <div class="q-diagram" id="diagram-${q.id}" onclick="openDiagModal('${q.id}')" title="Click to enlarge" style="margin:0 0 18px; cursor:zoom-in; text-align:center;"></div>` : '';
+
+  // Options (MCQ)
+  const optionsHtml = isMCQ ? `
+    <div class="detail-options">
+      ${['A','B','C','D'].map(letter => {
+        const text = q['option' + letter];
+        if (!text) return '';
+        const isCorrect = q.correctAnswer === letter;
+        return `
+          <div class="detail-option ${isCorrect ? 'correct' : ''}">
+            <span class="opt-letter">${letter}</span>
+            <span>${escHtml(text)}</span>
+            ${isCorrect ? '<span style="margin-left:auto; font-size:11px; color:#16a34a; font-weight:700;">✓ correct</span>' : ''}
+          </div>`;
+      }).join('')}
+    </div>` : '';
+
+  // SPR answer
+  const sprHtml = isSPR ? `
+    <div class="detail-spr">
+      <span style="font-size:11px; font-weight:600; color:#15803d;">Answer:</span>
+      <span>${escHtml(q.correctAnswer || '—')}</span>
+      ${(q.sprMin != null && parseFloat(q.sprMin) !== parseFloat(q.sprMax)) ? `<span style="font-size:11px; color:#6b7280; margin-left:4px;">(range: ${q.sprMin} – ${q.sprMax})</span>` : ''}
+    </div>` : '';
+
+  // Core concept
+  const coreConceptHtml = q.coreConcept ? `
+    <div class="detail-section">
+      <div class="detail-section-title">Core Concept</div>
+      <div class="core-concept-box">${escHtml(q.coreConcept)}</div>
+    </div>` : '';
+
+  // Prerequisites
+  let prereqHtml = '';
+  if (q.prerequisites) {
+    try {
+      const prereqs = typeof q.prerequisites === 'string' ? JSON.parse(q.prerequisites) : q.prerequisites;
+      if (Array.isArray(prereqs) && prereqs.length) {
+        prereqHtml = `
+          <div class="detail-section">
+            <div class="detail-section-title">Prerequisites</div>
+            <div class="prereq-list">
+              ${prereqs.map(p => `<span class="prereq-tag">${escHtml(p)}</span>`).join('')}
+            </div>
+          </div>`;
+      }
+    } catch(e) { /* skip */ }
+  }
+
+  // Solution steps
+  let stepsHtml = '';
+  if (q.explanationSteps) {
+    try {
+      const steps = typeof q.explanationSteps === 'string' ? JSON.parse(q.explanationSteps) : q.explanationSteps;
+      if (Array.isArray(steps) && steps.length) {
+        stepsHtml = `
+          <div class="detail-section">
+            <div class="detail-section-title">Solution Steps</div>
+            <div class="steps-list">
+              ${steps.map((s, i) => `
+                <div class="step-row">
+                  <div class="step-num">${(s.step != null ? s.step : i + 1)}</div>
+                  <div class="step-content">
+                    ${s.title ? `<div class="step-title">${escHtml(s.title)}</div>` : ''}
+                    <div>${escHtml(s.content || '')}</div>
+                  </div>
+                </div>`).join('')}
+            </div>
+          </div>`;
+      }
+    } catch(e) { /* skip */ }
+  }
+
+  // Distractor rationale (MCQ only)
+  let distractorHtml = '';
+  if (isMCQ && q.distractorRationale) {
+    try {
+      const dr = typeof q.distractorRationale === 'string' ? JSON.parse(q.distractorRationale) : q.distractorRationale;
+      const entries = Object.entries(dr).filter(([letter]) => letter !== q.correctAnswer);
+      if (entries.length) {
+        distractorHtml = `
+          <div class="detail-section">
+            <div class="detail-section-title">Distractor Rationale</div>
+            <div class="distractor-list">
+              ${entries.map(([letter, text]) => `
+                <div class="distractor-row">
+                  <span class="distractor-letter">${letter}</span>
+                  <span>${escHtml(text)}</span>
+                </div>`).join('')}
+            </div>
+          </div>`;
+      }
+    } catch(e) { /* skip */ }
+  }
+
+  // Alternative approach
+  const altHtml = q.alternativeApproach ? `
+    <div class="detail-section">
+      <div class="detail-section-title">Alternative Approach</div>
+      <div class="alt-approach-box">${escHtml(q.alternativeApproach)}</div>
+    </div>` : '';
+
+  // Pool badge
+  const poolBadge = q.pool ? `<span class="badge-pool ${q.pool}">${q.pool}</span>` : '';
+
+  // Scenario tag
+  const scenarioHtml = q.scenarioTag
+    ? `<span style="font-size:11px; padding:2px 7px; border-radius:20px; background:#f3f4f6; color:#6b7280;">${q.scenarioTag.replace(/_/g,' ')}</span>`
+    : '';
+
+  // Pool override select
+  const poolOverride = q.status !== 'promoted' ? `
+    <select class="pool-override" onchange="updatePool('${q.id}', this.value)" title="Change pool">
+      <option value="diagnostic" ${q.pool==='diagnostic'?'selected':''}>diagnostic</option>
+      <option value="drill"      ${q.pool==='drill'?'selected':''}>drill</option>
+      <option value="test"       ${q.pool==='test'?'selected':''}>test</option>
+      <option value="reference"  ${q.pool==='reference'?'selected':''}>reference</option>
+    </select>` : '';
+
+  // Action buttons
+  const actionBtns = (() => {
+    const id = `'${q.id}'`;
+    if (q.status === 'promoted') {
+      return `<span style="font-size:12px; color:#7c3aed; font-weight:600;">⬆ Promoted to production</span>
+              <button class="btn-revert" style="margin-left:8px;" onclick="revert(${id}, this)">↩ Revert</button>`;
+    }
+    if (q.status === 'approved') {
+      return `<button class="btn-promote" onclick="promoteQ(${id}, this)">⬆ Promote</button>
+              <button class="btn-revert"  onclick="revert(${id}, this)">↩ Revert</button>
+              <button class="btn-reject"  onclick="rejectQ(${id}, this)">Reject</button>`;
+    }
+    if (q.status === 'rejected') {
+      return `<button class="btn-promote"     onclick="approveAndPromote(${id}, this)">✓ Approve &amp; Promote</button>
+              <button class="btn-approve-only" onclick="approveOnly(${id}, this)">Approve only</button>
+              <button class="btn-revert"       onclick="revert(${id}, this)">↩ Revert</button>`;
+    }
+    return `<button class="btn-promote"     onclick="approveAndPromote(${id}, this)">✓ Approve &amp; Promote</button>
+            <button class="btn-approve-only" onclick="approveOnly(${id}, this)">Approve only</button>
+            <button class="btn-reject"       onclick="rejectQ(${id}, this)">✗ Reject</button>`;
+  })();
+
+  // Math object debug
+  const moFormatted = q.mathObject
+    ? (() => { try { return JSON.stringify(typeof q.mathObject === 'string' ? JSON.parse(q.mathObject) : q.mathObject, null, 2); } catch(e) { return String(q.mathObject); } })()
+    : null;
+  const debugHtml = moFormatted ? `
+    <div class="detail-section">
+      <button class="btn-debug" onclick="toggleDebug(this)">{ } math_object</button>
+      <pre class="debug-panel">${escHtml(moFormatted)}</pre>
+    </div>` : '';
+
+  return `
+    <div class="detail-card ${q.status}" id="detail-card-${q.id}">
+      <div class="detail-header">
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <span class="q-id" style="font-size:13px;">${escHtml(q.externalId || '—')}</span>
+          <div class="q-meta">
+            <span class="badge-skill">${skillCode(q.skillKey)}</span>
+            <span class="badge-diff">d${q.difficulty}</span>
+            <span class="badge-type">${q.questionType?.toUpperCase()}</span>
+            ${poolBadge}
+            ${scenarioHtml}
+            <span class="badge-status ${q.status}">${statusLabel(q.status)}</span>
+          </div>
+        </div>
+        <div class="detail-nav">
+          <button class="nav-arrow nav-prev" onclick="navPrev()" ${currentIndex === 0 ? 'disabled' : ''}>←</button>
+          <span class="nav-counter">${(currentIndex + 1)} / ${filteredQuestions.length}</span>
+          <button class="nav-arrow nav-next" onclick="navNext()" ${currentIndex === filteredQuestions.length - 1 ? 'disabled' : ''}>→</button>
+        </div>
+      </div>
+      <div class="detail-body">
+        <div class="detail-columns">
+          <div class="detail-left">
+            ${flagHtml}
+            <div class="stem-wrap" data-qid="${q.id}" style="display:flex; align-items:flex-start; gap:8px; margin-bottom:18px;">
+              <div class="detail-stem" style="flex:1; margin-bottom:0;">${escHtml(q.questionStem || '')}</div>
+              <button onclick="editStem(this)"
+                      style="flex-shrink:0; background:none; border:1.5px solid #e5e7eb; border-radius:6px;
+                             padding:4px 8px; font-size:12px; color:#9ca3af; cursor:pointer; margin-top:2px;"
+                      title="Edit question stem">✏</button>
+            </div>
+            <div class="stem-edit" data-qid="${q.id}" style="display:none; margin-bottom:18px;">
+              <textarea class="stem-textarea"
+                        style="width:100%; min-height:100px; font-size:15px; line-height:1.6; color:#111827;
+                               border:2px solid #6366f1; border-radius:8px; padding:10px 12px; resize:vertical;
+                               font-family:inherit; box-sizing:border-box;"></textarea>
+              <div style="display:flex; gap:8px; margin-top:6px;">
+                <button onclick="saveStem(this)"
+                        style="background:#6366f1; color:#fff; border:none; border-radius:7px;
+                               padding:6px 16px; font-size:13px; font-weight:600; cursor:pointer;">Save</button>
+                <button onclick="cancelStemEdit(this)"
+                        style="background:#f3f4f6; color:#374151; border:1.5px solid #d1d5db; border-radius:7px;
+                               padding:6px 14px; font-size:13px; cursor:pointer;">Cancel</button>
+              </div>
+            </div>
+            ${diagHtml}
+            ${optionsHtml}
+            ${sprHtml}
+          </div>
+          <div class="detail-right">
+            ${coreConceptHtml}
+            ${prereqHtml}
+            ${stepsHtml}
+            ${distractorHtml}
+            ${altHtml}
+            ${debugHtml}
+          </div>
+        </div>
+      </div>
+      <div class="detail-actions">
+        ${actionBtns}
+        ${poolOverride}
+        <span style="margin-left:auto; font-size:11px; color:#d1d5db; font-family:monospace;">${q.paramHash ? q.paramHash.substring(0,12)+'…' : ''}</span>
+      </div>
+    </div>`;
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// Actions
+// ════════════════════════════════════════════════════════════════════════════
+function _updateQuestionStatus(id, newStatus) {
+  // Update in allQuestions and filteredQuestions arrays
+  [allQuestions, filteredQuestions].forEach(arr => {
+    const q = arr.find(x => x.id === id);
+    if (q) q.status = newStatus;
+  });
+  // Refresh sidebar item badge
+  const q = allQuestions.find(x => x.id === id);
+  const siEl = document.getElementById(`si-${id}`);
+  if (siEl && q) {
+    const badge = siEl.querySelector('.si-status');
+    if (badge) {
+      badge.className = `si-status ${newStatus}`;
+      badge.textContent = statusLabel(newStatus);
+    }
+  }
+  // Re-render detail panel
+  showQuestion(currentIndex);
+}
+
+async function approveAndPromote(id, btn) {
+  btn.disabled = true; btn.textContent = '…';
+  try {
+    const result = await fetch(`/api/admin/sympy/questions/${id}/approve-and-promote`, { method: 'PATCH' });
+    if (!result.ok) throw new Error(`${result.status}`);
+    _updateQuestionStatus(id, 'promoted');
+    loadStats();
+  } catch(e) { alert('Approve & Promote failed: ' + e.message); btn.disabled = false; btn.textContent = '✓ Approve & Promote'; }
+}
+
+async function approveOnly(id, btn) {
+  btn.disabled = true; btn.textContent = '…';
+  try {
+    await apiPatch(`/api/admin/sympy/questions/${id}/approve`);
+    _updateQuestionStatus(id, 'approved');
+    loadStats();
+  } catch(e) { alert('Approve failed: ' + e.message); btn.disabled = false; btn.textContent = 'Approve only'; }
+}
+
+async function promoteQ(id, btn) {
+  btn.disabled = true; btn.textContent = '…';
+  try {
+    const result = await fetch(`/api/admin/sympy/questions/${id}/approve-and-promote`, { method: 'PATCH' });
+    if (!result.ok) throw new Error(`${result.status}`);
+    _updateQuestionStatus(id, 'promoted');
+    loadStats();
+  } catch(e) { alert('Promote failed: ' + e.message); btn.disabled = false; btn.textContent = '⬆ Promote'; }
+}
+
+async function rejectQ(id, btn) {
+  btn.disabled = true; btn.textContent = '…';
+  try {
+    await apiPatch(`/api/admin/sympy/questions/${id}/reject`);
+    _updateQuestionStatus(id, 'rejected');
+    loadStats();
+  } catch(e) { alert('Reject failed: ' + e.message); btn.disabled = false; btn.textContent = '✗ Reject'; }
+}
+
+function editStem(btn) {
+  const wrapEl = btn.closest('.stem-wrap');
+  if (!wrapEl) return;
+  const id     = wrapEl.dataset.qid;
+  const editEl = wrapEl.nextElementSibling;  // .stem-edit
+  const q      = allQuestions.find(x => x.id === id);
+  if (!q || !editEl) return;
+  editEl.querySelector('.stem-textarea').value = q.questionStem || '';
+  wrapEl.style.display = 'none';
+  editEl.style.display = 'block';
+  editEl.querySelector('.stem-textarea').focus();
+}
+
+function cancelStemEdit(btn) {
+  const editEl = btn.closest('.stem-edit');
+  if (!editEl) return;
+  editEl.style.display = 'none';
+  editEl.previousElementSibling.style.display = 'flex'; // .stem-wrap
+}
+
+async function saveStem(btn) {
+  const editEl  = btn.closest('.stem-edit');
+  if (!editEl) return;
+  const id      = editEl.dataset.qid;
+  const newStem = editEl.querySelector('.stem-textarea').value.trim();
+  if (!newStem) return;
+  btn.disabled = true; btn.textContent = '…';
+  try {
+    const r = await fetch(`/api/admin/sympy/questions/${id}/stem`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ questionStem: newStem })
+    });
+    if (!r.ok) throw new Error(`${r.status}`);
+    [allQuestions, filteredQuestions].forEach(arr => {
+      const q = arr.find(x => x.id === id);
+      if (q) q.questionStem = newStem;
+    });
+    showQuestion(currentIndex);
+  } catch(e) {
+    alert('Save failed: ' + e.message);
+    btn.disabled = false; btn.textContent = 'Save';
+  }
+}
+
+async function revert(id, btn) {
+  btn.disabled = true; btn.textContent = '…';
+  try {
+    await apiPatch(`/api/admin/sympy/questions/${id}/pending`);
+    _updateQuestionStatus(id, 'generated');
+    loadStats();
+  } catch(e) { alert('Revert failed: ' + e.message); btn.disabled = false; btn.textContent = '↩ Revert'; }
+}
+
+async function updatePool(id, newPool) {
+  try {
+    const r = await fetch(`/api/admin/sympy/questions/${id}/pool?pool=${encodeURIComponent(newPool)}`, { method: 'PATCH' });
+    if (!r.ok) throw new Error(`${r.status}`);
+    // Update pool in data arrays
+    [allQuestions, filteredQuestions].forEach(arr => {
+      const q = arr.find(x => x.id === id);
+      if (q) q.pool = newPool;
+    });
+    showQuestion(currentIndex);
+  } catch(e) { alert('Pool update failed: ' + e.message); }
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// Diagram modal
+// ════════════════════════════════════════════════════════════════════════════
+function openDiagModal(qId) {
+  const q = allQuestions.find(x => x.id === qId);
+  if (!q || !q.diagram) return;
+
+  const spec = typeof q.diagram === 'string' ? JSON.parse(q.diagram) : q.diagram;
+  const content = document.getElementById('diag-modal-content');
+  content.innerHTML = '';
+  renderSympyDiagram(spec, content);
+
+  // Scale up SVG for modal
+  const svg = content.querySelector('svg');
+  if (svg) {
+    const origW = parseInt(svg.getAttribute('width') || 300);
+    const origH = parseInt(svg.getAttribute('height') || 240);
+    const scale = Math.min(600 / origW, 500 / origH, 2.2);
+    svg.setAttribute('width',  Math.round(origW * scale));
+    svg.setAttribute('height', Math.round(origH * scale));
+    const vb = svg.getAttribute('viewBox') || `0 0 ${origW} ${origH}`;
+    if (!svg.getAttribute('viewBox')) svg.setAttribute('viewBox', vb);
+  }
+
+  document.getElementById('diag-modal-title').textContent =
+    `${q.externalId}  ·  ${spec.type}  ·  d${q.difficulty}`;
+
+  const stemEl = document.getElementById('diag-modal-stem');
+  stemEl.textContent = q.questionStem || '';
+  if (typeof renderMathInElement === 'function') {
+    renderMathInElement(stemEl, {
+      delimiters: [{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false},{left:'$$',right:'$$',display:true}],
+      throwOnError: false
+    });
+  }
+
+  document.getElementById('diag-modal').classList.add('open');
+}
+
+function closeDiagModal(event) {
+  if (event && event.target !== document.getElementById('diag-modal')) return;
+  document.getElementById('diag-modal').classList.remove('open');
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.getElementById('diag-modal').classList.remove('open');
+    return;
+  }
+  // Arrow key navigation (only when not focused in an input/select)
+  const tag = document.activeElement ? document.activeElement.tagName : '';
+  if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return;
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   { e.preventDefault(); navPrev(); }
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); navNext(); }
+});
+
+// ════════════════════════════════════════════════════════════════════════════
+// Filter state (driven by stat pills)
+// ════════════════════════════════════════════════════════════════════════════
+let currentStatus = 'generated';
+let currentPool = 'active';
+
+function toggleDebug(btn) {
+  const panel = btn.nextElementSibling;
+  const isOpen = panel.classList.contains('open');
+  panel.classList.toggle('open', !isOpen);
+  btn.textContent = isOpen ? '{ } math_object' : '{ } hide';
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// SymPy diagram renderers
+// Handles: coordinate_plane · right_triangle · rectangle ·
+//          composite_rectangle · scaled_rectangle
+// ════════════════════════════════════════════════════════════════════════════
+function renderSympyDiagram(spec, hostEl) {
+  if (!spec || !hostEl) return;
+  let html = '';
+  switch (spec.type) {
+    case 'coordinate_plane':    html = svgCoordinatePlane(spec);  break;
+    case 'right_triangle':      html = svgRightTriangle(spec);    break;
+    case 'rectangle':           html = svgRectangle(spec);        break;
+    case 'triangle':            html = svgTriangle(spec);         break;
+    case 'composite_rectangle': html = svgCompositeRect(spec);    break;
+    case 'scaled_rectangle':    html = svgScaledRect(spec);       break;
+    case 'circle':              html = svgCircle(spec);           break;
+    case 'cylinder':            html = svgCylinder(spec);         break;
+    case 'cone':                html = svgCone(spec);             break;
+    case 'sphere':              html = svgSphere(spec);           break;
+    case 'rectangular_prism':   html = svgRectPrism(spec);        break;
+    case 'parallelogram':       html = svgParallelogram(spec);    break;
+    case 'trapezoid':           html = svgTrapezoid(spec);        break;
+    case 'house_shape':         html = svgHouseShape(spec);       break;
+    case 'bar_chart':           html = svgBarChart(spec);         break;
+    case 'pie_chart':           html = svgPieChart(spec);         break;
+    case 'number_line':         html = svgNumberLine(spec);       break;
+    case 'scatter_plot':        html = svgScatterPlot(spec);      break;
+    case 'box_plot':            html = svgBoxPlot(spec);          break;
+    case 'two_way_table':       html = svgTwoWayTable(spec);      break;
+    case 'special_triangle':    html = svgSpecialTriangle(spec);  break;
+    case 'parabola':            html = svgParabola(spec);         break;
+  }
+  if (html) hostEl.innerHTML = html;
+}
+
+// ── helpers ───────────────────────────────────────────────────────────────────
+function parseFrac(s) {
+  s = String(s).replace(/^\+/, '');
+  if (s.includes('/')) { const [n,d] = s.split('/'); return parseFloat(n)/parseFloat(d); }
+  return parseFloat(s);
+}
+function parseLinearFn(fnStr) {
+  // Handles "y=mx+b", "y = mx + b", "y=mx-b", "y=-mx+b", "y=3/2x+1", etc.
+  // Also normalizes legacy "y=4x+-2" → "y=4x-2" (Python bug in older questions)
+  if (!fnStr) return null;
+  fnStr = fnStr.replace(/\s+/g, '').replace(/\+-/, '-');  // strip spaces, fix legacy +-
+  if (!fnStr.startsWith('y=')) return null;
+  const expr = fnStr.slice(2);
+  const m = expr.match(/^([+-]?[\d\/]*)x([+-][\d\/]+)?$/);
+  if (!m) return null;
+  let ms = m[1] || '1', bs = m[2] || '+0';
+  if (ms === '' || ms === '+') ms = '1';
+  if (ms === '-') ms = '-1';
+  const slope = parseFrac(ms), intercept = parseFrac(bs);
+  return (isNaN(slope) || isNaN(intercept)) ? null : { m: slope, b: intercept };
+}
+function fmtN(n) { return Number.isInteger(n) ? n : parseFloat(n.toFixed(2)); }
+function svgWrap(W, H, inner) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="display:block;margin:0 auto;max-width:100%;height:auto">`
+       + `<rect width="${W}" height="${H}" fill="#f8f9fa" rx="8" stroke="#e5e7eb" stroke-width="1"/>`
+       + inner + '</svg>';
+}
+
+// ── Coordinate plane ──────────────────────────────────────────────────────────
+// diagramSpec supports:
+//   Single line:  { type, function: "y = mx + b", label: "y = f(x) + k", hideLabel }
+//   Multi-line:   { type, lines: [{function, label, color}, ...], hideLabel }
+//   Both modes support points, highlight_point as before.
+//
+// Line colors (auto-assigned for multi-line if color not specified):
+//   line 1: indigo (#6366f1), line 2: red (#ef4444),
+//   line 3: emerald (#10b981), line 4: amber (#f59e0b)
+// ─────────────────────────────────────────────────────────────────────────────
+const LINE_COLORS = ['#6366f1', '#ef4444', '#10b981', '#f59e0b'];
+
+function svgCoordinatePlane(spec) {
+  const W = 300, H = 240, PAD = 40;
+  const numPts = (spec.points||[]).filter(([x,y]) => typeof x==='number' && typeof y==='number');
+  const hpt = spec.highlight_point;
+
+  // Build unified lines array from either spec.lines (multi) or spec.function (single)
+  let lineSpecs = [];
+  if (spec.lines && spec.lines.length) {
+    lineSpecs = spec.lines.map((l, i) => ({
+      fn:    parseLinearFn(l.function || ''),
+      label: l.label || (l.function || ''),
+      color: l.color || LINE_COLORS[i % LINE_COLORS.length],
+    })).filter(l => l.fn !== null);
+  } else if (spec.function) {
+    const fn = parseLinearFn(spec.function);
+    if (fn) lineSpecs = [{
+      fn,
+      label: spec.label || spec.function,   // use spec.label if provided (e.g. "y = f(x) + k")
+      color: LINE_COLORS[0],
+    }];
+  }
+
+  // coordinate_plane diagrams (function_shift, linear_functions, coordinate_geometry):
+  // always use a fixed ±5 viewport — identical to real SAT graphs.
+  // Lines are drawn edge-to-edge and SVG clips anything outside the viewBox naturally.
+  // Dynamic range expansion caused the axis to drift to top/bottom for steep slopes.
+  const fixedViewport = (spec.type === 'coordinate_plane');
+
+  let minX, maxX, minY, maxY;
+  if (fixedViewport) {
+    minX = -5; maxX = 5; minY = -5; maxY = 5;
+  } else {
+    // Dynamic range: used for geometry diagrams (triangles, etc.) that need to fit specific points
+    let xs = numPts.map(p=>p[0]), ys = numPts.map(p=>p[1]);
+    if (hpt && typeof hpt[0]==='number') { xs.push(hpt[0]); ys.push(typeof hpt[1]==='number' ? hpt[1] : 0); }
+    (spec.points||[]).filter(([,y])=>y==='?').forEach(([px])=>{
+      if(typeof px==='number' && lineSpecs.length) { xs.push(px); ys.push(lineSpecs[0].fn.m*px+lineSpecs[0].fn.b); }
+    });
+    if (!xs.length && lineSpecs.length) { xs=[0]; ys=lineSpecs.map(l=>l.fn.b); }
+    if (!xs.length) { xs=[-4,4]; ys=[-4,4]; }
+    minX=Math.floor(Math.min(...xs)-1.5); maxX=Math.ceil(Math.max(...xs)+1.5);
+    minX=Math.min(minX,-2); maxX=Math.max(maxX,2);
+    if (!numPts.length && !hpt) { minX=Math.min(minX,-5); maxX=Math.max(maxX,5); }
+    lineSpecs.forEach(({ fn }) => { ys.push(fn.m*minX+fn.b); ys.push(fn.m*maxX+fn.b); });
+    minY=Math.floor(Math.min(...ys)-1.5); maxY=Math.ceil(Math.max(...ys)+1.5);
+    minY=Math.min(minY,-2); maxY=Math.max(maxY,2);
+    if (!numPts.length && !hpt) { minY=Math.min(minY,-5); maxY=Math.max(maxY,5); }
+  }
+
+  const sx = x => PAD + (x-minX)/(maxX-minX)*(W-2*PAD);
+  const sy = y => (H-PAD) - (y-minY)/(maxY-minY)*(H-2*PAD);
+
+  const xRange = maxX-minX, yRange = maxY-minY;
+  const xStep = xRange<=10 ? 1 : xRange<=20 ? 2 : 5;
+  const yStep = yRange<=10 ? 1 : yRange<=20 ? 2 : 5;
+
+  let s = `<defs><marker id="axarr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+    <path d="M0,0 L6,3 L0,6 Z" fill="#374151"/></marker></defs>`;
+
+  // Grid + axis labels
+  for(let x=minX; x<=maxX; x++){
+    const xp=sx(x);
+    s+=`<line x1="${xp}" y1="${PAD}" x2="${xp}" y2="${H-PAD}" stroke="${x===0?'#9ca3af':'#e9ecef'}" stroke-width="${x===0?1:0.6}"/>`;
+    if(x!==0 && x%xStep===0) s+=`<text x="${xp}" y="${sy(0)+12}" text-anchor="middle" font-size="9" fill="#9ca3af">${x}</text>`;
+  }
+  for(let y=minY; y<=maxY; y++){
+    const yp=sy(y);
+    s+=`<line x1="${PAD}" y1="${yp}" x2="${W-PAD}" y2="${yp}" stroke="${y===0?'#9ca3af':'#e9ecef'}" stroke-width="${y===0?1:0.6}"/>`;
+    if(y!==0 && y%yStep===0) s+=`<text x="${sx(0)-5}" y="${yp+3}" text-anchor="end" font-size="9" fill="#9ca3af">${y}</text>`;
+  }
+
+  // Axes with arrows
+  s+=`<line x1="${PAD}" y1="${sy(0)}" x2="${W-PAD+2}" y2="${sy(0)}" stroke="#374151" stroke-width="1.5" marker-end="url(#axarr)"/>`;
+  s+=`<line x1="${sx(0)}" y1="${H-PAD}" x2="${sx(0)}" y2="${PAD-2}" stroke="#374151" stroke-width="1.5" marker-end="url(#axarr)"/>`;
+  s+=`<text x="${W-PAD+5}" y="${sy(0)+4}" font-size="11" fill="#374151" font-weight="bold">x</text>`;
+  s+=`<text x="${sx(0)+4}" y="${PAD-5}" font-size="11" fill="#374151" font-weight="bold">y</text>`;
+
+  // Draw all lines — single or multiple (parallel / perpendicular / intersecting)
+  lineSpecs.forEach(({ fn, label, color }, idx) => {
+    const lx1=minX, ly1=fn.m*lx1+fn.b, lx2=maxX, ly2=fn.m*lx2+fn.b;
+    s+=`<line x1="${sx(lx1)}" y1="${sy(ly1)}" x2="${sx(lx2)}" y2="${sy(ly2)}" stroke="${color}" stroke-width="2.5" opacity="0.9"/>`;
+    if (!spec.hideLabel && label) {
+      // Place label at top-left corner area, staggered per line — always clear of the line endpoint.
+      // White stroke (paint-order:stroke) acts as a background so the line never passes through text.
+      const lblSvgX = PAD + 6;
+      const lblSvgY = PAD + 13 + idx * 16;   // stack multiple labels vertically
+      s+=`<text x="${lblSvgX}" y="${lblSvgY}" font-size="10" fill="${color}" font-weight="600"
+               stroke="white" stroke-width="3" paint-order="stroke">${label}</text>`;
+    }
+  });
+
+  // Regular points (blue)
+  numPts.forEach(([px,py])=>{
+    s+=`<circle cx="${sx(px)}" cy="${sy(py)}" r="5" fill="#3b82f6" stroke="#fff" stroke-width="1.5"/>`;
+    const labelX = px < (minX+maxX)/2 ? sx(px)+7 : sx(px)-7;
+    const anchor = px < (minX+maxX)/2 ? 'start' : 'end';
+    s+=`<text x="${labelX}" y="${sy(py)-7}" font-size="9" fill="#1e40af" text-anchor="${anchor}">(${fmtN(px)}, ${fmtN(py)})</text>`;
+  });
+
+  // Points with "?" y value
+  (spec.points||[]).filter(([x,y])=>y==='?').forEach(([px])=>{
+    if(typeof px!=='number') return;
+    const firstFn = lineSpecs.length ? lineSpecs[0].fn : null;
+    const pyVal = firstFn ? firstFn.m*px+firstFn.b : 0;
+    s+=`<circle cx="${sx(px)}" cy="${sy(pyVal)}" r="5" fill="#f59e0b" stroke="#fff" stroke-width="1.5"/>`;
+    s+=`<text x="${sx(px)+7}" y="${sy(pyVal)-7}" font-size="9" fill="#d97706">(${fmtN(px)}, ?)</text>`;
+  });
+
+  // Highlight point (red, with dashed projection lines)
+  if(hpt && typeof hpt[0]==='number' && typeof hpt[1]==='number'){
+    const [hx,hy]=hpt;
+    s+=`<line x1="${sx(hx)}" y1="${sy(0)}" x2="${sx(hx)}" y2="${sy(hy)}" stroke="#ef4444" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>`;
+    s+=`<line x1="${sx(0)}" y1="${sy(hy)}" x2="${sx(hx)}" y2="${sy(hy)}" stroke="#ef4444" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>`;
+    s+=`<circle cx="${sx(hx)}" cy="${sy(hy)}" r="5.5" fill="#ef4444" stroke="#fff" stroke-width="2"/>`;
+    s+=`<text x="${sx(hx)+8}" y="${sy(hy)-8}" font-size="9" fill="#b91c1c" font-weight="700">(${fmtN(hx)}, ${fmtN(hy)})</text>`;
+  }
+
+  return svgWrap(W, H, s);
+}
+
+// ── Right triangle ─────────────────────────────────────────────────────────────
+function svgRightTriangle(spec) {
+  const W = 260, H = 200, PAD = 30;
+  const [la, lb] = spec.legs;
+  const hyp = spec.hypotenuse;
+  const missing = spec.missing;
+
+  const numA = typeof la === 'number' ? la : 0;
+  const numB = typeof lb === 'number' ? lb : 0;
+  const refA = numA || numB || 6, refB = numB || numA || 6;
+
+  const availW = W - 2*PAD - 30, availH = H - 2*PAD - 30;
+  const scale = Math.min(availW / refA, availH / refB, 18);
+  const bw = refA * scale, bh = refB * scale;
+
+  const ox = PAD + 20, oy = H - PAD - 10;
+  const ax = ox + bw, ay = oy;
+  const bxv = ox, byv = oy - bh;
+
+  const legALabel = typeof la === 'number' ? String(la) : '?';
+  const legBLabel = typeof lb === 'number' ? String(lb) : '?';
+  const hypLabel  = typeof hyp === 'number' ? String(hyp) : (hyp === '?' ? '?' : String(hyp));
+
+  const isAMissing = legALabel === '?';
+  const isBMissing = legBLabel === '?';
+  const isHMissing = hypLabel === '?';
+
+  const colorA = isAMissing ? '#ef4444' : '#374151';
+  const colorB = isBMissing ? '#ef4444' : '#374151';
+  const colorH = isHMissing ? '#ef4444' : '#374151';
+
+  let s = `<polygon points="${ox},${oy} ${ax},${ay} ${ox},${byv}" fill="#ede9fe" stroke="#6366f1" stroke-width="2"/>`;
+
+  // Right angle marker
+  const sq = 11;
+  s += `<polyline points="${ox+sq},${oy} ${ox+sq},${oy-sq} ${ox},${oy-sq}" fill="none" stroke="#6366f1" stroke-width="1.5"/>`;
+
+  // Bottom leg label (la)
+  s += `<text x="${(ox+ax)/2}" y="${oy+18}" text-anchor="middle" font-size="14" font-weight="700" fill="${colorA}">${legALabel}</text>`;
+
+  // Left leg label (lb) — horizontal text to the left of the left side, no rotation to avoid clipping
+  s += `<text x="${ox-6}" y="${(oy+byv)/2+5}" text-anchor="end" font-size="14" font-weight="700" fill="${colorB}">${legBLabel}</text>`;
+
+  // Hypotenuse label (midpoint of hyp, offset right)
+  const hmx = (ax+ox)/2 + 14, hmy = (ay+byv)/2 + 4;
+  s += `<text x="${hmx}" y="${hmy}" font-size="14" font-weight="700" fill="${colorH}">${hypLabel}</text>`;
+
+  // "Find" label for missing side
+  if (missing === 'hypotenuse') {
+    s += `<text x="${hmx+2}" y="${hmy+14}" font-size="9" fill="#6b7280">← find</text>`;
+  } else if (missing === 'leg') {
+    const missingIsA = isAMissing;
+    if (missingIsA) s += `<text x="${(ox+ax)/2}" y="${oy+30}" text-anchor="middle" font-size="9" fill="#6b7280">← find</text>`;
+    else s += `<text x="${ox-6}" y="${(oy+byv)/2+20}" text-anchor="end" font-size="9" fill="#6b7280">↑ find</text>`;
+  }
+
+  return svgWrap(W, H, s);
+}
+
+// ── Rectangle ──────────────────────────────────────────────────────────────────
+function svgRectangle(spec) {
+  const W = 280, H = 170, PAD = 40;
+  const l = spec.length, w = spec.width;
+  const lLabel = typeof l === 'number' ? String(l) : '?';
+  const wLabel = typeof w === 'number' ? String(w) : '?';
+  const hasArea = spec.area != null;
+
+  const rW = W - 2*PAD - 20, rH = H - 2*PAD - 20;
+  const rx = PAD, ry = PAD;
+
+  const colorL = lLabel === '?' ? '#ef4444' : '#374151';
+  const colorW = wLabel === '?' ? '#ef4444' : '#374151';
+
+  let s = `<rect x="${rx}" y="${ry}" width="${rW}" height="${rH}" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>`;
+
+  // Center label
+  if (hasArea) {
+    s += `<text x="${rx+rW/2}" y="${ry+rH/2-6}" text-anchor="middle" font-size="11" fill="#93c5fd">Area</text>`;
+    s += `<text x="${rx+rW/2}" y="${ry+rH/2+10}" text-anchor="middle" font-size="15" fill="#1e40af" font-weight="700">= ${spec.area}</text>`;
+  } else {
+    s += `<text x="${rx+rW/2}" y="${ry+rH/2+5}" text-anchor="middle" font-size="12" fill="#93c5fd">Area = ?</text>`;
+  }
+
+  // Bottom dimension
+  s += `<line x1="${rx}" y1="${ry+rH+8}" x2="${rx+rW}" y2="${ry+rH+8}" stroke="#94a3b8" stroke-width="1"/>`;
+  s += `<line x1="${rx}" y1="${ry+rH+4}" x2="${rx}" y2="${ry+rH+12}" stroke="#94a3b8" stroke-width="1.5"/>`;
+  s += `<line x1="${rx+rW}" y1="${ry+rH+4}" x2="${rx+rW}" y2="${ry+rH+12}" stroke="#94a3b8" stroke-width="1.5"/>`;
+  s += `<text x="${rx+rW/2}" y="${ry+rH+22}" text-anchor="middle" font-size="14" font-weight="700" fill="${colorL}">${lLabel}</text>`;
+
+  // Right side dimension
+  s += `<line x1="${rx+rW+8}" y1="${ry}" x2="${rx+rW+8}" y2="${ry+rH}" stroke="#94a3b8" stroke-width="1"/>`;
+  s += `<line x1="${rx+rW+4}" y1="${ry}" x2="${rx+rW+12}" y2="${ry}" stroke="#94a3b8" stroke-width="1.5"/>`;
+  s += `<line x1="${rx+rW+4}" y1="${ry+rH}" x2="${rx+rW+12}" y2="${ry+rH}" stroke="#94a3b8" stroke-width="1.5"/>`;
+  s += `<text x="${rx+rW+20}" y="${ry+rH/2+5}" font-size="14" font-weight="700" fill="${colorW}">${wLabel}</text>`;
+
+  return svgWrap(W, H, s);
+}
+
+// ── Triangle ───────────────────────────────────────────────────────────────────
+function svgTriangle(spec) {
+  const { base: b, height: h } = spec;
+  const W = 280, H = 180, PAD = 36;
+
+  const sc = Math.min((W - 2*PAD) / b, (H - 2*PAD) / h, 16);
+  const bw = b * sc, bh = h * sc;
+  const ox = PAD, oy = H - PAD;
+
+  const tx = ox + bw / 2, ty = oy - bh; // apex
+
+  let s = `<polygon points="${ox},${oy} ${ox+bw},${oy} ${tx},${ty}" fill="#fef9c3" stroke="#f59e0b" stroke-width="2"/>`;
+
+  // Height dashed line
+  s += `<line x1="${tx}" y1="${ty}" x2="${tx}" y2="${oy}" stroke="#6b7280" stroke-width="1" stroke-dasharray="3,3"/>`;
+
+  // Right angle at base of height line
+  const sq = 7;
+  s += `<polyline points="${tx+sq},${oy} ${tx+sq},${oy-sq} ${tx},${oy-sq}" fill="none" stroke="#6b7280" stroke-width="1"/>`;
+
+  // Height label (right of dashed line)
+  s += `<text x="${tx+10}" y="${(oy+ty)/2+4}" font-size="13" font-weight="700" fill="#92400e">${h}</text>`;
+
+  // Base label (below)
+  const bly = oy + 18;
+  s += `<line x1="${ox}" y1="${oy+8}" x2="${ox+bw}" y2="${oy+8}" stroke="#94a3b8" stroke-width="1"/>`;
+  s += `<line x1="${ox}" y1="${oy+4}" x2="${ox}" y2="${oy+12}" stroke="#94a3b8" stroke-width="1.5"/>`;
+  s += `<line x1="${ox+bw}" y1="${oy+4}" x2="${ox+bw}" y2="${oy+12}" stroke="#94a3b8" stroke-width="1.5"/>`;
+  s += `<text x="${ox+bw/2}" y="${bly+4}" text-anchor="middle" font-size="13" font-weight="700" fill="#374151">${b}</text>`;
+
+  // Area label
+  s += `<text x="${tx}" y="${(oy+ty)/2+20}" text-anchor="middle" font-size="11" fill="#a16207">Area = ½ × ${b} × ${h}</text>`;
+
+  return svgWrap(W, H, s);
+}
+
+// ── Composite (staircase) rectangle ───────────────────────────────────────────
+// Two joined rectangles: bottom (w × h1) + top-left protrusion (half_w × h2)
+// Area = w*h1 + half_w*h2
+function svgCompositeRect(spec) {
+  const { w, h1, half_w, h2 } = spec;
+  const W = 300, H = 240, PAD = 40;
+
+  const totalH = h1 + h2;
+  const scale = Math.min((W - 2*PAD - 40) / w, (H - 2*PAD - 30) / totalH, 18);
+  const pw = w * scale, ph1 = h1 * scale;
+  const phw = half_w * scale, ph2 = h2 * scale;
+
+  const ox = PAD, oy = PAD;
+  // Shape (y increases downward):
+  //   (ox, oy)           top-left of upper part
+  //   (ox+phw, oy)       top-right of upper part
+  //   (ox+phw, oy+ph2)   inner step corner
+  //   (ox+pw, oy+ph2)    top-right of lower part
+  //   (ox+pw, oy+ph2+ph1)bottom-right
+  //   (ox, oy+ph2+ph1)   bottom-left
+
+  const pts = [
+    [ox,      oy],
+    [ox+phw,  oy],
+    [ox+phw,  oy+ph2],
+    [ox+pw,   oy+ph2],
+    [ox+pw,   oy+ph2+ph1],
+    [ox,      oy+ph2+ph1],
+  ].map(p=>p.join(',')).join(' ');
+
+  let s = `<polygon points="${pts}" fill="#d1fae5" stroke="#10b981" stroke-width="2"/>`;
+
+  // Step dashed guide lines
+  s += `<line x1="${ox+phw}" y1="${oy+ph2}" x2="${ox+pw}" y2="${oy+ph2}" stroke="#9ca3af" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>`;
+
+  // Bottom width w
+  const bly = oy + ph2 + ph1 + 12;
+  s += `<line x1="${ox}" y1="${bly}" x2="${ox+pw}" y2="${bly}" stroke="#9ca3af" stroke-width="1"/>`;
+  s += `<line x1="${ox}" y1="${bly-4}" x2="${ox}" y2="${bly+4}" stroke="#9ca3af" stroke-width="1.5"/>`;
+  s += `<line x1="${ox+pw}" y1="${bly-4}" x2="${ox+pw}" y2="${bly+4}" stroke="#9ca3af" stroke-width="1.5"/>`;
+  s += `<text x="${ox+pw/2}" y="${bly+15}" text-anchor="middle" font-size="13" font-weight="700" fill="#374151">${w}</text>`;
+
+  // Right side height h1 (lower part)
+  const rsX = ox + pw + 12;
+  s += `<line x1="${rsX}" y1="${oy+ph2}" x2="${rsX}" y2="${oy+ph2+ph1}" stroke="#9ca3af" stroke-width="1"/>`;
+  s += `<line x1="${rsX-4}" y1="${oy+ph2}" x2="${rsX+4}" y2="${oy+ph2}" stroke="#9ca3af" stroke-width="1.5"/>`;
+  s += `<line x1="${rsX-4}" y1="${oy+ph2+ph1}" x2="${rsX+4}" y2="${oy+ph2+ph1}" stroke="#9ca3af" stroke-width="1.5"/>`;
+  s += `<text x="${rsX+14}" y="${oy+ph2+ph1/2+5}" font-size="13" font-weight="700" fill="#374151">${h1}</text>`;
+
+  // Upper part width half_w
+  s += `<text x="${ox+phw/2}" y="${oy-9}" text-anchor="middle" font-size="12" font-weight="700" fill="#374151">${half_w}</text>`;
+
+  // Upper part height h2 (left side)
+  const lsX = ox - 12;
+  s += `<line x1="${lsX}" y1="${oy}" x2="${lsX}" y2="${oy+ph2}" stroke="#9ca3af" stroke-width="1"/>`;
+  s += `<line x1="${lsX-4}" y1="${oy}" x2="${lsX+4}" y2="${oy}" stroke="#9ca3af" stroke-width="1.5"/>`;
+  s += `<line x1="${lsX-4}" y1="${oy+ph2}" x2="${lsX+4}" y2="${oy+ph2}" stroke="#9ca3af" stroke-width="1.5"/>`;
+  s += `<text x="${lsX-16}" y="${oy+ph2/2+4}" text-anchor="middle" font-size="12" font-weight="700" fill="#374151">${h2}</text>`;
+
+  return svgWrap(W, H, s);
+}
+
+// ── Scaled rectangle ───────────────────────────────────────────────────────────
+function svgScaledRect(spec) {
+  const { orig_length: l, orig_width: w, scale: k } = spec;
+  const newL = l * k, newW = w * k;
+  const W = 340, H = 180, PAD = 24;
+
+  const maxDim = Math.max(newL, newW, 1);
+  const sc = Math.min((W - 2*PAD - 80) * 0.55 / newL, (H - 2*PAD - 30) / newW, 14);
+
+  const sw = l * sc, sh = w * sc;   // original rect display size
+  const lw = newL * sc, lh = newW * sc; // scaled rect display size
+
+  const ox1 = PAD + 10, oy1 = (H - sh) / 2 + 10;
+  const ox2 = ox1 + sw + 56, oy2 = (H - lh) / 2 + 10;
+
+  let s = '';
+  // Original rect
+  s += `<rect x="${ox1}" y="${oy1}" width="${sw}" height="${sh}" fill="#fef9c3" stroke="#f59e0b" stroke-width="1.5"/>`;
+  s += `<text x="${ox1+sw/2}" y="${oy1-8}" text-anchor="middle" font-size="10" fill="#92400e">Original</text>`;
+  s += `<text x="${ox1+sw/2}" y="${oy1+sh+15}" text-anchor="middle" font-size="12" font-weight="600" fill="#374151">${l} × ${w}</text>`;
+
+  // Arrow
+  const arY = H/2 + 5;
+  s += `<line x1="${ox1+sw+6}" y1="${arY}" x2="${ox2-6}" y2="${arY}" stroke="#6b7280" stroke-width="1.5"/>`;
+  s += `<path d="M${ox2-8},${arY-4} L${ox2-2},${arY} L${ox2-8},${arY+4}" fill="none" stroke="#6b7280" stroke-width="1.5"/>`;
+  s += `<text x="${(ox1+sw+ox2)/2}" y="${arY-7}" text-anchor="middle" font-size="11" fill="#6366f1" font-weight="700">× ${k}</text>`;
+
+  // Scaled rect
+  s += `<rect x="${ox2}" y="${oy2}" width="${lw}" height="${lh}" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>`;
+  s += `<text x="${ox2+lw/2}" y="${oy2-8}" text-anchor="middle" font-size="10" fill="#1e40af" font-weight="600">Scaled</text>`;
+  s += `<text x="${ox2+lw/2}" y="${oy2+lh+15}" text-anchor="middle" font-size="12" font-weight="600" fill="#374151">${newL} × ${newW}</text>`;
+  s += `<text x="${ox2+lw/2}" y="${oy2+lh/2+5}" text-anchor="middle" font-size="12" fill="#1e40af">Area = ?</text>`;
+
+  return svgWrap(W, H, s);
+}
+
+// ── Circle ────────────────────────────────────────────────────────────────────
+function svgCircle(spec) {
+  const W = 240, H = 200;
+  const cx = W/2, cy = H/2;
+  const maxR = Math.min(W, H)/2 - 30;
+  const r = spec.radius || (spec.diameter ? spec.diameter/2 : 5);
+  const pr = maxR;  // pixel radius
+
+  let s = `<circle cx="${cx}" cy="${cy}" r="${pr}" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>`;
+
+  // Sector shading
+  if (spec.sector_angle && spec.sector_angle < 360) {
+    const θ = spec.sector_angle * Math.PI / 180;
+    const x1 = cx + pr * Math.sin(0), y1 = cy - pr * Math.cos(0);
+    const x2 = cx + pr * Math.sin(θ), y2 = cy - pr * Math.cos(θ);
+    const large = spec.sector_angle > 180 ? 1 : 0;
+    s += `<path d="M${cx},${cy} L${x1},${y1} A${pr},${pr} 0 ${large},1 ${x2},${y2} Z"
+               fill="#93c5fd" stroke="#3b82f6" stroke-width="1.5" opacity="0.7"/>`;
+    // Angle label in sector — cap at 60° to avoid overlap with horizontal radius label
+    const midθ = θ / 2;
+    const labelθ = midθ > Math.PI * 5/12 ? Math.PI / 3 : midθ;
+    const lx = cx + (pr*0.55)*Math.sin(labelθ), ly = cy - (pr*0.55)*Math.cos(labelθ);
+    s += `<text x="${lx}" y="${ly+4}" text-anchor="middle" font-size="12" font-weight="700" fill="#1e40af">${spec.sector_angle}°</text>`;
+  }
+
+  // Center dot
+  s += `<circle cx="${cx}" cy="${cy}" r="3" fill="#374151"/>`;
+
+  // Radius line (horizontal right)
+  if (spec.radius) {
+    s += `<line x1="${cx}" y1="${cy}" x2="${cx+pr}" y2="${cy}" stroke="#374151" stroke-width="1.5" stroke-dasharray="4,3"/>`;
+    s += `<text x="${cx+pr/2}" y="${cy-6}" text-anchor="middle" font-size="13" font-weight="700" fill="#374151">r = ${spec.radius}</text>`;
+  }
+  // Diameter line (horizontal through center)
+  if (spec.diameter && !spec.radius) {
+    s += `<line x1="${cx-pr}" y1="${cy}" x2="${cx+pr}" y2="${cy}" stroke="#374151" stroke-width="1.5" stroke-dasharray="4,3"/>`;
+    s += `<text x="${cx}" y="${cy-6}" text-anchor="middle" font-size="13" font-weight="700" fill="#374151">d = ${spec.diameter}</text>`;
+  }
+
+  return svgWrap(W, H, s);
+}
+
+// ── Cylinder ──────────────────────────────────────────────────────────────────
+function svgCylinder(spec) {
+  const W = 200, H = 220, PAD = 20;
+  const r = spec.radius, h = spec.height;
+  const pr = 60, ry = 16;  // pixel half-width and ellipse y-radius
+  const pH = 120;           // pixel height of cylinder body
+  const cx = W/2, top = PAD + 20, bot = top + pH;
+
+  let s = '';
+  // Body
+  s += `<rect x="${cx-pr}" y="${top}" width="${2*pr}" height="${pH}" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>`;
+  // Bottom ellipse
+  s += `<ellipse cx="${cx}" cy="${bot}" rx="${pr}" ry="${ry}" fill="#93c5fd" stroke="#3b82f6" stroke-width="1.5"/>`;
+  // Top ellipse
+  s += `<ellipse cx="${cx}" cy="${top}" rx="${pr}" ry="${ry}" fill="#bfdbfe" stroke="#3b82f6" stroke-width="1.5"/>`;
+
+  // Radius label
+  const rLabel = typeof r === 'number' ? String(r) : '?';
+  s += `<line x1="${cx}" y1="${top}" x2="${cx+pr}" y2="${top}" stroke="#374151" stroke-width="1.5" stroke-dasharray="4,3"/>`;
+  s += `<text x="${cx+pr/2}" y="${top-6}" text-anchor="middle" font-size="12" font-weight="700" fill="#374151">r = ${rLabel}</text>`;
+
+  // Height label
+  const hLabel = typeof h === 'number' ? String(h) : '?';
+  const hColor = hLabel === '?' ? '#ef4444' : '#374151';
+  // Height bracket on right side — keep inside SVG bounds
+  s += `<line x1="${cx+pr-2}" y1="${top+2}" x2="${cx+pr-2}" y2="${bot-2}" stroke="${hColor}" stroke-width="1.5" stroke-dasharray="4,3"/>`;
+  s += `<text x="${cx+pr-8}" y="${(top+bot)/2+4}" text-anchor="end" font-size="12" font-weight="700" fill="${hColor}">h=${hLabel}</text>`;
+
+  return svgWrap(W, H, s);
+}
+
+// ── Cone ──────────────────────────────────────────────────────────────────────
+function svgCone(spec) {
+  const W = 200, H = 210, PAD = 15;
+  const pr = 65, ry = 14;  // pixel base half-width and ellipse y-radius
+  const cx = W/2, baseY = H - PAD - 15, apexY = PAD + 10;
+
+  let s = '';
+  // Dashed height line
+  s += `<line x1="${cx}" y1="${apexY}" x2="${cx}" y2="${baseY}" stroke="#9ca3af" stroke-width="1" stroke-dasharray="4,3"/>`;
+  // Body sides
+  s += `<polygon points="${cx},${apexY} ${cx-pr},${baseY} ${cx+pr},${baseY}" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5" opacity="0.85"/>`;
+  // Base ellipse
+  s += `<ellipse cx="${cx}" cy="${baseY}" rx="${pr}" ry="${ry}" fill="#93c5fd" stroke="#3b82f6" stroke-width="1.5"/>`;
+
+  // Radius label
+  const rLabel = typeof spec.radius === 'number' ? String(spec.radius) : '?';
+  s += `<text x="${cx+pr/2}" y="${baseY+14}" text-anchor="middle" font-size="12" font-weight="700" fill="#374151">r = ${rLabel}</text>`;
+
+  // Height label
+  const hLabel = typeof spec.height === 'number' ? String(spec.height) : '?';
+  const hColor = hLabel === '?' ? '#ef4444' : '#374151';
+  s += `<text x="${cx+8}" y="${(apexY+baseY)/2+4}" font-size="12" font-weight="700" fill="${hColor}">h = ${hLabel}</text>`;
+
+  return svgWrap(W, H, s);
+}
+
+// ── Sphere ────────────────────────────────────────────────────────────────────
+function svgSphere(spec) {
+  const W = 200, H = 190;
+  const cx = W/2, cy = H/2, pr = 68;
+
+  let s = `<defs>
+    <radialGradient id="sg" cx="38%" cy="35%" r="60%">
+      <stop offset="0%" stop-color="#bfdbfe"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </radialGradient></defs>`;
+  s += `<circle cx="${cx}" cy="${cy}" r="${pr}" fill="url(#sg)" stroke="#2563eb" stroke-width="1.5"/>`;
+  // Equator ellipse (dashed)
+  s += `<ellipse cx="${cx}" cy="${cy}" rx="${pr}" ry="${pr*0.3}" fill="none" stroke="#93c5fd" stroke-width="1" stroke-dasharray="5,3"/>`;
+  // Center dot
+  s += `<circle cx="${cx}" cy="${cy}" r="2.5" fill="#1e40af"/>`;
+  // Radius line
+  const rLabel = typeof spec.radius === 'number' ? String(spec.radius) : '?';
+  s += `<line x1="${cx}" y1="${cy}" x2="${cx+pr*0.7}" y2="${cy-pr*0.7}" stroke="#fff" stroke-width="1.5" stroke-dasharray="4,3"/>`;
+  s += `<text x="${cx+pr*0.38}" y="${cy-pr*0.42}" font-size="13" font-weight="700" fill="#fff">r = ${rLabel}</text>`;
+
+  return svgWrap(W, H, s);
+}
+
+// ── Rectangular Prism ─────────────────────────────────────────────────────────
+function svgRectPrism(spec) {
+  const W = 240, H = 200;
+  const l = spec.length, w = spec.width, h = spec.height;
+  // Isometric-style 3D box
+  const ox = 50, oy = 140;   // front-bottom-left
+  const pw = 110, ph = 70, pd = 40, sk = 28;  // pixel width, height, depth, skew
+
+  let s = '';
+  // Front face
+  s += `<polygon points="${ox},${oy} ${ox+pw},${oy} ${ox+pw},${oy-ph} ${ox},${oy-ph}" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>`;
+  // Top face
+  s += `<polygon points="${ox},${oy-ph} ${ox+pw},${oy-ph} ${ox+pw+sk},${oy-ph-pd} ${ox+sk},${oy-ph-pd}" fill="#bfdbfe" stroke="#3b82f6" stroke-width="1.5"/>`;
+  // Right face
+  s += `<polygon points="${ox+pw},${oy} ${ox+pw+sk},${oy-pd} ${ox+pw+sk},${oy-ph-pd} ${ox+pw},${oy-ph}" fill="#93c5fd" stroke="#3b82f6" stroke-width="1.5"/>`;
+  // Hidden edges (dashed)
+  s += `<line x1="${ox}" y1="${oy}" x2="${ox+sk}" y2="${oy-pd}" stroke="#93c5fd" stroke-width="1" stroke-dasharray="4,3"/>`;
+  s += `<line x1="${ox+sk}" y1="${oy-pd}" x2="${ox+sk+pw}" y2="${oy-pd}" stroke="#93c5fd" stroke-width="1" stroke-dasharray="4,3"/>`;
+  s += `<line x1="${ox+sk}" y1="${oy-pd}" x2="${ox+sk}" y2="${oy-pd-ph}" stroke="#93c5fd" stroke-width="1" stroke-dasharray="4,3"/>`;
+
+  // Labels
+  const lbl = typeof l==='number'?String(l):'?', wlbl=typeof w==='number'?String(w):'?', hlbl=typeof h==='number'?String(h):'?';
+  s += `<text x="${ox+pw/2}" y="${oy+16}" text-anchor="middle" font-size="12" font-weight="700" fill="#374151">l = ${lbl}</text>`;
+  s += `<text x="${ox+pw+sk/2+14}" y="${oy-pd/2+4}" font-size="12" font-weight="700" fill="#374151">w = ${wlbl}</text>`;
+  s += `<text x="${ox-14}" y="${oy-ph/2+4}" text-anchor="end" font-size="12" font-weight="700" fill="#374151">h = ${hlbl}</text>`;
+
+  return svgWrap(W, H, s);
+}
+
+// ── Parallelogram ─────────────────────────────────────────────────────────────
+function svgParallelogram(spec) {
+  const W = 280, H = 160, PAD = 30;
+  const base = spec.base, height = spec.height, area = spec.area;
+  const skew = 30;
+  const pw = W - 2*PAD - skew, ph = H - 2*PAD - 20;
+  const ox = PAD, oy = H - PAD - 10;
+
+  const bColor = '#374151';
+  const hLabel = typeof height==='number' ? String(height) : '?';
+  const hColor = hLabel==='?' ? '#ef4444' : '#6b7280';
+
+  let s = `<polygon points="${ox+skew},${oy-ph} ${ox+skew+pw},${oy-ph} ${ox+pw},${oy} ${ox},${oy}"
+               fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>`;
+
+  // Base label
+  const bLabel = typeof base==='number' ? String(base) : '?';
+  s += `<text x="${ox+pw/2+skew/2}" y="${oy+16}" text-anchor="middle" font-size="13" font-weight="700" fill="${bColor}">${bLabel}</text>`;
+
+  // Height (dashed vertical line — at top-left corner, fully inside shape)
+  const hx = ox + skew;
+  s += `<line x1="${hx}" y1="${oy}" x2="${hx}" y2="${oy-ph}" stroke="${hColor}" stroke-width="1.5" stroke-dasharray="4,3"/>`;
+  s += `<text x="${hx+8}" y="${oy-ph/2+4}" font-size="13" font-weight="700" fill="${hColor}">${hLabel}</text>`;
+
+  // Area label (if given)
+  if (area) {
+    s += `<text x="${ox+skew+pw/2}" y="${oy-ph/2+5}" text-anchor="middle" font-size="12" fill="#93c5fd">Area = ${area}</text>`;
+  }
+
+  return svgWrap(W, H, s);
+}
+
+// ── Trapezoid ─────────────────────────────────────────────────────────────────
+function svgTrapezoid(spec) {
+  const W = 280, H = 170, PAD = 25;
+  const b1 = spec.base1, b2 = spec.base2;
+  const height = spec.height, area = spec.area;
+  const maxB = Math.max(typeof b1==='number'?b1:10, typeof b2==='number'?b2:6);
+  const scale = Math.min((W-2*PAD-20)/maxB, 12);
+  const pw1 = (typeof b1==='number'?b1:10)*scale;
+  const pw2 = (typeof b2==='number'?b2:6)*scale;
+  const ph = H - 2*PAD - 20;
+  const ox = (W - pw1) / 2, oy = H - PAD - 10;
+  const off = (pw1 - pw2) / 2;
+
+  const hLabel = typeof height==='number' ? String(height) : '?';
+  const hColor = hLabel==='?' ? '#ef4444' : '#6b7280';
+  const b1Label = typeof b1==='number'?String(b1):'?';
+  const b2Label = typeof b2==='number'?String(b2):'?';
+
+  let s = `<polygon points="${ox},${oy} ${ox+pw1},${oy} ${ox+off+pw2},${oy-ph} ${ox+off},${oy-ph}"
+               fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>`;
+
+  // Base 1 label (bottom)
+  s += `<text x="${ox+pw1/2}" y="${oy+16}" text-anchor="middle" font-size="13" font-weight="700" fill="#374151">${b1Label}</text>`;
+  // Base 2 label (top)
+  s += `<text x="${ox+off+pw2/2}" y="${oy-ph-6}" text-anchor="middle" font-size="13" font-weight="700" fill="#374151">${b2Label}</text>`;
+
+  // Height (dashed line)
+  const hx = ox + pw1 + 16;
+  s += `<line x1="${hx}" y1="${oy}" x2="${hx}" y2="${oy-ph}" stroke="${hColor}" stroke-width="1.5" stroke-dasharray="4,3"/>`;
+  s += `<text x="${hx+8}" y="${oy-ph/2+4}" font-size="13" font-weight="700" fill="${hColor}">${hLabel}</text>`;
+
+  // Area if given
+  if (area) {
+    s += `<text x="${W/2}" y="${oy-ph/2+5}" text-anchor="middle" font-size="11" fill="#93c5fd">Area = ${area}</text>`;
+  }
+
+  return svgWrap(W, H, s);
+}
+
+// ── House shape (rectangle + triangle) ────────────────────────────────────────
+function svgHouseShape(spec) {
+  const W = 260, H = 200, PAD = 20;
+  const rw = spec.width, rh = spec.rect_height, th = spec.tri_height;
+  const scale = Math.min((W-2*PAD)/rw, (H-2*PAD-10)/(rh+th), 15);
+  const pw = rw*scale, prh = rh*scale, pth = th*scale;
+  const ox = (W-pw)/2, oy = H-PAD-10;
+
+  let s = '';
+  // Rectangle
+  s += `<rect x="${ox}" y="${oy-prh}" width="${pw}" height="${prh}" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>`;
+  // Triangle (roof)
+  s += `<polygon points="${ox},${oy-prh} ${ox+pw},${oy-prh} ${ox+pw/2},${oy-prh-pth}" fill="#bfdbfe" stroke="#3b82f6" stroke-width="2"/>`;
+  // Dashed height for triangle
+  s += `<line x1="${ox+pw/2}" y1="${oy-prh}" x2="${ox+pw/2}" y2="${oy-prh-pth}" stroke="#9ca3af" stroke-width="1" stroke-dasharray="4,3"/>`;
+
+  // Labels
+  s += `<text x="${ox+pw/2}" y="${oy+14}" text-anchor="middle" font-size="12" font-weight="700" fill="#374151">${rw}</text>`;
+  s += `<text x="${ox-8}" y="${oy-prh/2+4}" text-anchor="end" font-size="12" font-weight="700" fill="#374151">${rh}</text>`;
+  s += `<text x="${ox+pw+8}" y="${oy-prh-pth/2+4}" font-size="12" font-weight="700" fill="#6b7280">${th}</text>`;
+
+  return svgWrap(W, H, s);
+}
+
+// ── Bar chart ─────────────────────────────────────────────────────────────────
+function svgBarChart(spec) {
+  const W = 300, H = 220, PL = 38, PR = 10, PT = 15, PB = 40;
+  const cats = spec.categories, vals = spec.values;
+  const missing = spec.missing;          // index of the unknown bar (shown as ?)
+  const highlight = spec.highlight;      // index of highlighted bar
+  const totalLabel = spec.total ? `Total = ${spec.total}` : '';
+
+  const chartW = W - PL - PR, chartH = H - PT - PB;
+  const maxVal = Math.max(...vals.filter(v=>v>0), 1);
+  const yMax = Math.ceil(maxVal / 10) * 10 + 10;
+  const barW = chartW / cats.length * 0.6;
+  const gap = chartW / cats.length;
+
+  const sy = v => PT + chartH - (v / yMax) * chartH;
+  const bx = i => PL + i * gap + gap * 0.2;
+
+  let s = '';
+  // Y axis ticks and grid
+  const yStep = yMax <= 50 ? 10 : yMax <= 100 ? 20 : 50;
+  for (let y = 0; y <= yMax; y += yStep) {
+    const yp = sy(y);
+    s += `<line x1="${PL}" y1="${yp}" x2="${W-PR}" y2="${yp}" stroke="#e5e7eb" stroke-width="0.8"/>`;
+    s += `<text x="${PL-4}" y="${yp+3}" text-anchor="end" font-size="9" fill="#9ca3af">${y}</text>`;
+  }
+  // Axes
+  s += `<line x1="${PL}" y1="${PT}" x2="${PL}" y2="${H-PB}" stroke="#374151" stroke-width="1.5"/>`;
+  s += `<line x1="${PL}" y1="${H-PB}" x2="${W-PR}" y2="${H-PB}" stroke="#374151" stroke-width="1.5"/>`;
+  // Y label
+  if (spec.ylabel) {
+    s += `<text x="10" y="${H/2}" text-anchor="middle" font-size="10" fill="#6b7280" transform="rotate(-90,10,${H/2})">${spec.ylabel}</text>`;
+  }
+  // Bars
+  cats.forEach((cat, i) => {
+    const isMissing = i === missing;
+    const isHighlit = i === highlight;
+    const v = vals[i];
+    const barColor = isMissing ? '#fde68a' : isHighlit ? '#f97316' : '#6366f1';
+    const barStroke = isMissing ? '#d97706' : isHighlit ? '#c2410c' : '#4f46e5';
+
+    if (!isMissing && v > 0) {
+      const bh = (v / yMax) * chartH;
+      s += `<rect x="${bx(i)}" y="${sy(v)}" width="${barW}" height="${bh}"
+                 fill="${barColor}" stroke="${barStroke}" stroke-width="1" rx="2"/>`;
+      s += `<text x="${bx(i)+barW/2}" y="${sy(v)-3}" text-anchor="middle" font-size="9" font-weight="600" fill="${barStroke}">${v}</text>`;
+    } else if (isMissing) {
+      // Draw empty bar outline with "?"
+      s += `<rect x="${bx(i)}" y="${PT}" width="${barW}" height="${chartH}"
+                 fill="#fef3c7" stroke="#d97706" stroke-width="1.5" stroke-dasharray="4,3" rx="2"/>`;
+      s += `<text x="${bx(i)+barW/2}" y="${H/2}" text-anchor="middle" font-size="16" font-weight="700" fill="#d97706">?</text>`;
+    }
+    // Category label
+    const catShort = cat.length > 5 ? cat.slice(0,4) + '.' : cat;
+    s += `<text x="${bx(i)+barW/2}" y="${H-PB+12}" text-anchor="middle" font-size="9" fill="#6b7280">${catShort}</text>`;
+  });
+
+  // Total label if given
+  if (totalLabel) {
+    s += `<text x="${W-PR-2}" y="${PT+10}" text-anchor="end" font-size="9" fill="#6b7280">${totalLabel}</text>`;
+  }
+
+  return svgWrap(W, H, s);
+}
+
+// ── Pie chart ─────────────────────────────────────────────────────────────────
+function svgPieChart(spec) {
+  const W = 280, H = 200;
+  const cx = 100, cy = H/2, pr = 72;
+  const segs = spec.segments;  // [{label, value}, ...] where value is percentage
+  const highlight = spec.highlight;
+  const total = spec.total;
+
+  const COLORS = ['#6366f1','#f97316','#22c55e','#eab308','#ec4899','#06b6d4'];
+  const LIGHT  = ['#e0e7ff','#ffedd5','#dcfce7','#fef9c3','#fce7f3','#cffafe'];
+
+  let angle = -Math.PI / 2;  // start at top
+  let s = '';
+  const sliceInfo = [];
+
+  segs.forEach((seg, i) => {
+    const frac = seg.value / 100;
+    const span = frac * 2 * Math.PI;
+    const x1 = cx + pr * Math.cos(angle), y1 = cy + pr * Math.sin(angle);
+    const x2 = cx + pr * Math.cos(angle + span), y2 = cy + pr * Math.sin(angle + span);
+    const large = span > Math.PI ? 1 : 0;
+    const fill = i === highlight ? COLORS[i % COLORS.length] : LIGHT[i % LIGHT.length];
+    const stroke = COLORS[i % COLORS.length];
+    const pull = i === highlight ? 6 : 0;
+    const midAngle = angle + span / 2;
+    const px = pull * Math.cos(midAngle), py = pull * Math.sin(midAngle);
+
+    s += `<path d="M${cx+px},${cy+py} L${x1+px},${y1+py} A${pr},${pr} 0 ${large},1 ${x2+px},${y2+py} Z"
+               fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+
+    // Store for legend
+    sliceInfo.push({ label: seg.label, value: seg.value, color: stroke, midAngle });
+    angle += span;
+  });
+
+  // Legend on right side
+  const legendX = cx + pr + 20;
+  sliceInfo.forEach((seg, i) => {
+    const ly = 28 + i * 22;
+    s += `<rect x="${legendX}" y="${ly-10}" width="12" height="12" fill="${seg.color}" rx="2"/>`;
+    s += `<text x="${legendX+16}" y="${ly}" font-size="10" fill="#374151">${seg.label} ${seg.value}%</text>`;
+  });
+
+  // Total label below
+  if (total) {
+    s += `<text x="${cx}" y="${H-8}" text-anchor="middle" font-size="10" fill="#6b7280">n = ${total}</text>`;
+  }
+
+  return svgWrap(W, H, s);
+}
+
+function svgNumberLine(spec) {
+  const W = 320, H = 90;
+  const lx = 30, rx = 290, my = 50;
+  const lo = spec.range_lo ?? -10, hi = spec.range_hi ?? 10;
+  const range = hi - lo;
+
+  function px(v) { return lx + (v - lo) / range * (rx - lx); }
+
+  let s = '';
+  // axis
+  s += `<line x1="${lx}" y1="${my}" x2="${rx}" y2="${my}" stroke="#374151" stroke-width="2"/>`;
+  s += `<polygon points="${rx},${my} ${rx-7},${my-4} ${rx-7},${my+4}" fill="#374151"/>`;
+
+  // ticks
+  for (let v = Math.ceil(lo); v <= hi; v++) {
+    const x = px(v);
+    const big = v % 5 === 0;
+    s += `<line x1="${x}" y1="${my - (big?8:5)}" x2="${x}" y2="${my + (big?8:5)}" stroke="#374151" stroke-width="${big?1.5:1}"/>`;
+    if (big) s += `<text x="${x}" y="${my+20}" text-anchor="middle" font-size="11" fill="#374151">${v}</text>`;
+  }
+
+  // solution region
+  const pts = spec.points || [];
+  pts.forEach(pt => {
+    const x = px(pt.value);
+    const filled = pt.type === 'closed';
+    s += `<circle cx="${x}" cy="${my}" r="6" fill="${filled ? '#4f46e5' : 'white'}" stroke="#4f46e5" stroke-width="2"/>`;
+    if (pt.label) s += `<text x="${x}" y="${my-14}" text-anchor="middle" font-size="12" font-weight="700" fill="#4f46e5">${pt.label}</text>`;
+  });
+
+  // shading arrow
+  if (spec.shade) {
+    const { from, direction } = spec.shade;
+    const fx = px(from);
+    const ex = direction === 'right' ? rx - 5 : lx + 5;
+    s += `<line x1="${fx}" y1="${my}" x2="${ex}" y2="${my}" stroke="#4f46e5" stroke-width="3" opacity="0.4"/>`;
+    const arrowX = direction === 'right' ? ex + 6 : ex - 6;
+    const arrow = direction === 'right'
+      ? `${arrowX},${my} ${arrowX-8},${my-4} ${arrowX-8},${my+4}`
+      : `${arrowX},${my} ${arrowX+8},${my-4} ${arrowX+8},${my+4}`;
+    s += `<polygon points="${arrow}" fill="#4f46e5" opacity="0.6"/>`;
+  }
+
+  return svgWrap(W, H, s);
+}
+
+function svgScatterPlot(spec) {
+  const W = 280, H = 220;
+  const ox = 45, oy = H - 35, pw = W - 60, ph = H - 55;
+
+  // Normalise points: accept [x,y] arrays or {x,y} objects
+  const rawPts = (spec.points || []).map(p => Array.isArray(p) ? {x: p[0], y: p[1]} : p);
+
+  // Auto-compute ranges from data if not provided
+  const xs = rawPts.map(p => p.x), ys = rawPts.map(p => p.y);
+  const line = spec.trend_line || spec.line;
+  const xloRaw = spec.x_min ?? (xs.length ? Math.min(...xs) : 0);
+  const xhiRaw = spec.x_max ?? (xs.length ? Math.max(...xs) : 10);
+  const yloRaw = spec.y_min ?? (ys.length ? Math.min(...ys) : 0);
+  const yhiRaw = spec.y_max ?? (ys.length ? Math.max(...ys) : 10);
+  const xpad = (xhiRaw - xloRaw) * 0.15 || 1;
+  const ypad = (yhiRaw - yloRaw) * 0.2 || 1;
+  const xlo = Math.floor(xloRaw - xpad), xhi = Math.ceil(xhiRaw + xpad);
+  const ylo = Math.floor(yloRaw - ypad), yhi = Math.ceil(yhiRaw + ypad);
+
+  function sx(v) { return ox + (v - xlo) / (xhi - xlo) * pw; }
+  function sy(v) { return oy - (v - ylo) / (yhi - ylo) * ph; }
+
+  let s = '';
+  // axes
+  s += `<line x1="${ox}" y1="${oy}" x2="${ox+pw}" y2="${oy}" stroke="#374151" stroke-width="1.5"/>`;
+  s += `<line x1="${ox}" y1="${oy}" x2="${ox}" y2="${oy-ph}" stroke="#374151" stroke-width="1.5"/>`;
+  s += `<text x="${ox+pw/2}" y="${H-5}" text-anchor="middle" font-size="11" fill="#6b7280">${spec.xlabel || spec.x_label || 'x'}</text>`;
+  s += `<text x="12" y="${oy-ph/2+4}" text-anchor="middle" font-size="11" fill="#6b7280" transform="rotate(-90,12,${oy-ph/2})">${spec.ylabel || spec.y_label || 'y'}</text>`;
+
+  // axis ticks (5 steps each)
+  const xSteps = 5, ySteps = 5;
+  for (let i = 0; i <= xSteps; i++) {
+    const v = xlo + i * (xhi - xlo) / xSteps;
+    const x = sx(v);
+    s += `<line x1="${x}" y1="${oy}" x2="${x}" y2="${oy+4}" stroke="#374151" stroke-width="1"/>`;
+    s += `<text x="${x}" y="${oy+14}" text-anchor="middle" font-size="10" fill="#6b7280">${Math.round(v)}</text>`;
+  }
+  for (let i = 0; i <= ySteps; i++) {
+    const v = ylo + i * (yhi - ylo) / ySteps;
+    const y = sy(v);
+    s += `<line x1="${ox-4}" y1="${y}" x2="${ox}" y2="${y}" stroke="#374151" stroke-width="1"/>`;
+    s += `<text x="${ox-7}" y="${y+4}" text-anchor="end" font-size="10" fill="#6b7280">${Math.round(v)}</text>`;
+  }
+
+  // line of best fit
+  if (line) {
+    const { slope, intercept } = line;
+    s += `<line x1="${sx(xlo)}" y1="${sy(slope*xlo+intercept)}" x2="${sx(xhi)}" y2="${sy(slope*xhi+intercept)}" stroke="#ef4444" stroke-width="2" stroke-dasharray="5,3"/>`;
+  }
+
+  // points (drawn on top of line)
+  rawPts.forEach(pt => {
+    s += `<circle cx="${sx(pt.x)}" cy="${sy(pt.y)}" r="4" fill="#4f46e5" opacity="0.8"/>`;
+  });
+
+  return svgWrap(W, H, s);
+}
+
+function svgBoxPlot(spec) {
+  const W = 320, H = 120;
+  const lx = 40, rx = 290, my = 55, bh = 30;
+  const lo = spec.range_lo ?? 0, hi = spec.range_hi ?? 100;
+
+  function px(v) { return lx + (v - lo) / (hi - lo) * (rx - lx); }
+
+  const mn = spec.min, q1 = spec.q1, med = spec.median, q3 = spec.q3, mx = spec.max;
+  let s = '';
+
+  // axis
+  s += `<line x1="${lx}" y1="${my+bh/2+18}" x2="${rx}" y2="${my+bh/2+18}" stroke="#d1d5db" stroke-width="1"/>`;
+  [mn, q1, med, q3, mx].forEach(v => {
+    const x = px(v);
+    s += `<text x="${x}" y="${my+bh/2+32}" text-anchor="middle" font-size="10" fill="#6b7280">${v}</text>`;
+  });
+
+  // whiskers
+  s += `<line x1="${px(mn)}" y1="${my+bh/2}" x2="${px(q1)}" y2="${my+bh/2}" stroke="#374151" stroke-width="1.5"/>`;
+  s += `<line x1="${px(mx)}" y1="${my+bh/2}" x2="${px(q3)}" y2="${my+bh/2}" stroke="#374151" stroke-width="1.5"/>`;
+  s += `<line x1="${px(mn)}" y1="${my+bh/4}" x2="${px(mn)}" y2="${my+3*bh/4}" stroke="#374151" stroke-width="1.5"/>`;
+  s += `<line x1="${px(mx)}" y1="${my+bh/4}" x2="${px(mx)}" y2="${my+3*bh/4}" stroke="#374151" stroke-width="1.5"/>`;
+
+  // box
+  s += `<rect x="${px(q1)}" y="${my}" width="${px(q3)-px(q1)}" height="${bh}" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2"/>`;
+  s += `<line x1="${px(med)}" y1="${my}" x2="${px(med)}" y2="${my+bh}" stroke="#4f46e5" stroke-width="2.5"/>`;
+
+  // labels
+  s += `<text x="${px(q1)}" y="${my-6}" text-anchor="middle" font-size="10" fill="#4f46e5">Q1</text>`;
+  s += `<text x="${px(med)}" y="${my-6}" text-anchor="middle" font-size="10" fill="#4f46e5">Med</text>`;
+  s += `<text x="${px(q3)}" y="${my-6}" text-anchor="middle" font-size="10" fill="#4f46e5">Q3</text>`;
+
+  return svgWrap(W, H, s);
+}
+
+function svgTwoWayTable(spec) {
+  const rows = spec.rows || ['Yes', 'No'];
+  const cols = spec.cols || ['A', 'B', 'Total'];
+  const data = spec.data || [];        // 2-D array [row][col]
+  const highlight = spec.highlight;    // [r, c] cell to highlight (0-indexed, null=total)
+
+  const CW = 64, CH = 32, ox = 10, oy = 10;
+  const nR = rows.length + 1, nC = cols.length + 1;   // +1 for headers
+  const W = ox + nC * CW + 10, H = oy + nR * CH + 10;
+
+  let s = '';
+
+  function cell(r, c, text, isHeader, isHL) {
+    const x = ox + c * CW, y = oy + r * CH;
+    const fill = isHeader ? '#e0e7ff' : isHL ? '#fef3c7' : '#ffffff';
+    const fw = isHeader ? '700' : '400';
+    s += `<rect x="${x}" y="${y}" width="${CW}" height="${CH}" fill="${fill}" stroke="#d1d5db" stroke-width="1"/>`;
+    s += `<text x="${x+CW/2}" y="${y+CH/2+4}" text-anchor="middle" font-size="12" font-weight="${fw}" fill="#111827">${escHtml(text ?? '')}</text>`;
+  }
+
+  // Header row
+  cell(0, 0, '', true, false);
+  cols.forEach((c, ci) => cell(0, ci + 1, c, true, false));
+
+  // Data rows
+  rows.forEach((rLabel, ri) => {
+    cell(ri + 1, 0, rLabel, true, false);
+    cols.forEach((c, ci) => {
+      const isHL = highlight && highlight[0] === ri && highlight[1] === ci;
+      cell(ri + 1, ci + 1, data[ri] ? data[ri][ci] : '?', false, isHL);
+    });
+  });
+
+  return svgWrap(W, H, s);
+}
+
+function svgSpecialTriangle(spec) {
+  const W = 220, H = 200;
+  const type = spec.triangle_type || '45-45-90';
+  let s = '';
+
+  if (type === '30-60-90') {
+    // right angle at bottom-left, 30° at bottom-right, 60° at top
+    const ax = 40, ay = 165;   // bottom-left (90°)
+    const bx = 180, by = 165;  // bottom-right (30°)
+    const cx2 = 40, cy2 = 45;  // top-left (60°)
+
+    s += `<polygon points="${ax},${ay} ${bx},${by} ${cx2},${cy2}" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2"/>`;
+    // right angle box
+    s += `<polyline points="${ax+12},${ay} ${ax+12},${ay-12} ${ax},${ay-12}" fill="none" stroke="#374151" stroke-width="1.5"/>`;
+    // altitude (dashed)
+    s += `<line x1="${cx2}" y1="${ay}" x2="${cx2}" y2="${cy2}" stroke="#9ca3af" stroke-width="1" stroke-dasharray="3,2"/>`;
+
+    // angle arcs
+    s += `<path d="M${ax+22},${ay} A22,22 0 0,0 ${ax},${ay-22}" fill="none" stroke="#6366f1" stroke-width="1.5"/>`;
+    s += `<text x="${ax+26}" y="${ay-6}" font-size="11" fill="#6366f1">90°</text>`;
+    s += `<path d="M${bx-22},${by} A22,22 0 0,1 ${bx-18},${by-13}" fill="none" stroke="#10b981" stroke-width="1.5"/>`;
+    s += `<text x="${bx-52}" y="${by-14}" font-size="11" fill="#10b981">30°</text>`;
+    s += `<path d="M${cx2+16},${cy2+20} A22,22 0 0,0 ${cx2+22},${cy2+8}" fill="none" stroke="#f59e0b" stroke-width="1.5"/>`;
+    s += `<text x="${cx2+26}" y="${cy2+22}" font-size="11" fill="#f59e0b">60°</text>`;
+
+    // side labels
+    const la = spec.label_a || (spec.missing === 'a' ? '?' : spec.a);
+    const lb = spec.label_b || (spec.missing === 'b' ? '?' : spec.b);
+    const lc = spec.label_c || (spec.missing === 'c' ? '?' : spec.c);
+    // hypotenuse (b→c)
+    const hmx = (bx+cx2)/2, hmy = (by+cy2)/2;
+    s += `<text x="${hmx+8}" y="${hmy}" font-size="13" font-weight="700" fill="#1e40af">${lc ?? ''}</text>`;
+    // bottom leg (a→b)
+    s += `<text x="${(ax+bx)/2}" y="${ay+18}" text-anchor="middle" font-size="13" font-weight="700" fill="#1e40af">${la ?? ''}</text>`;
+    // left leg (a→c)
+    s += `<text x="${ax-22}" y="${(ay+cy2)/2+4}" text-anchor="middle" font-size="13" font-weight="700" fill="#1e40af">${lb ?? ''}</text>`;
+
+  } else {
+    // 45-45-90: isosceles right triangle
+    const ax = 40, ay = 160;
+    const bx = 180, by = 160;
+    const cx2 = 40, cy2 = 20;
+
+    s += `<polygon points="${ax},${ay} ${bx},${by} ${cx2},${cy2}" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2"/>`;
+    s += `<polyline points="${ax+12},${ay} ${ax+12},${ay-12} ${ax},${ay-12}" fill="none" stroke="#374151" stroke-width="1.5"/>`;
+
+    s += `<path d="M${ax+22},${ay} A22,22 0 0,0 ${ax},${ay-22}" fill="none" stroke="#6366f1" stroke-width="1.5"/>`;
+    s += `<text x="${ax+26}" y="${ay-6}" font-size="11" fill="#6366f1">90°</text>`;
+    s += `<path d="M${bx-22},${by} A22,22 0 0,1 ${bx-19},${by-12}" fill="none" stroke="#10b981" stroke-width="1.5"/>`;
+    s += `<text x="${bx-52}" y="${by-14}" font-size="11" fill="#10b981">45°</text>`;
+    s += `<path d="M${cx2+16},${cy2+20} A22,22 0 0,0 ${cx2+22},${cy2+8}" fill="none" stroke="#f59e0b" stroke-width="1.5"/>`;
+    s += `<text x="${cx2+26}" y="${cy2+22}" font-size="11" fill="#f59e0b">45°</text>`;
+
+    const la = spec.label_a || (spec.missing === 'a' ? '?' : spec.a);
+    const lc = spec.label_c || (spec.missing === 'c' ? '?' : spec.c);
+    s += `<text x="${(bx+cx2)/2+8}" y="${(by+cy2)/2}" font-size="13" font-weight="700" fill="#1e40af">${lc ?? ''}</text>`;
+    s += `<text x="${(ax+bx)/2}" y="${ay+18}" text-anchor="middle" font-size="13" font-weight="700" fill="#1e40af">${la ?? ''}</text>`;
+    s += `<text x="${ax-22}" y="${(ay+cy2)/2+4}" text-anchor="middle" font-size="13" font-weight="700" fill="#1e40af">${la ?? ''}</text>`;
+  }
+
+  return svgWrap(W, H, s);
+}
+
+function svgParabola(spec) {
+  const W = 280, H = 260;
+  const ML = 38, MR = 16, MT = 18, MB = 28;   // margins
+  const pw = W - ML - MR, ph = H - MT - MB;
+
+  const h = spec.h ?? 0, k = spec.k ?? 0, a = spec.a ?? 1;
+  const xrange = spec.x_range ?? 4;
+  const vertex_label = spec.vertex_label !== false;
+
+  // Data bounds: vertex is the extremum; parabola ends at x = h ± xrange
+  const xDataMin = h - xrange, xDataMax = h + xrange;
+  const yAtEnds = a * xrange * xrange + k;
+  const yDataMin = a >= 0 ? k : yAtEnds;
+  const yDataMax = a >= 0 ? yAtEnds : k;
+
+  // Add 15% padding and snap to nice integers
+  const xpad = xrange * 0.18, ypad = Math.max((yDataMax - yDataMin) * 0.15, 1);
+  const xlo = Math.floor(xDataMin - xpad), xhi = Math.ceil(xDataMax + xpad);
+  const ylo = Math.floor(yDataMin - ypad), yhi = Math.ceil(yDataMax + ypad);
+
+  function px(x) { return ML + (x - xlo) / (xhi - xlo) * pw; }
+  function py(y) { return MT + ph - (y - ylo) / (yhi - ylo) * ph; }
+  const ox = px(0), oy = py(0);
+
+  let s = '';
+
+  // Light grid lines at every integer
+  for (let gx = xlo; gx <= xhi; gx++) {
+    s += `<line x1="${px(gx)}" y1="${MT}" x2="${px(gx)}" y2="${MT+ph}" stroke="#f3f4f6" stroke-width="1"/>`;
+  }
+  for (let gy = ylo; gy <= yhi; gy++) {
+    s += `<line x1="${ML}" y1="${py(gy)}" x2="${ML+pw}" y2="${py(gy)}" stroke="#f3f4f6" stroke-width="1"/>`;
+  }
+
+  // Axes (clamped to SVG bounds)
+  const axisOy = Math.min(Math.max(oy, MT), MT + ph);
+  const axisOx = Math.min(Math.max(ox, ML), ML + pw);
+  s += `<line x1="${ML}" y1="${axisOy}" x2="${ML+pw}" y2="${axisOy}" stroke="#9ca3af" stroke-width="1.5"/>`;
+  s += `<line x1="${axisOx}" y1="${MT}" x2="${axisOx}" y2="${MT+ph}" stroke="#9ca3af" stroke-width="1.5"/>`;
+  s += `<text x="${ML+pw+3}" y="${axisOy+4}" font-size="11" fill="#6b7280">x</text>`;
+  s += `<text x="${axisOx+3}" y="${MT-4}" font-size="11" fill="#6b7280">y</text>`;
+
+  // Tick labels — pick a reasonable step
+  const xSpan = xhi - xlo, ySpan = yhi - ylo;
+  const xStep = xSpan <= 8 ? 1 : xSpan <= 16 ? 2 : 4;
+  const yStep = ySpan <= 8 ? 1 : ySpan <= 16 ? 2 : ySpan <= 32 ? 4 : 5;
+
+  for (let v = xlo; v <= xhi; v += xStep) {
+    if (v === 0) continue;
+    const x = px(v);
+    s += `<line x1="${x}" y1="${axisOy-3}" x2="${x}" y2="${axisOy+3}" stroke="#9ca3af" stroke-width="1"/>`;
+    s += `<text x="${x}" y="${axisOy+13}" text-anchor="middle" font-size="10" fill="#9ca3af">${v}</text>`;
+  }
+  for (let v = ylo; v <= yhi; v += yStep) {
+    if (v === 0) continue;
+    const y = py(v);
+    s += `<line x1="${axisOx-3}" y1="${y}" x2="${axisOx+3}" y2="${y}" stroke="#9ca3af" stroke-width="1"/>`;
+    s += `<text x="${axisOx-5}" y="${y+4}" text-anchor="end" font-size="10" fill="#9ca3af">${v}</text>`;
+  }
+  // Origin label
+  if (xlo < 0 && xhi > 0 && ylo < 0 && yhi > 0)
+    s += `<text x="${axisOx-5}" y="${axisOy+13}" text-anchor="end" font-size="10" fill="#9ca3af">0</text>`;
+
+  // Axis of symmetry (dashed, before curve so curve draws on top)
+  const vsx = px(h);
+  s += `<line x1="${vsx}" y1="${MT}" x2="${vsx}" y2="${MT+ph}" stroke="#4f46e5" stroke-width="1" stroke-dasharray="4,3" opacity="0.35"/>`;
+
+  // Parabola curve
+  const steps = 80;
+  let pts = [];
+  for (let i = 0; i <= steps; i++) {
+    const x = xDataMin + i * (xDataMax - xDataMin) / steps;
+    const y = a * (x - h) * (x - h) + k;
+    const cx = px(x), cy = py(y);
+    // Only include points within SVG bounds
+    if (cy >= MT - 2 && cy <= MT + ph + 2) pts.push(`${cx.toFixed(1)},${cy.toFixed(1)}`);
+  }
+  if (pts.length > 1)
+    s += `<polyline points="${pts.join(' ')}" fill="none" stroke="#4f46e5" stroke-width="2.5"/>`;
+
+  // Vertex dot + label
+  const vx = px(h), vy = py(k);
+  if (vy >= MT - 4 && vy <= MT + ph + 4) {
+    s += `<circle cx="${vx}" cy="${vy}" r="4" fill="#4f46e5"/>`;
+    if (vertex_label) {
+      const above = vy > MT + 20;
+      s += `<text x="${vx+7}" y="${above ? vy - 6 : vy + 14}" font-size="11" font-weight="700" fill="#4f46e5">(${h}, ${k})</text>`;
+    }
+  }
+
+  // Roots (x-intercepts)
+  (spec.roots || spec.x_intercepts || []).filter(Boolean).forEach(r => {
+    const rx = px(r), ry = axisOy;
+    s += `<circle cx="${rx}" cy="${ry}" r="4" fill="none" stroke="#ef4444" stroke-width="2"/>`;
+    s += `<text x="${rx}" y="${ry+14}" text-anchor="middle" font-size="10" fill="#ef4444">${r}</text>`;
+  });
+
+  return svgWrap(W, H, s);
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// KaTeX rendering
+// ════════════════════════════════════════════════════════════════════════════
+function renderAllKaTeX() {
+  if (typeof renderMathInElement !== 'function') {
+    setTimeout(renderAllKaTeX, 200);
+    return;
+  }
+  const panel = document.getElementById('detail-panel');
+  if (!panel) return;
+  panel.querySelectorAll('.detail-stem, .detail-option span:last-child, .detail-spr span:nth-child(2), .step-content, .core-concept-box, .alt-approach-box').forEach(el => {
+    renderMathInElement(el, {
+      delimiters: [
+        { left: '\\[', right: '\\]', display: true  },
+        { left: '\\(', right: '\\)', display: false },
+        { left: '$$',  right: '$$',  display: true  },
+      ],
+      throwOnError: false
+    });
+  });
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// Utilities
+// ════════════════════════════════════════════════════════════════════════════
+function escHtml(s) {
+  if (s == null) return '';
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+function skillCode(key) {
+  const map = {
+    linear_eq_one_var: 'LEQ', linear_eq_word_problems: 'LWP',
+    systems_linear_eq: 'SLE', linear_functions: 'LFN',
+    quadratic_equations: 'QEQ', percentages: 'PCT',
+    ratios_rates: 'RAT', proportional_relationships: 'PRP',
+    pythagorean_theorem: 'PYT', area_2d: 'ARA',
+    coordinate_geometry: 'CGE', circles: 'CIR',
+    volume_3d: 'VOL', plane_geometry: 'PLG', data_analysis: 'DAT',
+    statistics: 'STA', sequences_series: 'SEQ', exponents_radicals: 'EXR',
+    complex_numbers: 'CMX', polynomials: 'POL', probability: 'PRB',
+    two_way_tables: 'TWT', linear_inequalities: 'LIN', absolute_value: 'ABV',
+    special_triangles: 'SPT', trigonometry: 'TRG', quadratic_functions: 'QFN',
+    scatterplot_analysis: 'SCA',
+  };
+  return map[key] || (key || '—').toUpperCase().substring(0, 4);
+}
+
+function statusLabel(s) {
+  const map = {
+    generated: 'Generated', generated_flagged: '⚠ Flagged',
+    approved: '✓ Approved', rejected: '✗ Rejected', promoted: '⬆ Promoted',
+  };
+  return map[s] || s;
+}
+
+function setLoading(on) {
+  document.getElementById('loading-bar').style.display = on ? 'block' : 'none';
+}
+
+function showEmpty(msg) {
+  const sidebarList = document.getElementById('sidebar-list');
+  sidebarList.innerHTML = `<div style="padding:16px 12px; font-size:13px; color:#9ca3af;">${escHtml(msg)}</div>`;
+  document.getElementById('sidebar-header').textContent = '0 questions';
+  document.getElementById('detail-empty').style.display = 'flex';
+  document.getElementById('detail-panel').style.display = 'none';
+}
+
+function updateCount(n) {
+  document.getElementById('count-badge').textContent = n + ' question' + (n !== 1 ? 's' : '');
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// Boot
+// ════════════════════════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  const pill = document.getElementById('pill-' + currentStatus);
+  if (pill) pill.classList.add('active-filter');
+  loadQuestions();
+});
+</script>
+</body>
+</html>

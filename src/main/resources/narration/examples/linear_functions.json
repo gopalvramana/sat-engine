@@ -1,0 +1,1667 @@
+[
+  {
+    "difficulty": "easy",
+    "sat_level": 1,
+    "framing": "evaluate_integer",
+    "variant": "pos_input",
+    "stem": "The function f is defined by f(x) = 3x − 8. What is the value of f(7)?",
+    "type": "mcq",
+    "choices": { "A": "13", "B": "18", "C": "21", "D": "29" },
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Student computed 3 + 8 + 7 instead of substituting x = 7",
+      "C": "Student computed 3 × 7 = 21 and forgot to subtract 8",
+      "D": "Student added 8 instead of subtracting"
+    },
+    "solution_steps": [
+      "Substitute x = 7: f(7) = 3(7) − 8",
+      "= 21 − 8 = 13"
+    ],
+    "why_this_difficulty": "Easy: one-step substitution into a linear function with positive integer input.",
+    "sat_key_phrases": ["the function f is defined by", "what is the value of"]
+  },
+  {
+    "difficulty": "easy",
+    "sat_level": 1,
+    "framing": "evaluate_integer",
+    "variant": "neg_input",
+    "stem": "The function g is defined by g(x) = 4x − 6. What is the value of g(−7)?",
+    "type": "mcq",
+    "choices": { "A": "−34", "B": "−22", "C": "22", "D": "34" },
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Student computed 4(7) − 6 = 22 with only one sign flipped",
+      "C": "Student substituted −7 but dropped the negative sign on the product",
+      "D": "Student computed 4(7) + 6 = 34 ignoring both the negative input and the minus sign"
+    },
+    "solution_steps": [
+      "Substitute x = −7: g(−7) = 4(−7) − 6",
+      "= −28 − 6 = −34"
+    ],
+    "why_this_difficulty": "Easy: substitution with negative input; common error is sign-tracking on the product 4(−7).",
+    "sat_key_phrases": ["the function g is defined by", "what is the value of"]
+  },
+  {
+    "difficulty": "easy",
+    "sat_level": 1,
+    "framing": "evaluate_integer",
+    "variant": "neg_slope",
+    "stem": "The function f is defined by f(x) = −3x + 60. What is the value of f(x) when x = −8?",
+    "type": "mcq",
+    "choices": { "A": "49", "B": "52", "C": "57", "D": "84" },
+    "correct": "D",
+    "distractor_rationales": {
+      "A": "Student computed (−3 + (−8)) + 60",
+      "B": "Student computed −8 + 60, ignoring the coefficient",
+      "C": "Student computed −3 + 60, ignoring the input"
+    },
+    "solution_steps": [
+      "Substitute x = −8: f(−8) = −3(−8) + 60",
+      "= 24 + 60 = 84"
+    ],
+    "why_this_difficulty": "Easy: tests double-negative handling on the slope-times-input product.",
+    "sat_key_phrases": ["the function is defined by", "what is the value of", "when"]
+  },
+  {
+    "difficulty": "easy",
+    "sat_level": 1,
+    "framing": "evaluate_integer",
+    "variant": "with_context",
+    "stem": "The function f is defined by f(x) = 7x + 1, where f(x) is the number of participants expected at a retreat after x days of registration. What is the value of f(7)?",
+    "type": "spr",
+    "choices": {},
+    "correct": "50",
+    "distractor_rationales": {
+      "49": "Student computed 7 × 7 and forgot the +1",
+      "57": "Student computed 7 + 1 + 49 with an extra addition",
+      "8": "Student computed 7 + 1 ignoring the multiplication"
+    },
+    "solution_steps": [
+      "Substitute x = 7: f(7) = 7(7) + 1",
+      "= 49 + 1 = 50"
+    ],
+    "why_this_difficulty": "Easy: substitution inside a real-world linear model, SPR format.",
+    "sat_key_phrases": ["where f(x) is the", "after x days", "what is the value of"]
+  },
+  {
+    "difficulty": "easy",
+    "sat_level": 2,
+    "framing": "evaluate_integer",
+    "variant": "eval_at_zero",
+    "stem": "The function h is defined by h(x) = x + 200. What is the value of h(50)?",
+    "type": "mcq",
+    "choices": { "A": "150", "B": "200", "C": "250", "D": "10000" },
+    "correct": "C",
+    "distractor_rationales": {
+      "A": "Student subtracted instead of added",
+      "B": "Student reported the constant term",
+      "D": "Student multiplied instead of added"
+    },
+    "solution_steps": [
+      "Substitute x = 50: h(50) = 50 + 200 = 250"
+    ],
+    "why_this_difficulty": "Easy: direct additive substitution with mid-size constants.",
+    "sat_key_phrases": ["the function is defined by", "what is the value of"]
+  },
+  {
+    "difficulty": "easy",
+    "sat_level": 1,
+    "framing": "evaluate_integer",
+    "variant": "unit_coefficient",
+    "stem": "The function g is defined by g(x) = 10x + 8. What is the value of g(8)?",
+    "type": "mcq",
+    "choices": { "A": "26", "B": "80", "C": "88", "D": "108" },
+    "correct": "C",
+    "distractor_rationales": {
+      "A": "Student added 10 + 8 + 8 instead of multiplying",
+      "B": "Student computed 10 × 8 = 80 and forgot the +8",
+      "D": "Student computed 10 × 10 + 8 using slope as the input"
+    },
+    "solution_steps": [
+      "Substitute x = 8: g(8) = 10(8) + 8",
+      "= 80 + 8 = 88"
+    ],
+    "why_this_difficulty": "Easy: clean multiplication with an additive intercept.",
+    "sat_key_phrases": ["the function g is defined by", "what is the value of"]
+  },
+  {
+    "difficulty": "easy",
+    "sat_level": 2,
+    "framing": "evaluate_fraction",
+    "variant": "pos_frac",
+    "stem": "The function f is defined by f(x) = x + 8/11. What is the value of f(3/11)?",
+    "type": "spr",
+    "choices": {},
+    "correct": "1",
+    "distractor_rationales": {
+      "8/11": "Student reported f(0) = 8/11 instead of substituting 3/11",
+      "11/14": "Student added numerators and denominators separately",
+      "3/11": "Student ignored the +8/11 term"
+    },
+    "solution_steps": [
+      "Substitute x = 3/11: f(3/11) = 3/11 + 8/11",
+      "= 11/11 = 1"
+    ],
+    "why_this_difficulty": "Easy SPR: fractional substitution simplifying to an integer.",
+    "sat_key_phrases": ["the function f is defined by", "what is the value of"]
+  },
+  {
+    "difficulty": "easy",
+    "sat_level": 2,
+    "framing": "evaluate_fraction",
+    "variant": "neg_frac",
+    "stem": "The function h is defined by h(x) = 1/2(x + 6). What is the value of h(4)?",
+    "type": "mcq",
+    "choices": { "A": "2", "B": "5", "C": "7", "D": "10" },
+    "correct": "B",
+    "distractor_rationales": {
+      "A": "Student distributed only the x term: (1/2)(4) = 2",
+      "C": "Student computed (1/2)(4) + 6 = 2 + 6 forgetting the outer grouping",
+      "D": "Student added 4 + 6 without applying the 1/2 factor"
+    },
+    "solution_steps": [
+      "Add first: 4 + 6 = 10",
+      "Multiply by 1/2: (1/2)(10) = 5"
+    ],
+    "why_this_difficulty": "Easy: fractional outside coefficient; tests order of operations.",
+    "sat_key_phrases": ["the function h is defined by", "what is the value of"]
+  },
+  {
+    "difficulty": "easy",
+    "sat_level": 2,
+    "framing": "evaluate_fraction",
+    "variant": "decimal_coeff",
+    "stem": "The function f is defined by f(x) = 0.75x + 4. What is the value of f(12)?",
+    "type": "spr",
+    "choices": {},
+    "correct": "13",
+    "distractor_rationales": {
+      "9": "Student computed 0.75(12) without adding 4",
+      "16": "Student added 4 before multiplying",
+      "12.75": "Student added the decimal coefficient instead of multiplying"
+    },
+    "solution_steps": [
+      "Substitute x = 12: f(12) = 0.75(12) + 4",
+      "= 9 + 4 = 13"
+    ],
+    "why_this_difficulty": "Easy SPR: decimal coefficient with clean product.",
+    "sat_key_phrases": ["the function f is defined by", "what is the value of"]
+  },
+  {
+    "difficulty": "easy",
+    "sat_level": 2,
+    "framing": "interpret_slope_easy",
+    "variant": "rate_per_unit",
+    "stem": "The equation d = 16t represents the distance d, in inches, an object has traveled t seconds after it started moving. Which of the following is the best interpretation of 16 in this context?",
+    "type": "mcq",
+    "choices": {
+      "A": "The object moved a total of 16 inches",
+      "B": "The object moved a total of 16t inches",
+      "C": "The object is moving at a rate of 16 inches per second",
+      "D": "The object is moving at a rate of 1/16 inches per second"
+    },
+    "correct": "C",
+    "distractor_rationales": {
+      "A": "Student interpreted the coefficient as a total distance rather than a rate",
+      "B": "Student restated the expression without interpreting the 16",
+      "D": "Student inverted the rate"
+    },
+    "solution_steps": [
+      "In d = 16t, the coefficient 16 is multiplied by t (seconds)",
+      "For each additional second, d increases by 16 inches",
+      "16 is the rate in inches per second"
+    ],
+    "why_this_difficulty": "Easy: slope-as-rate in a clean proportional model.",
+    "sat_key_phrases": ["represents the distance", "best interpretation of", "in this context"]
+  },
+  {
+    "difficulty": "easy",
+    "sat_level": 2,
+    "framing": "interpret_slope_easy",
+    "variant": "cost_per_item",
+    "stem": "The function f is defined by f(n) = 25n + 30, where f(n) is the total cost, in dollars, of ordering n picture frames. Which of the following is the best interpretation of 25 in this context?",
+    "type": "mcq",
+    "choices": {
+      "A": "The cost, in dollars, of ordering one picture frame",
+      "B": "The flat order fee, in dollars",
+      "C": "The total cost, in dollars, when 30 frames are ordered",
+      "D": "The number of picture frames ordered"
+    },
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Student confused the slope with the y-intercept",
+      "C": "Student plugged in 30 as n and reported the output",
+      "D": "Student confused the coefficient 25 with the variable n"
+    },
+    "solution_steps": [
+      "In f(n) = 25n + 30, the coefficient 25 is multiplied by n",
+      "Each additional frame adds $25 to the total",
+      "25 is the cost per frame; 30 is the fixed order fee"
+    ],
+    "why_this_difficulty": "Easy: cost-per-item framing with both slope and intercept positive.",
+    "sat_key_phrases": ["the total cost", "best interpretation of", "in this context"]
+  },
+  {
+    "difficulty": "easy",
+    "sat_level": 2,
+    "framing": "interpret_slope_easy",
+    "variant": "decrease_rate",
+    "stem": "A bike rider's remaining ride distance, in miles, after t minutes is given by D(t) = 12 − 0.2t. Which of the following is the best interpretation of 0.2 in this context?",
+    "type": "mcq",
+    "choices": {
+      "A": "The total distance, in miles, of the ride",
+      "B": "The number of minutes the rider has been riding",
+      "C": "The remaining distance, in miles, after 12 minutes",
+      "D": "The rate, in miles per minute, at which the remaining distance decreases"
+    },
+    "correct": "D",
+    "distractor_rationales": {
+      "A": "Student confused the rate with a total value",
+      "B": "Student confused 0.2 with the time variable",
+      "C": "Student combined two unrelated terms"
+    },
+    "solution_steps": [
+      "Coefficient of t is −0.2, so each additional minute reduces distance by 0.2 miles",
+      "0.2 is the rate of decrease in miles per minute"
+    ],
+    "why_this_difficulty": "Easy: rate-of-decrease reading; tests absolute-value understanding of a negative coefficient.",
+    "sat_key_phrases": ["best interpretation of", "in this context", "per minute"]
+  },
+  {
+    "difficulty": "easy",
+    "sat_level": 2,
+    "framing": "interpret_intercept_easy",
+    "variant": "initial_value",
+    "stem": "The function f is defined by f(x) = 8x + 4, where f(x) is the height, in inches, of a tree x years after it was planted. Which of the following is the best interpretation of 4 in this context?",
+    "type": "mcq",
+    "choices": {
+      "A": "The height, in inches, of the tree when it was planted",
+      "B": "The growth rate, in inches per year",
+      "C": "The height, in inches, after 4 years",
+      "D": "The number of years the tree has been growing"
+    },
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Student confused the constant with the slope",
+      "C": "Student plugged x = 4 into the function",
+      "D": "Student confused the constant with the input variable"
+    },
+    "solution_steps": [
+      "Set x = 0: f(0) = 8(0) + 4 = 4",
+      "x = 0 corresponds to planting time, so 4 is the initial height in inches"
+    ],
+    "why_this_difficulty": "Easy: initial-value interpretation with positive intercept.",
+    "sat_key_phrases": ["the function is defined by", "best interpretation of", "in this context"]
+  },
+  {
+    "difficulty": "easy",
+    "sat_level": 2,
+    "framing": "interpret_intercept_easy",
+    "variant": "starting_amount",
+    "stem": "The function f is defined by f(x) = 33 − 0.18x, where f(x) is the volume, in liters, of water remaining in a tank after x days of evaporation. Which of the following is the best interpretation of 33 in this context?",
+    "type": "mcq",
+    "choices": {
+      "A": "The volume, in liters, of water lost each day",
+      "B": "The volume, in liters, of water in the tank at the start",
+      "C": "The number of days it takes the tank to empty",
+      "D": "The volume, in liters, after 18 days"
+    },
+    "correct": "B",
+    "distractor_rationales": {
+      "A": "Student confused the constant with the rate",
+      "C": "Student misinterpreted 33 as a time value",
+      "D": "Student plugged x = 18 to produce a confused output"
+    },
+    "solution_steps": [
+      "Set x = 0: f(0) = 33 − 0.18(0) = 33",
+      "33 is the starting volume in liters"
+    ],
+    "why_this_difficulty": "Easy: starting-amount interpretation with decimal rate distractor.",
+    "sat_key_phrases": ["the volume remaining", "best interpretation of", "in this context"]
+  },
+  {
+    "difficulty": "easy",
+    "sat_level": 2,
+    "framing": "interpret_intercept_easy",
+    "variant": "constant_in_growth",
+    "stem": "A vine plant's height, in centimeters, after x weeks is modeled by h(x) = 2x + 9. Which of the following is the best interpretation of 9 in this context?",
+    "type": "mcq",
+    "choices": {
+      "A": "The weekly growth rate, in centimeters",
+      "B": "The height of the vine, in centimeters, at the start of observation",
+      "C": "The total height, in centimeters, after 9 weeks",
+      "D": "The number of weeks the vine has been growing"
+    },
+    "correct": "B",
+    "distractor_rationales": {
+      "A": "Student confused the constant with the slope",
+      "C": "Student computed h(9) instead of h(0)",
+      "D": "Student confused the constant with the input variable"
+    },
+    "solution_steps": [
+      "Set x = 0: h(0) = 2(0) + 9 = 9",
+      "x = 0 is the start, so 9 cm is the starting height"
+    ],
+    "why_this_difficulty": "Easy: interpretation of constant term as starting height in a growth context.",
+    "sat_key_phrases": ["is modeled by", "best interpretation of", "in this context"]
+  },
+  {
+    "difficulty": "easy",
+    "sat_level": 2,
+    "framing": "interpret_intercept_easy",
+    "variant": "find_y_intercept",
+    "stem": "The function f is defined by f(x) = 1/10·x − 2. What is the y-intercept of the graph of y = f(x) in the xy-plane?",
+    "type": "mcq",
+    "choices": { "A": "(0, −2)", "B": "(0, 1/10)", "C": "(−2, 0)", "D": "(2, 0)" },
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Student reported the slope as the intercept",
+      "C": "Student wrote the y-value as an x-coordinate",
+      "D": "Student dropped the negative sign and formatted as x-intercept"
+    },
+    "solution_steps": [
+      "y-intercept is where x = 0: f(0) = 1/10(0) − 2 = −2",
+      "So y-intercept is (0, −2)"
+    ],
+    "why_this_difficulty": "Easy: direct read of y-intercept with a fractional slope and negative intercept.",
+    "sat_key_phrases": ["is defined by", "y-intercept of the graph"]
+  },
+  {
+    "difficulty": "easy",
+    "sat_level": 1,
+    "framing": "graph_read_intercept",
+    "variant": "x_intercept",
+    "stem": "The graph of the linear function f is shown in the xy-plane, where y = f(x). The line passes through the points (−12, 0) and (0, 4). What is the x-intercept of the graph of f?",
+    "type": "mcq",
+    "choices": { "A": "(−12, 0)", "B": "(0, 0)", "C": "(1/4, 0)", "D": "(12, 0)" },
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Student reported the origin as a default",
+      "C": "Student divided the two intercepts: 4 / −12 → ¼",
+      "D": "Student dropped the negative sign"
+    },
+    "solution_steps": [
+      "The x-intercept is the point where y = 0",
+      "The line crosses the x-axis at (−12, 0)"
+    ],
+    "why_this_difficulty": "Easy: direct read of a graph feature. Sign tracking is the main trap.",
+    "sat_key_phrases": ["the graph of the linear function", "in the xy-plane", "x-intercept of the graph"]
+  },
+  {
+    "difficulty": "easy",
+    "sat_level": 1,
+    "framing": "graph_read_intercept",
+    "variant": "y_intercept",
+    "stem": "The graph of a linear function in the xy-plane has slope 5 and passes through the origin. Which of the following equations defines this function?",
+    "type": "mcq",
+    "choices": { "A": "f(x) = 5", "B": "f(x) = x + 5", "C": "f(x) = 5x", "D": "f(x) = 5x + 5" },
+    "correct": "C",
+    "distractor_rationales": {
+      "A": "Student produced a constant function matching the slope value",
+      "B": "Student used 5 as the y-intercept rather than the slope",
+      "D": "Student used 5 for both slope and intercept"
+    },
+    "solution_steps": [
+      "Passes through origin means y-intercept is 0",
+      "Slope is 5, so f(x) = 5x"
+    ],
+    "why_this_difficulty": "Easy: match slope + intercept to f(x) = mx form.",
+    "sat_key_phrases": ["the graph of a linear function", "passes through the origin", "which of the following equations"]
+  },
+  {
+    "difficulty": "easy",
+    "sat_level": 1,
+    "framing": "graph_read_intercept",
+    "variant": "identify_y_coord",
+    "stem": "The graph of a linear function f is shown in the xy-plane. The line passes through (0, −5) and has a positive slope. What are the coordinates of the y-intercept of the graph?",
+    "type": "mcq",
+    "choices": { "A": "(−5, 0)", "B": "(0, −5)", "C": "(0, 5)", "D": "(5, 0)" },
+    "correct": "B",
+    "distractor_rationales": {
+      "A": "Student swapped x- and y-coordinates",
+      "C": "Student dropped the negative sign",
+      "D": "Student made both errors"
+    },
+    "solution_steps": [
+      "y-intercept is where the line crosses the y-axis",
+      "The line crosses at y = −5, so the intercept is (0, −5)"
+    ],
+    "why_this_difficulty": "Easy: read y-intercept and format as ordered pair.",
+    "sat_key_phrases": ["graph of a linear function", "y-intercept of the graph"]
+  },
+  {
+    "difficulty": "easy",
+    "sat_level": 2,
+    "framing": "graph_read_context",
+    "variant": "initial_deposit",
+    "stem": "A bank account was opened with an initial deposit. Over the next several months regular deposits were made and no withdrawals occurred. The graph of the function f, where y = f(x), estimates the account balance in dollars x months after the initial deposit. To the nearest whole dollar, what is the amount of the initial deposit estimated by the graph? [Graph shows line through (0, 20) and (10, 40).]",
+    "type": "spr",
+    "choices": {},
+    "correct": "20",
+    "distractor_rationales": {
+      "40": "Student read the balance at x = 10 months",
+      "2": "Student reported the slope instead of the initial value",
+      "10": "Student reported the month value instead of the balance"
+    },
+    "solution_steps": [
+      "Initial deposit corresponds to x = 0",
+      "From the graph, f(0) = 20",
+      "So the initial deposit is $20"
+    ],
+    "why_this_difficulty": "Easy: read y-intercept from a real-world labeled graph.",
+    "sat_key_phrases": ["estimates the account balance", "graph of the function", "to the nearest whole dollar"]
+  },
+  {
+    "difficulty": "easy",
+    "sat_level": 2,
+    "framing": "graph_read_context",
+    "variant": "specific_time_value",
+    "stem": "Argon is placed in a container with constant volume. The graph shows the estimated pressure y, in psi, of the argon when its temperature is x kelvins. [Graph passes through (100, 0) and (600, 12).] What is the estimated pressure of the argon, in psi, when the temperature is 600 kelvins?",
+    "type": "mcq",
+    "choices": { "A": "6", "B": "12", "C": "300", "D": "600" },
+    "correct": "B",
+    "distractor_rationales": {
+      "A": "Student read the graph at x = 300 instead of 600",
+      "C": "Student reported a temperature value as a pressure",
+      "D": "Student reported the input value as the output"
+    },
+    "solution_steps": [
+      "Locate x = 600 on the horizontal axis",
+      "Corresponding y-value on the line is 12",
+      "Pressure is 12 psi"
+    ],
+    "why_this_difficulty": "Easy: direct point-read on a contextual graph.",
+    "sat_key_phrases": ["the graph shows", "when the temperature is", "what is the estimated"]
+  },
+  {
+    "difficulty": "easy",
+    "sat_level": 2,
+    "framing": "graph_read_context",
+    "variant": "production_cost",
+    "stem": "The graph of the linear function shown estimates the cost y, in dollars, to make x rings in a jewelry workshop. [Line passes through (0, 50) and (60, 230).] What is the estimated cost, in dollars, to make 60 rings?",
+    "type": "spr",
+    "choices": {},
+    "correct": "230",
+    "distractor_rationales": {
+      "50": "Student read the y-intercept instead of the value at x = 60",
+      "180": "Student ignored the fixed setup cost",
+      "60": "Student reported the input as the output"
+    },
+    "solution_steps": [
+      "Locate x = 60 on the horizontal axis",
+      "Corresponding y-value on the line is 230",
+      "Cost is $230"
+    ],
+    "why_this_difficulty": "Easy SPR: read a specific value from a real-world labeled graph.",
+    "sat_key_phrases": ["the graph of the linear function", "what is the estimated cost"]
+  },
+  {
+    "difficulty": "easy",
+    "sat_level": 2,
+    "framing": "word_equation_simple",
+    "variant": "flat_plus_rate",
+    "stem": "A tent rental costs $10 for a one-time insurance fee plus $11 for each day the tent is rented. Which equation gives the total cost y, in dollars, of renting the tent for x days?",
+    "type": "mcq",
+    "choices": { "A": "y = 10 + 11x", "B": "y = 11 + 10x", "C": "y = 21x", "D": "y = 10x + 11" },
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Student swapped the roles of flat fee and per-day rate",
+      "C": "Student summed the two amounts before multiplying",
+      "D": "Student placed the rate as the intercept"
+    },
+    "solution_steps": [
+      "Fixed insurance: $10 (intercept)",
+      "Per-day rate: $11 × x",
+      "Total: y = 10 + 11x"
+    ],
+    "why_this_difficulty": "Easy: translate two-part word problem into y = b + mx.",
+    "sat_key_phrases": ["one-time insurance fee", "for each day", "which equation gives the total cost"]
+  },
+  {
+    "difficulty": "easy",
+    "sat_level": 2,
+    "framing": "word_equation_simple",
+    "variant": "verbal_description",
+    "stem": "The value of y is 84 less than the value of x. Which of the following equations represents this relationship?",
+    "type": "mcq",
+    "choices": { "A": "y = x − 84", "B": "y = 84 − x", "C": "y = x + 84", "D": "y = −84x" },
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Student reversed the subtraction direction",
+      "C": "Student added instead of subtracting",
+      "D": "Student interpreted 'less than' as a negative coefficient"
+    },
+    "solution_steps": [
+      "'84 less than x' translates to x − 84",
+      "So y = x − 84"
+    ],
+    "why_this_difficulty": "Easy: direct verbal-to-algebra translation.",
+    "sat_key_phrases": ["is 84 less than", "which of the following equations"]
+  },
+  {
+    "difficulty": "easy",
+    "sat_level": 2,
+    "framing": "word_equation_simple",
+    "variant": "service_contract",
+    "stem": "A service contract charges a $35 activation fee plus $23 per month. Which equation gives the total cost C, in dollars, for x months of service?",
+    "type": "mcq",
+    "choices": { "A": "C = 23 + 35x", "B": "C = 35 + 23x", "C": "C = 58x", "D": "C = 35x + 23" },
+    "correct": "B",
+    "distractor_rationales": {
+      "A": "Student swapped activation fee and monthly rate",
+      "C": "Student added and lost the fixed structure",
+      "D": "Student placed monthly rate as intercept"
+    },
+    "solution_steps": [
+      "Activation: $35 (fixed intercept)",
+      "Monthly: $23 × x",
+      "C = 35 + 23x"
+    ],
+    "why_this_difficulty": "Easy: subscription-model translation.",
+    "sat_key_phrases": ["activation fee", "per month", "which equation gives the total cost"]
+  },
+  {
+    "difficulty": "easy",
+    "sat_level": 2,
+    "framing": "inverse_evaluate_easy",
+    "variant": "one_step",
+    "stem": "The function f is defined by f(x) = 8x. What value of x gives f(x) = 72?",
+    "type": "mcq",
+    "choices": { "A": "9", "B": "64", "C": "80", "D": "576" },
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Student subtracted 8 from 72",
+      "C": "Student added 8 to 72",
+      "D": "Student multiplied 72 by 8 instead of dividing"
+    },
+    "solution_steps": [
+      "Set 8x = 72",
+      "Divide by 8: x = 9"
+    ],
+    "why_this_difficulty": "Easy: one-step inverse-evaluation.",
+    "sat_key_phrases": ["the function is defined by", "what value of x gives"]
+  },
+  {
+    "difficulty": "easy",
+    "sat_level": 2,
+    "framing": "inverse_evaluate_easy",
+    "variant": "two_step",
+    "stem": "If 5x + 8 = 58, what is the value of x?",
+    "type": "spr",
+    "choices": {},
+    "correct": "10",
+    "distractor_rationales": {
+      "13": "Student added 8 to 58 and divided by 5",
+      "50": "Student subtracted 8 and reported the result as x",
+      "66": "Student added 8 to 58 directly"
+    },
+    "solution_steps": [
+      "Subtract 8: 5x = 50",
+      "Divide by 5: x = 10"
+    ],
+    "why_this_difficulty": "Easy: two-step linear solve.",
+    "sat_key_phrases": ["what is the value of"]
+  },
+  {
+    "difficulty": "easy",
+    "sat_level": 2,
+    "framing": "inverse_evaluate_easy",
+    "variant": "distribute_solve",
+    "stem": "If 9(2x + 3) = 63, what is the value of x?",
+    "type": "spr",
+    "choices": {},
+    "correct": "2",
+    "distractor_rationales": {
+      "5": "Student divided 63 by 9 and subtracted 3 without halving",
+      "3": "Student solved 2x = 6 but reported the simplified expression",
+      "7": "Student divided 63 by 9 only"
+    },
+    "solution_steps": [
+      "Divide both sides by 9: 2x + 3 = 7",
+      "Subtract 3: 2x = 4",
+      "Divide by 2: x = 2"
+    ],
+    "why_this_difficulty": "Easy SPR: distribute-then-solve with clean integer quotient.",
+    "sat_key_phrases": ["what is the value of"]
+  },
+  {
+    "difficulty": "easy",
+    "sat_level": 2,
+    "framing": "match_graph_to_equation_table",
+    "variant": "table_to_equation",
+    "stem": "The table shows four values of x and their corresponding values of g(x) for the function g(x) = 11x + 4. Which of the following tables is consistent with this function?",
+    "type": "mcq",
+    "choices": {
+      "A": "x: 0, 1, 2, 3 | g: 4, 15, 26, 37",
+      "B": "x: 0, 1, 2, 3 | g: 11, 15, 22, 33",
+      "C": "x: 0, 1, 2, 3 | g: 4, 11, 22, 33",
+      "D": "x: 0, 1, 2, 3 | g: 0, 11, 22, 33"
+    },
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Student used g(0) = 11 (slope as intercept)",
+      "C": "Student used slopes correctly for g(1) but then dropped +4",
+      "D": "Student ignored the intercept entirely"
+    },
+    "solution_steps": [
+      "g(0) = 4, g(1) = 15, g(2) = 26, g(3) = 37",
+      "Choice A matches"
+    ],
+    "why_this_difficulty": "Easy: match function to correct table row-by-row.",
+    "sat_key_phrases": ["the table shows", "consistent with", "which of the following"]
+  },
+  {
+    "difficulty": "medium",
+    "sat_level": 3,
+    "framing": "evaluate_compound",
+    "variant": "combine_two_fns",
+    "stem": "The functions f and g are defined by f(x) = x + 7 and g(x) = 7x. What is the value of 4f(2) − g(2)?",
+    "type": "mcq",
+    "choices": { "A": "22", "B": "28", "C": "36", "D": "50" },
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Student computed 4 × 7 = 28, ignoring f and g entirely",
+      "C": "Student added g(2) instead of subtracting",
+      "D": "Student multiplied instead of adding inside f"
+    },
+    "solution_steps": [
+      "f(2) = 9, so 4f(2) = 36",
+      "g(2) = 14",
+      "4f(2) − g(2) = 36 − 14 = 22"
+    ],
+    "why_this_difficulty": "Medium: chained evaluation of two functions with coefficient and subtraction.",
+    "sat_key_phrases": ["the functions f and g are defined by", "what is the value of"]
+  },
+  {
+    "difficulty": "medium",
+    "sat_level": 3,
+    "framing": "evaluate_compound",
+    "variant": "scaled_output",
+    "stem": "The function f is defined by f(x) = 45x + 600, where f(x) represents the monthly storage fee, in dollars, for storing x cubic feet. What is the monthly fee for storing 50 cubic feet?",
+    "type": "mcq",
+    "choices": { "A": "650", "B": "2250", "C": "2850", "D": "3000" },
+    "correct": "C",
+    "distractor_rationales": {
+      "A": "Student computed 45 + 600 + 5 without scaling",
+      "B": "Student computed 45 × 50 and forgot the flat fee",
+      "D": "Student used x = 60 instead of 50"
+    },
+    "solution_steps": [
+      "Substitute x = 50: f(50) = 45(50) + 600",
+      "= 2250 + 600 = 2850"
+    ],
+    "why_this_difficulty": "Medium: real-world evaluation with large numbers; forgetting the intercept is common.",
+    "sat_key_phrases": ["represents the monthly", "what is the"]
+  },
+  {
+    "difficulty": "medium",
+    "sat_level": 3,
+    "framing": "evaluate_compound",
+    "variant": "coefficient_gather",
+    "stem": "The functions f and g are defined by f(x) = 3x − 5 and g(x) = 2x + 1. What is the value of 7f(2) − g(2)?",
+    "type": "spr",
+    "choices": {},
+    "correct": "2",
+    "distractor_rationales": {
+      "7": "Student computed 7 × 1 by mistake",
+      "12": "Student computed 7(3) − 9 using wrong inputs",
+      "5": "Student forgot to multiply f(2) by 7"
+    },
+    "solution_steps": [
+      "f(2) = 3(2) − 5 = 1, so 7f(2) = 7",
+      "g(2) = 2(2) + 1 = 5",
+      "7f(2) − g(2) = 7 − 5 = 2"
+    ],
+    "why_this_difficulty": "Medium SPR: two-function evaluation with coefficient scaling and subtraction.",
+    "sat_key_phrases": ["the functions f and g are defined by", "what is the value of"]
+  },
+  {
+    "difficulty": "medium",
+    "sat_level": 3,
+    "framing": "interpret_slope_medium",
+    "variant": "rate_in_formula",
+    "stem": "The equation C = 12n + 25 represents the cost C, in dollars, of ordering n custom t-shirts, where n ≥ 1. Which of the following is the best interpretation of 12 in this context?",
+    "type": "mcq",
+    "choices": {
+      "A": "The total cost, in dollars, of ordering shirts",
+      "B": "The cost per shirt, in dollars",
+      "C": "The number of shirts ordered",
+      "D": "The fixed fee, in dollars, charged per order"
+    },
+    "correct": "B",
+    "distractor_rationales": {
+      "A": "Student confused the coefficient with the total output",
+      "C": "Student confused the coefficient 12 with the variable n",
+      "D": "Student assigned the y-intercept role to the slope"
+    },
+    "solution_steps": [
+      "In C = 12n + 25, the coefficient 12 is multiplied by n",
+      "Each shirt adds $12; 25 is the fixed fee",
+      "12 is the cost per shirt"
+    ],
+    "why_this_difficulty": "Medium: slope interpretation with intercept distractor.",
+    "sat_key_phrases": ["represents the cost", "best interpretation of", "in this context"]
+  },
+  {
+    "difficulty": "medium",
+    "sat_level": 3,
+    "framing": "interpret_slope_medium",
+    "variant": "rate_from_graph",
+    "stem": "An electrician charges a flat call-out fee plus an hourly rate. The graph of the linear function f, where y = f(x), shows the total charge y, in dollars, for x hours of work. The line passes through (0, 40) and (4, 200). What does the slope of this line represent?",
+    "type": "mcq",
+    "choices": {
+      "A": "The total charge, in dollars, for 1 hour of work",
+      "B": "The call-out fee, in dollars",
+      "C": "The hourly rate, in dollars per hour",
+      "D": "The number of hours of work included in the flat fee"
+    },
+    "correct": "C",
+    "distractor_rationales": {
+      "A": "Student combined slope and intercept into total cost for 1 hour",
+      "B": "Student named the y-intercept",
+      "D": "Student confused the slope with a time quantity"
+    },
+    "solution_steps": [
+      "Slope = (200 − 40) / (4 − 0) = 160 / 4 = 40",
+      "Each additional hour adds $40",
+      "Slope represents the hourly rate"
+    ],
+    "why_this_difficulty": "Medium: derive slope from graph, then map to context.",
+    "sat_key_phrases": ["the graph of the linear function", "what does the slope", "represent"]
+  },
+  {
+    "difficulty": "medium",
+    "sat_level": 3,
+    "framing": "interpret_slope_medium",
+    "variant": "gas_tank_rate",
+    "stem": "The function g is defined by g(x) = 16 − 0.05x, where g(x) is the gasoline, in gallons, remaining in a tank x miles into a trip. Which of the following is the best interpretation of −0.05 in this context?",
+    "type": "mcq",
+    "choices": {
+      "A": "The initial amount of gasoline, in gallons, in the tank",
+      "B": "The number of gallons used per mile",
+      "C": "The total miles driven",
+      "D": "The number of miles driven per gallon"
+    },
+    "correct": "B",
+    "distractor_rationales": {
+      "A": "Student confused the slope with the intercept",
+      "C": "Student confused the coefficient with a total",
+      "D": "Student inverted the rate"
+    },
+    "solution_steps": [
+      "For each additional mile, gas decreases by 0.05 gallons",
+      "So 0.05 is gallons used per mile"
+    ],
+    "why_this_difficulty": "Medium: decimal coefficient interpreted as a rate; negative sign indicates decrease.",
+    "sat_key_phrases": ["the function is defined by", "best interpretation of", "in this context"]
+  },
+  {
+    "difficulty": "medium",
+    "sat_level": 3,
+    "framing": "interpret_intercept_medium",
+    "variant": "juice_volume",
+    "stem": "The function f is defined by f(x) = 180 − 12x, where f(x) is the volume of juice, in fluid ounces, remaining in a pitcher after x cups have been poured. Which of the following is the best interpretation of the y-intercept of the graph of y = f(x) in the xy-plane?",
+    "type": "mcq",
+    "choices": {
+      "A": "The volume of juice per cup",
+      "B": "The initial volume of juice in the pitcher",
+      "C": "The maximum number of cups that can be poured",
+      "D": "The volume of juice after 12 cups"
+    },
+    "correct": "B",
+    "distractor_rationales": {
+      "A": "Student confused the intercept with the slope",
+      "C": "Student estimated a break-even value",
+      "D": "Student computed f(12) and reported that"
+    },
+    "solution_steps": [
+      "y-intercept = f(0) = 180",
+      "x = 0 means no cups poured yet",
+      "So 180 fl oz is the initial volume"
+    ],
+    "why_this_difficulty": "Medium: tests interpretation of y-intercept in a depletion scenario.",
+    "sat_key_phrases": ["best interpretation of the y-intercept", "in the xy-plane"]
+  },
+  {
+    "difficulty": "medium",
+    "sat_level": 3,
+    "framing": "interpret_intercept_medium",
+    "variant": "fabric_relation",
+    "stem": "Kaylani uses fabric according to the equation y − 5x = 6, where y represents the length of fabric, in yards, and x represents the number of pillows made. Which of the following is the best interpretation of 6 in this context?",
+    "type": "mcq",
+    "choices": {
+      "A": "The length of fabric, in yards, needed to make one pillow",
+      "B": "The amount of fabric, in yards, reserved before making any pillows",
+      "C": "The total number of pillows that can be made",
+      "D": "The fabric used after 6 pillows"
+    },
+    "correct": "B",
+    "distractor_rationales": {
+      "A": "Student confused the constant with the slope (5)",
+      "C": "Student misinterpreted 6 as a count",
+      "D": "Student computed y at x = 6 and reported that"
+    },
+    "solution_steps": [
+      "Rewrite: y = 5x + 6",
+      "At x = 0 (no pillows yet): y = 6",
+      "So 6 yards is reserved before any pillow is made"
+    ],
+    "why_this_difficulty": "Medium: rearrange equation first, then interpret the constant term.",
+    "sat_key_phrases": ["best interpretation of", "in this context"]
+  },
+  {
+    "difficulty": "medium",
+    "sat_level": 3,
+    "framing": "equation_from_two_pts",
+    "variant": "integer_slope",
+    "stem": "In the linear function f, f(0) = 8 and f(1) = 12. Which of the following equations defines f?",
+    "type": "mcq",
+    "choices": { "A": "f(x) = 12x + 8", "B": "f(x) = 4x", "C": "f(x) = 4x + 12", "D": "f(x) = 4x + 8" },
+    "correct": "D",
+    "distractor_rationales": {
+      "A": "Student used f(1) = 12 as the slope",
+      "B": "Student forgot the intercept",
+      "C": "Student swapped slope and intercept"
+    },
+    "solution_steps": [
+      "f(0) = 8 gives b = 8",
+      "f(1) = 4(1) + 8 = 12 confirms slope a = 4",
+      "f(x) = 4x + 8"
+    ],
+    "why_this_difficulty": "Medium: build equation from two input/output pairs.",
+    "sat_key_phrases": ["in the linear function", "which of the following equations defines"]
+  },
+  {
+    "difficulty": "medium",
+    "sat_level": 3,
+    "framing": "equation_from_two_pts",
+    "variant": "larger_slope",
+    "stem": "A line in the xy-plane passes through (0, 2) and (8, 34). Which equation represents this line?",
+    "type": "mcq",
+    "choices": { "A": "y = 4x + 2", "B": "y = 2x + 4", "C": "y = x + 32", "D": "y = 32x + 8" },
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Student swapped slope and intercept",
+      "C": "Student used Δy = 32 without dividing by Δx",
+      "D": "Student used Δy = 32 as slope and Δx = 8 as intercept"
+    },
+    "solution_steps": [
+      "Slope m = (34 − 2) / (8 − 0) = 32/8 = 4",
+      "y-intercept = 2",
+      "y = 4x + 2"
+    ],
+    "why_this_difficulty": "Medium: compute slope from two points, combine with intercept.",
+    "sat_key_phrases": ["passes through", "which equation represents this line"]
+  },
+  {
+    "difficulty": "medium",
+    "sat_level": 3,
+    "framing": "equation_from_two_pts",
+    "variant": "from_slope_and_point",
+    "stem": "A line has slope 2 and passes through the point (1, 14). Which equation represents this line?",
+    "type": "mcq",
+    "choices": { "A": "y = 2x + 12", "B": "y = 2x + 13", "C": "y = 2x + 14", "D": "y = 2x + 16" },
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Student subtracted 1 from 14 but mishandled the slope offset",
+      "C": "Student used 14 as the y-intercept directly",
+      "D": "Student added instead of subtracted"
+    },
+    "solution_steps": [
+      "Use point-slope: 14 = 2(1) + b",
+      "14 = 2 + b → b = 12",
+      "y = 2x + 12"
+    ],
+    "why_this_difficulty": "Medium: given slope + non-origin point, solve for intercept.",
+    "sat_key_phrases": ["passes through the point", "which equation represents this line"]
+  },
+  {
+    "difficulty": "medium",
+    "sat_level": 3,
+    "framing": "equation_from_two_pts",
+    "variant": "negative_slope_decreasing",
+    "stem": "The function h is linear, with h(28) = 15 and h(26) = 22. Which of the following defines h(x)?",
+    "type": "mcq",
+    "choices": { "A": "h(x) = −7/2·x + 113", "B": "h(x) = 7/2·x − 83", "C": "h(x) = −3.5x + 15", "D": "h(x) = −x + 43" },
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Student flipped the slope sign",
+      "C": "Student used 15 as the intercept",
+      "D": "Student guessed a simpler slope"
+    },
+    "solution_steps": [
+      "Slope = (22 − 15) / (26 − 28) = 7 / (−2) = −7/2",
+      "Use (28, 15): 15 = −7/2(28) + b → 15 = −98 + b → b = 113",
+      "h(x) = −7/2·x + 113"
+    ],
+    "why_this_difficulty": "Medium: negative fractional slope with non-trivial intercept calculation.",
+    "sat_key_phrases": ["is linear", "which defines h(x)"]
+  },
+  {
+    "difficulty": "medium",
+    "sat_level": 3,
+    "framing": "coefficient_from_table",
+    "variant": "find_m",
+    "stem": "The table shows four values of x and their corresponding values of f(x). There is a linear relationship between x and f(x) defined by f(x) = mx − 28, where m is a constant. The table values are x = 10, 15, 20, 25 with f(x) = 82, 137, 192, 247. What is the value of m?",
+    "type": "spr",
+    "choices": {},
+    "correct": "11",
+    "distractor_rationales": {
+      "8.2": "Student divided f(10) by x = 10",
+      "54": "Student took Δf but forgot to divide by Δx",
+      "5": "Student only used Δx without Δf"
+    },
+    "solution_steps": [
+      "Use (10, 82): 82 = 10m − 28 → 10m = 110 → m = 11",
+      "Verify with (15, 137): 11(15) − 28 = 137 ✓"
+    ],
+    "why_this_difficulty": "Medium: extract slope by substituting one row into the given form.",
+    "sat_key_phrases": ["the table shows", "linear relationship", "what is the value of"]
+  },
+  {
+    "difficulty": "medium",
+    "sat_level": 3,
+    "framing": "coefficient_from_table",
+    "variant": "find_b",
+    "stem": "The function g is defined by g(x) = 5x + b, where b is a constant. The table shows that g(4) = 23. What is the value of b?",
+    "type": "spr",
+    "choices": {},
+    "correct": "3",
+    "distractor_rationales": {
+      "20": "Student reported 5(4) as b",
+      "18": "Student subtracted 5 instead of 20",
+      "28": "Student added instead of subtracting"
+    },
+    "solution_steps": [
+      "Substitute (4, 23): 23 = 5(4) + b",
+      "23 = 20 + b → b = 3"
+    ],
+    "why_this_difficulty": "Medium: solve for intercept given slope and one point.",
+    "sat_key_phrases": ["is defined by", "the table shows", "what is the value of"]
+  },
+  {
+    "difficulty": "medium",
+    "sat_level": 3,
+    "framing": "coefficient_from_table",
+    "variant": "two_unknowns",
+    "stem": "The function g is defined by g(x) = ax + b, where a and b are constants. The table shows g(1) = 7 and g(3) = 13. What is the value of a + b?",
+    "type": "mcq",
+    "choices": { "A": "4", "B": "7", "C": "3", "D": "10" },
+    "correct": "B",
+    "distractor_rationales": {
+      "A": "Student found b = 4 and reported it as a + b",
+      "C": "Student found a = 3 and reported it as a + b",
+      "D": "Student added g(1) + g(3) = 7 + 3 instead of finding a and b"
+    },
+    "solution_steps": [
+      "Slope: a = (13 − 7) / (3 − 1) = 6 / 2 = 3",
+      "b = 7 − 3(1) = 4",
+      "a + b = 3 + 4 = 7"
+    ],
+    "why_this_difficulty": "Medium: two-step — find slope and intercept, then combine.",
+    "sat_key_phrases": ["where a and b are constants", "the table shows", "what is the value of a + b"]
+  },
+  {
+    "difficulty": "medium",
+    "sat_level": 3,
+    "framing": "parameter_solve_simple",
+    "variant": "solve_m",
+    "stem": "The function f is defined by f(x) = mx + 9, where m is a constant. If f(7) = 44, what is the value of m?",
+    "type": "spr",
+    "choices": {},
+    "correct": "5",
+    "distractor_rationales": {
+      "6.29": "Student divided 44 by 7 without subtracting 9",
+      "7.57": "Student added 9 to 44 then divided",
+      "35": "Student subtracted 9 but didn't divide by 7"
+    },
+    "solution_steps": [
+      "f(7) = 7m + 9 = 44",
+      "7m = 35 → m = 5"
+    ],
+    "why_this_difficulty": "Medium: two-step solve for the unknown slope.",
+    "sat_key_phrases": ["is defined by", "where m is a constant", "what is the value of"]
+  },
+  {
+    "difficulty": "medium",
+    "sat_level": 3,
+    "framing": "parameter_solve_simple",
+    "variant": "solve_b",
+    "stem": "The linear function h is defined by h(x) = x + b, where b is a constant. If h(0) = 45, what is the value of b?",
+    "type": "mcq",
+    "choices": { "A": "0", "B": "1", "C": "45", "D": "46" },
+    "correct": "C",
+    "distractor_rationales": {
+      "A": "Student treated b as zero since x = 0",
+      "B": "Student confused b with the coefficient of x",
+      "D": "Student added 1 to 45"
+    },
+    "solution_steps": [
+      "h(0) = 0 + b = b = 45"
+    ],
+    "why_this_difficulty": "Medium: recognize that f(0) is always the intercept.",
+    "sat_key_phrases": ["is defined by", "where b is a constant", "what is the value of"]
+  },
+  {
+    "difficulty": "medium",
+    "sat_level": 3,
+    "framing": "parameter_solve_simple",
+    "variant": "inverse_then_solve",
+    "stem": "The function f is defined by f(x) = (x + 15)/5. If f(a) = 10, what is the value of a?",
+    "type": "spr",
+    "choices": {},
+    "correct": "35",
+    "distractor_rationales": {
+      "2": "Student divided 10 by 5 and ignored the +15 shift",
+      "50": "Student multiplied 10 by 5 without subtracting 15",
+      "25": "Student subtracted 15 but didn't multiply by 5"
+    },
+    "solution_steps": [
+      "f(a) = (a + 15)/5 = 10",
+      "a + 15 = 50 → a = 35"
+    ],
+    "why_this_difficulty": "Medium: invert the function to find the input for a given output.",
+    "sat_key_phrases": ["is defined by", "what is the value of"]
+  },
+  {
+    "difficulty": "medium",
+    "sat_level": 3,
+    "framing": "linear_model_word_solve",
+    "variant": "forward_interp",
+    "stem": "A reservoir holds an initial 500 gallons of water. Starting at time t = 0 hours, water flows in at a constant rate of 35 gallons per hour. After how many hours will the reservoir contain 885 gallons?",
+    "type": "spr",
+    "choices": {},
+    "correct": "11",
+    "distractor_rationales": {
+      "25": "Student divided 885 by 35 without subtracting the initial value",
+      "14": "Student subtracted 500 but divided by 45 by mistake",
+      "385": "Student subtracted 500 and reported gallons"
+    },
+    "solution_steps": [
+      "V = 500 + 35t = 885",
+      "35t = 385 → t = 11"
+    ],
+    "why_this_difficulty": "Medium: set up and solve a linear model from context.",
+    "sat_key_phrases": ["at a constant rate of", "after how many hours", "gallons per hour"]
+  },
+  {
+    "difficulty": "medium",
+    "sat_level": 3,
+    "framing": "linear_model_word_solve",
+    "variant": "specific_input",
+    "stem": "A bus travels at a constant speed given by d = 30t, where d is the distance traveled in feet and t is the time in seconds since it began moving. What is the distance traveled, in feet, after 2 seconds?",
+    "type": "mcq",
+    "choices": { "A": "15", "B": "30", "C": "60", "D": "120" },
+    "correct": "C",
+    "distractor_rationales": {
+      "A": "Student divided 30 by 2",
+      "B": "Student reported the rate instead of the distance",
+      "D": "Student used t = 4"
+    },
+    "solution_steps": [
+      "d = 30(2) = 60 feet"
+    ],
+    "why_this_difficulty": "Medium: proportional model evaluation.",
+    "sat_key_phrases": ["at a constant speed", "what is the distance traveled"]
+  },
+  {
+    "difficulty": "medium",
+    "sat_level": 3,
+    "framing": "linear_model_word_solve",
+    "variant": "acceleration_like",
+    "stem": "The function s defined by s = 40 + 3t gives a vehicle's speed, in miles per hour, t seconds after it began accelerating. What is the speed of the vehicle at t = 5?",
+    "type": "mcq",
+    "choices": { "A": "35", "B": "43", "C": "50", "D": "55" },
+    "correct": "D",
+    "distractor_rationales": {
+      "A": "Student subtracted instead of added",
+      "B": "Student used t = 1 instead of 5",
+      "C": "Student computed s at t = 10/3"
+    },
+    "solution_steps": [
+      "s = 40 + 3(5) = 40 + 15 = 55"
+    ],
+    "why_this_difficulty": "Medium: rate-plus-baseline model with context.",
+    "sat_key_phrases": ["gives the speed", "after", "what is the speed"]
+  },
+  {
+    "difficulty": "medium",
+    "sat_level": 3,
+    "framing": "linear_model_word_solve",
+    "variant": "savings_balance",
+    "stem": "Gabriella deposits $35 into her savings account each week. Her starting balance was $600. What is her balance, in dollars, at the end of week 4?",
+    "type": "spr",
+    "choices": {},
+    "correct": "740",
+    "distractor_rationales": {
+      "635": "Student used 1 week instead of 4",
+      "1400": "Student added 35 to 600 then multiplied",
+      "140": "Student only computed the deposits, missed the base"
+    },
+    "solution_steps": [
+      "Balance = 600 + 35(4) = 600 + 140 = 740"
+    ],
+    "why_this_difficulty": "Medium: recurrent-deposit model evaluated at a specific week.",
+    "sat_key_phrases": ["deposits", "each week", "starting balance", "at the end of"]
+  },
+  {
+    "difficulty": "medium",
+    "sat_level": 3,
+    "framing": "graph_intercept_computed",
+    "variant": "sum_of_intercepts",
+    "stem": "The function f is defined by f(x) = 7x − 84. In the xy-plane, the graph of y = f(x) has an x-intercept and a y-intercept. What is the sum of the x-coordinate of the x-intercept and the y-coordinate of the y-intercept?",
+    "type": "spr",
+    "choices": {},
+    "correct": "-72",
+    "distractor_rationales": {
+      "-84": "Student reported the y-intercept only",
+      "12": "Student reported the x-intercept only",
+      "-96": "Student added sign-flipped values"
+    },
+    "solution_steps": [
+      "y-intercept y-coord: f(0) = −84",
+      "x-intercept x-coord: 7x − 84 = 0 → x = 12",
+      "Sum = 12 + (−84) = −72"
+    ],
+    "why_this_difficulty": "Medium: compute both intercepts, then combine.",
+    "sat_key_phrases": ["is defined by", "x-intercept", "y-intercept", "sum of"]
+  },
+  {
+    "difficulty": "medium",
+    "sat_level": 3,
+    "framing": "graph_intercept_computed",
+    "variant": "intercept_after_shift",
+    "stem": "In the xy-plane, the graph of y = f(x) − 11 is shown [line through (0, −8) and (11, 3)]. Which of the following defines f(x)?",
+    "type": "mcq",
+    "choices": { "A": "f(x) = x + 3", "B": "f(x) = x − 8", "C": "f(x) = x + 11", "D": "f(x) = x − 11" },
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Student read the shifted y-intercept directly",
+      "C": "Student added 11 to the shifted slope",
+      "D": "Student reported the shift without adding back"
+    },
+    "solution_steps": [
+      "Shifted graph: slope 1, intercept −8; y = x − 8 = f(x) − 11",
+      "f(x) = x − 8 + 11 = x + 3"
+    ],
+    "why_this_difficulty": "Medium: undo the vertical shift to recover f(x).",
+    "sat_key_phrases": ["in the xy-plane", "the graph of", "which defines f(x)"]
+  },
+  {
+    "difficulty": "medium",
+    "sat_level": 3,
+    "framing": "arithmetic_nth_term",
+    "variant": "forward",
+    "stem": "The first three terms of an arithmetic sequence are 7, 11, and 15. What is the value of the 20th term?",
+    "type": "spr",
+    "choices": {},
+    "correct": "83",
+    "distractor_rationales": {
+      "80": "Student computed 4(20) without adding the first term offset",
+      "87": "Student added 4 to 83",
+      "79": "Student subtracted 4 instead of adding"
+    },
+    "solution_steps": [
+      "Common difference d = 11 − 7 = 4; first term a₁ = 7",
+      "nth term aₙ = 7 + (n − 1)(4)",
+      "a₂₀ = 7 + 19(4) = 7 + 76 = 83"
+    ],
+    "why_this_difficulty": "Medium: arithmetic sequence treated as linear function with nth-term formula.",
+    "sat_key_phrases": ["arithmetic sequence", "first three terms", "what is the value of the"]
+  },
+  {
+    "difficulty": "hard",
+    "sat_level": 4,
+    "framing": "parameter_solve_compound",
+    "variant": "double_param",
+    "stem": "The function f is defined by f(x) = 4x + k(x − 1), where k is a constant. If f(5) = 32, what is the value of f(10)?",
+    "type": "spr",
+    "choices": {},
+    "correct": "67",
+    "distractor_rationales": {
+      "40": "Student substituted x = 10 into 4x without solving for k",
+      "50": "Student found k = 3 but used it incorrectly",
+      "27": "Student solved for k but computed f(9)"
+    },
+    "solution_steps": [
+      "f(5) = 20 + 4k = 32 → k = 3",
+      "f(10) = 40 + 3(9) = 40 + 27 = 67"
+    ],
+    "why_this_difficulty": "Hard: solve for parameter first, then evaluate at a different input.",
+    "sat_key_phrases": ["is defined by", "where k is a constant", "what is the value of"]
+  },
+  {
+    "difficulty": "hard",
+    "sat_level": 4,
+    "framing": "parameter_solve_compound",
+    "variant": "expr_input",
+    "stem": "The function f is defined by f(cx) = x − 8, where c is a constant. If f(12) = 35, what is the value of c?",
+    "type": "mcq",
+    "choices": { "A": "1/3", "B": "3/7", "C": "12/43", "D": "43/12" },
+    "correct": "C",
+    "distractor_rationales": {
+      "A": "Student used 4/12 without accounting for −8",
+      "B": "Student inverted the ratio",
+      "D": "Student solved 12c = x directly"
+    },
+    "solution_steps": [
+      "x − 8 = 35 → x = 43",
+      "cx = 12 → c(43) = 12 → c = 12/43"
+    ],
+    "why_this_difficulty": "Hard: work the function definition backward to isolate c.",
+    "sat_key_phrases": ["is defined by", "where c is a constant", "what is the value of c"]
+  },
+  {
+    "difficulty": "hard",
+    "sat_level": 4,
+    "framing": "parameter_solve_compound",
+    "variant": "implicit_b",
+    "stem": "The function g is defined by g(x) = b − 15x, where b is a constant. If g(c + 7) = c/4, what is b in terms of c?",
+    "type": "mcq",
+    "choices": { "A": "b = c/4 + 15c + 105", "B": "b = 61c/4 + 105", "C": "b = c/4 − 105", "D": "b = 15c + 7" },
+    "correct": "B",
+    "distractor_rationales": {
+      "A": "Student kept 15c and c/4 separate instead of combining",
+      "C": "Student flipped the sign on 105",
+      "D": "Student dropped the c/4 term entirely"
+    },
+    "solution_steps": [
+      "g(c + 7) = b − 15(c + 7) = b − 15c − 105",
+      "Set equal to c/4: b − 15c − 105 = c/4",
+      "b = c/4 + 15c + 105 = 60c/4 + c/4 + 105 = 61c/4 + 105"
+    ],
+    "why_this_difficulty": "Hard: symbolic manipulation with a compound input expression.",
+    "sat_key_phrases": ["is defined by", "where b is a constant", "in terms of"]
+  },
+  {
+    "difficulty": "hard",
+    "sat_level": 4,
+    "framing": "parameter_solve_compound",
+    "variant": "table_derived",
+    "stem": "The function f is linear. The table shows f(2) = 13 and f(6) = 29. If h(x) = f(x) − 13, what is h(10)?",
+    "type": "spr",
+    "choices": {},
+    "correct": "32",
+    "distractor_rationales": {
+      "45": "Student found f(10) but forgot to subtract 13",
+      "29": "Student reported f(6) as h(10)",
+      "40": "Student used the wrong slope"
+    },
+    "solution_steps": [
+      "Slope = (29 − 13) / (6 − 2) = 16/4 = 4",
+      "Using (2, 13): b = 13 − 4(2) = 5, so f(x) = 4x + 5",
+      "h(10) = f(10) − 13 = (40 + 5) − 13 = 32"
+    ],
+    "why_this_difficulty": "Hard: derive f from a table, then shift to h and evaluate.",
+    "sat_key_phrases": ["the function is linear", "the table shows", "what is the value of"]
+  },
+  {
+    "difficulty": "hard",
+    "sat_level": 4,
+    "framing": "word_model_multistep",
+    "variant": "flat_plus_daily",
+    "stem": "A plumber charges a flat fee of $75 for a service call plus $50 per hour worked. If the total charge for a job was $225, for how many hours did the plumber work?",
+    "type": "mcq",
+    "choices": { "A": "2", "B": "3", "C": "4", "D": "4.5" },
+    "correct": "B",
+    "distractor_rationales": {
+      "A": "Student subtracted 75 then divided by 75",
+      "C": "Student added 75 before dividing",
+      "D": "Student divided 225 by 50 without subtracting flat fee"
+    },
+    "solution_steps": [
+      "75 + 50h = 225",
+      "50h = 150 → h = 3"
+    ],
+    "why_this_difficulty": "Hard: set up equation from context, identify flat vs. per-hour, solve.",
+    "sat_key_phrases": ["flat fee of", "per hour worked", "total charge", "for how many hours"]
+  },
+  {
+    "difficulty": "hard",
+    "sat_level": 4,
+    "framing": "word_model_multistep",
+    "variant": "tiered_rate",
+    "stem": "The cost of renting a backhoe for up to 10 days is $270 for the first day and $135 for each additional day. Which equation gives the cost y, in dollars, of renting the backhoe for x days, where x is a positive integer and x ≤ 10?",
+    "type": "mcq",
+    "choices": { "A": "y = 270x − 135", "B": "y = 270x + 135", "C": "y = 135x + 270", "D": "y = 135x + 135" },
+    "correct": "D",
+    "distractor_rationales": {
+      "A": "Student used 270 as per-day rate",
+      "B": "Student misapplied structure",
+      "C": "Student kept 270 as intercept"
+    },
+    "solution_steps": [
+      "Cost = 270 + 135(x − 1) = 135x + 135"
+    ],
+    "why_this_difficulty": "Hard: tiered pricing where first unit differs; requires algebraic expansion.",
+    "sat_key_phrases": ["for the first day", "for each additional day", "which equation gives the cost"]
+  },
+  {
+    "difficulty": "hard",
+    "sat_level": 4,
+    "framing": "word_model_multistep",
+    "variant": "coverage_double",
+    "stem": "One gallon of paint covers 220 square feet of wall, and a double coat is to be applied. How many gallons are needed to double-coat a wall that is 1100 square feet?",
+    "type": "spr",
+    "choices": {},
+    "correct": "10",
+    "distractor_rationales": {
+      "5": "Student applied single coat only",
+      "1100": "Student reported square footage",
+      "220": "Student reported coverage rate as answer"
+    },
+    "solution_steps": [
+      "Total area to be covered = 1100 × 2 = 2200 sq ft",
+      "Gallons = 2200 / 220 = 10"
+    ],
+    "why_this_difficulty": "Hard: two-step — doubled coverage times area, then divide by rate.",
+    "sat_key_phrases": ["one gallon covers", "double coat", "how many"]
+  },
+  {
+    "difficulty": "hard",
+    "sat_level": 4,
+    "framing": "linear_model_three_pts_hard",
+    "variant": "interpolate",
+    "stem": "A linear model estimates the population of a city from 1991 to 2015. The model estimates the population was 57 thousand in 1991, 224 thousand in 2011, and x thousand in 2015. To the nearest whole number, what is the value of x?",
+    "type": "spr",
+    "choices": {},
+    "correct": "257",
+    "distractor_rationales": {
+      "281": "Student miscalculated the rate",
+      "224": "Student reported the 2011 value",
+      "391": "Student added total change twice"
+    },
+    "solution_steps": [
+      "Rate = (224 − 57) / 20 = 8.35 thousand/year",
+      "From 2011 to 2015 is 4 years: 8.35 × 4 = 33.4",
+      "x = 224 + 33.4 ≈ 257"
+    ],
+    "why_this_difficulty": "Hard: derive rate from 2 points, then extrapolate to a 3rd.",
+    "sat_key_phrases": ["a linear model estimates", "to the nearest whole number", "what is the value of"]
+  },
+  {
+    "difficulty": "hard",
+    "sat_level": 4,
+    "framing": "linear_model_three_pts_hard",
+    "variant": "extrapolate",
+    "stem": "A scuba diver measures pressure below the water surface. At 0 meters the pressure is 1 atm, and at 10 meters the pressure is 2 atm. If the pressure is a linear function of depth, what is the pressure, in atm, at 33 meters?",
+    "type": "spr",
+    "choices": {},
+    "correct": "4.3",
+    "distractor_rationales": {
+      "3.3": "Student used slope 1/10 without adding surface pressure",
+      "3.4": "Student computed 33/10 correctly but dropped +1",
+      "33": "Student reported depth as pressure"
+    },
+    "solution_steps": [
+      "Slope = 1/10 atm/m",
+      "P(33) = 0.1(33) + 1 = 4.3"
+    ],
+    "why_this_difficulty": "Hard: extrapolate beyond given points.",
+    "sat_key_phrases": ["linear function of", "what is the pressure", "at"]
+  },
+  {
+    "difficulty": "hard",
+    "sat_level": 4,
+    "framing": "linear_model_three_pts_hard",
+    "variant": "window_repair",
+    "stem": "A window-repair company charges a fixed trip fee plus an hourly labor rate. A 3-hour job cost $190, and a 5-hour job cost $270. What will an 8-hour job cost, in dollars?",
+    "type": "spr",
+    "choices": {},
+    "correct": "390",
+    "distractor_rationales": {
+      "380": "Student used wrong hourly rate",
+      "320": "Student used slope only without trip fee",
+      "400": "Student overshot by adding extra hour"
+    },
+    "solution_steps": [
+      "Hourly rate = (270 − 190) / (5 − 3) = 80 / 2 = 40",
+      "Fixed fee: 190 = 3(40) + b → b = 70",
+      "8-hour: 8(40) + 70 = 320 + 70 = 390"
+    ],
+    "why_this_difficulty": "Hard: 3 data points (2 given, 1 target); fit linear model and evaluate.",
+    "sat_key_phrases": ["charges", "fixed", "hourly", "what will the cost"]
+  },
+  {
+    "difficulty": "hard",
+    "sat_level": 4,
+    "framing": "literal_formula_solve",
+    "variant": "isolate_var",
+    "stem": "The equation F = (9/5)C + 32 gives the temperature F, in degrees Fahrenheit, corresponding to a temperature of C degrees Celsius. What is the value of C when F = 68?",
+    "type": "spr",
+    "choices": {},
+    "correct": "20",
+    "distractor_rationales": {
+      "18": "Student subtracted 32 then multiplied by 9/5",
+      "36": "Student stopped at 68 − 32 = 36",
+      "100": "Student solved in wrong direction"
+    },
+    "solution_steps": [
+      "68 = (9/5)C + 32",
+      "36 = (9/5)C",
+      "C = 36 × (5/9) = 20"
+    ],
+    "why_this_difficulty": "Hard: multi-step solve with fractional coefficient in a literal formula.",
+    "sat_key_phrases": ["gives the temperature", "corresponding to", "what is the value of"]
+  },
+  {
+    "difficulty": "hard",
+    "sat_level": 4,
+    "framing": "literal_formula_solve",
+    "variant": "kelvin_inverse",
+    "stem": "The equation h = 9(v − 273.15)/5 + 32 gives the temperature h, in degrees Fahrenheit, of any substance that has a temperature of v kelvins, where v > 0. If a substance has a temperature of 467.33 degrees Fahrenheit, what is the corresponding temperature, in kelvins, of this substance?",
+    "type": "spr",
+    "choices": {},
+    "correct": "515",
+    "distractor_rationales": {
+      "241.85": "Student stopped after dividing by 9",
+      "435.33": "Student subtracted 32 and reported that",
+      "273.15": "Student reported the offset"
+    },
+    "solution_steps": [
+      "Substitute h = 467.33: 467.33 = 9(v − 273.15)/5 + 32",
+      "435.33 = 9(v − 273.15)/5",
+      "Multiply by 5: 2176.65 = 9(v − 273.15)",
+      "Divide by 9: 241.85 = v − 273.15 → v = 515"
+    ],
+    "why_this_difficulty": "Hard: multi-step solve with fractions and offset in a compound formula.",
+    "sat_key_phrases": ["gives the corresponding temperature", "what is the corresponding", "if a substance"]
+  },
+  {
+    "difficulty": "hard",
+    "sat_level": 4,
+    "framing": "interpret_shift_or_coeff",
+    "variant": "signed_change",
+    "stem": "The function F is defined by F(x) = (9/5)(x − 273.15) + 32, giving the Fahrenheit temperature F corresponding to x kelvins. If the temperature of a substance increases by 2.10 kelvins, by how many degrees Fahrenheit does its temperature increase?",
+    "type": "spr",
+    "choices": {},
+    "correct": "3.78",
+    "distractor_rationales": {
+      "2.10": "Student assumed 1:1 kelvin-to-Fahrenheit relationship",
+      "1.17": "Student used 5/9 instead of 9/5",
+      "5.88": "Student added 32 to the change"
+    },
+    "solution_steps": [
+      "A kelvin change of 2.10 produces (9/5)(2.10) = 3.78 °F"
+    ],
+    "why_this_difficulty": "Hard: interpret slope coefficient 9/5 as a unit-conversion ratio.",
+    "sat_key_phrases": ["gives the", "if the temperature increases by"]
+  },
+  {
+    "difficulty": "hard",
+    "sat_level": 4,
+    "framing": "interpret_shift_or_coeff",
+    "variant": "abs_change",
+    "stem": "The function P is defined by P(t) = 300 − 4t, where P(t) is the volume of water in a container, in liters, t minutes after draining begins. Which of the following is the best interpretation of −4 in this context?",
+    "type": "mcq",
+    "choices": {
+      "A": "The container starts with −4 liters of water",
+      "B": "The volume of water decreases by 4 liters each minute",
+      "C": "The volume of water increases by 4 liters each minute",
+      "D": "The container empties after 4 minutes"
+    },
+    "correct": "B",
+    "distractor_rationales": {
+      "A": "Student interpreted the coefficient as an amount",
+      "C": "Student ignored the negative sign",
+      "D": "Student confused the coefficient with an elapsed time"
+    },
+    "solution_steps": [
+      "−4 is the rate per minute",
+      "Negative sign indicates decrease",
+      "Volume decreases by 4 liters each minute"
+    ],
+    "why_this_difficulty": "Hard: signed-coefficient interpretation with negative slope.",
+    "sat_key_phrases": ["where t is", "best interpretation of", "in this context"]
+  },
+  {
+    "difficulty": "hard",
+    "sat_level": 4,
+    "framing": "interpret_shift_or_coeff",
+    "variant": "coefficient_from_growth",
+    "stem": "A scientist models the weight of a piglet using W(x) = a + bx, where a is the birth weight in kilograms and b is the growth rate in kilograms per week. If a week-4 measurement gives W(4) = 3.2 kg, and the birth weight was 1.2 kg, which of the following is the best interpretation of b in this model?",
+    "type": "mcq",
+    "choices": {
+      "A": "The total weight, in kilograms, after 4 weeks",
+      "B": "The piglet gains 0.5 kilogram per week",
+      "C": "The piglet weighs 0.5 kilogram at birth",
+      "D": "The total weight gained over 4 weeks"
+    },
+    "correct": "B",
+    "distractor_rationales": {
+      "A": "Student named total output rather than rate",
+      "C": "Student interpreted slope as intercept",
+      "D": "Student named an aggregate rather than rate"
+    },
+    "solution_steps": [
+      "3.2 = 1.2 + 4b → 4b = 2.0 → b = 0.5",
+      "b = 0.5 kg/week means piglet gains 0.5 kg per week"
+    ],
+    "why_this_difficulty": "Hard: combine parameter recovery with contextual interpretation.",
+    "sat_key_phrases": ["birth weight", "growth rate", "best interpretation of"]
+  },
+  {
+    "difficulty": "medium",
+    "sat_level": 3,
+    "framing": "evaluate_compound",
+    "variant": "difference_single_fn",
+    "stem": "The function f is defined by f(x) = 6x − 11. What is the value of f(5) − f(2)?",
+    "type": "spr",
+    "choices": {},
+    "correct": "18",
+    "distractor_rationales": {
+      "30": "Student computed 6 × 5 only without subtracting f(2)",
+      "19": "Student computed f(5) − f(2) as 19 by arithmetic slip",
+      "3": "Student subtracted inputs only (5 − 2) without applying f"
+    },
+    "solution_steps": [
+      "f(5) = 6(5) − 11 = 19",
+      "f(2) = 6(2) − 11 = 1",
+      "f(5) − f(2) = 19 − 1 = 18",
+      "Shortcut: slope × (5 − 2) = 6 × 3 = 18"
+    ],
+    "why_this_difficulty": "Medium: single-function difference — tests the insight that f(b) − f(a) = slope × (b − a) for a linear function.",
+    "sat_key_phrases": ["the function f is defined by", "what is the value of", "f(b) − f(a)"]
+  },
+  {
+    "difficulty": "medium",
+    "sat_level": 3,
+    "framing": "evaluate_compound",
+    "variant": "symbolic_input",
+    "stem": "The function f is defined by f(x) = 2x − 7. What is the value of f(k + 3) in terms of k?",
+    "type": "mcq",
+    "choices": {
+      "A": "2k − 4",
+      "B": "2k − 1",
+      "C": "2k + 3",
+      "D": "2k + 6"
+    },
+    "correct": "B",
+    "distractor_rationales": {
+      "A": "Student distributed 2 across (k + 3) but subtracted 7 − 3 = 4 instead of applying −7 to the full expression",
+      "C": "Student replaced x with k and added 3 to f(k) instead of substituting (k + 3)",
+      "D": "Student doubled (k + 3) correctly but dropped the −7"
+    },
+    "solution_steps": [
+      "Substitute x = k + 3: f(k + 3) = 2(k + 3) − 7",
+      "= 2k + 6 − 7 = 2k − 1"
+    ],
+    "why_this_difficulty": "Medium: abstract variable substitution where the input is a symbolic expression, not a number. Tests distributive property and sign tracking.",
+    "sat_key_phrases": ["the function f is defined by", "what is the value of", "in terms of"]
+  },
+  {
+    "difficulty": "medium",
+    "sat_level": 3,
+    "framing": "interpret_x_intercept",
+    "variant": "time_zero_context",
+    "stem": "The function f is defined by f(x) = 240 − 12x, where f(x) is the amount of water, in liters, remaining in a reservoir x hours after a leak began. In the xy-plane, the graph of y = f(x) has an x-intercept at (c, 0). Which of the following is the best interpretation of c in this context?",
+    "type": "mcq",
+    "choices": {
+      "A": "The initial amount of water, in liters, in the reservoir",
+      "B": "The rate at which water is leaking, in liters per hour",
+      "C": "The time, in hours, at which the reservoir is empty",
+      "D": "The total amount of water, in liters, lost in 12 hours"
+    },
+    "correct": "C",
+    "distractor_rationales": {
+      "A": "Student interpreted the x-intercept as the y-intercept",
+      "B": "Student named the slope (rate of change)",
+      "D": "Student computed f(12) and reported that"
+    },
+    "solution_steps": [
+      "x-intercept occurs when f(x) = 0, i.e., when the water runs out",
+      "0 = 240 − 12x → x = 20",
+      "c = 20, interpreted as 20 hours after the leak began the reservoir is empty"
+    ],
+    "why_this_difficulty": "Medium: tests recognition that the x-intercept represents the input value where output (amount of water) hits zero, giving contextual meaning (time to empty).",
+    "sat_key_phrases": ["best interpretation of", "x-intercept", "in this context"]
+  },
+  {
+    "difficulty": "medium",
+    "sat_level": 3,
+    "framing": "interpret_x_intercept",
+    "variant": "break_even_context",
+    "stem": "A new-business owner models monthly profit, in dollars, with the function P(m) = 450m − 5400, where m is the number of months since opening. The graph of y = P(m) crosses the m-axis at (c, 0). What is the best interpretation of c?",
+    "type": "mcq",
+    "choices": {
+      "A": "The initial startup cost, in dollars",
+      "B": "The number of months needed for the business to break even",
+      "C": "The monthly profit, in dollars, at month 450",
+      "D": "The total profit, in dollars, over 12 months"
+    },
+    "correct": "B",
+    "distractor_rationales": {
+      "A": "Student named the y-intercept role",
+      "C": "Student confused the slope with the x-intercept",
+      "D": "Student estimated a total rather than a specific time"
+    },
+    "solution_steps": [
+      "x-intercept: 0 = 450m − 5400 → m = 12",
+      "At m = 12, profit = 0, so the business breaks even after 12 months",
+      "c = 12 represents the break-even month"
+    ],
+    "why_this_difficulty": "Medium: business-context x-intercept interpretation (break-even), requires mapping zero profit to real-world meaning.",
+    "sat_key_phrases": ["best interpretation of", "x-intercept", "crosses the", "in this context"]
+  },
+  {
+    "difficulty": "medium",
+    "sat_level": 3,
+    "framing": "parallel_slope_from_fn",
+    "variant": "parallel_to_linear_fn",
+    "stem": "The function f is defined by f(x) = 2x + 3. In the xy-plane, line j is parallel to the graph of y = f(x). What is the slope of line j?",
+    "type": "spr",
+    "choices": {},
+    "correct": "2",
+    "distractor_rationales": {
+      "3": "Student reported the y-intercept of f as the slope",
+      "-2": "Student negated the slope (perpendicular confusion)",
+      "-1/2": "Student computed the perpendicular slope instead of the parallel slope"
+    },
+    "solution_steps": [
+      "Slope of f is the coefficient of x: 2",
+      "Parallel lines have equal slopes, so slope of j = 2"
+    ],
+    "why_this_difficulty": "Medium: tests the definition of parallel lines (equal slopes) when one line is given in function-notation form.",
+    "sat_key_phrases": ["the function f is defined by", "parallel to the graph", "what is the slope"]
+  }
+]

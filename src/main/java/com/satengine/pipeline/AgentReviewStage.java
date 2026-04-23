@@ -191,18 +191,9 @@ public class AgentReviewStage {
         questionAnswerRepository.findByQuestionId(q.getId())
                 .ifPresent(qa -> n.put("correctAnswer", qa.getCorrectAnswer()));
 
-        if (q.getExplanationSteps() != null) {
-            try { n.set("explanationSteps", objectMapper.readTree(q.getExplanationSteps())); }
-            catch (Exception ignored) {}
-        }
-        if (q.getCoreConcept() != null) {
-            try { n.set("coreConcept", objectMapper.readTree(q.getCoreConcept())); }
-            catch (Exception ignored) {}
-        }
-        if (q.getPrerequisites() != null) {
-            try { n.set("prerequisites", objectMapper.readTree(q.getPrerequisites())); }
-            catch (Exception ignored) {}
-        }
+        // explanationSteps, coreConcept, prerequisites intentionally EXCLUDED from slim node.
+        // Including them anchors the reviewer to Haiku's (potentially wrong) equations/values,
+        // causing false PASS results. The reviewer must derive the answer independently from the stem.
         if (q.getDiagram() != null) {
             try {
                 JsonNode d = objectMapper.readTree(q.getDiagram());

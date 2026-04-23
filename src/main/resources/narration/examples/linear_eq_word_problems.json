@@ -1,0 +1,132 @@
+[
+  {
+    "difficulty": "medium",
+    "sat_level": 3,
+    "framing": "mixture",
+    "stem": "A trail mix contains almonds and cashews weighing 3 pounds total. Almonds cost $4 per pound and cashews cost $7 per pound. The total cost of the mix is $15. How many pounds of almonds are in the mix?",
+    "type": "mcq",
+    "choices": { "A": "1", "B": "2", "C": "2.5", "D": "3" },
+    "correct": "B",
+    "distractor_rationales": {
+      "A": "Student set up one equation correctly but used the wrong constraint for total weight",
+      "C": "Student averaged the two pound amounts rather than solving the system",
+      "D": "Student assigned all 3 pounds to almonds, ignoring the cost constraint"
+    },
+    "solution_steps": [
+      "Let a = pounds of almonds, c = pounds of cashews",
+      "a + c = 3 and 4a + 7c = 15",
+      "Substitute c = 3 − a: 4a + 7(3 − a) = 15 → −3a = −6 → a = 2"
+    ],
+    "why_this_difficulty": "Medium: requires translating two real-world constraints into two equations, then solving by substitution. Students often set up only one equation.",
+    "sat_key_phrases": ["how many", "total cost", "consists of"]
+  },
+  {
+    "difficulty": "medium",
+    "sat_level": 3,
+    "framing": "interpretation",
+    "stem": "A rectangle has length l feet and width w feet. The equation 2l + 2w = 48 represents the perimeter of the rectangle. The width is 8 feet. What is the length, in feet, of the rectangle?",
+    "type": "spr",
+    "choices": {},
+    "correct": "16",
+    "distractor_rationales": {
+      "8": "Student set length equal to width",
+      "24": "Student divided 48 by 2 and reported that as the length, ignoring width",
+      "32": "Student subtracted only one width: 48 − 8 = 40, then divided by 2 incorrectly"
+    },
+    "solution_steps": [
+      "Substitute w = 8: 2l + 16 = 48",
+      "2l = 32 → l = 16"
+    ],
+    "why_this_difficulty": "Medium: requires recognising which variable is given, substituting, and solving a one-step linear equation in context.",
+    "sat_key_phrases": ["the equation represents", "what is the length", "in feet"]
+  },
+  {
+    "difficulty": "medium",
+    "sat_level": 3,
+    "framing": "rate_word_problem",
+    "stem": "A phone plan charges a flat monthly fee of $20 plus $0.05 per text message. In one month, Marcus was charged $35. How many text messages did Marcus send that month?",
+    "type": "mcq",
+    "choices": { "A": "15", "B": "200", "C": "300", "D": "700" },
+    "correct": "C",
+    "distractor_rationales": {
+      "A": "Student found 35 − 20 = 15 and reported the dollar difference as the count",
+      "B": "Student divided 35 by 0.05 instead of (35 − 20) by 0.05",
+      "D": "Student divided the full $35 by $0.05 instead of the overage only"
+    },
+    "solution_steps": [
+      "20 + 0.05t = 35",
+      "0.05t = 15 → t = 300"
+    ],
+    "why_this_difficulty": "Medium: two-step equation in context. The most common error is dividing the full amount by the per-unit rate rather than the amount above the flat fee.",
+    "sat_key_phrases": ["charges ... plus ... per", "how many", "was charged"]
+  },
+  {
+    "difficulty": "hard",
+    "sat_level": 4,
+    "framing": "word_problem_multistep",
+    "stem": "In August, a store manager completed 5 more than three times the number of reports completed in September. In the two months combined, 61 reports were completed. How many reports were completed in September?",
+    "type": "spr",
+    "choices": {},
+    "correct": "14",
+    "distractor_rationales": {
+      "47": "Student found the August count instead of September",
+      "19": "Student added 5 to the correct September count instead of computing it",
+      "56": "Student subtracted 5 from 61 and reported that as September"
+    },
+    "solution_steps": [
+      "Let s = September reports",
+      "August = 3s + 5",
+      "(3s + 5) + s = 61 → 4s = 56 → s = 14"
+    ],
+    "why_this_difficulty": "Hard: requires translating 'more than three times' into 3s + 5 correctly (a common mistranslation is 3(s + 5)), then solving and identifying that the question asks for September, not August.",
+    "sat_key_phrases": ["more than", "combined", "how many", "completed in"]
+  },
+  {
+    "difficulty": "hard",
+    "sat_level": 4,
+    "framing": "interpretation_coefficient",
+    "stem": "The equation C = 45h + 30 gives the total cost C, in dollars, for a contractor to work h hours on a project, where h ≥ 0. Which of the following is the best interpretation of 45 in this context?",
+    "type": "mcq",
+    "choices": {
+      "A": "The total cost, in dollars, of the project",
+      "B": "The contractor's hourly rate, in dollars per hour",
+      "C": "The number of hours worked on the project",
+      "D": "The one-time setup fee, in dollars, for the project"
+    },
+    "correct": "B",
+    "distractor_rationales": {
+      "A": "Student confused the coefficient with the output value C",
+      "C": "Student confused the coefficient 45 with the variable h",
+      "D": "Student identified the fixed fee correctly as 30 but then misassigned 45 to the same role"
+    },
+    "solution_steps": [
+      "In C = 45h + 30, the coefficient of h is the rate of change: cost increases by $45 for each additional hour",
+      "30 is the y-intercept: the fixed fee regardless of hours worked",
+      "45 is the cost per hour — the hourly rate"
+    ],
+    "why_this_difficulty": "Hard: tests interpretation of slope in a linear model. Students must distinguish the rate of change (45) from the y-intercept (30) and translate each into real-world meaning.",
+    "sat_key_phrases": ["best interpretation of", "in this context", "the equation gives", "where h ≥ 0"]
+  },
+  {
+    "difficulty": "hard",
+    "sat_level": 5,
+    "framing": "word_problem_two_conditions",
+    "stem": "A catering company charges \\(\\$12\\) per hot item and \\(\\$8\\) per cold item. For one event, a customer ordered a total of 15 items and was charged \\(\\$148\\). How many hot items did the customer order?",
+    "type": "mcq",
+    "choices": { "A": "4", "B": "7", "C": "8", "D": "11" },
+    "correct": "B",
+    "distractor_rationales": {
+      "A": "Student set up the cost equation correctly but made an arithmetic error when solving",
+      "C": "Student swapped hot and cold item counts",
+      "D": "Student found the number of cold items instead of hot items"
+    },
+    "solution_steps": [
+      "Let h = hot items, c = cold items",
+      "h + c = 15 and 12h + 8c = 148",
+      "From first equation: c = 15 − h",
+      "12h + 8(15 − h) = 148 → 4h = 28 → h = 7"
+    ],
+    "why_this_difficulty": "Hard: requires setting up two equations from two conditions, solving by substitution, and reading the question carefully to return the right variable (hot items, not cold).",
+    "sat_key_phrases": ["charges ... per", "total of", "how many", "was charged"]
+  }
+]
