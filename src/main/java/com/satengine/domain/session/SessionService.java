@@ -2,10 +2,8 @@ package com.satengine.domain.session;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.satengine.domain.question.Question;
-import com.satengine.domain.question.QuestionAnswer;
-import com.satengine.domain.question.QuestionAnswerRepository;
-import com.satengine.domain.question.QuestionRepository;
+import com.satengine.domain.sympy.SatQuestion;
+import com.satengine.domain.sympy.SatQuestionRepository;
 import com.satengine.dto.*;
 import com.satengine.exception.DuplicateAnswerException;
 import com.satengine.exception.InvalidRequestException;
@@ -25,17 +23,16 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SessionService {
 
-    private final SessionRepository sessionRepository;
+    private final SessionRepository    sessionRepository;
     private final SessionAnswerRepository sessionAnswerRepository;
-    private final QuestionRepository questionRepository;
-    private final QuestionAnswerRepository questionAnswerRepository;
-    private final ObjectMapper objectMapper;
+    private final SatQuestionRepository satQuestionRepository;
+    private final ObjectMapper         objectMapper;
 
-    /** Difficulty band → [min, max] difficulty values */
+    /** Difficulty band → [min, max] sat_questions difficulty values (1=Easy, 2=Medium, 3=Hard) */
     private static final Map<String, int[]> BAND_RANGE = Map.of(
-        "easy",   new int[]{1, 2},
-        "medium", new int[]{3, 5},
-        "hard",   new int[]{6, 7}
+        "easy",   new int[]{1, 1},
+        "medium", new int[]{2, 2},
+        "hard",   new int[]{3, 3}
     );
 
     // ── Dashboard ──────────────────────────────────────────────────────────
@@ -168,10 +165,10 @@ public class SessionService {
         if (session.getDomainBandCounts() != null) {
             result = getNextQuestionByBandQuota(session, answeredIds);
         } else {
-            // Fallback: random
-            Optional<Question> next = answeredIds.isEmpty()
-                    ? questionRepository.findNextQuestionNoExclusions("practice", session.getSection())
-                    : questionRepository.findNextQuestion("practice", session.getSection(), answeredIds);
+            // Fallback: random approved question
+            Optional<SatQuestion> next = answeredIds.isEmpty()
+                    ? satQuestionRepository.findNextNoExclusions(session.getSection())
+                    : satQuestionRepository.findNext(session.getSection(), answeredIds);
             result = next.map(QuestionResponse::from);
         }
 
@@ -204,8 +201,8 @@ public class SessionService {
         // Count already-answered questions per domain per band
         Map<String, Map<String, Long>> answeredByDomainBand = new HashMap<>();
         if (!answeredIds.isEmpty()) {
-            List<Question> answeredQuestions = questionRepository.findAllById(answeredIds);
-            for (Question q : answeredQuestions) {
+            List<SatQuestion> answeredQuestions = satQuestionRepository.findAllById(answeredIds);
+            for (SatQuestion q : answeredQuestions) {
                 String band = difficultyToBand(q.getDifficulty());
                 answeredByDomainBand
                     .computeIfAbsent(q.getDomain(), k -> new HashMap<>())
@@ -228,7 +225,7 @@ public class SessionService {
                     .getOrDefault(domain, Map.of())
                     .getOrDefault(band, 0L);
                 if (answered < quota) {
-                    int[] range = BAND_RANGE.getOrDefault(band, new int[]{1, 7});
+                    int[] range = BAND_RANGE.getOrDefault(band, new int[]{1, 3});
                     remaining.add(new Slot(domain, range[0], range[1]));
                 }
             }
@@ -237,11 +234,11 @@ public class SessionService {
         Collections.shuffle(remaining);
 
         for (Slot slot : remaining) {
-            Optional<Question> q = answeredIds.isEmpty()
-                ? questionRepository.findNextQuestionByDomainAndDifficultyNoExclusions(
-                    "practice", session.getSection(), slot.domain(), slot.minDiff(), slot.maxDiff())
-                : questionRepository.findNextQuestionByDomainAndDifficulty(
-                    "practice", session.getSection(), slot.domain(), answeredIds, slot.minDiff(), slot.maxDiff());
+            Optional<SatQuestion> q = answeredIds.isEmpty()
+                ? satQuestionRepository.findNextByDomainDiffNoExclusions(
+                    session.getSection(), slot.domain(), slot.minDiff(), slot.maxDiff())
+                : satQuestionRepository.findNextByDomainDiff(
+                    session.getSection(), slot.domain(), answeredIds, slot.minDiff(), slot.maxDiff());
             if (q.isPresent()) return q.map(QuestionResponse::from);
             log.debug("no question found for slot domain={} band={} (diff={}-{})",
                     slot.domain(), difficultyToBand((short) slot.minDiff()), slot.minDiff(), slot.maxDiff());
@@ -251,8 +248,8 @@ public class SessionService {
     }
 
     private String difficultyToBand(short difficulty) {
-        if (difficulty <= 2) return "easy";
-        if (difficulty <= 5) return "medium";
+        if (difficulty <= 1) return "easy";
+        if (difficulty == 2) return "medium";
         return "hard";
     }
 
@@ -270,11 +267,11 @@ public class SessionService {
                     throw new DuplicateAnswerException(sessionId, req.questionId());
                 });
 
-        QuestionAnswer answer = questionAnswerRepository.findByQuestionId(req.questionId())
-                .orElseThrow(() -> new ResourceNotFoundException("Answer for question", req.questionId()));
+        SatQuestion satQ = satQuestionRepository.findById(req.questionId())
+                .orElseThrow(() -> new ResourceNotFoundException("Question", req.questionId()));
 
-        boolean isCorrect = answer.getCorrectAnswer()
-                .equalsIgnoreCase(req.studentAnswer().trim());
+        boolean isCorrect = satQ.getCorrectAnswer() != null &&
+                satQ.getCorrectAnswer().equalsIgnoreCase(req.studentAnswer().trim());
 
         SessionAnswer sessionAnswer = SessionAnswer.builder()
                 .sessionId(sessionId)
@@ -291,15 +288,12 @@ public class SessionService {
                         : "null",
                 isCorrect, req.timeSpentSeconds());
 
-        Question question = questionRepository.findById(req.questionId())
-                .orElseThrow(() -> new ResourceNotFoundException("Question", req.questionId()));
-
         return new AnswerFeedback(
                 req.questionId(),
                 isCorrect,
-                answer.getCorrectAnswer(),
-                question.getExplanationShort(),
-                question.getExplanationSteps()
+                satQ.getCorrectAnswer(),
+                satQ.getExplanationShort(),
+                satQ.getRawExplanationSteps()
         );
     }
 
@@ -377,42 +371,35 @@ public class SessionService {
 
         List<UUID> questionIds = answers.stream().map(SessionAnswer::getQuestionId).toList();
 
-        Map<UUID, Question> questionMap = questionRepository.findAllById(questionIds)
-                .stream().collect(Collectors.toMap(Question::getId, q -> q));
-
-        Map<UUID, String> correctAnswerMap = questionAnswerRepository.findAllByQuestionIds(questionIds)
-                .stream().collect(Collectors.toMap(
-                        qa -> qa.getQuestion().getId(),
-                        com.satengine.domain.question.QuestionAnswer::getCorrectAnswer
-                ));
+        Map<UUID, SatQuestion> questionMap = satQuestionRepository.findAllById(questionIds)
+                .stream().collect(Collectors.toMap(SatQuestion::getId, q -> q));
 
         return answers.stream().map(sa -> {
-            Question q = questionMap.get(sa.getQuestionId());
-            String correct = correctAnswerMap.get(sa.getQuestionId());
+            SatQuestion q = questionMap.get(sa.getQuestionId());
             return new com.satengine.dto.SessionAnswerDetail(
                     sa.getQuestionId(),
                     q != null ? q.getQuestionStem() : null,
                     q != null ? q.getDomain() : null,
-                    q != null ? q.getSkill() : null,
+                    q != null ? q.getSkillKey() : null,
                     q != null ? q.getDifficulty() : null,
                     q != null ? q.getQuestionType() : null,
                     q != null ? q.getOptionA() : null,
                     q != null ? q.getOptionB() : null,
                     q != null ? q.getOptionC() : null,
                     q != null ? q.getOptionD() : null,
-                    correct,
+                    q != null ? q.getCorrectAnswer() : null,
                     sa.getStudentAnswer(),
                     sa.getIsCorrect(),
                     sa.getTimeSpentSeconds(),
                     q != null ? q.getExplanationShort() : null,
-                    q != null ? q.getExplanationSteps() : null,
+                    q != null ? q.getRawExplanationSteps() : null,
                     q != null ? q.getCoreConcept() : null,
-                    q != null ? q.getChoiceExplanations() : null,
+                    null,                               // choiceExplanations — not in sat_questions
                     q != null ? q.getAlternativeApproach() : null,
-                    q != null ? q.getAnimation() : null,
-                    q != null ? q.getDiagram() : null,
-                    q != null ? q.getPassageText() : null,
-                    q != null ? q.getPassageSource() : null,
+                    null,                               // animationJson — not in sat_questions
+                    q != null ? q.getRawDiagram() : null,
+                    null,                               // passageText — math only
+                    null,                               // passageSource — math only
                     q != null ? q.getSkillKey() : null
             );
         }).toList();

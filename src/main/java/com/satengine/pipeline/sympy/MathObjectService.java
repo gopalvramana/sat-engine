@@ -1,7 +1,7 @@
 package com.satengine.pipeline.sympy;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.satengine.domain.sympy.SymPyQuestionRepository;
+import com.satengine.domain.sympy.SatQuestionRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +35,7 @@ public class MathObjectService {
     @Value("${sympy.python.script:scripts/math_engine.py}")
     private String mathEngineScript;
 
-    private final SymPyQuestionRepository sympyRepo;
+    private final SatQuestionRepository sympyRepo;
     private final ObjectMapper objectMapper;
 
     @PostConstruct

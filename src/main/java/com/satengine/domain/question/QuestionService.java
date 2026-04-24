@@ -1,5 +1,7 @@
 package com.satengine.domain.question;
 
+import com.satengine.domain.sympy.SatQuestion;
+import com.satengine.domain.sympy.SatQuestionRepository;
 import com.satengine.dto.QuestionResponse;
 import com.satengine.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -14,47 +16,53 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 public class QuestionService {
 
-    private final QuestionRepository questionRepository;
+    private final SatQuestionRepository satQuestionRepository;
 
     /**
      * Retrieve a single question by ID (no correct answer in response).
      */
     public QuestionResponse getQuestion(UUID id) {
-        Question question = questionRepository.findById(id)
+        SatQuestion question = satQuestionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Question", id));
         return QuestionResponse.from(question);
     }
 
     /**
-     * Count questions per domain broken down by difficulty band for the session builder.
+     * Count approved questions per domain broken down by difficulty band.
+     * Used by the session builder UI (/api/questions/count).
+     * Returns rows: [domain, easy, medium, hard, total]
      */
     public List<Object[]> getCountsByDomain(String section) {
-        return questionRepository.countByDomainAndDifficulty(section);
+        return satQuestionRepository.countByDomainAndDifficulty(section);
     }
 
     /**
-     * Retrieve a filtered list of questions.
+     * Retrieve a filtered list of approved questions.
      * All parameters are optional — null means "no filter on that field".
      */
     public List<QuestionResponse> getQuestions(String section, String domain, Integer difficulty) {
-        List<Question> questions;
-
         Short diff = difficulty != null ? difficulty.shortValue() : null;
 
+        List<SatQuestion> questions;
+
         if (section != null && domain != null && diff != null) {
-            questions = questionRepository.findBySectionAndDomainAndDifficulty(section, domain, diff);
+            questions = satQuestionRepository.findByStatusAndSectionAndDomainAndDifficulty(
+                    "approved", section, domain, diff);
         } else if (section != null && domain != null) {
-            questions = questionRepository.findBySectionAndDomain(section, domain);
+            questions = satQuestionRepository.findByStatusAndSectionAndDomain(
+                    "approved", section, domain);
         } else if (section != null && diff != null) {
-            questions = questionRepository.findBySectionAndDifficulty(section, diff);
+            questions = satQuestionRepository.findByStatusAndSectionAndDifficulty(
+                    "approved", section, diff);
         } else if (domain != null && diff != null) {
-            questions = questionRepository.findByDomainAndDifficulty(domain, diff);
+            questions = satQuestionRepository.findByStatusAndDomainAndDifficulty(
+                    "approved", domain, diff);
         } else if (section != null) {
-            questions = questionRepository.findBySection(section);
+            questions = satQuestionRepository.findByStatusAndSection("approved", section);
         } else if (diff != null) {
-            questions = questionRepository.findByDifficulty(diff);
+            questions = satQuestionRepository.findByStatusAndDifficulty("approved", diff);
         } else {
-            questions = questionRepository.findAll();
+            questions = satQuestionRepository.findByStatus("approved");
         }
 
         return questions.stream()

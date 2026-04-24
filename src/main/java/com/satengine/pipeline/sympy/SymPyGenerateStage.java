@@ -2,10 +2,8 @@ package com.satengine.pipeline.sympy;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.satengine.domain.sympy.SymPyQuestion;
-import com.satengine.domain.sympy.SymPyQuestionAnswer;
-import com.satengine.domain.sympy.SymPyQuestionAnswerRepository;
-import com.satengine.domain.sympy.SymPyQuestionRepository;
+import com.satengine.domain.sympy.SatQuestion;
+import com.satengine.domain.sympy.SatQuestionRepository;
 import com.satengine.pipeline.claude.ClaudeClient;
 import com.satengine.pipeline.claude.NarrationPromptLibrary;
 import lombok.RequiredArgsConstructor;
@@ -70,7 +68,8 @@ public class SymPyGenerateStage {
             Map.entry("quadratic_functions",        "advanced_math"),
             Map.entry("scatterplot_analysis",       "problem_solving_data_analysis"),
             Map.entry("equivalent_expressions",     "advanced_math"),
-            Map.entry("nonlinear_equations",         "advanced_math")
+            Map.entry("nonlinear_equations",         "advanced_math"),
+            Map.entry("nonlinear_functions",         "advanced_math")
     );
 
     // Skill → human-readable name
@@ -105,7 +104,8 @@ public class SymPyGenerateStage {
             Map.entry("quadratic_functions",        "Quadratic functions"),
             Map.entry("scatterplot_analysis",       "Scatterplots and line of best fit"),
             Map.entry("equivalent_expressions",     "Equivalent expressions"),
-            Map.entry("nonlinear_equations",         "Nonlinear equations in one variable")
+            Map.entry("nonlinear_equations",         "Nonlinear equations in one variable"),
+            Map.entry("nonlinear_functions",         "Nonlinear functions")
     );
 
     // Skill code suffix for external IDs
@@ -140,13 +140,13 @@ public class SymPyGenerateStage {
             Map.entry("quadratic_functions",        "QFN"),
             Map.entry("scatterplot_analysis",       "SCA"),
             Map.entry("equivalent_expressions",     "EXP"),
-            Map.entry("nonlinear_equations",         "NLE")
+            Map.entry("nonlinear_equations",         "NLE"),
+            Map.entry("nonlinear_functions",         "NLF")
     );
 
     private final MathObjectService          mathObjectService;
     private final ClaudeClient               claudeClient;
-    private final SymPyQuestionRepository    sympyRepo;
-    private final SymPyQuestionAnswerRepository answerRepo;
+    private final SatQuestionRepository      satRepo;
     private final ObjectMapper               objectMapper;
     private final com.satengine.pipeline.claude.ExampleLoader exampleLoader;
     private final NarrationFormatValidator   formatValidator;
@@ -198,11 +198,11 @@ public class SymPyGenerateStage {
         // Pre-load existing param hashes
         if (skill == null) {
             for (String s : SKILL_CODE.keySet()) {
-                excludeParams.addAll(sympyRepo.findParamHashesBySkillKey(s));
+                excludeParams.addAll(satRepo.findParamHashesBySkillKey(s));
             }
         } else {
-            excludeParams.addAll(sympyRepo.findParamHashesBySkillKey(skill));
-            sympyRepo.findRecentScenarioTagsForSkill(skill, 20).forEach(excludeScenarios::add);
+            excludeParams.addAll(satRepo.findParamHashesBySkillKey(skill));
+            satRepo.findRecentScenarioTagsForSkill(skill, 20).forEach(excludeScenarios::add);
         }
 
         // ── Path A: single variant ────────────────────────────────────────────
@@ -585,48 +585,73 @@ public class SymPyGenerateStage {
 
         String alternativeApproach = narration.path("alternativeApproach").asText(null);
 
-        SymPyQuestion q = SymPyQuestion.builder()
+        // Build content JSONB — packs all question content into one blob
+        boolean isMcq = "mcq".equals(mo.questionType());
+        Map<String, Object> contentMap = new java.util.LinkedHashMap<>();
+        contentMap.put("questionStem",        narration.path("questionStem").asText(""));
+        contentMap.put("optionA",             isMcq ? slots[0] : null);
+        contentMap.put("optionB",             isMcq ? slots[1] : null);
+        contentMap.put("optionC",             isMcq ? slots[2] : null);
+        contentMap.put("optionD",             isMcq ? slots[3] : null);
+        contentMap.put("correctLetter",       isMcq ? correctLetter : null);
+        contentMap.put("sprMin",              mo.sprMin() != null ? mo.sprMin().toPlainString() : null);
+        contentMap.put("sprMax",              mo.sprMax() != null ? mo.sprMax().toPlainString() : null);
+        contentMap.put("explanationShort",    narration.path("explanationShort").asText(null));
+        contentMap.put("explanationSteps",    steps.isMissingNode() ? null : steps);
+        contentMap.put("coreConcept",         coreConcept);
+        contentMap.put("distractorRationale", dr.isMissingNode()  ? null : dr);
+        contentMap.put("prerequisites",       prereqNode.isMissingNode() ? null : prereqNode);
+        contentMap.put("alternativeApproach", alternativeApproach);
+        contentMap.put("diagram",             mo.diagramSpec() != null ? mo.diagramSpec() : null);
+        try {
+            JsonNode moNode = objectMapper.readTree(mathObjectJson);
+            contentMap.put("mathObject", moNode);
+        } catch (Exception e) {
+            contentMap.put("mathObject", null);
+        }
+
+        String contentJson;
+        try {
+            contentJson = objectMapper.writeValueAsString(contentMap);
+        } catch (Exception e) {
+            log.error("Failed to serialize content JSONB for skill={}: {}", mo.skill(), e.getMessage());
+            contentJson = "{}";
+        }
+
+        // Extract template and variant from params
+        String template = null;
+        String variant  = null;
+        try {
+            JsonNode moNode = objectMapper.readTree(mathObjectJson);
+            JsonNode params = moNode.path("params");
+            if (!params.isMissingNode()) {
+                template = params.path("tpl").asText(null);
+                variant  = params.path("variant").asText(null);
+            }
+        } catch (Exception ignored) {}
+
+        String answer = isMcq ? correctLetter : mo.verifiedAnswer();
+
+        SatQuestion q = SatQuestion.builder()
                 .externalId(externalId)
                 .section("math")
                 .domain(SKILL_DOMAIN.getOrDefault(mo.skill(), "algebra"))
-                .skill(SKILL_NAME.getOrDefault(mo.skill(), mo.skill()))
                 .skillKey(mo.skill())
+                .template(template)
+                .variant(variant)
                 .scenarioTag(mo.scenarioTag())
                 .difficulty((short) mo.difficulty())
                 .questionType(mo.questionType())
-                .questionStem(narration.path("questionStem").asText(""))
-                .optionA("mcq".equals(mo.questionType()) ? slots[0] : null)
-                .optionB("mcq".equals(mo.questionType()) ? slots[1] : null)
-                .optionC("mcq".equals(mo.questionType()) ? slots[2] : null)
-                .optionD("mcq".equals(mo.questionType()) ? slots[3] : null)
-                .sprMin(mo.sprMin())
-                .sprMax(mo.sprMax())
-                .explanationShort(narration.path("explanationShort").asText(null))
-                .explanationSteps(stepsJson)
-                .coreConcept(coreConcept)
-                .distractorRationale(distractorRationaleJson)
-                .prerequisites(prerequisitesJson)
-                .alternativeApproach(alternativeApproach)
-                .diagram(diagJson)
-                .mathObject(mathObjectJson)
+                .correctAnswer(answer)
                 .paramHash(mo.paramHash())
                 .reviewNotes(reviewNotes)
                 .pool(pool)
                 .status(status)
                 .generatedAt(OffsetDateTime.now())
+                .content(contentJson)
                 .build();
 
-        sympyRepo.save(q);
-
-        // Save answer
-        String answer = "mcq".equals(mo.questionType()) ? correctLetter : mo.verifiedAnswer();
-        if (answer != null && !answer.isBlank()) {
-            SymPyQuestionAnswer qa = SymPyQuestionAnswer.builder()
-                    .question(q)
-                    .correctAnswer(answer)
-                    .build();
-            answerRepo.save(qa);
-        }
+        satRepo.save(q);
     }
 
     // ── External ID allocation ────────────────────────────────────────────────
@@ -638,7 +663,7 @@ public class SymPyGenerateStage {
     private String nextExternalId(String skill) {
         String code   = SKILL_CODE.getOrDefault(skill, "UNK");
         String prefix = "SP-" + code + "-";
-        int    next   = sympyRepo.findMaxSeqForPrefix(prefix + "%", prefix.length() + 1) + 1;
+        int    next   = satRepo.findMaxSeqForPrefix(prefix + "%", prefix.length() + 1) + 1;
         return prefix + String.format("%03d", next);
     }
 

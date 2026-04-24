@@ -1,6 +1,7 @@
 package com.satengine.dto;
 
 import com.satengine.domain.question.Question;
+import com.satengine.domain.sympy.SatQuestion;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -39,6 +40,47 @@ public record QuestionResponse(
         Boolean calculatorOk,
         String skillKey
 ) {
+
+    /**
+     * Factory method — maps from a SatQuestion entity, omitting the correct answer.
+     * sprMin/sprMax are stored as numbers in content JSONB and parsed to BigDecimal.
+     */
+    public static QuestionResponse from(SatQuestion sq) {
+        BigDecimal sprMin = null, sprMax = null;
+        try { String s = sq.getSprMinStr(); if (s != null) sprMin = new BigDecimal(s); } catch (Exception ignored) {}
+        try { String s = sq.getSprMaxStr(); if (s != null) sprMax = new BigDecimal(s); } catch (Exception ignored) {}
+        return new QuestionResponse(
+                sq.getId(),
+                sq.getExternalId(),
+                sq.getSection(),
+                sq.getDomain(),
+                sq.getSkillKey(),       // skill display = skillKey for sympy questions
+                sq.getDifficulty(),
+                sq.getQuestionType(),
+                sq.getQuestionStem(),
+                sq.getOptionA(),
+                sq.getOptionB(),
+                sq.getOptionC(),
+                sq.getOptionD(),
+                sprMin,
+                sprMax,
+                sq.getExplanationShort(),
+                sq.getRawExplanationSteps(),
+                null,                   // trapCategory — not in sympy questions
+                null,                   // trapExplanation — not in sympy questions
+                sq.getCoreConcept(),
+                sq.getRawPrerequisites(),
+                null,                   // animationJson — not in sympy questions
+                null,                   // choiceExplanations — not in sympy questions
+                sq.getAlternativeApproach(),
+                sq.getPool(),
+                null,                   // passageText — math only
+                null,                   // passageSource — math only
+                sq.getRawDiagram(),
+                true,                   // calculatorOk — math section default
+                sq.getSkillKey()
+        );
+    }
 
     /**
      * Factory method — maps from the Question entity, omitting the correct answer.

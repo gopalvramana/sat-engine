@@ -34,8 +34,8 @@ public interface SessionAnswerRepository extends JpaRepository<SessionAnswer, UU
                COUNT(sa.id)                                            AS total,
                SUM(CASE WHEN sa.is_correct = true THEN 1 ELSE 0 END)  AS correct
         FROM session_answers sa
-        JOIN questions q ON sa.question_id = q.id
-        JOIN sessions  s ON sa.session_id  = s.id
+        JOIN sat_questions q ON sa.question_id = q.id
+        JOIN sessions      s ON sa.session_id  = s.id
         WHERE s.user_id = :userId
         GROUP BY q.domain
         ORDER BY q.domain
