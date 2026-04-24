@@ -1079,6 +1079,8 @@
           <option value="linear_inequalities">LIN — Linear Inequalities</option>
           <option value="systems_linear_eq">SLE — Systems (2 var)</option>
           <option value="linear_functions">LFN — Linear Functions</option>
+          <option value="equivalent_expressions">EXP — Equivalent Expressions</option>
+          <option value="nonlinear_equations">NLE — Nonlinear Equations</option>
         </select>
       </div>
 
@@ -1584,6 +1586,23 @@ const SKILL_TEMPLATES = {
     'd3 — Hard':   ['parameter_solve_compound','word_model_multistep','linear_model_three_pts_hard',
                     'literal_formula_solve','interpret_shift_or_coeff'],
   },
+  equivalent_expressions: {
+    'd1 — Easy':   ['combine_like_terms','factor_gcf','rational_exponent_radical','factor_trinomial'],
+    'd2 — Medium': ['polynomial_multiply','add_subtract_polynomials','exponent_rules','factor_polynomial_medium'],
+    'd3 — Hard':   ['factor_to_reveal_property','rational_expression_add','polynomial_factor_with_constant',
+                    'polynomial_coefficient_find','exponent_equation_solve'],
+  },
+  nonlinear_equations: {
+    'd1 — Easy':   ['perfect_square_solve','factored_form_solve','absolute_value_easy',
+                    'system_from_graph','literal_equation'],
+    'd2 — Medium': ['solve_by_factoring','solve_from_context_area','rational_equation_solve',
+                    'literal_equation_rational','absolute_value_medium',
+                    'count_solutions_discriminant','system_linear_quadratic_solve'],
+    'd3 — Hard':   ['system_one_intersection','vieta_sum_of_roots','discriminant_no_solution',
+                    'tangent_condition','radical_equation_solve','literal_rearrangement_hard',
+                    'count_distinct_zeros','discriminant_constant_find',
+                    'sum_of_roots_cubic','greatest_intersection_x'],
+  },
 };
 
 function onSkillChange() {
@@ -1629,7 +1648,7 @@ const TEMPLATE_DIFFICULTY = (() => {
 })();
 
 // Skills that expose variant metadata via /api/admin/sympy/variants
-const VARIANT_SUPPORTED_SKILLS = new Set(['linear_eq_one_var', 'linear_eq_two_var', 'linear_inequalities', 'systems_linear_eq', 'linear_functions']);
+const VARIANT_SUPPORTED_SKILLS = new Set(['linear_eq_one_var', 'linear_eq_two_var', 'linear_inequalities', 'systems_linear_eq', 'linear_functions', 'equivalent_expressions', 'nonlinear_equations']);
 
 async function onTemplateSelect() {
   const tmplSel    = document.getElementById('sympy-template');

@@ -1,0 +1,587 @@
+[
+  {
+    "difficulty": "easy",
+    "framing": "combine_like_terms",
+    "stem": "Which of the following is equivalent to 4(3x − 2) + 5x + 6?\nA. 17x − 2\nB. 17x + 14\nC. 12x − 2\nD. 7x − 2",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Distributed as 4(3x + 2) = 12x + 8 instead of 12x − 8, giving 12x + 8 + 5x + 6 = 17x + 14",
+      "C": "Omitted the 5x term; computed only 12x − 8 + 6 = 12x − 2",
+      "D": "Subtracted the 5x term instead of adding: 12x − 8 − 5x + 6 = 7x − 2"
+    },
+    "solution_steps": [
+      "Distribute 4: 4(3x − 2) = 12x − 8",
+      "Rewrite: 12x − 8 + 5x + 6",
+      "Combine x terms: 17x; combine constants: −2",
+      "Result: 17x − 2"
+    ],
+    "why_this_difficulty": "Easy: single distribution then collect; all integer coefficients.",
+    "sat_key_phrases": ["Which of the following is equivalent to", "is equivalent to the expression"]
+  },
+  {
+    "difficulty": "easy",
+    "framing": "combine_like_terms",
+    "stem": "Which of the following is equivalent to 3(x − 4) + 2(x + 1)?\nA. 5x − 10\nB. 5x − 14\nC. x − 10\nD. 5x + 14",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Computed 2(x + 1) as 2(x − 1): 3x − 12 + 2x − 2 = 5x − 14",
+      "C": "Subtracted the 2x term instead of adding: 3x − 12 − 2x + 2 = x − 10",
+      "D": "Computed 3(x − 4) as 3(x + 4): 3x + 12 + 2x + 2 = 5x + 14"
+    },
+    "solution_steps": [
+      "Distribute 3: 3x − 12",
+      "Distribute 2: 2x + 2",
+      "Combine: (3x + 2x) + (−12 + 2) = 5x − 10"
+    ],
+    "why_this_difficulty": "Easy: two distributions, integer results; common errors are sign flips in one factor.",
+    "sat_key_phrases": ["Which of the following is equivalent to"]
+  },
+  {
+    "difficulty": "easy",
+    "framing": "combine_like_terms",
+    "stem": "Which of the following is equivalent to 9x² + 3x − 4x² + 7x − 5?\nA. 5x² + 10x − 5\nB. 5x² − 4x − 5\nC. 13x² + 10x − 5\nD. 5x² + 10x + 5",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Treated +7x as −7x when collecting: 3x − 7x = −4x",
+      "C": "Added x² coefficients instead of subtracting: 9 + 4 = 13 instead of 9 − 4 = 5",
+      "D": "Changed sign of constant: −5 → +5"
+    },
+    "solution_steps": [
+      "Group like terms: (9x² − 4x²) + (3x + 7x) + (−5)",
+      "Combine: 5x² + 10x − 5"
+    ],
+    "why_this_difficulty": "Easy: three groups of like terms; no distribution required.",
+    "sat_key_phrases": ["Which of the following is equivalent to"]
+  },
+  {
+    "difficulty": "easy",
+    "framing": "combine_like_terms",
+    "stem": "Which of the following is equivalent to 6a³ + 2a − 3a³ + 5a?\nA. 3a³ + 7a\nB. 3a³ − 3a\nC. 9a³ + 7a\nD. 3a⁴ + 7a",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Subtracted a terms instead of adding: 2a − 5a = −3a",
+      "C": "Added a³ terms instead of subtracting: 6 + 3 = 9",
+      "D": "Multiplied the a³ and a terms as if combining exponents: wrote a⁴"
+    },
+    "solution_steps": [
+      "Group like terms: (6a³ − 3a³) + (2a + 5a)",
+      "Combine: 3a³ + 7a"
+    ],
+    "why_this_difficulty": "Easy: pure collection across two variable types; no distribution.",
+    "sat_key_phrases": ["Which of the following is equivalent to"]
+  },
+  {
+    "difficulty": "easy",
+    "framing": "factor_gcf",
+    "stem": "Which of the following is equivalent to 12x³ + 8x²?\nA. 4x²(3x + 2)\nB. 2x²(6x + 4)\nC. 4(3x³ + 2x²)\nD. 4x(3x² + 2x)",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Used GCF coefficient 2 instead of 4; the remaining terms 6x and 4 still share a common factor",
+      "C": "Factored out only the numerical GCF 4, not the variable part x²",
+      "D": "Factored out 4x instead of 4x²; one power of x remains un-factored"
+    },
+    "solution_steps": [
+      "Find GCF of 12x³ and 8x²: GCF = 4x²",
+      "Divide each term: 12x³ ÷ 4x² = 3x; 8x² ÷ 4x² = 2",
+      "Write: 4x²(3x + 2)"
+    ],
+    "why_this_difficulty": "Easy: monomial GCF with two terms; students must extract both the numerical factor and the variable factor.",
+    "sat_key_phrases": ["Which of the following is equivalent to", "is equivalent to the expression"]
+  },
+  {
+    "difficulty": "easy",
+    "framing": "factor_gcf",
+    "stem": "Which of the following is equivalent to 5x(x − 3) + 2(x − 3)?\nA. (5x + 2)(x − 3)\nB. (5x − 2)(x − 3)\nC. (5x + 2)(x + 3)\nD. 5x(x − 3) + 2",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Changed the sign of the 2: used −2 instead of +2 in the linear factor",
+      "C": "Changed the sign of the common binomial factor: (x + 3) instead of (x − 3)",
+      "D": "Factored out (x − 3) from only the first term; did not complete the factoring"
+    },
+    "solution_steps": [
+      "Identify the common binomial factor: (x − 3)",
+      "Factor it out: (x − 3)[5x + 2]",
+      "Write: (5x + 2)(x − 3)"
+    ],
+    "why_this_difficulty": "Easy: the common binomial factor is explicit; students just read off the remaining linear factor.",
+    "sat_key_phrases": ["Which of the following is equivalent to"]
+  },
+  {
+    "difficulty": "easy",
+    "framing": "rational_exponent_radical",
+    "stem": "Which of the following is equivalent to ∛(x^5)?\nA. x^(5/3)\nB. x^(3/5)\nC. 5x^(1/3)\nD. x^15",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Flipped the numerator and denominator: wrote 3/5 instead of 5/3",
+      "C": "Moved the inner exponent 5 outside the radical as a coefficient instead of keeping it in the exponent",
+      "D": "Multiplied the indices 5 × 3 = 15 instead of writing 5 as the numerator over 3"
+    },
+    "solution_steps": [
+      "Recall: the nth root of x^m equals x^(m/n)",
+      "Here m = 5 (inner exponent), n = 3 (root index)",
+      "Result: x^(5/3)"
+    ],
+    "why_this_difficulty": "Easy: direct application of radical-to-rational-exponent conversion rule.",
+    "sat_key_phrases": ["Which of the following is equivalent to", "is equivalent to the expression"]
+  },
+  {
+    "difficulty": "easy",
+    "framing": "rational_exponent_radical",
+    "stem": "Which of the following is equivalent to x^(2/3)?\nA. ∛(x²)\nB. √(x³)\nC. ∛(x³)\nD. x²/3",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Flipped the exponent: x^(3/2) = √(x³), not x^(2/3)",
+      "C": "Used the same root index 3 but dropped the numerator 2: ∛(x³) = x, not x^(2/3)",
+      "D": "Misread the rational exponent as an algebraic fraction: interpreted x^(2/3) as (x²)/3"
+    },
+    "solution_steps": [
+      "Recall: x^(m/n) = nth root of x^m",
+      "Here m = 2, n = 3",
+      "Result: ∛(x²)"
+    ],
+    "why_this_difficulty": "Easy: reverse conversion from rational exponent to radical form.",
+    "sat_key_phrases": ["Which of the following is equivalent to"]
+  },
+  {
+    "difficulty": "easy",
+    "framing": "factor_trinomial",
+    "stem": "Which of the following is equivalent to x² + 7x + 12?\nA. (x + 3)(x + 4)\nB. (x + 2)(x + 6)\nC. (x + 1)(x + 12)\nD. (x − 3)(x − 4)",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Chose factor pair {2, 6} with correct product 12 but wrong sum: 2 + 6 = 8 ≠ 7",
+      "C": "Chose factor pair {1, 12} with correct product 12 but wrong sum: 1 + 12 = 13 ≠ 7",
+      "D": "Used negative factors; (x − 3)(x − 4) = x² − 7x + 12, not x² + 7x + 12"
+    },
+    "solution_steps": [
+      "Find two integers with product 12 and sum 7: 3 × 4 = 12 and 3 + 4 = 7",
+      "Write: (x + 3)(x + 4)"
+    ],
+    "why_this_difficulty": "Easy: monic trinomial with positive coefficients; distractors test other factor pairs.",
+    "sat_key_phrases": ["Which of the following is equivalent to"]
+  },
+  {
+    "difficulty": "easy",
+    "framing": "factor_trinomial",
+    "stem": "Which of the following is equivalent to x² − x − 6?\nA. (x − 3)(x + 2)\nB. (x + 3)(x − 2)\nC. (x − 3)(x − 2)\nD. (x + 3)(x + 2)",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Reversed the signs: (x + 3)(x − 2) = x² + x − 6, giving the wrong sign on the middle term",
+      "C": "Used both negative: (x − 3)(x − 2) = x² − 5x + 6, both middle term and constant are wrong",
+      "D": "Used both positive: (x + 3)(x + 2) = x² + 5x + 6, all terms positive"
+    },
+    "solution_steps": [
+      "Need two integers with product −6 and sum −1",
+      "Try −3 and +2: product = −6 ✓, sum = −1 ✓",
+      "Write: (x − 3)(x + 2)"
+    ],
+    "why_this_difficulty": "Easy: monic trinomial with mixed signs; sign tracking is the key skill.",
+    "sat_key_phrases": ["Which of the following is equivalent to"]
+  },
+  {
+    "difficulty": "easy",
+    "framing": "factor_trinomial",
+    "stem": "Which of the following is equivalent to 2x² + 5x − 3?\nA. (2x − 1)(x + 3)\nB. (2x + 1)(x − 3)\nC. (2x + 3)(x − 1)\nD. (x + 3)(x − 1)",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "(2x + 1)(x − 3) = 2x² − 6x + x − 3 = 2x² − 5x − 3; middle term has wrong sign",
+      "C": "(2x + 3)(x − 1) = 2x² − 2x + 3x − 3 = 2x² + x − 3; middle term is wrong",
+      "D": "Dropped the leading coefficient 2; (x + 3)(x − 1) = x² + 2x − 3, not a degree-2 match"
+    },
+    "solution_steps": [
+      "Find factors of 2x² and −3 that combine to give +5x",
+      "Try (2x − 1)(x + 3): 2x·3 + (−1)·x = 6x − x = 5x ✓, and (−1)(3) = −3 ✓",
+      "Verify: 2x² + 6x − x − 3 = 2x² + 5x − 3 ✓"
+    ],
+    "why_this_difficulty": "Easy: non-monic trinomial; must find factors of both leading coefficient and constant.",
+    "sat_key_phrases": ["Which of the following is equivalent to"]
+  },
+  {
+    "difficulty": "medium",
+    "framing": "polynomial_multiply",
+    "stem": "Which of the following is equivalent to (2x + 3)(x − 5)?\nA. 2x² − 7x − 15\nB. 2x² + 7x − 15\nC. 2x² − 7x + 15\nD. 2x² − 15",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Sign error: computed +10x − 3x = +7x instead of −10x + 3x = −7x",
+      "C": "Sign error on constant: used 3 × 5 = +15 instead of 3 × (−5) = −15",
+      "D": "Computed only the first and last products; omitted the middle cross terms entirely"
+    },
+    "solution_steps": [
+      "FOIL: 2x·x = 2x²; 2x·(−5) = −10x; 3·x = 3x; 3·(−5) = −15",
+      "Combine middle terms: −10x + 3x = −7x",
+      "Result: 2x² − 7x − 15"
+    ],
+    "why_this_difficulty": "Medium: FOIL with mixed signs; middle-term sign errors are the primary trap.",
+    "sat_key_phrases": ["Which of the following is equivalent to"]
+  },
+  {
+    "difficulty": "medium",
+    "framing": "polynomial_multiply",
+    "stem": "Which of the following is equivalent to (3x − 1)(3x + 1)?\nA. 9x² − 1\nB. 9x² + 1\nC. 9x² − 6x − 1\nD. 6x − 2",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Added the constant instead of subtracting: did not recognize the difference-of-squares pattern",
+      "C": "Treated as (3x − 1)² instead: (3x − 1)² = 9x² − 6x + 1, then also got the sign wrong",
+      "D": "Added the two binomials instead of multiplying: (3x − 1) + (3x + 1) = 6x − 2"
+    },
+    "solution_steps": [
+      "Recognize difference of squares: (a − b)(a + b) = a² − b²",
+      "Here a = 3x and b = 1",
+      "Result: (3x)² − 1² = 9x² − 1"
+    ],
+    "why_this_difficulty": "Medium: difference-of-squares pattern; students who FOIL mechanically may still get the right answer, but pattern recognition is the intended skill.",
+    "sat_key_phrases": ["Which of the following is equivalent to"]
+  },
+  {
+    "difficulty": "medium",
+    "framing": "polynomial_multiply",
+    "stem": "Which of the following is equivalent to (x + 2)(x² − 3x + 4)?\nA. x³ − x² − 2x + 8\nB. x³ − x² + 10x + 8\nC. x³ + x² − 2x + 8\nD. x³ − x² − 2x − 8",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Sign error: computed 2·(−3x) as +6x instead of −6x, giving −3x² + 2x² + 4x + 6x + 8 = −x² + 10x + 8",
+      "C": "Sign error on x² term: computed −3x² + 2x² = +x² instead of −x²",
+      "D": "Sign error on constant: computed 2·4 as −8 instead of +8"
+    },
+    "solution_steps": [
+      "Distribute x: x·x² − x·3x + x·4 = x³ − 3x² + 4x",
+      "Distribute 2: 2·x² − 2·3x + 2·4 = 2x² − 6x + 8",
+      "Combine: x³ + (−3 + 2)x² + (4 − 6)x + 8 = x³ − x² − 2x + 8"
+    ],
+    "why_this_difficulty": "Medium: linear × quadratic multiplication; tracking three groups of partial products raises error risk.",
+    "sat_key_phrases": ["Which of the following is equivalent to"]
+  },
+  {
+    "difficulty": "medium",
+    "framing": "add_subtract_polynomials",
+    "stem": "Which of the following is equivalent to (4x² + 3x − 7) + (2x² − 5x + 1)?\nA. 6x² − 2x − 6\nB. 6x² + 8x − 6\nC. 2x² − 2x − 6\nD. 6x² − 2x − 8",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Ignored the sign of −5x; added magnitudes: 3 + 5 = 8 instead of 3 + (−5) = −2",
+      "C": "Subtracted x² terms instead of adding: 4 − 2 = 2 instead of 4 + 2 = 6",
+      "D": "Constant error: computed −7 + 1 = −8 by treating it as −7 − 1"
+    },
+    "solution_steps": [
+      "Combine x² terms: 4x² + 2x² = 6x²",
+      "Combine x terms: 3x + (−5x) = −2x",
+      "Combine constants: −7 + 1 = −6",
+      "Result: 6x² − 2x − 6"
+    ],
+    "why_this_difficulty": "Medium: polynomial addition with a negative coefficient; sign tracking on the x term is the main challenge.",
+    "sat_key_phrases": ["Which of the following is equivalent to"]
+  },
+  {
+    "difficulty": "medium",
+    "framing": "add_subtract_polynomials",
+    "stem": "Which of the following is equivalent to (5x² − 3x + 8) − (2x² + x − 4)?\nA. 3x² − 4x + 12\nB. 3x² − 4x + 4\nC. 3x² − 2x + 12\nD. 7x² − 4x + 4",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Distributed the minus sign to x term but not to the constant −4; computed 8 − 4 = 4 instead of 8 − (−4) = 12",
+      "C": "Distributed minus to the constant but not the x term; computed −3x − x as −3x + x = −2x instead of −4x",
+      "D": "Added x² terms instead of subtracting: 5 + 2 = 7"
+    },
+    "solution_steps": [
+      "Distribute the minus sign to all terms of the second polynomial: −(2x² + x − 4) = −2x² − x + 4",
+      "Combine: (5x² − 2x²) + (−3x − x) + (8 + 4)",
+      "= 3x² − 4x + 12"
+    ],
+    "why_this_difficulty": "Medium: polynomial subtraction; distributing the minus sign to every term — especially to a negative constant — is the critical step.",
+    "sat_key_phrases": ["Which of the following is equivalent to"]
+  },
+  {
+    "difficulty": "medium",
+    "framing": "exponent_rules",
+    "stem": "Which of the following is equivalent to x⁵ · x³?\nA. x⁸\nB. x¹⁵\nC. 2x⁸\nD. x²",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Multiplied exponents instead of adding: 5 × 3 = 15",
+      "C": "Added a coefficient of 2; there is no basis for doubling the coefficient here",
+      "D": "Subtracted exponents instead of adding: 5 − 3 = 2"
+    },
+    "solution_steps": [
+      "Product rule: x^a · x^b = x^(a+b)",
+      "x⁵ · x³ = x^(5+3) = x⁸"
+    ],
+    "why_this_difficulty": "Medium: product rule applied directly; the main traps are multiplying or subtracting exponents.",
+    "sat_key_phrases": ["Which of the following is equivalent to"]
+  },
+  {
+    "difficulty": "medium",
+    "framing": "exponent_rules",
+    "stem": "Which of the following is equivalent to (x⁴)³?\nA. x¹²\nB. x⁷\nC. x⁶⁴\nD. 3x⁴",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Added exponents instead of multiplying: 4 + 3 = 7",
+      "C": "Computed 4³ = 64 as the new exponent instead of 4 × 3 = 12",
+      "D": "Moved the outer exponent to become a coefficient: wrote 3x⁴"
+    },
+    "solution_steps": [
+      "Power rule: (x^a)^b = x^(a·b)",
+      "(x⁴)³ = x^(4·3) = x¹²"
+    ],
+    "why_this_difficulty": "Medium: power-of-a-power rule; students often confuse multiply vs. add, or treat the outer exponent as a coefficient.",
+    "sat_key_phrases": ["Which of the following is equivalent to"]
+  },
+  {
+    "difficulty": "medium",
+    "framing": "exponent_rules",
+    "stem": "Which of the following is equivalent to 4x⁻²?\nA. 4/x²\nB. −4x²\nC. 4x²\nD. −4/x²",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Interpreted the negative exponent as a sign change on x: wrote −4x² instead of moving x² to the denominator",
+      "C": "Dropped the negative exponent: 4x² ignores the reciprocal",
+      "D": "Both moved x² to the denominator AND negated the coefficient: applied the negative twice"
+    },
+    "solution_steps": [
+      "Negative exponent rule: x^(−n) = 1/x^n",
+      "4x⁻² = 4 · (1/x²) = 4/x²"
+    ],
+    "why_this_difficulty": "Medium: negative exponent rule; students commonly confuse x^(−n) with −x^n.",
+    "sat_key_phrases": ["Which of the following is equivalent to"]
+  },
+  {
+    "difficulty": "medium",
+    "framing": "factor_polynomial_medium",
+    "stem": "Which of the following is equivalent to x³ + 3x² − 4x − 12?\nA. (x² − 4)(x + 3)\nB. (x² + 4)(x + 3)\nC. (x² − 4)(x − 3)\nD. (x + 3)(x + 4)",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Sign error when factoring −4(x + 3): treated as +4(x + 3), giving x² + 4 instead of x² − 4",
+      "C": "Sign error in the common binomial factor: used (x − 3) instead of (x + 3)",
+      "D": "Incorrect expansion: (x + 3)(x + 4) = x² + 7x + 12, which does not match the original cubic"
+    },
+    "solution_steps": [
+      "Group: (x³ + 3x²) + (−4x − 12)",
+      "Factor each group: x²(x + 3) − 4(x + 3)",
+      "Factor out common (x + 3): (x² − 4)(x + 3)"
+    ],
+    "why_this_difficulty": "Medium: factor by grouping on a cubic; recognizing the common binomial is the key insight.",
+    "sat_key_phrases": ["Which of the following is equivalent to"]
+  },
+  {
+    "difficulty": "medium",
+    "framing": "factor_polynomial_medium",
+    "stem": "Which of the following is equivalent to 4x²y + 8xy²?\nA. 4xy(x + 2y)\nB. 2xy(2x + 4y)\nC. 4x(xy + 2y²)\nD. 4xy(x + 2)",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Used GCF of 2xy instead of 4xy; the resulting terms 2x and 4y still share a common factor 2",
+      "C": "Factored out only x from the GCF, missing the y; GCF is 4xy not 4x",
+      "D": "Dropped the y in the second factor term: 4xy · 2 = 8xy, not 8xy²"
+    },
+    "solution_steps": [
+      "Find GCF of 4x²y and 8xy²: GCF = 4xy",
+      "Divide: 4x²y ÷ 4xy = x; 8xy² ÷ 4xy = 2y",
+      "Write: 4xy(x + 2y)"
+    ],
+    "why_this_difficulty": "Medium: multi-variable GCF; students must extract both variable parts of the GCF correctly.",
+    "sat_key_phrases": ["Which of the following is equivalent to"]
+  },
+  {
+    "difficulty": "hard",
+    "framing": "factor_to_reveal_property",
+    "stem": "Which of the following is equivalent to x² + 6x + 5?\nA. (x + 3)² − 4\nB. (x + 3)² + 5\nC. (x + 6)² − 31\nD. (x + 3)² − 9",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Wrote (x + 3)² and then appended the original constant +5, without subtracting the 9 that completing the square added",
+      "C": "Tried (x + 6)², but (x + 6)² = x² + 12x + 36 has the wrong coefficient for x; the half-coefficient is 3, not 6",
+      "D": "Completed the square correctly to (x + 3)², then subtracted only 9 without adding back the original constant 5; net adjustment should be −9 + 5 = −4"
+    },
+    "solution_steps": [
+      "Take half the x-coefficient: 6/2 = 3; square it: 3² = 9",
+      "Add and subtract 9: x² + 6x + 9 − 9 + 5",
+      "Rewrite: (x + 3)² − 4"
+    ],
+    "why_this_difficulty": "Hard: completing the square to reveal vertex form; the two-step constant adjustment (−9 + original c) trips up most students.",
+    "sat_key_phrases": ["Which of the following is equivalent to", "can be written in the form"]
+  },
+  {
+    "difficulty": "hard",
+    "framing": "factor_to_reveal_property",
+    "stem": "Which of the following is equivalent to x² − 8x + 7?\nA. (x − 4)² − 9\nB. (x − 4)² + 7\nC. (x − 4)² − 16\nD. (x − 8)² − 57",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Wrote (x − 4)² and appended the original +7 without adjusting; did not subtract 16 to compensate for the square",
+      "C": "Subtracted 16 (the square completion value) as the net constant, ignoring the original +7; should be −16 + 7 = −9",
+      "D": "Used (x − 8)² instead of (x − 4)²; (x − 8)² = x² − 16x + 64 has the wrong x-coefficient"
+    },
+    "solution_steps": [
+      "Half the x-coefficient: −8/2 = −4; square it: (−4)² = 16",
+      "x² − 8x + 7 = x² − 8x + 16 − 16 + 7 = (x − 4)² − 9"
+    ],
+    "why_this_difficulty": "Hard: completing the square with a negative x-coefficient; sign errors inside the square and in the net constant are both traps.",
+    "sat_key_phrases": ["Which of the following is equivalent to", "can be written in the form"]
+  },
+  {
+    "difficulty": "hard",
+    "framing": "rational_expression_add",
+    "stem": "Which of the following is equivalent to 1/(x + 2) + 3/(x − 1)?\nA. (4x + 5)/[(x + 2)(x − 1)]\nB. 4/[(x + 2)(x − 1)]\nC. (4x + 5)/(2x + 1)\nD. (4x + 7)/[(x + 2)(x − 1)]",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Added numerators directly without adjusting for the LCD: 1 + 3 = 4",
+      "C": "Added denominators instead of multiplying to find the LCD: (x + 2) + (x − 1) = 2x + 1",
+      "D": "Arithmetic error when expanding 3(x + 2): computed 3x + 8 instead of 3x + 6, giving (x − 1) + (3x + 8) = 4x + 7"
+    },
+    "solution_steps": [
+      "LCD = (x + 2)(x − 1)",
+      "Rewrite: 1·(x − 1)/LCD + 3·(x + 2)/LCD",
+      "Numerator: (x − 1) + 3(x + 2) = x − 1 + 3x + 6 = 4x + 5",
+      "Result: (4x + 5)/[(x + 2)(x − 1)]"
+    ],
+    "why_this_difficulty": "Hard: adding rational expressions with linear denominators; students must expand and combine the adjusted numerators correctly.",
+    "sat_key_phrases": ["Which of the following is equivalent to"]
+  },
+  {
+    "difficulty": "hard",
+    "framing": "rational_expression_add",
+    "stem": "Which of the following is equivalent to 3/(x + 4) + 2/(x − 2)?\nA. (5x + 2)/[(x + 4)(x − 2)]\nB. 5/[(x + 4)(x − 2)]\nC. (5x + 2)/(2x + 2)\nD. (5x − 14)/[(x + 4)(x − 2)]",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Added numerators without adjusting for LCD: 3 + 2 = 5",
+      "C": "Added the denominators instead of multiplying: (x + 4) + (x − 2) = 2x + 2",
+      "D": "Sign error: used 2(x − 4) = 2x − 8 instead of 2(x + 4) = 2x + 8 when cross-multiplying the second term, giving 3x − 6 + 2x − 8 = 5x − 14"
+    },
+    "solution_steps": [
+      "LCD = (x + 4)(x − 2)",
+      "Numerator: 3(x − 2) + 2(x + 4) = 3x − 6 + 2x + 8 = 5x + 2",
+      "Result: (5x + 2)/[(x + 4)(x − 2)]"
+    ],
+    "why_this_difficulty": "Hard: adding rational expressions; expanding each numerator using the other denominator is the key multi-step process.",
+    "sat_key_phrases": ["Which of the following is equivalent to"]
+  },
+  {
+    "difficulty": "hard",
+    "framing": "polynomial_factor_with_constant",
+    "stem": "If (x − 2) is a factor of x² + kx − 10, which of the following is the value of k?\nA. 3\nB. −3\nC. 5\nD. −5",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Found the factor pairing (x + 2)(x − 5) instead: k = 2 + (−5) = −3, which gives x² − 3x − 10, not the original",
+      "C": "Read off the other root value (+5) directly instead of computing k = sum of roots: gave 5 instead of 5 − 2 = 3",
+      "D": "Used the other root with a sign error: −5 instead of +5 as the second root, then k = 2 + (−7)..."
+    },
+    "solution_steps": [
+      "Since (x − 2) is a factor, x = 2 is a root: substitute 4 + 2k − 10 = 0",
+      "Solve: 2k = 6, so k = 3",
+      "Verify: x² + 3x − 10 = (x − 2)(x + 5) ✓"
+    ],
+    "why_this_difficulty": "Hard: working backwards from a known factor to find an unknown coefficient; requires substituting the root and solving.",
+    "sat_key_phrases": ["is a factor of", "what is the value of k", "if (x − a) is a factor"]
+  },
+  {
+    "difficulty": "hard",
+    "framing": "polynomial_factor_with_constant",
+    "stem": "Which of the following is a factor of x² − 2x − 15?\nA. x + 3\nB. x − 3\nC. x + 5\nD. x − 15",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "(x − 3)(x + 5) = x² + 2x − 15; correct constant but wrong sign on the middle term",
+      "C": "(x + 5) would require a root at x = −5; checking: (−5)² − 2(−5) − 15 = 25 + 10 − 15 = 20 ≠ 0",
+      "D": "The constant −15 is not a factor in the polynomial-factor sense; a factor has the form (x − r)"
+    },
+    "solution_steps": [
+      "Factor: find two integers with product −15 and sum −2",
+      "Try −5 and +3: (−5)(3) = −15 ✓, (−5) + 3 = −2 ✓",
+      "x² − 2x − 15 = (x − 5)(x + 3)",
+      "The factor (x + 3) appears in the choices"
+    ],
+    "why_this_difficulty": "Hard: recognizing factors from sign patterns; distractors use the same numbers with wrong signs.",
+    "sat_key_phrases": ["which of the following is a factor", "is a factor of the polynomial"]
+  },
+  {
+    "difficulty": "hard",
+    "framing": "polynomial_coefficient_find",
+    "stem": "The expression (2x + 1)(x² − 3x + 4) is expanded and written in standard form. What is the coefficient of x²?\nA. −5\nB. −6\nC. 1\nD. 5",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Computed only the product 2x · (−3x) = −6x² and omitted 1 · x² = x²; missing the second x² contribution",
+      "C": "Computed only 1 · x² = x² and omitted 2x · (−3x) = −6x²; missing the first x² contribution",
+      "D": "Found the magnitude 5 but dropped the negative sign"
+    },
+    "solution_steps": [
+      "Identify x² contributions: (2x)(−3x) = −6x²; (1)(x²) = +x²",
+      "Sum: −6x² + x² = −5x²",
+      "Coefficient of x² is −5"
+    ],
+    "why_this_difficulty": "Hard: finding a specific coefficient without fully expanding; requires tracking all partial products that produce x².",
+    "sat_key_phrases": ["what is the coefficient of", "written in standard form", "expanded and written as"]
+  },
+  {
+    "difficulty": "hard",
+    "framing": "polynomial_coefficient_find",
+    "stem": "The expression (x + p)(x + q) is equivalent to x² + 11x + c, where p and q are positive integers and p − q = 3. What is c?",
+    "type": "spr",
+    "correct": "28",
+    "distractor_rationales": null,
+    "solution_steps": [
+      "Since (x + p)(x + q) = x² + (p + q)x + pq, we have p + q = 11 and c = pq",
+      "Also p − q = 3",
+      "Add the two equations: 2p = 14, so p = 7; then q = 11 − 7 = 4",
+      "c = pq = 7 · 4 = 28"
+    ],
+    "why_this_difficulty": "Hard: two constraints on p and q must both be used; a common error is ignoring the p − q = 3 condition and guessing any pair that sums to 11.",
+    "sat_key_phrases": ["is equivalent to", "what is the value of c", "written in the form"]
+  },
+  {
+    "difficulty": "hard",
+    "framing": "exponent_equation_solve",
+    "stem": "Which value of x satisfies x^(2/3) = 9?\nA. 27\nB. 6\nC. 3\nD. 729",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Multiplied instead of applying the reciprocal power: 9 × (2/3) = 6",
+      "C": "Took only the square root of 9: √9 = 3, without cubing the result",
+      "D": "Raised 9 to the power 3 instead of 3/2: 9³ = 729"
+    },
+    "solution_steps": [
+      "Raise both sides to the reciprocal power 3/2: (x^(2/3))^(3/2) = 9^(3/2)",
+      "Left side: x¹ = x",
+      "Right side: 9^(3/2) = (9^(1/2))³ = 3³ = 27",
+      "x = 27"
+    ],
+    "why_this_difficulty": "Hard: solving an equation with a rational exponent by applying the reciprocal power; two-step process (square root then cube) is error-prone.",
+    "sat_key_phrases": ["which value of x satisfies", "what is the value of x"]
+  },
+  {
+    "difficulty": "hard",
+    "framing": "exponent_equation_solve",
+    "stem": "If 3^(2x) = 81, what is the value of x?\nA. 2\nB. 4\nC. 8\nD. 1/2",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Found that 3⁴ = 81 and set x = 4, forgetting to divide by the coefficient 2 in the exponent 2x",
+      "C": "Multiplied 4 × 2 = 8 instead of dividing: 4 ÷ 2 = 2",
+      "D": "Inverted the coefficient: set x = 1/2 by treating '2x = 4' as 'x = 1/2' via some reciprocal error"
+    },
+    "solution_steps": [
+      "Express 81 as a power of 3: 81 = 3⁴",
+      "Equation becomes: 3^(2x) = 3⁴",
+      "Set exponents equal: 2x = 4",
+      "Solve: x = 2"
+    ],
+    "why_this_difficulty": "Hard: solving exponential equation by matching bases; students who find the correct base exponent often forget to divide by the coefficient of x.",
+    "sat_key_phrases": ["what is the value of x", "if a^f(x) = b"]
+  }
+]

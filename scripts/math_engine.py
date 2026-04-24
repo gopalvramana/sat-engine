@@ -50,6 +50,8 @@ from math_skills.special_tri import gen_special_triangles
 from math_skills.trigonometry import gen_trigonometry
 from math_skills.quadratic_fn import gen_quadratic_functions
 from math_skills.scatterplot  import gen_scatterplot_analysis
+from math_skills.equiv_expr          import gen_equivalent_expressions, exp_variants
+from math_skills.nonlinear_equations import gen_nonlinear_equations, nle_variants
 
 
 # ── Dispatch ──────────────────────────────────────────────────────────────────
@@ -102,6 +104,8 @@ def generate_one(skill: str, difficulty: int, rng_obj: random.Random,
         "quadratic_functions":        gen_quadratic_functions,
         "scatterplot_analysis":       lambda **k: gen_scatterplot_analysis(
                                           **k, exclude_scenarios=exclude_scenarios),
+        "equivalent_expressions":     gen_equivalent_expressions,
+        "nonlinear_equations":        gen_nonlinear_equations,
     }
     if skill not in dispatch:
         raise ValueError(f"Unknown skill: {skill}")
@@ -149,7 +153,8 @@ def main():
     if args.list_variants:
         _VARIANTS_SUPPORTED = {"linear_eq_one_var", "linear_eq_two_var",
                                "linear_inequalities", "systems_linear_eq",
-                               "linear_functions"}
+                               "linear_functions", "equivalent_expressions",
+                               "nonlinear_equations"}
         skill = args.skill
         if skill not in _VARIANTS_SUPPORTED:
             print(json.dumps({"error": f"--list-variants is only supported for {sorted(_VARIANTS_SUPPORTED)}"}),
@@ -165,13 +170,18 @@ def main():
             data = sle_variants(difficulty, template=args.template)
         elif skill == "linear_functions":
             data = lfn_variants(difficulty, template=args.template)
+        elif skill == "equivalent_expressions":
+            data = exp_variants(difficulty, template=args.template)
+        elif skill == "nonlinear_equations":
+            data = nle_variants(difficulty, template=args.template)
         print(json.dumps(data))
         sys.exit(0)
 
     # Warn if --template is used with a skill that doesn't support it
     _TEMPLATE_SUPPORTED = {"linear_eq_one_var", "linear_eq_two_var",
                             "linear_inequalities", "systems_linear_eq",
-                            "linear_functions"}
+                            "linear_functions", "equivalent_expressions",
+                            "nonlinear_equations"}
     if args.template is not None and args.skill not in _TEMPLATE_SUPPORTED and args.skill != "all":
         print(json.dumps({"warning": f"--template is only supported for {sorted(_TEMPLATE_SUPPORTED)}; "
                                      f"ignoring for skill '{args.skill}'"}), file=sys.stderr)

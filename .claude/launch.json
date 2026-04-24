@@ -1,1 +1,11 @@
-{"version":"0.0.1","configurations":[{"name":"sat-engine","runtimeExecutable":"java","runtimeArgs":["-jar","target/sat-engine.jar","--spring.profiles.active=local"],"cwd":"/Users/ramana/SatEngine/sat-engine","port":8080},{"name":"frontend-dev","runtimeExecutable":"npm","runtimeArgs":["run","dev"],"cwd":"/Users/ramana/SatEngine/sat-engine/frontend","port":5173}]}
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "sat-engine",
+      "runtimeExecutable": "java",
+      "runtimeArgs": ["-jar", "target/sat-engine.jar", "--server.port=8080"],
+      "port": 8080
+    }
+  ]
+}

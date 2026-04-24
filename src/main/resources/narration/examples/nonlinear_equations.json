@@ -1,0 +1,662 @@
+[
+  {
+    "difficulty": "easy",
+    "stem": "If x² = 81, what is the positive value of x?\nA. 9\nB. 18\nC. 40.5\nD. 81",
+    "type": "perfect_square_solve — isolate variable from x²=k, state positive root (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["positive value of x", "satisfies the equation"],
+    "why_this_difficulty": "Easy — one step: take the positive square root of 81",
+    "distractor_rationales": {
+      "B": "Student doubled 9 instead of taking the square root",
+      "C": "Student divided 81 by 2 instead of taking the square root",
+      "D": "Student reported the original constant rather than its square root"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "If 4x² = 100, what is the positive value of x?\nA. 5\nB. 10\nC. 25\nD. 50",
+    "type": "perfect_square_solve — divide then take positive square root (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["positive value of x"],
+    "why_this_difficulty": "Easy — two steps: x² = 25, then x = 5",
+    "distractor_rationales": {
+      "B": "Student took √100 = 10 without dividing by 4 first",
+      "C": "Student computed 100/4 = 25 but stopped before taking the square root",
+      "D": "Student divided 100 by 2 instead of 4"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "If x² = 49, what is the positive value of x?",
+    "type": "perfect_square_solve — state positive root (SPR)",
+    "correct": "7",
+    "sat_key_phrases": ["positive value of x"],
+    "why_this_difficulty": "Easy — one step: x = √49 = 7",
+    "distractor_rationales": null
+  },
+  {
+    "difficulty": "easy",
+    "stem": "(x − 9)(x + 4) = 0\nWhat is the positive solution to the equation above?\nA. −9\nB. −4\nC. 4\nD. 9",
+    "type": "factored_form_solve/two_factors — zero product property, identify positive root (MCQ)",
+    "correct": "D",
+    "sat_key_phrases": ["positive solution", "zero product property"],
+    "why_this_difficulty": "Easy — two-factor product set to zero; apply zero product property and pick the positive root",
+    "distractor_rationales": {
+      "A": "Student negated the correct root of the first factor",
+      "B": "Student selected the negative root from the second factor",
+      "C": "Student selected the absolute value of the negative root rather than the root of the first factor"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "(2x − 8)(x + 5) = 0\nWhat is the positive solution to the equation above?\nA. −5\nB. 2\nC. 4\nD. 8",
+    "type": "factored_form_solve/two_factors — zero product property with leading coefficient (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["positive solution"],
+    "why_this_difficulty": "Easy — apply zero product, solve 2x − 8 = 0 → x = 4",
+    "distractor_rationales": {
+      "A": "Student selected the negative root from the second factor",
+      "B": "Student found the coefficient of x (2) rather than solving 2x − 8 = 0",
+      "D": "Student reported the constant 8 from the first factor instead of solving for x"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "x(x − 5)(x + 3) = 0\nWhich of the following is the greatest solution to the equation above?\nA. −3\nB. 0\nC. 3\nD. 5",
+    "type": "factored_form_solve/three_factors — zero product with three factors, find greatest root (MCQ)",
+    "correct": "D",
+    "sat_key_phrases": ["greatest solution", "zero product property"],
+    "why_this_difficulty": "Easy — three-factor product; apply zero product to each and pick greatest",
+    "distractor_rationales": {
+      "A": "Student selected the negative root x = −3",
+      "B": "Student selected x = 0 from the first factor rather than the greatest root",
+      "C": "Student negated the root of the third factor"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "|x − 5| = 8\nWhat is the positive value of x that satisfies the equation above?\nA. 3\nB. 5\nC. 8\nD. 13",
+    "type": "absolute_value_easy/find_positive — absolute value equation, identify larger (positive) root (MCQ)",
+    "correct": "D",
+    "sat_key_phrases": ["positive value of x", "satisfies the equation"],
+    "why_this_difficulty": "Easy — split into x − 5 = 8 and x − 5 = −8; the positive solution is 13",
+    "distractor_rationales": {
+      "A": "Student computed 8 − 5 = 3 instead of solving x − 5 = −8 for the negative root",
+      "B": "Student reported the constant inside the absolute value",
+      "C": "Student reported the right-hand side value"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "|x + 4| = 9\nWhat is the sum of all values of x that satisfy the equation above?\nA. −8\nB. −4\nC. 5\nD. 13",
+    "type": "absolute_value_easy/sum_of_solutions — absolute value equation, find sum of both roots (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["sum of all values of x", "satisfies the equation"],
+    "why_this_difficulty": "Easy — two solutions: x = 5 and x = −13; their sum is −8",
+    "distractor_rationales": {
+      "B": "Student reported the constant inside the absolute value rather than the sum",
+      "C": "Student reported only the positive solution",
+      "D": "Student added the right-hand side and the constant (9 + 4 = 13) instead of finding both roots"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "|2x − 6| = 10\nWhat is the positive value of x that satisfies the equation above?",
+    "type": "absolute_value_easy/find_positive — absolute value with coefficient, state positive root (SPR)",
+    "correct": "8",
+    "sat_key_phrases": ["positive value of x"],
+    "why_this_difficulty": "Easy — 2x − 6 = 10 → x = 8; 2x − 6 = −10 → x = −2; positive value is 8",
+    "distractor_rationales": null
+  },
+  {
+    "difficulty": "easy",
+    "stem": "The graphs of y = x² − 2x and y = x are shown in the xy-plane. They intersect at the origin and at one other point. What is the x-coordinate of the other intersection point?\nA. −1\nB. 0\nC. 2\nD. 3",
+    "type": "system_from_graph/read_coordinates — read non-origin intersection from graph (MCQ)",
+    "correct": "D",
+    "sat_key_phrases": ["x-coordinate", "intersection point", "graphs of ... are shown"],
+    "why_this_difficulty": "Easy — set equal: x² − 2x = x → x² − 3x = 0 → x(x − 3) = 0 → x = 3",
+    "distractor_rationales": {
+      "A": "Student solved with a sign error and got x = −1",
+      "B": "Student reported the known intersection at the origin",
+      "C": "Student set x² − 2x = 0 (omitted the y = x line) and found only x = 2"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "The graphs of y = x² + 2 and y = −1 are shown in the xy-plane. How many points of intersection do these two graphs have?\nA. 0\nB. 1\nC. 2\nD. 4",
+    "type": "system_from_graph/count_intersections — count intersections of parabola and horizontal line (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["how many points of intersection", "graphs of ... are shown"],
+    "why_this_difficulty": "Easy — y = x² + 2 ≥ 2 for all x; the line y = −1 is always below the parabola",
+    "distractor_rationales": {
+      "B": "Student confused with a tangency case",
+      "C": "Student assumed a parabola and horizontal line always meet at two points",
+      "D": "Student used the degree of the equation rather than analyzing the graph"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "If 5p − 3q = 30, which of the following expresses p in terms of q?\nA. p = 6 − 3q/5\nB. p = 6 + 3q/5\nC. p = 30 − 3q\nD. p = 30 + 3q/5",
+    "type": "literal_equation/two_var_linear — isolate one variable, two-variable linear equation (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["expresses p in terms of q", "which of the following"],
+    "why_this_difficulty": "Easy — 5p = 30 + 3q → p = 6 + 3q/5",
+    "distractor_rationales": {
+      "A": "Student subtracted 3q instead of adding: 5p = 30 − 3q",
+      "C": "Student forgot to divide the entire right side by 5",
+      "D": "Student added instead of dividing, keeping the wrong form"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "If 2x + 7y − z = 14, which of the following expresses x in terms of y and z?\nA. x = 7 − 7y + z\nB. x = 7 + 7y − z\nC. x = (14 − 7y + z)/2\nD. x = (14 + 7y − z)/2",
+    "type": "literal_equation/three_var_linear — isolate one variable, three-variable linear equation (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["expresses x in terms of", "which of the following"],
+    "why_this_difficulty": "Easy — 2x = 14 − 7y + z → x = (14 − 7y + z)/2",
+    "distractor_rationales": {
+      "A": "Student forgot to divide by 2 and made a sign error on z",
+      "B": "Student used the wrong sign on 7y",
+      "D": "Student added 7y instead of subtracting when isolating x"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "If 6k − 2m = 18, what is the value of k when m = 3?",
+    "type": "literal_equation/two_var_linear — substitute to evaluate one variable (SPR)",
+    "correct": "4",
+    "sat_key_phrases": ["value of k when"],
+    "why_this_difficulty": "Easy — 6k − 6 = 18 → 6k = 24 → k = 4",
+    "distractor_rationales": null
+  },
+  {
+    "difficulty": "medium",
+    "stem": "What is the largest value of x that satisfies x² − 7x + 10 = 0?\nA. 2\nB. 3.5\nC. 5\nD. 7",
+    "type": "solve_by_factoring/find_root — factor and apply zero product, identify largest root (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["largest value of x", "satisfies"],
+    "why_this_difficulty": "Medium — factor: (x − 2)(x − 5) = 0; roots are 2 and 5",
+    "distractor_rationales": {
+      "A": "Student identified the smaller root x = 2",
+      "B": "Student found the axis of symmetry x = 7/2 = 3.5 instead of factoring",
+      "D": "Student reported the coefficient of x (7) rather than solving"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "What is the sum of all values of x that satisfy x² − 9x + 14 = 0?\nA. 2\nB. 7\nC. 9\nD. 14",
+    "type": "solve_by_factoring/find_sum — factor and sum roots (or apply Vieta's formula) (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["sum of all values of x", "satisfies"],
+    "why_this_difficulty": "Medium — factor: (x − 2)(x − 7) = 0; sum = 2 + 7 = 9 (or by Vieta: −(−9)/1 = 9)",
+    "distractor_rationales": {
+      "A": "Student reported only the smaller root x = 2",
+      "B": "Student reported only the larger root x = 7",
+      "D": "Student reported the constant term rather than the sum of roots"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "What is the largest solution to 3x² − 10x + 3 = 0?\nA. 1/3\nB. 1\nC. 3\nD. 10/3",
+    "type": "solve_by_factoring/find_root — factor non-monic quadratic, identify larger root (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["largest solution"],
+    "why_this_difficulty": "Medium — factor: (3x − 1)(x − 3) = 0; roots are 1/3 and 3",
+    "distractor_rationales": {
+      "A": "Student identified the smaller root x = 1/3",
+      "B": "Student made an arithmetic error during factoring",
+      "D": "Student used Vieta's sum formula (10/3) instead of finding individual roots"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "A rectangle has a length that is 4 more than its width. The area of the rectangle is 60 square centimeters. What is the width of the rectangle, in centimeters?\nA. 4\nB. 6\nC. 10\nD. 15",
+    "type": "solve_from_context_area/rectangle_area — set up quadratic from area, solve for positive dimension (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["area", "length", "width", "square centimeters"],
+    "why_this_difficulty": "Medium — w(w + 4) = 60 → w² + 4w − 60 = 0 → (w + 10)(w − 6) = 0 → w = 6",
+    "distractor_rationales": {
+      "A": "Student confused the additive constant (4 more) with the width",
+      "C": "Student reported the length (w + 4 = 10) rather than the width",
+      "D": "Student divided the area by 4 (60/4 = 15) without setting up the quadratic"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "A rectangular garden has a perimeter of 36 meters and an area of 80 square meters. What is the shorter side of the garden, in meters?\nA. 5\nB. 8\nC. 10\nD. 16",
+    "type": "solve_from_context_area/rectangle_area — system from perimeter and area conditions (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["perimeter", "area", "shorter side"],
+    "why_this_difficulty": "Medium — l + w = 18, lw = 80 → w² − 18w + 80 = 0 → (w − 8)(w − 10) = 0 → shorter side = 8",
+    "distractor_rationales": {
+      "A": "Student used an incorrect factoring of the resulting quadratic",
+      "C": "Student identified the longer side rather than the shorter side",
+      "D": "Student divided the perimeter by 2 (36/2 = 18) and reported that rather than solving"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "If 18/(3x − 6) = 3, what is the value of x?\nA. 2\nB. 4\nC. 6\nD. 8",
+    "type": "rational_equation_solve/simple_rational — cross-multiply and solve linear equation (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["value of x"],
+    "why_this_difficulty": "Medium — 18 = 3(3x − 6) → 18 = 9x − 18 → 9x = 36 → x = 4",
+    "distractor_rationales": {
+      "A": "Student solved 3x − 6 = 0 (set denominator to zero) instead of cross-multiplying",
+      "C": "Student divided 18 by 3 to get 6 without accounting for the denominator",
+      "D": "Student made an arithmetic error when isolating x"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "If (x + 5)/(x − 1) = 3, what is the value of x?\nA. 2\nB. 3\nC. 4\nD. 7",
+    "type": "rational_equation_solve/simple_rational — rational equation with binomials (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["value of x"],
+    "why_this_difficulty": "Medium — x + 5 = 3(x − 1) → x + 5 = 3x − 3 → 8 = 2x → x = 4",
+    "distractor_rationales": {
+      "A": "Student set numerator equal to denominator: x + 5 = x − 1 has no solution; arithmetic error gave 2",
+      "B": "Student equated the right-hand side to the denominator: x − 1 = 3 → x = 4... see C",
+      "D": "Student added 5 and the right-hand side (5 + 3 − 1 = 7) without cross-multiplying"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "What is the larger solution to x + 6/x = 5?\nA. 2\nB. 3\nC. 5\nD. 6",
+    "type": "rational_equation_solve/rational_with_quadratic — multiply through to form quadratic, find larger root (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["larger solution"],
+    "why_this_difficulty": "Medium — multiply by x: x² + 6 = 5x → x² − 5x + 6 = 0 → (x − 2)(x − 3) = 0; larger root = 3",
+    "distractor_rationales": {
+      "A": "Student identified the smaller root x = 2",
+      "C": "Student reported the coefficient on the right side rather than solving",
+      "D": "Student reported the numerator constant 6 rather than solving"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "The formula for the kinetic energy of an object is E = (1/2)mv², where m is the mass and v is the speed. Which of the following expresses v in terms of E and m?\nA. v = √(E/m)\nB. v = √(2E/m)\nC. v = 2E/m\nD. v = E/(2m)",
+    "type": "literal_equation_rational/square_root_form — isolate variable appearing under a square in a physics formula (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["expresses v in terms of", "which of the following"],
+    "why_this_difficulty": "Medium — 2E = mv² → v² = 2E/m → v = √(2E/m)",
+    "distractor_rationales": {
+      "A": "Student forgot to multiply by 2 before dividing: used E/m instead of 2E/m",
+      "C": "Student isolated v² = 2E/m but forgot to take the square root",
+      "D": "Student divided E by 2m without solving for v²"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "The pressure P, volume V, and temperature T of a gas are related by PV = nRT, where n is the amount of gas and R is a constant. Which of the following expresses T in terms of the other variables?\nA. T = PVnR\nB. T = PV/(nR)\nC. T = nR/(PV)\nD. T = PV − nR",
+    "type": "literal_equation_rational/rational_form — isolate variable from product equation (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["expresses T in terms of", "which of the following"],
+    "why_this_difficulty": "Medium — T = PV/(nR)",
+    "distractor_rationales": {
+      "A": "Student multiplied all variables together instead of dividing by nR",
+      "C": "Student inverted the fraction, dividing nR by PV",
+      "D": "Student subtracted nR instead of dividing"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "|3x − 9| = 15\nWhat is the sum of all values of x that satisfy the equation above?\nA. −2\nB. 6\nC. 8\nD. 15",
+    "type": "absolute_value_medium/find_sum — absolute value with coefficient, sum both roots (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["sum of all values of x", "satisfies"],
+    "why_this_difficulty": "Medium — 3x − 9 = 15 → x = 8; 3x − 9 = −15 → x = −2; sum = 8 + (−2) = 6",
+    "distractor_rationales": {
+      "A": "Student reported only the negative solution",
+      "C": "Student reported only the positive solution",
+      "D": "Student reported the right-hand side value without solving"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "|4x + 8| = 20\nWhat is the positive value of x that satisfies the equation above?\nA. −7\nB. 3\nC. 7\nD. 12",
+    "type": "absolute_value_medium/find_positive — absolute value with binomial, identify positive root (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["positive value of x"],
+    "why_this_difficulty": "Medium — 4x + 8 = 20 → x = 3; 4x + 8 = −20 → x = −7; positive value is 3",
+    "distractor_rationales": {
+      "A": "Student identified the negative solution x = −7",
+      "C": "Student took the absolute value of the negative solution",
+      "D": "Student added the right side to 8 and forgot to divide: (20 + 8)/... arithmetic error"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "How many distinct real solutions does x² − 4x + 7 = 0 have?\nA. 0\nB. 1\nC. 2\nD. 4",
+    "type": "count_solutions_discriminant/count_roots — compute discriminant, determine count (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["how many", "distinct real solutions"],
+    "why_this_difficulty": "Medium — discriminant: b² − 4ac = 16 − 28 = −12 < 0 → no real solutions",
+    "distractor_rationales": {
+      "B": "Student confused negative discriminant with exactly one solution",
+      "C": "Student assumed every quadratic has two distinct real solutions",
+      "D": "Student cited the degree of the polynomial as the number of solutions"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "How many distinct real solutions does x² − 6x + 9 = 0 have?\nA. 0\nB. 1\nC. 2\nD. 3",
+    "type": "count_solutions_discriminant/count_roots — discriminant equals zero, identify one repeated solution (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["how many", "distinct real solutions"],
+    "why_this_difficulty": "Medium — discriminant: 36 − 36 = 0 → exactly one repeated solution (x = 3)",
+    "distractor_rationales": {
+      "A": "Student concluded the equation has no real solutions since the discriminant is zero",
+      "C": "Student applied the standard rule 'quadratic has two solutions' without checking the discriminant",
+      "D": "Student confused the degree of the polynomial with the number of solutions"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "For what positive value of k does 2x² − 8x + k = 0 have exactly one real solution?\nA. 2\nB. 4\nC. 8\nD. 16",
+    "type": "count_solutions_discriminant/find_k — set discriminant to zero, solve for parameter (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["for what", "value of k", "exactly one real solution"],
+    "why_this_difficulty": "Medium — discriminant = 0: 64 − 8k = 0 → k = 8",
+    "distractor_rationales": {
+      "A": "Student divided the coefficient of x² (2) by something instead of using discriminant = 0",
+      "B": "Student found half of 8 rather than applying the discriminant condition",
+      "D": "Student computed b² = 64 and stopped, reporting 64 then halving to 16 without dividing by 4ac"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "In the xy-plane, the graphs of y = x² − 4 and y = 2x − 1 intersect at two points. Which of the following ordered pairs is a solution to the system?\nA. (−3, −7)\nB. (−1, −3)\nC. (1, 1)\nD. (4, 7)",
+    "type": "system_linear_quadratic_solve/find_coordinates — substitute linear into quadratic, identify intersection (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["ordered pair", "solution to the system", "intersect"],
+    "why_this_difficulty": "Medium — set equal: x² − 4 = 2x − 1 → x² − 2x − 3 = 0 → (x − 3)(x + 1) = 0; at x = −1: y = −3",
+    "distractor_rationales": {
+      "A": "Student solved with a sign error and used x = −3",
+      "C": "Student substituted x = 1 into only the linear equation without checking the quadratic",
+      "D": "Student substituted x = 4 which is not a solution to the combined equation"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "The graphs of y = x² − 3x + 2 and y = x − 1 intersect at two points. What is the greater y-value at these two intersection points?\nA. 0\nB. 1\nC. 2\nD. 3",
+    "type": "system_linear_quadratic_solve/find_y — substitute, solve for both x, evaluate y at larger x (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["greater y-value", "intersection points"],
+    "why_this_difficulty": "Medium — set equal: x² − 3x + 2 = x − 1 → x² − 4x + 3 = 0 → (x−1)(x−3) = 0; at x = 3: y = 2",
+    "distractor_rationales": {
+      "A": "Student evaluated y at x = 1 using the linear equation: 1 − 1 = 0",
+      "B": "Student reported the x-value x = 1 rather than the y-value",
+      "D": "Student reported the x-value x = 3 rather than the corresponding y-value"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "The system of equations y = x² + kx + 5 and y = 1 has exactly one solution. What is the positive value of k?\nA. 2\nB. 4\nC. 6\nD. 8",
+    "type": "system_one_intersection/find_k_in_quadratic — discriminant = 0 condition to find parameter (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["exactly one solution", "positive value of k"],
+    "why_this_difficulty": "Hard — set equal: x² + kx + 4 = 0; discriminant = 0: k² − 16 = 0 → k = ±4; positive value is 4",
+    "distractor_rationales": {
+      "A": "Student set k² = 4 (used 4 as the discriminant rather than 4ac)",
+      "C": "Student solved k² = 36 from an arithmetic error in 4ac",
+      "D": "Student doubled the correct answer"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "The graphs of y = x² + 2 and y = 6x − 7 intersect at exactly one point. What is the x-coordinate of that point?\nA. 1\nB. 3\nC. 6\nD. 9",
+    "type": "system_one_intersection/find_x — set up quadratic from tangent condition, solve perfect square (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["exactly one point", "x-coordinate"],
+    "why_this_difficulty": "Hard — set equal: x² − 6x + 9 = 0 → (x − 3)² = 0 → x = 3",
+    "distractor_rationales": {
+      "A": "Student found x = 1 from an error in rearranging the equation",
+      "C": "Student reported the coefficient of x from the linear equation",
+      "D": "Student reported the constant c = 9 from the perfect-square form"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "The two solutions of x² + bx + 18 = 0 differ by 3. What is the value of |b|?\nA. 3\nB. 6\nC. 9\nD. 18",
+    "type": "vieta_sum_of_roots/sum_of_roots — combine Vieta's formulas with a given constraint to find coefficient (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["two solutions", "differ by", "value of"],
+    "why_this_difficulty": "Hard — Vieta: r + s = −b and rs = 18; given r − s = 3; (r − s)² = (r + s)² − 4rs → 9 = b² − 72 → b² = 81 → |b| = 9",
+    "distractor_rationales": {
+      "A": "Student reported the given difference of 3 rather than computing |b|",
+      "B": "Student found (r + s) = ±6 from an incorrect application of the constraint",
+      "D": "Student reported the product of roots (18) rather than |b|"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "The solutions of 5x² − 13x + 6 = 0 have a sum of p/q in lowest terms. What is p + q?\nA. 8\nB. 11\nC. 13\nD. 18",
+    "type": "vieta_sum_of_roots/sum_of_roots — apply Vieta's formula to non-monic quadratic (MCQ)",
+    "correct": "D",
+    "sat_key_phrases": ["sum", "p/q in lowest terms", "value of p + q"],
+    "why_this_difficulty": "Hard — Vieta: sum = 13/5; in lowest terms p = 13, q = 5; p + q = 18",
+    "distractor_rationales": {
+      "A": "Student subtracted the coefficients (13 − 5 = 8) instead of applying Vieta's formula",
+      "B": "Student reported only p = 11 from an arithmetic error in the sum",
+      "C": "Student reported b = 13 directly from the coefficient without dividing by a = 5"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "The solutions of 4x² − 12x + 9 = 0 are r and s. What is the value of rs?\nA. 3/2\nB. 9/4\nC. 3\nD. 9",
+    "type": "vieta_sum_of_roots/product_of_roots — product of roots by Vieta's formula (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["solutions", "value of rs", "product"],
+    "why_this_difficulty": "Hard — Vieta: product = c/a = 9/4 (note: 4x² − 12x + 9 = (2x − 3)² so r = s = 3/2)",
+    "distractor_rationales": {
+      "A": "Student found the root 3/2 but reported it as the product rather than computing (3/2)² = 9/4",
+      "C": "Student used the sum formula: −b/a = 12/4 = 3",
+      "D": "Student reported the constant c = 9 without dividing by a = 4"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "For what least integer value of k does kx² − 4x + 1 = 0 have no real solutions?\nA. 4\nB. 5\nC. 8\nD. 16",
+    "type": "discriminant_no_solution/least_integer_k — discriminant inequality, find least integer satisfying it (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["least integer value", "no real solutions"],
+    "why_this_difficulty": "Hard — discriminant < 0: 16 − 4k < 0 → k > 4; least integer greater than 4 is 5",
+    "distractor_rationales": {
+      "A": "Student found k > 4 but reported 4 itself, which gives discriminant = 0 (one solution, not zero)",
+      "C": "Student doubled the boundary value (2 × 4 = 8)",
+      "D": "Student reported b² = 16 rather than solving the inequality"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "For what greatest integer value of b does x² + bx + 16 = 0 have no real solutions?\nA. 4\nB. 7\nC. 8\nD. 16",
+    "type": "discriminant_no_solution/greatest_integer_b — discriminant inequality with upper bound (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["greatest integer value", "no real solutions"],
+    "why_this_difficulty": "Hard — discriminant < 0: b² − 64 < 0 → −8 < b < 8; greatest integer is 7",
+    "distractor_rationales": {
+      "A": "Student found √16 = 4 (the square root of c) instead of setting up the discriminant inequality",
+      "C": "Student reported 8 which gives discriminant = 0 (one solution, not zero solutions)",
+      "D": "Student reported the constant c = 16 rather than solving the inequality"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "The line y = 4x + c is tangent to the parabola y = x² + 2x + 6. What is the value of c?\nA. 1\nB. 3\nC. 5\nD. 8",
+    "type": "tangent_condition/find_c — discriminant = 0 for tangent line, solve for y-intercept (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["tangent to", "value of c"],
+    "why_this_difficulty": "Hard — set equal: x² − 2x + (6 − c) = 0; discriminant = 0: 4 − 4(6 − c) = 0 → c = 5",
+    "distractor_rationales": {
+      "A": "Student set up the equation correctly but made an arithmetic error: 4 − 4(6 − c) = 0 → 4c = 20 → c = 5, error gave c = 1",
+      "B": "Student computed 6 − c = 3 from an intermediate step error",
+      "D": "Student added 4 + 4 = 8 from the discriminant equation without isolating c"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "The line y = mx − 1 is tangent to the parabola y = x² − 4x + 3. What is the negative value of m?\nA. −8\nB. −4\nC. 0\nD. 8",
+    "type": "tangent_condition/find_slope — discriminant = 0 for tangent, identify negative slope value (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["tangent to", "negative value of m"],
+    "why_this_difficulty": "Hard — set equal: x² − (4 + m)x + 4 = 0; discriminant = 0: (4 + m)² = 16 → m = 0 or m = −8; negative value is −8",
+    "distractor_rationales": {
+      "B": "Student found (4 + m) = 0 → m = −4 from an intermediate error",
+      "C": "Student reported the non-negative solution m = 0 instead of the negative value",
+      "D": "Student reported the positive solution m = 8 instead of the negative value"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "What value of x satisfies √(x + 12) = x?\nA. −3\nB. 3\nC. 4\nD. 12",
+    "type": "radical_equation_solve/simple_radical — square both sides, solve quadratic, reject extraneous (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["satisfies", "value of x"],
+    "why_this_difficulty": "Hard — square both sides: x + 12 = x² → x² − x − 12 = 0 → (x − 4)(x + 3) = 0; check: x = 4 works, x = −3 is extraneous",
+    "distractor_rationales": {
+      "A": "Student found the extraneous solution x = −3 and failed to verify it in the original equation",
+      "B": "Student took the absolute value of the extraneous solution rather than checking",
+      "D": "Student reported the constant under the radical rather than solving the equation"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "What value of x satisfies √(3x − 2) = x − 2?\nA. 1\nB. 4\nC. 6\nD. 7",
+    "type": "radical_equation_solve/square_both_sides — square both sides, quadratic, verify no extraneous solutions (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["satisfies", "value of x"],
+    "why_this_difficulty": "Hard — square: 3x − 2 = x² − 4x + 4 → x² − 7x + 6 = 0 → (x−1)(x−6) = 0; check: x = 1 is extraneous (√1 = 1 ≠ −1); x = 6 is valid",
+    "distractor_rationales": {
+      "A": "Student found x = 1 but failed to verify: √(3·1 − 2) = 1 but x − 2 = −1 ≠ 1",
+      "B": "Student evaluated the expression x − 2 at x = 6 and reported 4 rather than the value of x",
+      "D": "Student added the roots 1 + 6 = 7 instead of checking and selecting the valid root"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "If 4p/q = 2√(r − 6), which of the following expresses r in terms of p and q?\nA. r = 4p/q + 6\nB. r = 4p²/q² − 6\nC. r = 4p²/q² + 6\nD. r = 2p/q + 6",
+    "type": "literal_rearrangement_hard/solve_for_var — multi-step rearrangement involving square root and fraction (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["expresses r in terms of", "which of the following"],
+    "why_this_difficulty": "Hard — divide by 2: 2p/q = √(r − 6); square both sides: 4p²/q² = r − 6; add 6: r = 4p²/q² + 6",
+    "distractor_rationales": {
+      "A": "Student did not square the fraction — left it as 4p/q instead of 4p²/q²",
+      "B": "Student squared correctly but subtracted 6 instead of adding",
+      "D": "Student forgot to divide by 2 before squaring, giving (2p/q)² as 2p/q"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "How many distinct real zeros does f(x) = (x + 2)²(x − 5)(x + 2)(x − 1) have?\nA. 2\nB. 3\nC. 4\nD. 5",
+    "type": "count_distinct_zeros/factored_form — simplify factored polynomial, count distinct roots (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["distinct real zeros", "how many"],
+    "why_this_difficulty": "Hard — combine: (x + 2)³(x − 5)(x − 1); distinct zeros: x = −2, x = 5, x = 1 → 3 distinct zeros",
+    "distractor_rationales": {
+      "A": "Student counted only the zeros with multiplicity greater than 1: just x = −2 and one other",
+      "C": "Student counted the number of distinct factors rather than distinct zeros (4 distinct factor expressions)",
+      "D": "Student used the total degree of the polynomial (5) as the count of distinct zeros"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "The function f(x) = x³ + x² − 9x − 9 has zeros at x = 3, x = −3, and x = −1. Which of the following is a factor of f(x)?\nA. (x − 1)\nB. (x + 1)\nC. (x − 9)\nD. (x + 9)",
+    "type": "count_distinct_zeros/identify_factor — convert zero to factor using zero-factor relationship (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["factor of f(x)", "zeros at"],
+    "why_this_difficulty": "Hard — zero at x = −1 means (x − (−1)) = (x + 1) is a factor",
+    "distractor_rationales": {
+      "A": "Student used the wrong sign: x = −1 gives factor (x + 1), not (x − 1)",
+      "C": "Student used the constant 9 from the polynomial as a root directly",
+      "D": "Student negated the constant 9 and formed (x + 9), which is not a factor"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "For what value of c does 9x² − 12x + c = 0 have exactly one real solution?\nA. 2\nB. 3\nC. 4\nD. 6",
+    "type": "discriminant_constant_find/find_constant — set discriminant to zero, solve for constant term (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["exactly one real solution", "value of c"],
+    "why_this_difficulty": "Hard — discriminant = 0: 144 − 36c = 0 → c = 4",
+    "distractor_rationales": {
+      "A": "Student divided −b = 12 by the wrong factor: 12/6 = 2",
+      "B": "Student computed 12/(a + c) with an incorrect combination",
+      "D": "Student computed c = b/2a = 12/18 = 2/3 and then used a different incorrect path to reach 6"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "For the equation x² + 6x + k = 0 to have exactly one real solution, what must be the value of k?",
+    "type": "discriminant_constant_find/find_constant — discriminant = 0, compute constant (SPR)",
+    "correct": "9",
+    "sat_key_phrases": ["exactly one real solution", "value of k"],
+    "why_this_difficulty": "Hard — discriminant = 0: 36 − 4k = 0 → k = 9",
+    "distractor_rationales": null
+  },
+  {
+    "difficulty": "hard",
+    "stem": "The function f(x) = (x − 4)(x + 1)(x − 7) has three zeros. What is the sum of all three zeros?\nA. −4\nB. 4\nC. 7\nD. 10",
+    "type": "sum_of_roots_cubic/sum_of_roots — sum all roots of factored cubic by inspection or Vieta (MCQ)",
+    "correct": "D",
+    "sat_key_phrases": ["sum of all", "zeros"],
+    "why_this_difficulty": "Hard — zeros are 4, −1, 7; sum = 4 + (−1) + 7 = 10",
+    "distractor_rationales": {
+      "A": "Student subtracted rather than added: 4 − 7 − 1 = −4",
+      "B": "Student reported only the zero x = 4",
+      "C": "Student reported only the zero x = 7"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "The function g(x) = (x + 3)(x − 2)(x + 5) has three zeros. What is the product of all three zeros?\nA. −30\nB. −6\nC. 10\nD. 30",
+    "type": "sum_of_roots_cubic/product_of_roots — product of all roots of factored cubic (MCQ)",
+    "correct": "D",
+    "sat_key_phrases": ["product of all", "zeros"],
+    "why_this_difficulty": "Hard — zeros are −3, 2, −5; product = (−3)(2)(−5) = 30",
+    "distractor_rationales": {
+      "A": "Student applied a sign error: computed (−3)(2)(5) = −30 instead of (−3)(2)(−5) = 30",
+      "B": "Student computed the coefficient of x² by Vieta's sum formula (−3 + 2 + (−5) = −6) instead of the product",
+      "C": "Student computed only the product of the two negative roots: (−3)(−5) = 15... or computed (3)(2)(5)/3 = 10"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "The graphs of y = x² − 5x + 4 and y = x − 1 intersect at two points. What is the greatest x-value at the intersection points?\nA. 1\nB. 3\nC. 5\nD. 6",
+    "type": "greatest_intersection_x/greatest_x — substitute, factor, identify greater x-coordinate (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["greatest x-value", "intersection points"],
+    "why_this_difficulty": "Hard — set equal: x² − 6x + 5 = 0 → (x − 1)(x − 5) = 0; greatest x = 5",
+    "distractor_rationales": {
+      "A": "Student identified the smaller x-value x = 1",
+      "B": "Student computed the axis of symmetry x = 6/2 = 3 instead of solving for intersection",
+      "D": "Student reported the sum of roots 1 + 5 = 6 rather than the greater root"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "The graphs of y = x² − 2x − 3 and y = x + 1 intersect at two points. What is the y-coordinate of the intersection point with the greater x-value?\nA. 0\nB. 4\nC. 5\nD. 7",
+    "type": "greatest_intersection_x/find_y — find y-coordinate at greater x intersection (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["y-coordinate", "greater x-value", "intersection point"],
+    "why_this_difficulty": "Hard — set equal: x² − 3x − 4 = 0 → (x − 4)(x + 1) = 0; greater x = 4; y = 4 + 1 = 5",
+    "distractor_rationales": {
+      "A": "Student evaluated y at the smaller x-value: at x = −1, y = −1 + 1 = 0",
+      "B": "Student reported the greater x-value (4) rather than the corresponding y-value",
+      "D": "Student added the two x-values: 4 + (−1) + ... arithmetic error yielding 7"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "The height h, in feet, of a ball above the ground t seconds after being launched is h = −16t² + 64t. After how many seconds does the ball first reach a height of 48 feet?\nA. 1\nB. 2\nC. 3\nD. 4",
+    "type": "solve_from_context_area/projectile_context — quadratic model for height, solve for first occurrence (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["after how many seconds", "height of", "first"],
+    "why_this_difficulty": "Hard — −16t² + 64t = 48 → −16t² + 64t − 48 = 0 → t² − 4t + 3 = 0 → (t−1)(t−3) = 0; first time is t = 1",
+    "distractor_rationales": {
+      "B": "Student found the axis of symmetry t = 2 (maximum height), not when height equals 48",
+      "C": "Student identified the second time the ball is at 48 ft (descending), not the first",
+      "D": "Student found when the ball hits the ground (t = 4) rather than when it reaches 48 ft"
+    }
+  }
+]

@@ -64,6 +64,8 @@ SKILL_CODES = {
     "trigonometry":               "TRG",
     "quadratic_functions":        "QFN",
     "scatterplot_analysis":       "SCA",
+    "equivalent_expressions":     "EXP",
+    "nonlinear_equations":        "NLE",
 }
 
 ALL_SKILLS = list(SKILL_CODES.keys())

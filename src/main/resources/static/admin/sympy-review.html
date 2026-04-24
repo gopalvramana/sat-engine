@@ -431,7 +431,11 @@
     }
 
     /* Solution steps */
-    .steps-list { display: flex; flex-direction: column; gap: 10px; }
+    .steps-list {
+      display: flex; flex-direction: column; gap: 10px;
+      max-height: 42vh; overflow-y: auto;
+      padding-right: 6px;
+    }
     .step-row {
       display: flex; gap: 12px; align-items: flex-start;
     }
@@ -1009,13 +1013,13 @@ function buildDetailPanel(q) {
             ${diagHtml}
             ${optionsHtml}
             ${sprHtml}
+            ${distractorHtml}
+            ${altHtml}
           </div>
           <div class="detail-right">
             ${coreConceptHtml}
             ${prereqHtml}
             ${stepsHtml}
-            ${distractorHtml}
-            ${altHtml}
             ${debugHtml}
           </div>
         </div>
@@ -2396,7 +2400,8 @@ function skillCode(key) {
     complex_numbers: 'CMX', polynomials: 'POL', probability: 'PRB',
     two_way_tables: 'TWT', linear_inequalities: 'LIN', absolute_value: 'ABV',
     special_triangles: 'SPT', trigonometry: 'TRG', quadratic_functions: 'QFN',
-    scatterplot_analysis: 'SCA',
+    scatterplot_analysis: 'SCA', equivalent_expressions: 'EXP',
+    nonlinear_equations: 'NLE',
   };
   return map[key] || (key || '—').toUpperCase().substring(0, 4);
 }

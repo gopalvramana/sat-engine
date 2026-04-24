@@ -220,4 +220,5 @@ These will be designed and documented here as each phase is implemented. High-le
 ## Few-Shot Examples File
 
 Location: `src/main/resources/narration/examples/linear_eq_two_var.json`  
-Status: **Pending** — to be created once first questions are generated and reviewed.
+Status: **Pending** — must be populated from real SAT Bluebook screenshots only.  
+No invented examples. All three tiers (easy/medium/hard) need Bluebook-sourced samples before this file is populated.

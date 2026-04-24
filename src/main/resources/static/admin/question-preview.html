@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Question Preview</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+          onload="window._katexReady=true"></script>
+  <style>
+    body { background: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; padding: 24px; }
+    #question-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px 24px 24px;
+      width: 480px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.12);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    .badge {
+      font-size: 11px;
+      font-weight: 600;
+      color: #6366f1;
+      background: #eef2ff;
+      padding: 3px 9px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+    .diff-pill {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 10px;
+    }
+    .d1 { background: #dcfce7; color: #166534; }
+    .d2 { background: #fef9c3; color: #854d0e; }
+    .d3 { background: #fee2e2; color: #991b1b; }
+    .stem {
+      color: #111827;
+      font-size: 14px;
+      margin: 0 0 14px;
+      white-space: pre-wrap;
+    }
+    .context-note {
+      color: #374151;
+      font-size: 13px;
+      background: #f9fafb;
+      border-left: 3px solid #6366f1;
+      padding: 10px 12px;
+      margin: 0 0 14px;
+      border-radius: 0 6px 6px 0;
+      white-space: pre-wrap;
+    }
+    .diagram-host { margin: 12px 0; text-align: center; }
+    .choices { display: flex; flex-direction: column; gap: 7px; margin-top: 14px; }
+    .choice {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 13px;
+      border-radius: 7px;
+      border: 1.5px solid #e5e7eb;
+      background: #f9fafb;
+    }
+    .choice.correct {
+      background: #f0fdf4;
+      border-color: #22c55e;
+      border-width: 2px;
+    }
+    .choice-label { font-weight: 700; color: #6b7280; min-width: 16px; }
+    .choice.correct .choice-label { color: #16a34a; }
+    .choice-text { flex: 1; color: #111827; }
+    .correct-badge {
+      font-size: 10px;
+      font-weight: 700;
+      color: #16a34a;
+      background: #dcfce7;
+      padding: 2px 7px;
+      border-radius: 10px;
+      white-space: nowrap;
+    }
+    .spr-answer {
+      margin-top: 14px;
+      padding: 11px 14px;
+      background: #f0fdf4;
+      border: 2px solid #22c55e;
+      border-radius: 7px;
+      font-weight: 700;
+      color: #16a34a;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+<div id="question-card"><div id="card-inner" style="color:#9ca3af;font-size:13px">Waiting for question...</div></div>
+
+<script>
+// ── Diagram helpers (from sympy-review.html) ──────────────────────────────────
+function parseFrac(s) {
+  s = String(s).replace(/^\+/, '');
+  if (s.includes('/')) { const [n,d] = s.split('/'); return parseFloat(n)/parseFloat(d); }
+  return parseFloat(s);
+}
+function parseLinearFn(fnStr) {
+  if (!fnStr) return null;
+  fnStr = fnStr.replace(/\s+/g, '').replace(/\+-/, '-');
+  if (!fnStr.startsWith('y=')) return null;
+  const expr = fnStr.slice(2);
+  const m = expr.match(/^([+-]?[\d\/]*)x([+-][\d\/]+)?$/);
+  if (!m) return null;
+  let ms = m[1] || '1', bs = m[2] || '+0';
+  if (ms === '' || ms === '+') ms = '1';
+  if (ms === '-') ms = '-1';
+  const slope = parseFrac(ms), intercept = parseFrac(bs);
+  return (isNaN(slope) || isNaN(intercept)) ? null : { m: slope, b: intercept };
+}
+function fmtN(n) { return Number.isInteger(n) ? n : parseFloat(n.toFixed(2)); }
+function svgWrap(W, H, inner) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="display:block;margin:0 auto;max-width:100%;height:auto">`
+       + `<rect width="${W}" height="${H}" fill="#f8f9fa" rx="8" stroke="#e5e7eb" stroke-width="1"/>`
+       + inner + '</svg>';
+}
+const LINE_COLORS = ['#6366f1', '#ef4444', '#10b981', '#f59e0b'];
+function svgCoordinatePlane(spec) {
+  const W = 300, H = 240, PAD = 40;
+  const numPts = (spec.points||[]).filter(([x,y]) => typeof x==='number' && typeof y==='number');
+  const hpt = spec.highlight_point;
+  let lineSpecs = [];
+  if (spec.lines && spec.lines.length) {
+    lineSpecs = spec.lines.map((l, i) => ({
+      fn: parseLinearFn(l.function || ''), label: l.label || (l.function || ''),
+      color: l.color || LINE_COLORS[i % LINE_COLORS.length],
+    })).filter(l => l.fn !== null);
+  } else if (spec.function) {
+    const fn = parseLinearFn(spec.function);
+    if (fn) lineSpecs = [{ fn, label: spec.label || spec.function, color: LINE_COLORS[0] }];
+  }
+  const fixedViewport = (spec.type === 'coordinate_plane');
+  let minX, maxX, minY, maxY;
+  if (fixedViewport) {
+    minX = -5; maxX = 5; minY = -5; maxY = 5;
+  } else {
+    let xs = numPts.map(p=>p[0]), ys = numPts.map(p=>p[1]);
+    if (hpt && typeof hpt[0]==='number') { xs.push(hpt[0]); ys.push(typeof hpt[1]==='number' ? hpt[1] : 0); }
+    (spec.points||[]).filter(([,y])=>y==='?').forEach(([px])=>{
+      if(typeof px==='number' && lineSpecs.length) { xs.push(px); ys.push(lineSpecs[0].fn.m*px+lineSpecs[0].fn.b); }
+    });
+    if (!xs.length && lineSpecs.length) { xs=[0]; ys=lineSpecs.map(l=>l.fn.b); }
+    if (!xs.length) { xs=[-4,4]; ys=[-4,4]; }
+    minX=Math.floor(Math.min(...xs)-1.5); maxX=Math.ceil(Math.max(...xs)+1.5);
+    minX=Math.min(minX,-2); maxX=Math.max(maxX,2);
+    if (!numPts.length && !hpt) { minX=Math.min(minX,-5); maxX=Math.max(maxX,5); }
+    lineSpecs.forEach(({ fn }) => { ys.push(fn.m*minX+fn.b); ys.push(fn.m*maxX+fn.b); });
+    minY=Math.floor(Math.min(...ys)-1.5); maxY=Math.ceil(Math.max(...ys)+1.5);
+    minY=Math.min(minY,-2); maxY=Math.max(maxY,2);
+    if (!numPts.length && !hpt) { minY=Math.min(minY,-5); maxY=Math.max(maxY,5); }
+  }
+  const sx = x => PAD + (x-minX)/(maxX-minX)*(W-2*PAD);
+  const sy = y => (H-PAD) - (y-minY)/(maxY-minY)*(H-2*PAD);
+  const xRange = maxX-minX, yRange = maxY-minY;
+  const xStep = xRange<=10 ? 1 : xRange<=20 ? 2 : 5;
+  const yStep = yRange<=10 ? 1 : yRange<=20 ? 2 : 5;
+  let s = `<defs><marker id="axarr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+    <path d="M0,0 L6,3 L0,6 Z" fill="#374151"/></marker></defs>`;
+  for(let x=minX; x<=maxX; x++){
+    const xp=sx(x);
+    s+=`<line x1="${xp}" y1="${PAD}" x2="${xp}" y2="${H-PAD}" stroke="${x===0?'#9ca3af':'#e9ecef'}" stroke-width="${x===0?1:0.6}"/>`;
+    if(x!==0 && x%xStep===0) s+=`<text x="${xp}" y="${sy(0)+12}" text-anchor="middle" font-size="9" fill="#9ca3af">${x}</text>`;
+  }
+  for(let y=minY; y<=maxY; y++){
+    const yp=sy(y);
+    s+=`<line x1="${PAD}" y1="${yp}" x2="${W-PAD}" y2="${yp}" stroke="${y===0?'#9ca3af':'#e9ecef'}" stroke-width="${y===0?1:0.6}"/>`;
+    if(y!==0 && y%yStep===0) s+=`<text x="${sx(0)-5}" y="${yp+3}" text-anchor="end" font-size="9" fill="#9ca3af">${y}</text>`;
+  }
+  s+=`<line x1="${PAD}" y1="${sy(0)}" x2="${W-PAD+2}" y2="${sy(0)}" stroke="#374151" stroke-width="1.5" marker-end="url(#axarr)"/>`;
+  s+=`<line x1="${sx(0)}" y1="${H-PAD}" x2="${sx(0)}" y2="${PAD-2}" stroke="#374151" stroke-width="1.5" marker-end="url(#axarr)"/>`;
+  s+=`<text x="${W-PAD+5}" y="${sy(0)+4}" font-size="11" fill="#374151" font-weight="bold">x</text>`;
+  s+=`<text x="${sx(0)+4}" y="${PAD-5}" font-size="11" fill="#374151" font-weight="bold">y</text>`;
+  lineSpecs.forEach(({ fn, label, color }, idx) => {
+    const lx1=minX, ly1=fn.m*lx1+fn.b, lx2=maxX, ly2=fn.m*lx2+fn.b;
+    s+=`<line x1="${sx(lx1)}" y1="${sy(ly1)}" x2="${sx(lx2)}" y2="${sy(ly2)}" stroke="${color}" stroke-width="2.5" opacity="0.9"/>`;
+    if (!spec.hideLabel && label) {
+      const lblSvgX = PAD + 6, lblSvgY = PAD + 13 + idx * 16;
+      s+=`<text x="${lblSvgX}" y="${lblSvgY}" font-size="10" fill="${color}" font-weight="600"
+               stroke="white" stroke-width="3" paint-order="stroke">${label}</text>`;
+    }
+  });
+  numPts.forEach(([px,py])=>{
+    s+=`<circle cx="${sx(px)}" cy="${sy(py)}" r="5" fill="#3b82f6" stroke="#fff" stroke-width="1.5"/>`;
+    const labelX = px < (minX+maxX)/2 ? sx(px)+7 : sx(px)-7;
+    const anchor = px < (minX+maxX)/2 ? 'start' : 'end';
+    s+=`<text x="${labelX}" y="${sy(py)-7}" font-size="9" fill="#1e40af" text-anchor="${anchor}">(${fmtN(px)}, ${fmtN(py)})</text>`;
+  });
+  (spec.points||[]).filter(([x,y])=>y==='?').forEach(([px])=>{
+    if(typeof px!=='number') return;
+    const firstFn = lineSpecs.length ? lineSpecs[0].fn : null;
+    const pyVal = firstFn ? firstFn.m*px+firstFn.b : 0;
+    s+=`<circle cx="${sx(px)}" cy="${sy(pyVal)}" r="5" fill="#f59e0b" stroke="#fff" stroke-width="1.5"/>`;
+    s+=`<text x="${sx(px)+7}" y="${sy(pyVal)-7}" font-size="9" fill="#d97706">(${fmtN(px)}, ?)</text>`;
+  });
+  if(hpt && typeof hpt[0]==='number' && typeof hpt[1]==='number'){
+    const [hx,hy]=hpt;
+    s+=`<line x1="${sx(hx)}" y1="${sy(0)}" x2="${sx(hx)}" y2="${sy(hy)}" stroke="#ef4444" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>`;
+    s+=`<line x1="${sx(0)}" y1="${sy(hy)}" x2="${sx(hx)}" y2="${sy(hy)}" stroke="#ef4444" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>`;
+    s+=`<circle cx="${sx(hx)}" cy="${sy(hy)}" r="5.5" fill="#ef4444" stroke="#fff" stroke-width="2"/>`;
+    s+=`<text x="${sx(hx)+8}" y="${sy(hy)-8}" font-size="9" fill="#b91c1c" font-weight="700">(${fmtN(hx)}, ${fmtN(hy)})</text>`;
+  }
+  return svgWrap(W, H, s);
+}
+function svgRightTriangle(spec) {
+  const W = 260, H = 200, PAD = 30;
+  const [la, lb] = spec.legs; const hyp = spec.hypotenuse;
+  const numA = typeof la==='number'?la:0, numB = typeof lb==='number'?lb:0;
+  const refA = numA||numB||6, refB = numB||numA||6;
+  const availW = W-2*PAD-30, availH = H-2*PAD-30;
+  const scale = Math.min(availW/refA, availH/refB, 18);
+  const bw = refA*scale, bh = refB*scale;
+  const ox=PAD+20, oy=H-PAD-10, ax=ox+bw, ay=oy, bxv=ox, byv=oy-bh;
+  const legALabel = typeof la==='number'?String(la):'?';
+  const legBLabel = typeof lb==='number'?String(lb):'?';
+  const hypLabel = typeof hyp==='number'?String(hyp):(hyp==='?'?'?':String(hyp));
+  const isAMissing=legALabel==='?', isBMissing=legBLabel==='?', isHMissing=hypLabel==='?';
+  const colorA=isAMissing?'#ef4444':'#374151', colorB=isBMissing?'#ef4444':'#374151', colorH=isHMissing?'#ef4444':'#374151';
+  let s = `<polygon points="${ox},${oy} ${ax},${ay} ${ox},${byv}" fill="#ede9fe" stroke="#6366f1" stroke-width="2"/>`;
+  const sq=11;
+  s+=`<polyline points="${ox+sq},${oy} ${ox+sq},${oy-sq} ${ox},${oy-sq}" fill="none" stroke="#6366f1" stroke-width="1.5"/>`;
+  s+=`<text x="${(ox+ax)/2}" y="${oy+18}" text-anchor="middle" font-size="14" font-weight="700" fill="${colorA}">${legALabel}</text>`;
+  s+=`<text x="${ox-6}" y="${(oy+byv)/2+5}" text-anchor="end" font-size="14" font-weight="700" fill="${colorB}">${legBLabel}</text>`;
+  const hmx=(ax+ox)/2+14, hmy=(ay+byv)/2+4;
+  s+=`<text x="${hmx}" y="${hmy}" font-size="14" font-weight="700" fill="${colorH}">${hypLabel}</text>`;
+  return svgWrap(W, H, s);
+}
+function svgRectangle(spec) {
+  const W=280, H=170, PAD=40;
+  const l=spec.length, w=spec.width;
+  const lLabel=typeof l==='number'?String(l):'?', wLabel=typeof w==='number'?String(w):'?';
+  const hasArea=spec.area!=null;
+  const rW=W-2*PAD-20, rH=H-2*PAD-20, rx=PAD, ry=PAD;
+  const colorL=lLabel==='?'?'#ef4444':'#374151', colorW=wLabel==='?'?'#ef4444':'#374151';
+  let s=`<rect x="${rx}" y="${ry}" width="${rW}" height="${rH}" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>`;
+  if(hasArea){s+=`<text x="${rx+rW/2}" y="${ry+rH/2-6}" text-anchor="middle" font-size="11" fill="#93c5fd">Area</text>`;s+=`<text x="${rx+rW/2}" y="${ry+rH/2+10}" text-anchor="middle" font-size="15" fill="#1e40af" font-weight="700">= ${spec.area}</text>`;}
+  else{s+=`<text x="${rx+rW/2}" y="${ry+rH/2+5}" text-anchor="middle" font-size="12" fill="#93c5fd">Area = ?</text>`;}
+  s+=`<line x1="${rx}" y1="${ry+rH+8}" x2="${rx+rW}" y2="${ry+rH+8}" stroke="#94a3b8" stroke-width="1"/>`;
+  s+=`<line x1="${rx}" y1="${ry+rH+4}" x2="${rx}" y2="${ry+rH+12}" stroke="#94a3b8" stroke-width="1.5"/>`;
+  s+=`<line x1="${rx+rW}" y1="${ry+rH+4}" x2="${rx+rW}" y2="${ry+rH+12}" stroke="#94a3b8" stroke-width="1.5"/>`;
+  s+=`<text x="${rx+rW/2}" y="${ry+rH+22}" text-anchor="middle" font-size="14" font-weight="700" fill="${colorL}">${lLabel}</text>`;
+  s+=`<line x1="${rx+rW+8}" y1="${ry}" x2="${rx+rW+8}" y2="${ry+rH}" stroke="#94a3b8" stroke-width="1"/>`;
+  s+=`<line x1="${rx+rW+4}" y1="${ry}" x2="${rx+rW+12}" y2="${ry}" stroke="#94a3b8" stroke-width="1.5"/>`;
+  s+=`<line x1="${rx+rW+4}" y1="${ry+rH}" x2="${rx+rW+12}" y2="${ry+rH}" stroke="#94a3b8" stroke-width="1.5"/>`;
+  s+=`<text x="${rx+rW+20}" y="${ry+rH/2+5}" font-size="14" font-weight="700" fill="${colorW}">${wLabel}</text>`;
+  return svgWrap(W, H, s);
+}
+function svgTriangle(spec) {
+  const {base:b,height:h}=spec, W=280, H=180, PAD=36;
+  const sc=Math.min((W-2*PAD)/b,(H-2*PAD)/h,16);
+  const bw=b*sc, bh=h*sc, ox=PAD, oy=H-PAD, tx=ox+bw/2, ty=oy-bh;
+  let s=`<polygon points="${ox},${oy} ${ox+bw},${oy} ${tx},${ty}" fill="#fef9c3" stroke="#f59e0b" stroke-width="2"/>`;
+  s+=`<line x1="${tx}" y1="${ty}" x2="${tx}" y2="${oy}" stroke="#6b7280" stroke-width="1" stroke-dasharray="3,3"/>`;
+  const sq=7;
+  s+=`<polyline points="${tx+sq},${oy} ${tx+sq},${oy-sq} ${tx},${oy-sq}" fill="none" stroke="#6b7280" stroke-width="1"/>`;
+  s+=`<text x="${tx+10}" y="${(oy+ty)/2+4}" font-size="13" font-weight="700" fill="#92400e">${h}</text>`;
+  s+=`<line x1="${ox}" y1="${oy+8}" x2="${ox+bw}" y2="${oy+8}" stroke="#94a3b8" stroke-width="1"/>`;
+  s+=`<line x1="${ox}" y1="${oy+4}" x2="${ox}" y2="${oy+12}" stroke="#94a3b8" stroke-width="1.5"/>`;
+  s+=`<line x1="${ox+bw}" y1="${oy+4}" x2="${ox+bw}" y2="${oy+12}" stroke="#94a3b8" stroke-width="1.5"/>`;
+  s+=`<text x="${ox+bw/2}" y="${oy+22}" text-anchor="middle" font-size="13" font-weight="700" fill="#374151">${b}</text>`;
+  return svgWrap(W, H, s);
+}
+function svgCompositeRect(spec) {
+  const {w,h1,half_w,h2}=spec, W=300, H=240, PAD=40;
+  const totalH=h1+h2, scale=Math.min((W-2*PAD-40)/w,(H-2*PAD-30)/totalH,18);
+  const pw=w*scale, ph1=h1*scale, phw=half_w*scale, ph2=h2*scale, ox=PAD, oy=PAD;
+  const pts=[[ox,oy],[ox+phw,oy],[ox+phw,oy+ph2],[ox+pw,oy+ph2],[ox+pw,oy+ph2+ph1],[ox,oy+ph2+ph1]].map(p=>p.join(',')).join(' ');
+  let s=`<polygon points="${pts}" fill="#d1fae5" stroke="#10b981" stroke-width="2"/>`;
+  const bly=oy+ph2+ph1+12;
+  s+=`<line x1="${ox}" y1="${bly}" x2="${ox+pw}" y2="${bly}" stroke="#9ca3af" stroke-width="1"/>`;
+  s+=`<text x="${ox+pw/2}" y="${bly+15}" text-anchor="middle" font-size="13" font-weight="700" fill="#374151">${w}</text>`;
+  const rsX=ox+pw+12;
+  s+=`<text x="${rsX+14}" y="${oy+ph2+ph1/2+5}" font-size="13" font-weight="700" fill="#374151">${h1}</text>`;
+  s+=`<text x="${ox+phw/2}" y="${oy-9}" text-anchor="middle" font-size="12" font-weight="700" fill="#374151">${half_w}</text>`;
+  s+=`<text x="${ox-16}" y="${oy+ph2/2+4}" text-anchor="middle" font-size="12" font-weight="700" fill="#374151">${h2}</text>`;
+  return svgWrap(W, H, s);
+}
+function svgScaledRect(spec) {
+  const {orig_length:l,orig_width:w,scale:k}=spec, newL=l*k, newW=w*k, W=340, H=180, PAD=24;
+  const maxDim=Math.max(newL,newW,1), sc=Math.min((W-2*PAD-80)*0.55/newL,(H-2*PAD-30)/newW,14);
+  const sw=l*sc, sh=w*sc, lw=newL*sc, lh=newW*sc;
+  const ox1=PAD+10, oy1=(H-sh)/2+10, ox2=ox1+sw+56, oy2=(H-lh)/2+10;
+  let s='';
+  s+=`<rect x="${ox1}" y="${oy1}" width="${sw}" height="${sh}" fill="#fef9c3" stroke="#f59e0b" stroke-width="1.5"/>`;
+  s+=`<text x="${ox1+sw/2}" y="${oy1-8}" text-anchor="middle" font-size="10" fill="#92400e">Original</text>`;
+  s+=`<text x="${ox1+sw/2}" y="${oy1+sh+15}" text-anchor="middle" font-size="12" font-weight="600" fill="#374151">${l} × ${w}</text>`;
+  const arY=H/2+5;
+  s+=`<line x1="${ox1+sw+6}" y1="${arY}" x2="${ox2-6}" y2="${arY}" stroke="#6b7280" stroke-width="1.5"/>`;
+  s+=`<path d="M${ox2-8},${arY-4} L${ox2-2},${arY} L${ox2-8},${arY+4}" fill="none" stroke="#6b7280" stroke-width="1.5"/>`;
+  s+=`<text x="${(ox1+sw+ox2)/2}" y="${arY-7}" text-anchor="middle" font-size="11" fill="#6366f1" font-weight="700">× ${k}</text>`;
+  s+=`<rect x="${ox2}" y="${oy2}" width="${lw}" height="${lh}" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>`;
+  s+=`<text x="${ox2+lw/2}" y="${oy2-8}" text-anchor="middle" font-size="10" fill="#1e40af" font-weight="600">Scaled</text>`;
+  s+=`<text x="${ox2+lw/2}" y="${oy2+lh+15}" text-anchor="middle" font-size="12" font-weight="600" fill="#374151">${newL} × ${newW}</text>`;
+  return svgWrap(W, H, s);
+}
+function svgCircle(spec) {
+  const W=240, H=200, cx=W/2, cy=H/2, maxR=Math.min(W,H)/2-30, pr=maxR;
+  const r=spec.radius||(spec.diameter?spec.diameter/2:5);
+  let s=`<circle cx="${cx}" cy="${cy}" r="${pr}" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>`;
+  if(spec.sector_angle&&spec.sector_angle<360){
+    const θ=spec.sector_angle*Math.PI/180;
+    const x1=cx+pr*Math.sin(0),y1=cy-pr*Math.cos(0);
+    const x2=cx+pr*Math.sin(θ),y2=cy-pr*Math.cos(θ);
+    const large=spec.sector_angle>180?1:0;
+    s+=`<path d="M${cx},${cy} L${x1},${y1} A${pr},${pr} 0 ${large},1 ${x2},${y2} Z" fill="#93c5fd" stroke="#3b82f6" stroke-width="1.5" opacity="0.7"/>`;
+    const midθ=θ/2, lx=cx+(pr*0.55)*Math.sin(midθ), ly=cy-(pr*0.55)*Math.cos(midθ);
+    s+=`<text x="${lx}" y="${ly+4}" text-anchor="middle" font-size="12" font-weight="700" fill="#1e40af">${spec.sector_angle}°</text>`;
+  }
+  s+=`<circle cx="${cx}" cy="${cy}" r="3" fill="#374151"/>`;
+  if(spec.radius){s+=`<line x1="${cx}" y1="${cy}" x2="${cx+pr}" y2="${cy}" stroke="#374151" stroke-width="1.5" stroke-dasharray="4,3"/>`;s+=`<text x="${cx+pr/2}" y="${cy-6}" text-anchor="middle" font-size="13" font-weight="700" fill="#374151">r = ${spec.radius}</text>`;}
+  if(spec.diameter&&!spec.radius){s+=`<line x1="${cx-pr}" y1="${cy}" x2="${cx+pr}" y2="${cy}" stroke="#374151" stroke-width="1.5" stroke-dasharray="4,3"/>`;s+=`<text x="${cx}" y="${cy-6}" text-anchor="middle" font-size="13" font-weight="700" fill="#374151">d = ${spec.diameter}</text>`;}
+  return svgWrap(W, H, s);
+}
+function svgCylinder(spec) {
+  const W=200, H=220, PAD=20, pr=60, ry=16, pH=120, cx=W/2, top=PAD+20, bot=top+pH;
+  let s='';
+  s+=`<rect x="${cx-pr}" y="${top}" width="${2*pr}" height="${pH}" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>`;
+  s+=`<ellipse cx="${cx}" cy="${bot}" rx="${pr}" ry="${ry}" fill="#93c5fd" stroke="#3b82f6" stroke-width="1.5"/>`;
+  s+=`<ellipse cx="${cx}" cy="${top}" rx="${pr}" ry="${ry}" fill="#bfdbfe" stroke="#3b82f6" stroke-width="1.5"/>`;
+  const rLabel=typeof spec.radius==='number'?String(spec.radius):'?';
+  s+=`<line x1="${cx}" y1="${top}" x2="${cx+pr}" y2="${top}" stroke="#374151" stroke-width="1.5" stroke-dasharray="4,3"/>`;
+  s+=`<text x="${cx+pr/2}" y="${top-6}" text-anchor="middle" font-size="12" font-weight="700" fill="#374151">r = ${rLabel}</text>`;
+  const hLabel=typeof spec.height==='number'?String(spec.height):'?', hColor=hLabel==='?'?'#ef4444':'#374151';
+  s+=`<text x="${cx+pr-8}" y="${(top+bot)/2+4}" text-anchor="end" font-size="12" font-weight="700" fill="${hColor}">h=${hLabel}</text>`;
+  return svgWrap(W, H, s);
+}
+function svgCone(spec) {
+  const W=200, H=210, PAD=15, pr=65, ry=14, cx=W/2, baseY=H-PAD-15, apexY=PAD+10;
+  let s='';
+  s+=`<line x1="${cx}" y1="${apexY}" x2="${cx}" y2="${baseY}" stroke="#9ca3af" stroke-width="1" stroke-dasharray="4,3"/>`;
+  s+=`<polygon points="${cx},${apexY} ${cx-pr},${baseY} ${cx+pr},${baseY}" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5" opacity="0.85"/>`;
+  s+=`<ellipse cx="${cx}" cy="${baseY}" rx="${pr}" ry="${ry}" fill="#93c5fd" stroke="#3b82f6" stroke-width="1.5"/>`;
+  const rLabel=typeof spec.radius==='number'?String(spec.radius):'?';
+  s+=`<text x="${cx+pr/2}" y="${baseY+14}" text-anchor="middle" font-size="12" font-weight="700" fill="#374151">r = ${rLabel}</text>`;
+  const hLabel=typeof spec.height==='number'?String(spec.height):'?', hColor=hLabel==='?'?'#ef4444':'#374151';
+  s+=`<text x="${cx+8}" y="${(apexY+baseY)/2+4}" font-size="12" font-weight="700" fill="${hColor}">h = ${hLabel}</text>`;
+  return svgWrap(W, H, s);
+}
+function svgSphere(spec) {
+  const W=200, H=190, cx=W/2, cy=H/2, pr=68;
+  let s=`<defs><radialGradient id="sg" cx="38%" cy="35%" r="60%"><stop offset="0%" stop-color="#bfdbfe"/><stop offset="100%" stop-color="#3b82f6"/></radialGradient></defs>`;
+  s+=`<circle cx="${cx}" cy="${cy}" r="${pr}" fill="url(#sg)" stroke="#2563eb" stroke-width="1.5"/>`;
+  s+=`<ellipse cx="${cx}" cy="${cy}" rx="${pr}" ry="${pr*0.3}" fill="none" stroke="#93c5fd" stroke-width="1" stroke-dasharray="5,3"/>`;
+  s+=`<circle cx="${cx}" cy="${cy}" r="2.5" fill="#1e40af"/>`;
+  const rLabel=typeof spec.radius==='number'?String(spec.radius):'?';
+  s+=`<line x1="${cx}" y1="${cy}" x2="${cx+pr*0.7}" y2="${cy-pr*0.7}" stroke="#fff" stroke-width="1.5" stroke-dasharray="4,3"/>`;
+  s+=`<text x="${cx+pr*0.38}" y="${cy-pr*0.42}" font-size="13" font-weight="700" fill="#fff">r = ${rLabel}</text>`;
+  return svgWrap(W, H, s);
+}
+function svgRectPrism(spec) {
+  const W=240, H=200, l=spec.length, w=spec.width, h=spec.height;
+  const ox=50, oy=140, pw=110, ph=70, pd=40, sk=28;
+  let s='';
+  s+=`<polygon points="${ox},${oy} ${ox+pw},${oy} ${ox+pw},${oy-ph} ${ox},${oy-ph}" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>`;
+  s+=`<polygon points="${ox},${oy-ph} ${ox+pw},${oy-ph} ${ox+pw+sk},${oy-ph-pd} ${ox+sk},${oy-ph-pd}" fill="#bfdbfe" stroke="#3b82f6" stroke-width="1.5"/>`;
+  s+=`<polygon points="${ox+pw},${oy} ${ox+pw+sk},${oy-pd} ${ox+pw+sk},${oy-ph-pd} ${ox+pw},${oy-ph}" fill="#93c5fd" stroke="#3b82f6" stroke-width="1.5"/>`;
+  const lbl=typeof l==='number'?String(l):'?', wlbl=typeof w==='number'?String(w):'?', hlbl=typeof h==='number'?String(h):'?';
+  s+=`<text x="${ox+pw/2}" y="${oy+16}" text-anchor="middle" font-size="12" font-weight="700" fill="#374151">l = ${lbl}</text>`;
+  s+=`<text x="${ox+pw+sk/2+14}" y="${oy-pd/2+4}" font-size="12" font-weight="700" fill="#374151">w = ${wlbl}</text>`;
+  s+=`<text x="${ox-14}" y="${oy-ph/2+4}" text-anchor="end" font-size="12" font-weight="700" fill="#374151">h = ${hlbl}</text>`;
+  return svgWrap(W, H, s);
+}
+function svgParallelogram(spec) {
+  const W=280, H=160, PAD=30, base=spec.base, height=spec.height, skew=30;
+  const pw=W-2*PAD-skew, ph=H-2*PAD-20, ox=PAD, oy=H-PAD-10;
+  const hLabel=typeof height==='number'?String(height):'?', hColor=hLabel==='?'?'#ef4444':'#6b7280';
+  let s=`<polygon points="${ox+skew},${oy-ph} ${ox+skew+pw},${oy-ph} ${ox+pw},${oy} ${ox},${oy}" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>`;
+  const bLabel=typeof base==='number'?String(base):'?';
+  s+=`<text x="${ox+pw/2+skew/2}" y="${oy+16}" text-anchor="middle" font-size="13" font-weight="700" fill="#374151">${bLabel}</text>`;
+  const hx=ox+skew;
+  s+=`<line x1="${hx}" y1="${oy}" x2="${hx}" y2="${oy-ph}" stroke="${hColor}" stroke-width="1.5" stroke-dasharray="4,3"/>`;
+  s+=`<text x="${hx+8}" y="${oy-ph/2+4}" font-size="13" font-weight="700" fill="${hColor}">${hLabel}</text>`;
+  return svgWrap(W, H, s);
+}
+function svgTrapezoid(spec) {
+  const W=280, H=170, PAD=25, b1=spec.base1, b2=spec.base2, height=spec.height;
+  const maxB=Math.max(typeof b1==='number'?b1:10,typeof b2==='number'?b2:6);
+  const scale=Math.min((W-2*PAD-20)/maxB,12);
+  const pw1=(typeof b1==='number'?b1:10)*scale, pw2=(typeof b2==='number'?b2:6)*scale;
+  const ph=H-2*PAD-20, ox=(W-pw1)/2, oy=H-PAD-10, off=(pw1-pw2)/2;
+  const hLabel=typeof height==='number'?String(height):'?', hColor=hLabel==='?'?'#ef4444':'#6b7280';
+  const b1Label=typeof b1==='number'?String(b1):'?', b2Label=typeof b2==='number'?String(b2):'?';
+  let s=`<polygon points="${ox},${oy} ${ox+pw1},${oy} ${ox+off+pw2},${oy-ph} ${ox+off},${oy-ph}" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>`;
+  s+=`<text x="${ox+pw1/2}" y="${oy+16}" text-anchor="middle" font-size="13" font-weight="700" fill="#374151">${b1Label}</text>`;
+  s+=`<text x="${ox+off+pw2/2}" y="${oy-ph-6}" text-anchor="middle" font-size="13" font-weight="700" fill="#374151">${b2Label}</text>`;
+  const hx=ox+pw1+16;
+  s+=`<line x1="${hx}" y1="${oy}" x2="${hx}" y2="${oy-ph}" stroke="${hColor}" stroke-width="1.5" stroke-dasharray="4,3"/>`;
+  s+=`<text x="${hx+8}" y="${oy-ph/2+4}" font-size="13" font-weight="700" fill="${hColor}">${hLabel}</text>`;
+  return svgWrap(W, H, s);
+}
+function svgHouseShape(spec) {
+  const W=260, H=200, PAD=20, rw=spec.width, rh=spec.rect_height, th=spec.tri_height;
+  const scale=Math.min((W-2*PAD)/rw,(H-2*PAD-10)/(rh+th),15);
+  const pw=rw*scale, prh=rh*scale, pth=th*scale, ox=(W-pw)/2, oy=H-PAD-10;
+  let s='';
+  s+=`<rect x="${ox}" y="${oy-prh}" width="${pw}" height="${prh}" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>`;
+  s+=`<polygon points="${ox},${oy-prh} ${ox+pw},${oy-prh} ${ox+pw/2},${oy-prh-pth}" fill="#bfdbfe" stroke="#3b82f6" stroke-width="2"/>`;
+  s+=`<text x="${ox+pw/2}" y="${oy+14}" text-anchor="middle" font-size="12" font-weight="700" fill="#374151">${rw}</text>`;
+  s+=`<text x="${ox-8}" y="${oy-prh/2+4}" text-anchor="end" font-size="12" font-weight="700" fill="#374151">${rh}</text>`;
+  s+=`<text x="${ox+pw+8}" y="${oy-prh-pth/2+4}" font-size="12" font-weight="700" fill="#6b7280">${th}</text>`;
+  return svgWrap(W, H, s);
+}
+function svgBarChart(spec) {
+  const W=300, H=220, PL=38, PR=10, PT=15, PB=40;
+  const cats=spec.categories, vals=spec.values, missing=spec.missing, highlight=spec.highlight;
+  const chartW=W-PL-PR, chartH=H-PT-PB;
+  const maxVal=Math.max(...vals.filter(v=>v>0),1);
+  const yMax=Math.ceil(maxVal/10)*10+10;
+  const barW=chartW/cats.length*0.6, gap=chartW/cats.length;
+  const sy=v=>PT+chartH-(v/yMax)*chartH, bx=i=>PL+i*gap+gap*0.2;
+  let s='';
+  const yStep=yMax<=50?10:yMax<=100?20:50;
+  for(let y=0;y<=yMax;y+=yStep){const yp=sy(y);s+=`<line x1="${PL}" y1="${yp}" x2="${W-PR}" y2="${yp}" stroke="#e5e7eb" stroke-width="0.8"/>`;s+=`<text x="${PL-4}" y="${yp+3}" text-anchor="end" font-size="9" fill="#9ca3af">${y}</text>`;}
+  s+=`<line x1="${PL}" y1="${PT}" x2="${PL}" y2="${H-PB}" stroke="#374151" stroke-width="1.5"/>`;
+  s+=`<line x1="${PL}" y1="${H-PB}" x2="${W-PR}" y2="${H-PB}" stroke="#374151" stroke-width="1.5"/>`;
+  cats.forEach((cat,i)=>{
+    const isMissing=i===missing, isHighlit=i===highlight, v=vals[i];
+    const barColor=isMissing?'#fde68a':isHighlit?'#f97316':'#6366f1', barStroke=isMissing?'#d97706':isHighlit?'#c2410c':'#4f46e5';
+    if(!isMissing&&v>0){const bh=(v/yMax)*chartH;s+=`<rect x="${bx(i)}" y="${sy(v)}" width="${barW}" height="${bh}" fill="${barColor}" stroke="${barStroke}" stroke-width="1" rx="2"/>`;s+=`<text x="${bx(i)+barW/2}" y="${sy(v)-3}" text-anchor="middle" font-size="9" font-weight="600" fill="${barStroke}">${v}</text>`;}
+    else if(isMissing){s+=`<rect x="${bx(i)}" y="${PT}" width="${barW}" height="${chartH}" fill="#fef3c7" stroke="#d97706" stroke-width="1.5" stroke-dasharray="4,3" rx="2"/>`;s+=`<text x="${bx(i)+barW/2}" y="${H/2}" text-anchor="middle" font-size="16" font-weight="700" fill="#d97706">?</text>`;}
+    const catShort=cat.length>5?cat.slice(0,4)+'.':cat;
+    s+=`<text x="${bx(i)+barW/2}" y="${H-PB+12}" text-anchor="middle" font-size="9" fill="#6b7280">${catShort}</text>`;
+  });
+  return svgWrap(W, H, s);
+}
+function svgPieChart(spec) {
+  const W=280, H=200, cx=100, cy=H/2, pr=72;
+  const segs=spec.segments, highlight=spec.highlight, total=spec.total;
+  const COLORS=['#6366f1','#f97316','#22c55e','#eab308','#ec4899','#06b6d4'];
+  const LIGHT=['#e0e7ff','#ffedd5','#dcfce7','#fef9c3','#fce7f3','#cffafe'];
+  let angle=-Math.PI/2, s='', sliceInfo=[];
+  segs.forEach((seg,i)=>{
+    const frac=seg.value/100, span=frac*2*Math.PI;
+    const x1=cx+pr*Math.cos(angle),y1=cy+pr*Math.sin(angle);
+    const x2=cx+pr*Math.cos(angle+span),y2=cy+pr*Math.sin(angle+span);
+    const large=span>Math.PI?1:0;
+    const fill=i===highlight?COLORS[i%COLORS.length]:LIGHT[i%LIGHT.length];
+    const stroke=COLORS[i%COLORS.length], pull=i===highlight?6:0;
+    const midAngle=angle+span/2, px=pull*Math.cos(midAngle), py=pull*Math.sin(midAngle);
+    s+=`<path d="M${cx+px},${cy+py} L${x1+px},${y1+py} A${pr},${pr} 0 ${large},1 ${x2+px},${y2+py} Z" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+    sliceInfo.push({label:seg.label,value:seg.value,color:stroke});
+    angle+=span;
+  });
+  const legendX=cx+pr+20;
+  sliceInfo.forEach((seg,i)=>{const ly=28+i*22;s+=`<rect x="${legendX}" y="${ly-10}" width="12" height="12" fill="${seg.color}" rx="2"/>`;s+=`<text x="${legendX+16}" y="${ly}" font-size="10" fill="#374151">${seg.label} ${seg.value}%</text>`;});
+  if(total)s+=`<text x="${cx}" y="${H-8}" text-anchor="middle" font-size="10" fill="#6b7280">n = ${total}</text>`;
+  return svgWrap(W, H, s);
+}
+function svgNumberLine(spec) {
+  const W=320, H=90, lx=30, rx=290, my=50;
+  const lo=spec.range_lo??-10, hi=spec.range_hi??10, range=hi-lo;
+  function px(v){return lx+(v-lo)/range*(rx-lx);}
+  let s='';
+  s+=`<line x1="${lx}" y1="${my}" x2="${rx}" y2="${my}" stroke="#374151" stroke-width="2"/>`;
+  s+=`<polygon points="${rx},${my} ${rx-7},${my-4} ${rx-7},${my+4}" fill="#374151"/>`;
+  for(let v=Math.ceil(lo);v<=hi;v++){const x=px(v),big=v%5===0;s+=`<line x1="${x}" y1="${my-(big?8:5)}" x2="${x}" y2="${my+(big?8:5)}" stroke="#374151" stroke-width="${big?1.5:1}"/>`;if(big)s+=`<text x="${x}" y="${my+20}" text-anchor="middle" font-size="11" fill="#374151">${v}</text>`;}
+  const pts=spec.points||[];
+  pts.forEach(pt=>{const x=px(pt.value),filled=pt.type==='closed';s+=`<circle cx="${x}" cy="${my}" r="6" fill="${filled?'#4f46e5':'white'}" stroke="#4f46e5" stroke-width="2"/>`;if(pt.label)s+=`<text x="${x}" y="${my-14}" text-anchor="middle" font-size="12" font-weight="700" fill="#4f46e5">${pt.label}</text>`;});
+  if(spec.shade){const{from,direction}=spec.shade,fx=px(from),ex=direction==='right'?rx-5:lx+5;s+=`<line x1="${fx}" y1="${my}" x2="${ex}" y2="${my}" stroke="#4f46e5" stroke-width="3" opacity="0.4"/>`;const arrowX=direction==='right'?ex+6:ex-6,arrow=direction==='right'?`${arrowX},${my} ${arrowX-8},${my-4} ${arrowX-8},${my+4}`:`${arrowX},${my} ${arrowX+8},${my-4} ${arrowX+8},${my+4}`;s+=`<polygon points="${arrow}" fill="#4f46e5" opacity="0.6"/>`;}
+  return svgWrap(W, H, s);
+}
+function svgScatterPlot(spec) {
+  const W=280, H=220, ox=45, oy=H-35, pw=W-60, ph=H-55;
+  const rawPts=(spec.points||[]).map(p=>Array.isArray(p)?{x:p[0],y:p[1]}:p);
+  const xs=rawPts.map(p=>p.x), ys=rawPts.map(p=>p.y);
+  const line=spec.trend_line||spec.line;
+  const xloRaw=spec.x_min??(xs.length?Math.min(...xs):0), xhiRaw=spec.x_max??(xs.length?Math.max(...xs):10);
+  const yloRaw=spec.y_min??(ys.length?Math.min(...ys):0), yhiRaw=spec.y_max??(ys.length?Math.max(...ys):10);
+  const xpad=(xhiRaw-xloRaw)*0.15||1, ypad=(yhiRaw-yloRaw)*0.2||1;
+  const xlo=Math.floor(xloRaw-xpad), xhi=Math.ceil(xhiRaw+xpad), ylo=Math.floor(yloRaw-ypad), yhi=Math.ceil(yhiRaw+ypad);
+  function sx(v){return ox+(v-xlo)/(xhi-xlo)*pw;} function sy(v){return oy-(v-ylo)/(yhi-ylo)*ph;}
+  let s='';
+  s+=`<line x1="${ox}" y1="${oy}" x2="${ox+pw}" y2="${oy}" stroke="#374151" stroke-width="1.5"/>`;
+  s+=`<line x1="${ox}" y1="${oy}" x2="${ox}" y2="${oy-ph}" stroke="#374151" stroke-width="1.5"/>`;
+  s+=`<text x="${ox+pw/2}" y="${H-5}" text-anchor="middle" font-size="11" fill="#6b7280">${spec.xlabel||spec.x_label||'x'}</text>`;
+  s+=`<text x="12" y="${oy-ph/2+4}" text-anchor="middle" font-size="11" fill="#6b7280" transform="rotate(-90,12,${oy-ph/2})">${spec.ylabel||spec.y_label||'y'}</text>`;
+  for(let i=0;i<=5;i++){const v=xlo+i*(xhi-xlo)/5,x=sx(v);s+=`<line x1="${x}" y1="${oy}" x2="${x}" y2="${oy+4}" stroke="#374151" stroke-width="1"/>`;s+=`<text x="${x}" y="${oy+14}" text-anchor="middle" font-size="10" fill="#6b7280">${Math.round(v)}</text>`;}
+  for(let i=0;i<=5;i++){const v=ylo+i*(yhi-ylo)/5,y=sy(v);s+=`<line x1="${ox-4}" y1="${y}" x2="${ox}" y2="${y}" stroke="#374151" stroke-width="1"/>`;s+=`<text x="${ox-7}" y="${y+4}" text-anchor="end" font-size="10" fill="#6b7280">${Math.round(v)}</text>`;}
+  if(line){const{slope,intercept}=line;s+=`<line x1="${sx(xlo)}" y1="${sy(slope*xlo+intercept)}" x2="${sx(xhi)}" y2="${sy(slope*xhi+intercept)}" stroke="#ef4444" stroke-width="2" stroke-dasharray="5,3"/>`;}
+  rawPts.forEach(pt=>{s+=`<circle cx="${sx(pt.x)}" cy="${sy(pt.y)}" r="4" fill="#4f46e5" opacity="0.8"/>`;});
+  return svgWrap(W, H, s);
+}
+function svgBoxPlot(spec) {
+  const W=320, H=120, lx=40, rx=290, my=55, bh=30;
+  const lo=spec.range_lo??0, hi=spec.range_hi??100;
+  function px(v){return lx+(v-lo)/(hi-lo)*(rx-lx);}
+  const mn=spec.min,q1=spec.q1,med=spec.median,q3=spec.q3,mx=spec.max;
+  let s='';
+  [mn,q1,med,q3,mx].forEach(v=>{s+=`<text x="${px(v)}" y="${my+bh/2+32}" text-anchor="middle" font-size="10" fill="#6b7280">${v}</text>`;});
+  s+=`<line x1="${px(mn)}" y1="${my+bh/2}" x2="${px(q1)}" y2="${my+bh/2}" stroke="#374151" stroke-width="1.5"/>`;
+  s+=`<line x1="${px(mx)}" y1="${my+bh/2}" x2="${px(q3)}" y2="${my+bh/2}" stroke="#374151" stroke-width="1.5"/>`;
+  s+=`<line x1="${px(mn)}" y1="${my+bh/4}" x2="${px(mn)}" y2="${my+3*bh/4}" stroke="#374151" stroke-width="1.5"/>`;
+  s+=`<line x1="${px(mx)}" y1="${my+bh/4}" x2="${px(mx)}" y2="${my+3*bh/4}" stroke="#374151" stroke-width="1.5"/>`;
+  s+=`<rect x="${px(q1)}" y="${my}" width="${px(q3)-px(q1)}" height="${bh}" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2"/>`;
+  s+=`<line x1="${px(med)}" y1="${my}" x2="${px(med)}" y2="${my+bh}" stroke="#4f46e5" stroke-width="2.5"/>`;
+  return svgWrap(W, H, s);
+}
+function svgTwoWayTable(spec) {
+  const rows=spec.rows||['Yes','No'], cols=spec.cols||['A','B','Total'], data=spec.data||[], highlight=spec.highlight;
+  const CW=64, CH=32, ox=10, oy=10, nR=rows.length+1, nC=cols.length+1;
+  const W=ox+nC*CW+10, H=oy+nR*CH+10;
+  let s='';
+  function cell(r,c,text,isHeader,isHL){
+    const x=ox+c*CW, y=oy+r*CH, fill=isHeader?'#e0e7ff':isHL?'#fef3c7':'#ffffff', fw=isHeader?'700':'400';
+    s+=`<rect x="${x}" y="${y}" width="${CW}" height="${CH}" fill="${fill}" stroke="#d1d5db" stroke-width="1"/>`;
+    s+=`<text x="${x+CW/2}" y="${y+CH/2+4}" text-anchor="middle" font-size="12" font-weight="${fw}" fill="#111827">${escHtml(String(text??''))}</text>`;
+  }
+  cell(0,0,'',true,false);
+  cols.forEach((c,ci)=>cell(0,ci+1,c,true,false));
+  rows.forEach((rLabel,ri)=>{
+    cell(ri+1,0,rLabel,true,false);
+    cols.forEach((c,ci)=>{const isHL=highlight&&highlight[0]===ri&&highlight[1]===ci;cell(ri+1,ci+1,data[ri]?data[ri][ci]:'?',false,isHL);});
+  });
+  return svgWrap(W, H, s);
+}
+function svgSpecialTriangle(spec) {
+  const W=220, H=200, type=spec.triangle_type||'45-45-90';
+  let s='';
+  if(type==='30-60-90'){
+    const ax=40,ay=165,bx=180,by=165,cx2=40,cy2=45;
+    s+=`<polygon points="${ax},${ay} ${bx},${by} ${cx2},${cy2}" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2"/>`;
+    s+=`<polyline points="${ax+12},${ay} ${ax+12},${ay-12} ${ax},${ay-12}" fill="none" stroke="#374151" stroke-width="1.5"/>`;
+    const la=spec.label_a||(spec.missing==='a'?'?':spec.a);
+    const lb=spec.label_b||(spec.missing==='b'?'?':spec.b);
+    const lc=spec.label_c||(spec.missing==='c'?'?':spec.c);
+    const hmx=(bx+cx2)/2,hmy=(by+cy2)/2;
+    s+=`<text x="${hmx+8}" y="${hmy}" font-size="13" font-weight="700" fill="#1e40af">${lc??''}</text>`;
+    s+=`<text x="${(ax+bx)/2}" y="${ay+18}" text-anchor="middle" font-size="13" font-weight="700" fill="#1e40af">${la??''}</text>`;
+    s+=`<text x="${ax-22}" y="${(ay+cy2)/2+4}" text-anchor="middle" font-size="13" font-weight="700" fill="#1e40af">${lb??''}</text>`;
+  } else {
+    const ax=40,ay=160,bx=180,by=160,cx2=40,cy2=20;
+    s+=`<polygon points="${ax},${ay} ${bx},${by} ${cx2},${cy2}" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2"/>`;
+    s+=`<polyline points="${ax+12},${ay} ${ax+12},${ay-12} ${ax},${ay-12}" fill="none" stroke="#374151" stroke-width="1.5"/>`;
+    const la=spec.label_a||(spec.missing==='a'?'?':spec.a);
+    const lc=spec.label_c||(spec.missing==='c'?'?':spec.c);
+    s+=`<text x="${(bx+cx2)/2+8}" y="${(by+cy2)/2}" font-size="13" font-weight="700" fill="#1e40af">${lc??''}</text>`;
+    s+=`<text x="${(ax+bx)/2}" y="${ay+18}" text-anchor="middle" font-size="13" font-weight="700" fill="#1e40af">${la??''}</text>`;
+    s+=`<text x="${ax-22}" y="${(ay+cy2)/2+4}" text-anchor="middle" font-size="13" font-weight="700" fill="#1e40af">${la??''}</text>`;
+  }
+  return svgWrap(W, H, s);
+}
+function svgParabola(spec) {
+  const W=280, H=260, ML=38, MR=16, MT=18, MB=28, pw=W-ML-MR, ph=H-MT-MB;
+  const h=spec.h??0, k=spec.k??0, a=spec.a??1, xrange=spec.x_range??4;
+  const xDataMin=h-xrange, xDataMax=h+xrange;
+  const yAtEnds=a*xrange*xrange+k, yDataMin=a>=0?k:yAtEnds, yDataMax=a>=0?yAtEnds:k;
+  const xpad=xrange*0.18, ypad=Math.max((yDataMax-yDataMin)*0.15,1);
+  const xlo=Math.floor(xDataMin-xpad), xhi=Math.ceil(xDataMax+xpad);
+  const ylo=Math.floor(yDataMin-ypad), yhi=Math.ceil(yDataMax+ypad);
+  function px(x){return ML+(x-xlo)/(xhi-xlo)*pw;} function py(y){return MT+ph-(y-ylo)/(yhi-ylo)*ph;}
+  const ox=px(0), oy=py(0);
+  let s='';
+  for(let gx=xlo;gx<=xhi;gx++)s+=`<line x1="${px(gx)}" y1="${MT}" x2="${px(gx)}" y2="${MT+ph}" stroke="#f3f4f6" stroke-width="1"/>`;
+  for(let gy=ylo;gy<=yhi;gy++)s+=`<line x1="${ML}" y1="${py(gy)}" x2="${ML+pw}" y2="${py(gy)}" stroke="#f3f4f6" stroke-width="1"/>`;
+  const axisOy=Math.min(Math.max(oy,MT),MT+ph), axisOx=Math.min(Math.max(ox,ML),ML+pw);
+  s+=`<line x1="${ML}" y1="${axisOy}" x2="${ML+pw}" y2="${axisOy}" stroke="#9ca3af" stroke-width="1.5"/>`;
+  s+=`<line x1="${axisOx}" y1="${MT}" x2="${axisOx}" y2="${MT+ph}" stroke="#9ca3af" stroke-width="1.5"/>`;
+  const vsx=px(h);
+  s+=`<line x1="${vsx}" y1="${MT}" x2="${vsx}" y2="${MT+ph}" stroke="#4f46e5" stroke-width="1" stroke-dasharray="4,3" opacity="0.35"/>`;
+  const steps=80; let pts=[];
+  for(let i=0;i<=steps;i++){const x=xDataMin+i*(xDataMax-xDataMin)/steps,y=a*(x-h)*(x-h)+k,cx=px(x),cy=py(y);if(cy>=MT-2&&cy<=MT+ph+2)pts.push(`${cx.toFixed(1)},${cy.toFixed(1)}`);}
+  if(pts.length>1)s+=`<polyline points="${pts.join(' ')}" fill="none" stroke="#4f46e5" stroke-width="2.5"/>`;
+  const vx=px(h),vy=py(k);
+  if(vy>=MT-4&&vy<=MT+ph+4){s+=`<circle cx="${vx}" cy="${vy}" r="4" fill="#4f46e5"/>`;if(spec.vertex_label!==false){const above=vy>MT+20;s+=`<text x="${vx+7}" y="${above?vy-6:vy+14}" font-size="11" font-weight="700" fill="#4f46e5">(${h}, ${k})</text>`;}}
+  (spec.roots||spec.x_intercepts||[]).filter(Boolean).forEach(r=>{const rx2=px(r),ry2=axisOy;s+=`<circle cx="${rx2}" cy="${ry2}" r="4" fill="none" stroke="#ef4444" stroke-width="2"/>`;s+=`<text x="${rx2}" y="${ry2+14}" text-anchor="middle" font-size="10" fill="#ef4444">${r}</text>`;});
+  return svgWrap(W, H, s);
+}
+function renderSympyDiagram(spec, hostEl) {
+  if (!spec || !hostEl) return;
+  let html = '';
+  switch (spec.type) {
+    case 'coordinate_plane':    html = svgCoordinatePlane(spec);  break;
+    case 'right_triangle':      html = svgRightTriangle(spec);    break;
+    case 'rectangle':           html = svgRectangle(spec);        break;
+    case 'triangle':            html = svgTriangle(spec);         break;
+    case 'composite_rectangle': html = svgCompositeRect(spec);    break;
+    case 'scaled_rectangle':    html = svgScaledRect(spec);       break;
+    case 'circle':              html = svgCircle(spec);           break;
+    case 'cylinder':            html = svgCylinder(spec);         break;
+    case 'cone':                html = svgCone(spec);             break;
+    case 'sphere':              html = svgSphere(spec);           break;
+    case 'rectangular_prism':   html = svgRectPrism(spec);        break;
+    case 'parallelogram':       html = svgParallelogram(spec);    break;
+    case 'trapezoid':           html = svgTrapezoid(spec);        break;
+    case 'house_shape':         html = svgHouseShape(spec);       break;
+    case 'bar_chart':           html = svgBarChart(spec);         break;
+    case 'pie_chart':           html = svgPieChart(spec);         break;
+    case 'number_line':         html = svgNumberLine(spec);       break;
+    case 'scatter_plot':        html = svgScatterPlot(spec);      break;
+    case 'box_plot':            html = svgBoxPlot(spec);          break;
+    case 'two_way_table':       html = svgTwoWayTable(spec);      break;
+    case 'special_triangle':    html = svgSpecialTriangle(spec);  break;
+    case 'parabola':            html = svgParabola(spec);         break;
+  }
+  if (html) hostEl.innerHTML = html;
+}
+
+// ── Utilities ─────────────────────────────────────────────────────────────────
+function escHtml(s) {
+  if (s == null) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function applyKaTeX(el) {
+  if (typeof renderMathInElement === 'function') {
+    renderMathInElement(el, {
+      delimiters: [
+        { left: '\\[', right: '\\]', display: true },
+        { left: '\\(', right: '\\)', display: false },
+        { left: '$$',  right: '$$',  display: true  },
+      ],
+      throwOnError: false
+    });
+  }
+}
+
+// ── Main render ───────────────────────────────────────────────────────────────
+function renderQuestion(q) {
+  const skill   = q.skill   || '';
+  const tpl     = (q.params && q.params.tpl) || (q.params && q.params.template) || '';
+  const variant = (q.params && q.params.variant) || '';
+  const diff    = q.difficulty || '';
+  const diffLabel = diff === 1 ? 'Easy' : diff === 2 ? 'Medium' : diff === 3 ? 'Hard' : `d${diff}`;
+  const diffClass = `d${Math.min(diff, 3)}`;
+
+  // Build 4 choices: sort numerically if possible, else alphabetically
+  const allChoices = [
+    { text: String(q.verifiedAnswer ?? ''), correct: true },
+    ...((q.distractors || []).map(d => ({ text: String(d), correct: false })))
+  ];
+  allChoices.sort((a, b) => {
+    const na = parseFloat(a.text), nb = parseFloat(b.text);
+    return (!isNaN(na) && !isNaN(nb)) ? na - nb : a.text.localeCompare(b.text);
+  });
+
+  const labels = ['A', 'B', 'C', 'D'];
+  const stem = q.exactStem || null;
+  const ctx  = q.questionContext || '';
+
+  let html = `<div class="badge">${escHtml(skill)} · ${escHtml(tpl)} · ${escHtml(variant)}<span class="diff-pill ${diffClass}">${diffLabel}</span></div>`;
+
+  if (stem) {
+    html += `<div class="stem">${escHtml(stem)}</div>`;
+  } else {
+    html += `<div class="context-note">${escHtml(ctx)}</div>`;
+  }
+
+  if (q.diagramSpec) {
+    html += `<div class="diagram-host" id="diag-host"></div>`;
+  }
+
+  if (q.questionType === 'spr') {
+    const range = (q.sprMin != null && q.sprMax != null) ? ` (range: ${q.sprMin}–${q.sprMax})` : '';
+    html += `<div class="spr-answer">&#10003; Answer: ${escHtml(String(q.verifiedAnswer ?? ''))}${escHtml(range)}</div>`;
+  } else {
+    html += `<div class="choices">`;
+    allChoices.forEach((c, i) => {
+      const cls = c.correct ? 'choice correct' : 'choice';
+      const badge = c.correct ? '<span class="correct-badge">✓ CORRECT</span>' : '';
+      html += `<div class="${cls}"><span class="choice-label">${labels[i]}</span><span class="choice-text">${escHtml(c.text)}</span>${badge}</div>`;
+    });
+    html += `</div>`;
+  }
+
+  document.getElementById('card-inner').innerHTML = html;
+
+  if (q.diagramSpec) {
+    const host = document.getElementById('diag-host');
+    if (host) renderSympyDiagram(q.diagramSpec, host);
+  }
+
+  // KaTeX: run now if ready, else retry after CDN loads
+  const card = document.getElementById('question-card');
+  if (window._katexReady) {
+    applyKaTeX(card);
+  } else {
+    setTimeout(() => applyKaTeX(card), 800);
+  }
+}
+
+window.renderQuestion = renderQuestion;
+</script>
+</body>
+</html>

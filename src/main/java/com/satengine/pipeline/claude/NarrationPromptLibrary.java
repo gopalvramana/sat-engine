@@ -80,6 +80,13 @@ Rules for alternativeApproach:
 - Keep it to 2–3 sentences, plain English
 - If no meaningful alternative exists, set to null
 
+Rules for explanationSteps language:
+- Use DIRECT IMPERATIVE: "Square both sides", "Substitute x=6", "Factor the quadratic", "Divide by 4".
+- Each step must state what is done and its result. No self-correction, no second-guessing.
+- NEVER write thinking-out-loud phrases: "wait", "let me check", "let me recalculate", "let's verify", "hmm", "actually (at sentence start)", "that's not right", "oh,", "on re-examination", "recalculate more carefully".
+- If a computation needs re-derivation, redo it silently in the next step — do not narrate the correction.
+- Each step should be self-contained and confident. A reader should never see the narrator doubting.
+
 Rules for diagram questions (when a graph or diagram is shown):
 - NEVER state the slope of the graphed line in the question stem
 - NEVER state the y-intercept or any coordinate of the graphed line in the question stem
@@ -234,6 +241,14 @@ Rules:
 - "is_ambiguous" = true only when a correct student could arrive at two different valid answers
 - "answer_leaked" = true when the correct letter/value is obvious from the stem or choice wording
 - If intent is null or empty, set stem_matches_intent to true (no intent to check against)
+
+Reasoning discipline — CRITICAL:
+- Work through each check silently before writing the JSON.
+- Set every boolean field based on your FINAL conclusion only.
+- The "reasoning" value must be one sentence that states your final verdict — not a transcript of your working.
+- NEVER write "wait", "actually", "let me re-check", "hmm", "on re-examination", or any self-correction
+  inside the reasoning field. If you catch an error mid-calculation, correct it silently and state only
+  the final result. A reasoning field that contains self-correction language is always wrong — rewrite it.
 """;
 
     /**

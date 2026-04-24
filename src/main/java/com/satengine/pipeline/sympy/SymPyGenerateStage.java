@@ -68,7 +68,9 @@ public class SymPyGenerateStage {
             Map.entry("special_triangles",          "geometry_trigonometry"),
             Map.entry("trigonometry",               "geometry_trigonometry"),
             Map.entry("quadratic_functions",        "advanced_math"),
-            Map.entry("scatterplot_analysis",       "problem_solving_data_analysis")
+            Map.entry("scatterplot_analysis",       "problem_solving_data_analysis"),
+            Map.entry("equivalent_expressions",     "advanced_math"),
+            Map.entry("nonlinear_equations",         "advanced_math")
     );
 
     // Skill → human-readable name
@@ -101,7 +103,9 @@ public class SymPyGenerateStage {
             Map.entry("special_triangles",          "Special triangles (30-60-90, 45-45-90)"),
             Map.entry("trigonometry",               "Trigonometry (sin, cos, tan)"),
             Map.entry("quadratic_functions",        "Quadratic functions"),
-            Map.entry("scatterplot_analysis",       "Scatterplots and line of best fit")
+            Map.entry("scatterplot_analysis",       "Scatterplots and line of best fit"),
+            Map.entry("equivalent_expressions",     "Equivalent expressions"),
+            Map.entry("nonlinear_equations",         "Nonlinear equations in one variable")
     );
 
     // Skill code suffix for external IDs
@@ -134,7 +138,9 @@ public class SymPyGenerateStage {
             Map.entry("special_triangles",          "SPT"),
             Map.entry("trigonometry",               "TRG"),
             Map.entry("quadratic_functions",        "QFN"),
-            Map.entry("scatterplot_analysis",       "SCA")
+            Map.entry("scatterplot_analysis",       "SCA"),
+            Map.entry("equivalent_expressions",     "EXP"),
+            Map.entry("nonlinear_equations",         "NLE")
     );
 
     private final MathObjectService          mathObjectService;

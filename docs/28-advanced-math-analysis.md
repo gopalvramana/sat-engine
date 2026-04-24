@@ -69,9 +69,13 @@ They are not Bluebook Advanced Math skills. No redesign needed for those generat
 | d3 | `polynomial_coefficient_find` | Expand polynomial product; identify coefficient of specific term |
 | d3 | `exponent_equation_solve` | Solve `p^(3n−1)=t^(8/3)` type — rational exponent equation |
 
-### NLF — 28 templates
+### NLF — 30 templates
 
 **Function types observed:** quadratic, exponential (a·bˣ), radical (√x±c), rational (1/kx), absolute value, cubic, piecewise.
+
+**Two additional templates added 2026-04-23 (not from Bluebook screenshots — added by design decision):**
+- `function_composition` — covers f(g(x)) which Bluebook tests but was not in the original 28-template inventory
+- `inequality_system_nonlinear` — covers systems where at least one boundary is nonlinear (parabola inequality); decided to place in NLF rather than LIN
 
 | d | Template | Description |
 |---|---|---|
@@ -92,6 +96,8 @@ They are not Bluebook Advanced Math skills. No redesign needed for those generat
 | d2 | `exponential_growth_rate` | f(x)=a(1.06)^(x/12); interpret growth rate percentage |
 | d2 | `function_table_shift` | Given f(x) table, find table for y=f(x)−3 |
 | d2 | `graph_read_intercept_nonlinear` | Graph of radical/log function shown; what is the y-intercept? |
+| d2 | `function_composition` | Given f(x) and g(x) as simple formulas, compute f(g(a)) at a specific integer value |
+| d2 | `inequality_system_nonlinear` | Which ordered pair (x,y) satisfies both a linear inequality and y < ax²+bx+c (or y > …)? |
 | d3 | `max_in_context` | f(x)=ax²+bx+c (a<0); at what x is the maximum? Uses axis of symmetry x=−b/2a |
 | d3 | `compound_function_max` | g(t)=f(t)+k; find maximum of g using vertex of f |
 | d3 | `vertex_from_zeros` | f(r₁)=f(r₂)=0; find x-coordinate of vertex = (r₁+r₂)/2 |

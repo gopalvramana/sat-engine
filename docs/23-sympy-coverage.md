@@ -496,5 +496,6 @@ Uses SAT 3-level taxonomy (d1=Easy, d2=Medium, d3=Hard). Full variant-driven ref
 | Histogram diagram | Would require a frequency-distribution statistics sub-type |
 | Unit circle diagram | Full trig unit circle; current TRG uses right_triangle |
 | Compound bar / stacked bar | Multi-variable data analysis not yet modeled |
-| Systems of linear inequalities | Compound constraint problems |
+| Systems of nonlinear inequalities | Assigned to NLF (`inequality_system_nonlinear` d2 template) — implement when NLF is built |
+| Function composition f(g(x)) | Assigned to NLF (`function_composition` d2 template) — implement when NLF is built |
 | Inference / margin of error | Statistical sampling questions |
