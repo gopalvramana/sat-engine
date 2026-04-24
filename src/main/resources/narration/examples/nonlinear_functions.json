@@ -183,6 +183,63 @@
     }
   },
   {
+    "difficulty": "easy",
+    "stem": "The function f is defined by f(x) = |x − 5|. What is the value of f(−2)?\nA. −7\nB. 3\nC. 7\nD. 10",
+    "type": "evaluate_other_nonlinear/find_absolute_value_output — evaluate absolute value function at integer (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["value of f"],
+    "why_this_difficulty": "Easy — substitute: |(−2) − 5| = |−7| = 7; tests that student applies absolute value after substitution",
+    "distractor_rationales": {
+      "A": "Student skipped the absolute value step: (−2) − 5 = −7",
+      "B": "Student applied |x + 5| instead of |x − 5|: |−2 + 5| = |3| = 3",
+      "D": "Student computed |x| · 5 = |−2| · 5 = 2 · 5 = 10, treating multiplication instead of subtraction"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "The function g is defined by g(x) = |2x + 3|. What is the value of g(−4)?",
+    "type": "evaluate_other_nonlinear/find_absolute_value_output — evaluate absolute value with coefficient at negative input (SPR)",
+    "correct": "5",
+    "sat_key_phrases": ["value of g"],
+    "why_this_difficulty": "Easy — 2(−4) + 3 = −8 + 3 = −5; |−5| = 5; tests order of operations inside absolute value before applying it",
+    "distractor_rationales": null
+  },
+  {
+    "difficulty": "easy",
+    "stem": "The function f is defined by the following:\n\n  f(x) = 3x + 1   if x < 2\n  f(x) = x² − 1   if x ≥ 2\n\nWhat is the value of f(4)?\nA. 7\nB. 13\nC. 15\nD. 17",
+    "type": "piecewise_read_value/find_output_formula — select correct piece then evaluate; x falls in second piece (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["value of f"],
+    "why_this_difficulty": "Easy — since 4 ≥ 2, use the second piece: 4² − 1 = 16 − 1 = 15; key step is identifying the right piece before computing",
+    "distractor_rationales": {
+      "A": "Student evaluated the first piece at the boundary x = 2: 3(2) + 1 = 7",
+      "B": "Student used the first piece (x < 2) for x = 4: 3(4) + 1 = 13",
+      "D": "Student computed 4² + 1 = 17, adding 1 instead of subtracting in the second piece"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "The function g is defined by the following:\n\n  g(x) = 2x       if x ≤ −1\n  g(x) = x² + 3   if x > −1\n\nWhat is the value of g(−3)?",
+    "type": "piecewise_read_value/find_output_formula — select correct piece then evaluate; x falls in first piece with negative input (SPR)",
+    "correct": "-6",
+    "sat_key_phrases": ["value of g"],
+    "why_this_difficulty": "Easy — since −3 ≤ −1, use the first piece: 2(−3) = −6; tests piece selection for negative x and correct sign handling",
+    "distractor_rationales": null
+  },
+  {
+    "difficulty": "easy",
+    "stem": "The graph of y = f(x) is shown in the xy-plane. The graph consists of two pieces: a horizontal segment at y = 3 for −4 ≤ x ≤ 0, and a line segment from (0, −2) to (4, 6) for 0 < x ≤ 4. What is the value of f(−2)?\nA. −2\nB. 2\nC. 3\nD. 6",
+    "type": "piecewise_read_value/find_output_graph — read f(a) from graph where a falls in the flat left piece (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["value of f"],
+    "why_this_difficulty": "Easy — x = −2 falls in [−4, 0]; read the y-value from the horizontal segment: y = 3",
+    "distractor_rationales": {
+      "A": "Student read from the second piece, which starts at (0, −2); its y-intercept is −2",
+      "B": "Student located x = 2 (not x = −2) on the second segment and read y ≈ 2",
+      "D": "Student read the far endpoint (4, 6) of the second piece instead of locating x = −2"
+    }
+  },
+  {
     "difficulty": "medium",
     "stem": "The function f is defined by f(x) = 7 · (0.1)^x. What is the value of f(0)?\nA. 0\nB. 0.7\nC. 7\nD. 70",
     "type": "evaluate_exponential_zero/find_initial_value — evaluate a·b^0; tests b⁰=1 understanding (MCQ)",
@@ -888,5 +945,57 @@
     "sat_key_phrases": ["after how many seconds", "height of"],
     "why_this_difficulty": "Hard — set −16t² + 40t + 10 = 34 → −16t² + 40t − 24 = 0 → 2t² − 5t + 3 = 0 → (2t − 3)(t − 1) = 0 → t = 0.5 or t = 1.5; first time = 0.5",
     "distractor_rationales": null
+  },
+  {
+    "difficulty": "medium",
+    "stem": "The table shows selected values of an exponential function f.\n| x    |  0 |  1 |  2 |  3 |\n| f(x) |  3 |  6 | 12 |  ? |\nWhat is the missing value of f(3)?\nA. 18\nB. 20\nC. 24\nD. 36",
+    "type": "exponential_from_table/find_missing_table_value — identify constant ratio and extend table to fill missing cell (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["missing value", "table"],
+    "why_this_difficulty": "Medium — common ratio r = 6/3 = 2; f(3) = 12 · 2 = 24",
+    "distractor_rationales": {
+      "A": "Student treated the table as linear (constant difference): 12 + 6 = 18",
+      "B": "Student used an incorrect ratio or made an arithmetic error",
+      "D": "Student tripled rather than doubled: 12 · 3 = 36"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "The table shows selected values of a quadratic function g.\n| x    | 1 |  2 |  3 |  4 |\n| g(x) | 3 |  8 | 15 |  ? |\nWhat is the missing value?\nA. 20\nB. 22\nC. 24\nD. 28",
+    "type": "identify_quadratic_from_table/find_missing_value — use constant second differences to extend a quadratic table (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["missing value", "table"],
+    "why_this_difficulty": "Medium — first differences: 5, 7; second differences: 2 (constant → confirms quadratic); next first difference: 9; g(4) = 15 + 9 = 24",
+    "distractor_rationales": {
+      "A": "Student added the first first-difference again: 15 + 5 = 20",
+      "B": "Student repeated the last first-difference rather than advancing it: 15 + 7 = 22",
+      "D": "Student incorrectly added 13 as the next difference: 15 + 13 = 28"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "The graph shows the parabola y = x² and the line y = 2x + 8 in the xy-plane. The two curves intersect at (−2, 4) and (4, 16) and divide the plane into four regions labeled I, II, III, and IV. Region I lies between the two curves (above the parabola and below the line for −2 < x < 4). Which region contains all points (x, y) that satisfy both y ≥ x² and y ≤ 2x + 8?\nA. Region I\nB. Region II\nC. Region III\nD. Region IV",
+    "type": "inequality_system_nonlinear/identify_satisfying_region — identify the graph region that satisfies both a linear and a nonlinear inequality (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["satisfy", "both", "region"],
+    "why_this_difficulty": "Medium — y ≥ x² = on or above the parabola; y ≤ 2x + 8 = on or below the line; only Region I (between the curves) satisfies both at once",
+    "distractor_rationales": {
+      "B": "Region II is above the line — fails y ≤ 2x + 8",
+      "C": "Region III is below the parabola — fails y ≥ x²",
+      "D": "Region IV is outside both curves — fails both inequalities"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "The function f is defined by f(x) = ax² + bx + c, where a, b, and c are nonzero constants. The graph of y = f(x) opens upward and has its axis of symmetry at x = 3. Which of the following must be true?\nA. b > 0\nB. b = 0\nC. b < 0\nD. The sign of b cannot be determined",
+    "type": "quadratic_parameter_properties/determine_sign_of_param — use axis-of-symmetry formula to deduce sign of parameter b (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["must be true", "axis of symmetry"],
+    "why_this_difficulty": "Hard — opens upward → a > 0; axis of symmetry x = −b/(2a) = 3; with a > 0, −b/(2a) = 3 > 0 requires −b > 0, so b < 0",
+    "distractor_rationales": {
+      "A": "Student assumed positive axis of symmetry directly implies b > 0; forgot the negative sign in the formula x = −b/(2a)",
+      "B": "b = 0 would give axis x = 0, contradicting x = 3",
+      "D": "The sign is fully determined: with a > 0 and a positive axis of symmetry, b must be negative"
+    }
   }
 ]
