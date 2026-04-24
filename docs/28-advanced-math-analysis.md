@@ -45,7 +45,7 @@ They are not Bluebook Advanced Math skills. No redesign needed for those generat
 |---|---|---|
 | EXP | `equiv_expr` (new, replaces EXR/POL) | ✅ **Implemented** — 13 templates · 25 variants; covers rational expressions, polynomial manipulation, exponent equations |
 | NLE | `nonlinear_equations` (new, replaces QEQ) | ✅ **Implemented** — 22 templates · 42 variants; covers systems, Vieta's, discriminant, tangent, radical equations, literal rearrangement |
-| NLF | `nonlinear_fn` (new, replaces QFN) | 🔜 **Planned** — 30 templates · 55 variants; exponential, radical, rational, quadratic, composition, inequality systems |
+| NLF | `nonlinear_fn` (new, replaces QFN) | 🔜 **Planned** — 31 templates · 58 variants; exponential, radical, rational, quadratic, composition, piecewise, inequality systems |
 
 ---
 
@@ -89,13 +89,14 @@ They are not Bluebook Advanced Math skills. No redesign needed for those generat
 
 **Totals:** d1 → 4 templates / 8 variants · d2 → 4 / 9 · d3 → 5 / 8 = **13 templates · 25 variants**
 
-### NLF — 30 templates
+### NLF — 31 templates
 
 **Function types observed:** quadratic, exponential (a·bˣ), radical (√x±c), rational (1/kx), absolute value, cubic, piecewise.
 
-**Two additional templates added 2026-04-23 (not from Bluebook screenshots — added by design decision):**
+**Three additional templates added 2026-04-23 (not from Bluebook screenshots — added by design decision):**
 - `function_composition` — covers f(g(x)) which Bluebook tests but was not in the original 28-template inventory
 - `inequality_system_nonlinear` — covers systems where at least one boundary is nonlinear (parabola inequality); decided to place in NLF rather than LIN
+- `piecewise_read_value` — piecewise functions observed in Bluebook function-type list; added as d1 template with formula-read and graph-read variants
 
 | d | Template | Description |
 |---|---|---|
@@ -134,17 +135,18 @@ They are not Bluebook Advanced Math skills. No redesign needed for those generat
 
 📊 = requires diagram renderer (parabola / exponential curve SVG)
 
-**d1 — 7 templates · 10 variants**
+**d1 — 8 templates · 13 variants**
 
 | Template | Variants |
 |---|---|
 | `evaluate_polynomial` | `find_output` |
 | `evaluate_exponential` | `find_output` |
-| `evaluate_other_nonlinear` | `find_radical_output`, `find_rational_output` |
+| `evaluate_other_nonlinear` | `find_radical_output`, `find_rational_output`, `find_absolute_value_output` |
 | `interpret_y_intercept_context` | `interpret_initial_value` |
 | `y_intercept_from_graph` 📊 | `identify_ordered_pair` |
 | `vertex_from_graph` 📊 | `find_minimum`, `find_maximum` |
 | `graph_translation` 📊 | `identify_shifted_graph`, `find_output_after_shift` |
+| `piecewise_read_value` | `find_output_formula`, `find_output_graph` 📊 |
 
 **d2 — 12 templates · 23 variants**
 
@@ -179,10 +181,13 @@ They are not Bluebook Advanced Math skills. No redesign needed for those generat
 | `projectile_symmetry` | `find_time_to_return`, `find_max_height` |
 | `model_setup_quadratic` | `write_equation` (SPR), `identify_equation` (MCQ) |
 
-**Totals:** d1 → 7 templates / 10 variants · d2 → 12 / 23 · d3 → 11 / 22 = **30 templates · 55 variants**
+**Totals:** d1 → 8 templates / 13 variants · d2 → 12 / 23 · d3 → 11 / 22 = **31 templates · 58 variants**
 
-**Diagram phase (Phase 2):** parabola and exponential curve SVG renderers needed for 5 templates:
-`y_intercept_from_graph`, `vertex_from_graph`, `graph_translation`, `graph_read_intercept_nonlinear`, `inequality_system_nonlinear` (one variant).
+**New SVG renderers (built in Phase 3 alongside the generator):**
+- `nonlinear_curve` — exponential y=a·bˣ and radical y=√(x+c)+d curves; used by `y_intercept_from_graph`, `graph_translation`, `graph_read_intercept_nonlinear`
+- `piecewise_function` — 2-segment piecewise with open/closed endpoints; used by `piecewise_read_value/find_output_graph`
+- `inequality_nonlinear` — parabola + line with shaded region; used by `inequality_system_nonlinear/identify_satisfying_region`
+- `parabola` renderer already exists — reused for `vertex_from_graph`
 
 ### NLE — 22 templates
 
