@@ -41,11 +41,11 @@ They are not Bluebook Advanced Math skills. No redesign needed for those generat
 
 ## Generator Mapping
 
-| Bluebook Skill | Current generators | Gap |
+| Bluebook Skill | Generator | Status |
 |---|---|---|
-| EXP | EXR (partial) + POL (partial) | EXR covers only exponent rules; POL covers only FOIL/factor. Neither covers rational expressions or equivalent-form identification. |
-| NLF | QFN (quadratic only) | Missing: exponential (very frequent), radical, rational, absolute value, compound functions, reparameterize, projectile symmetry |
-| NLE | QEQ (basic quadratic only) | Missing: systems (linear+quadratic), Vieta's formulas, discriminant analysis, tangent condition, radical equations, hard literal rearrangement |
+| EXP | `equiv_expr` (new, replaces EXR/POL) | ✅ **Implemented** — 13 templates · 25 variants; covers rational expressions, polynomial manipulation, exponent equations |
+| NLE | `nonlinear_equations` (new, replaces QEQ) | ✅ **Implemented** — 22 templates · 42 variants; covers systems, Vieta's, discriminant, tangent, radical equations, literal rearrangement |
+| NLF | `nonlinear_fn` (new, replaces QFN) | 🔜 **Planned** — 30 templates · 55 variants; exponential, radical, rational, quadratic, composition, inequality systems |
 
 ---
 
@@ -68,6 +68,26 @@ They are not Bluebook Advanced Math skills. No redesign needed for those generat
 | d3 | `polynomial_factor_with_constant` | Find integer `k` in factored quadratic; or identify which expression is a factor |
 | d3 | `polynomial_coefficient_find` | Expand polynomial product; identify coefficient of specific term |
 | d3 | `exponent_equation_solve` | Solve `p^(3n−1)=t^(8/3)` type — rational exponent equation |
+
+#### EXP Variant Mapping (✅ implemented — `equiv_expr.py`)
+
+| d | Template | Variants |
+|---|---|---|
+| d1 | `combine_like_terms` | `distribute_first`, `pure_collect` |
+| d1 | `factor_gcf` | `monomial_gcf`, `binomial_gcf` |
+| d1 | `rational_exponent_radical` | `radical_to_exp`, `exp_to_radical` |
+| d1 | `factor_trinomial` | `monic`, `non_monic` |
+| d2 | `polynomial_multiply` | `linear_linear`, `linear_quadratic` |
+| d2 | `add_subtract_polynomials` | `add_type`, `subtract_type` |
+| d2 | `exponent_rules` | `product_rule`, `power_rule`, `negative_exp` |
+| d2 | `factor_polynomial_medium` | `grouping`, `complex_gcf` |
+| d3 | `factor_to_reveal_property` | `complete_square` |
+| d3 | `rational_expression_add` | `poly_denom` |
+| d3 | `polynomial_factor_with_constant` | `find_k`, `identify_factor` |
+| d3 | `polynomial_coefficient_find` | `specific_term`, `compare_forms` |
+| d3 | `exponent_equation_solve` | `rational_exp`, `solve_for_var` |
+
+**Totals:** d1 → 4 templates / 8 variants · d2 → 4 / 9 · d3 → 5 / 8 = **13 templates · 25 variants**
 
 ### NLF — 30 templates
 
@@ -110,7 +130,61 @@ They are not Bluebook Advanced Math skills. No redesign needed for those generat
 | d3 | `projectile_symmetry` | Quadratic projectile; find time to return to height h using parabola symmetry |
 | d3 | `model_setup_quadratic` | Word problem → write quadratic equation representing the situation |
 
-### NLE — 21 templates
+#### NLF Variant Mapping (🔜 planned — `nonlinear_fn.py`)
+
+📊 = requires diagram renderer (parabola / exponential curve SVG)
+
+**d1 — 7 templates · 10 variants**
+
+| Template | Variants |
+|---|---|
+| `evaluate_polynomial` | `find_output` |
+| `evaluate_exponential` | `find_output` |
+| `evaluate_other_nonlinear` | `find_radical_output`, `find_rational_output` |
+| `interpret_y_intercept_context` | `interpret_initial_value` |
+| `y_intercept_from_graph` 📊 | `identify_ordered_pair` |
+| `vertex_from_graph` 📊 | `find_minimum`, `find_maximum` |
+| `graph_translation` 📊 | `identify_shifted_graph`, `find_output_after_shift` |
+
+**d2 — 12 templates · 23 variants**
+
+| Template | Variants |
+|---|---|
+| `evaluate_exponential_zero` | `find_initial_value`, `interpret_initial_value` |
+| `interpret_exponential_statement` | `interpret_output_value`, `interpret_growth_factor` |
+| `minimum_from_vertex_form` | `find_minimum_value`, `find_x_at_minimum` |
+| `x_for_min_from_factored` | `find_x_at_minimum` |
+| `interpret_x_intercept_context` | `interpret_physical_meaning`, `identify_positive_zero` |
+| `exponential_from_table` | `identify_equation_from_table`, `find_missing_table_value` |
+| `identify_quadratic_from_table` | `identify_equation_from_table`, `find_missing_value` |
+| `exponential_growth_rate` | `find_growth_percentage`, `interpret_growth_rate` |
+| `function_table_shift` | `identify_transformed_table`, `find_specific_shifted_value` |
+| `graph_read_intercept_nonlinear` 📊 | `find_y_intercept`, `find_x_intercept` |
+| `function_composition` | `evaluate_f_of_g`, `evaluate_g_of_f` |
+| `inequality_system_nonlinear` | `identify_satisfying_point`, `identify_satisfying_region` 📊 |
+
+**d3 — 11 templates · 22 variants**
+
+| Template | Variants |
+|---|---|
+| `max_in_context` | `find_x_at_max`, `find_max_value` |
+| `compound_function_max` | `find_max_of_compound`, `find_shift_from_max` |
+| `vertex_from_zeros` | `find_vertex_x`, `find_vertex_y` |
+| `identify_equivalent_form` | `reveal_maximum`, `reveal_zeros` |
+| `exponential_two_points` | `find_parameter_value`, `find_product_of_params` |
+| `quadratic_parameter_properties` | `identify_true_statements`, `determine_sign_of_param` |
+| `exponential_reparameterize` | `convert_time_base`, `find_percent_change` |
+| `count_zeros_graph` | `count_x_intercepts`, `count_intersections` |
+| `minimum_completing_square` | `find_minimum_value`, `find_x_at_minimum` |
+| `projectile_symmetry` | `find_time_to_return`, `find_max_height` |
+| `model_setup_quadratic` | `write_equation` (SPR), `identify_equation` (MCQ) |
+
+**Totals:** d1 → 7 templates / 10 variants · d2 → 12 / 23 · d3 → 11 / 22 = **30 templates · 55 variants**
+
+**Diagram phase (Phase 2):** parabola and exponential curve SVG renderers needed for 5 templates:
+`y_intercept_from_graph`, `vertex_from_graph`, `graph_translation`, `graph_read_intercept_nonlinear`, `inequality_system_nonlinear` (one variant).
+
+### NLE — 22 templates
 
 | d | Template | Description |
 |---|---|---|
@@ -118,11 +192,12 @@ They are not Bluebook Advanced Math skills. No redesign needed for those generat
 | d1 | `factored_form_solve` | (x−a)(x+b)=0 already set up; zero product property |
 | d1 | `absolute_value_easy` | \|x−c\|=d; find solutions |
 | d1 | `system_from_graph` | Graph shows parabola + line; identify intersection point |
+| d1 | `literal_equation` | Solve for one variable in terms of others (two or three linear variables) |
 | d2 | `solve_by_factoring` | ax²+bx+c=0; factor and solve, state positive root |
 | d2 | `solve_from_context_area` | Area/geometry word problem → quadratic → factor → positive root |
 | d2 | `rational_equation_solve` | Solve a/(bx+c)=d; multiply and rearrange |
-| d2 | `literal_equation` | Solve for one variable in terms of others (linear or simple nonlinear) |
-| d2 | `absolute_value_medium` | \|x+c\|=d; find sum of solutions or positive solution |
+| d2 | `literal_equation_rational` | Solve for variable in rational or square-root form (multi-step) |
+| d2 | `absolute_value_medium` | \|ax+b\|=−c (no solution) or \|x+c\|=d; find sum of solutions |
 | d2 | `count_solutions_discriminant` | How many real solutions? Compute b²−4ac |
 | d2 | `system_linear_quadratic_solve` | y=ax²+bx+c and y=mx+d; substitute and find x |
 | d3 | `system_one_intersection` | Quadratic+linear system; exactly one intersection → find x-value or constant |
@@ -136,26 +211,55 @@ They are not Bluebook Advanced Math skills. No redesign needed for those generat
 | d3 | `sum_of_roots_cubic` | Cubic or quartic; find sum or product of roots from factored form |
 | d3 | `greatest_intersection_x` | System of equations; find greatest x-value where they intersect |
 
+#### NLE Variant Mapping (✅ implemented — `nonlinear_equations.py`)
+
+| d | Template | Variants |
+|---|---|---|
+| d1 | `perfect_square_solve` | `spr_root`, `mcq_with_coeff` |
+| d1 | `factored_form_solve` | `two_factors`, `three_factors` |
+| d1 | `absolute_value_easy` | `find_positive`, `sum_of_solutions` |
+| d1 | `system_from_graph` | `read_coordinates`, `count_intersections` |
+| d1 | `literal_equation` | `two_var_linear`, `three_var_linear` |
+| d2 | `solve_by_factoring` | `find_root`, `find_sum` |
+| d2 | `solve_from_context_area` | `rectangle_area`, `projectile_context` |
+| d2 | `rational_equation_solve` | `simple_rational`, `rational_with_quadratic` |
+| d2 | `literal_equation_rational` | `rational_form`, `square_root_form` |
+| d2 | `absolute_value_medium` | `find_sum`, `no_solution` |
+| d2 | `count_solutions_discriminant` | `count_roots`, `find_k` |
+| d2 | `system_linear_quadratic_solve` | `find_coordinates`, `find_y` |
+| d3 | `system_one_intersection` | `find_k_in_quadratic`, `find_x` |
+| d3 | `vieta_sum_of_roots` | `sum_of_roots`, `product_of_roots` |
+| d3 | `discriminant_no_solution` | `least_integer_k`, `greatest_integer_b` |
+| d3 | `tangent_condition` | `find_c`, `find_slope` |
+| d3 | `radical_equation_solve` | `simple_radical`, `square_both_sides` |
+| d3 | `literal_rearrangement_hard` | `solve_for_var` |
+| d3 | `count_distinct_zeros` | `factored_form`, `identify_factor` |
+| d3 | `discriminant_constant_find` | `find_constant` |
+| d3 | `sum_of_roots_cubic` | `sum_of_roots`, `product_of_roots` |
+| d3 | `greatest_intersection_x` | `greatest_x`, `find_y` |
+
+**Totals:** d1 → 5 templates / 10 variants · d2 → 7 / 14 · d3 → 10 / 18 = **22 templates · 42 variants**
+
 ---
 
 ## Scale Estimate
 
-| Skill | Templates | Est. variants (~2.5 avg) |
-|---|---|---|
-| EXP | 13 | ~33 |
-| NLF | 28 | ~70 |
-| NLE | 21 | ~53 |
-| **Total** | **62** | **~156 variants** |
+| Skill | Templates | Variants | Status |
+|---|---|---|---|
+| EXP | 13 | 25 | ✅ Implemented |
+| NLE | 22 | 42 | ✅ Implemented |
+| NLF | 30 | 55 | 🔜 Planned |
+| **Total** | **65** | **122** | |
 
 **Algebra comparison:** 5 skills → 88 templates → 216 variants  
-**Advanced Math:** 3 generators → 62 templates → ~156 variants (≈ 70% of Algebra workload)
+**Advanced Math:** 3 generators → 65 templates → 122 variants (≈ 57% of Algebra workload)
 
 ---
 
-## Implementation Order (when ready)
+## Implementation Order + Status
 
-1. **EXP** — smallest (13 templates), cleanest cognitive types, no diagrams
-2. **NLE** — 21 templates, builds on Algebra QEQ; adds systems + discriminant
-3. **NLF** — largest (28 templates), most diverse function types; do last
+1. ✅ **EXP** — 13 templates · 25 variants — implemented (`equiv_expr.py`), pipeline.html tested
+2. ✅ **NLE** — 22 templates · 42 variants — implemented (`nonlinear_equations.py`), pipeline.html tested
+3. 🔜 **NLF** — 30 templates · 55 variants — planned (`nonlinear_fn.py`); largest skill, most diverse function types
 
-Per methodology: narration examples before generator code. All examples written and coverage table approved before Phase 2.
+Per methodology: narration examples before generator code. All examples written and coverage table approved before Phase 2 (diagram renderers).
