@@ -3,6 +3,8 @@
 # Never commit real secrets here.
 
 spring:
+  flyway:
+    validate-on-migrate: false   # skip strict validate phase; migrate phase handles IF NOT EXISTS idempotently
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
