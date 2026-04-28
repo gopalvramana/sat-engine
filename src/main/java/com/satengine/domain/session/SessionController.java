@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.satengine.dto.*;
 import com.satengine.dto.SessionAnswerDetail;
+import com.satengine.dto.SessionQuestionResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -124,6 +125,65 @@ public class SessionController {
         log.info("answer submitted session={} question={} correct={}",
                 id, request.questionId(), feedback.isCorrect());
         return ResponseEntity.ok(feedback);
+    }
+
+    /**
+     * GET /api/sessions/active
+     * Returns the most recent active session for the user (for resume detection).
+     * Returns 204 if no active session exists.
+     */
+    @GetMapping("/active")
+    public ResponseEntity<SessionResponse> getActiveSession(HttpSession httpSession) {
+        UUID userId = requireAuth(httpSession);
+        return sessionService.getActiveSessionForUser(userId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.noContent().build());
+    }
+
+    /**
+     * GET /api/sessions/{id}/questions
+     * Returns all pre-queued questions for the session in position order.
+     * Pre-selects and caches them on first call; includes existing answers for resume.
+     */
+    @GetMapping("/{id}/questions")
+    public ResponseEntity<List<SessionQuestionResponse>> getSessionQuestions(
+            @PathVariable UUID id,
+            HttpSession httpSession
+    ) {
+        UUID userId = requireAuth(httpSession);
+        sessionService.requireOwnership(id, userId);
+        return ResponseEntity.ok(sessionService.getSessionQuestions(id));
+    }
+
+    /**
+     * PATCH /api/sessions/{id}/questions/{questionId}/mark
+     * Toggle the "marked for review" flag on a session question.
+     */
+    @PatchMapping("/{id}/questions/{questionId}/mark")
+    public ResponseEntity<Map<String, Boolean>> toggleMark(
+            @PathVariable UUID id,
+            @PathVariable UUID questionId,
+            HttpSession httpSession
+    ) {
+        UUID userId = requireAuth(httpSession);
+        sessionService.requireOwnership(id, userId);
+        boolean marked = sessionService.toggleMark(id, questionId);
+        return ResponseEntity.ok(Map.of("marked", marked));
+    }
+
+    /**
+     * POST /api/sessions/{id}/complete
+     * Mark the session as completed (called when student submits the session).
+     */
+    @PostMapping("/{id}/complete")
+    public ResponseEntity<Void> completeSession(
+            @PathVariable UUID id,
+            HttpSession httpSession
+    ) {
+        UUID userId = requireAuth(httpSession);
+        sessionService.requireOwnership(id, userId);
+        sessionService.completeSession(id);
+        return ResponseEntity.noContent().build();
     }
 
     /**

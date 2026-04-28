@@ -1,0 +1,60 @@
+{
+  "skillKey": "polynomials",
+  "domain": "advanced_math",
+  "section": "math",
+  "label": "Polynomials",
+  "overview": "Polynomial questions on the SAT cover adding, subtracting, multiplying, and dividing polynomials; factoring; identifying zeros and their multiplicity; and applying the Remainder Theorem. A polynomial p(x) has (x − r) as a factor if and only if p(r) = 0 (the Factor Theorem).",
+
+  "conceptDiagram": {
+    "caption": "The Remainder Theorem: p(r) tells you the remainder when p(x) is divided by (x − r)",
+    "svg": "<svg viewBox='0 0 340 185' xmlns='http://www.w3.org/2000/svg' font-family=\"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\"><rect width='340' height='185' fill='#fff7ed' rx='10'/><rect x='12' y='15' width='148' height='155' fill='#fff' rx='8' stroke='#fed7aa' stroke-width='1.5'/><text x='86' y='38' font-size='11' font-weight='800' fill='#c2410c' text-anchor='middle'>Remainder Theorem</text><text x='86' y='60' font-size='10' fill='#374151' text-anchor='middle'>p(x) ÷ (x − r)</text><text x='86' y='80' font-size='10' fill='#374151' text-anchor='middle'>remainder = p(r)</text><text x='86' y='108' font-size='10' fill='#64748b' text-anchor='middle'>p(x) = x² + 3x − 4</text><text x='86' y='128' font-size='10' fill='#64748b' text-anchor='middle'>Divide by (x − 1):</text><text x='86' y='150' font-size='11' font-weight='700' fill='#ea580c' text-anchor='middle'>p(1) = 1 + 3 − 4 = 0</text><text x='86' y='167' font-size='9' fill='#c2410c' text-anchor='middle'>→ (x−1) is a factor!</text><rect x='175' y='15' width='153' height='155' fill='#fff' rx='8' stroke='#fed7aa' stroke-width='1.5'/><text x='251' y='38' font-size='11' font-weight='800' fill='#c2410c' text-anchor='middle'>Factor Theorem</text><text x='251' y='60' font-size='10' fill='#374151' text-anchor='middle'>p(r) = 0 ↔ (x − r) is a factor</text><text x='251' y='88' font-size='10' fill='#64748b' text-anchor='middle'>x² + 3x − 4</text><text x='251' y='108' font-size='10' fill='#64748b' text-anchor='middle'>= (x − 1)(x + 4)</text><text x='251' y='130' font-size='10' fill='#374151' text-anchor='middle'>Zeros at x = 1 and x = −4</text><text x='251' y='152' font-size='9' fill='#c2410c' text-anchor='middle'>p(1) = 0  ✓   p(−4) = 0  ✓</text></svg>"
+  },
+
+  "keyFormulas": [
+    { "name": "FOIL / multiplication", "latex": "(a+b)(c+d) = ac + ad + bc + bd" },
+    { "name": "Difference of squares", "latex": "a^2 - b^2 = (a+b)(a-b)" },
+    { "name": "Perfect square trinomial", "latex": "(a \\pm b)^2 = a^2 \\pm 2ab + b^2" },
+    { "name": "Remainder Theorem", "latex": "p(x) \\div (x-r) \\text{ has remainder } p(r)" },
+    { "name": "Factor Theorem", "latex": "p(r)=0 \\iff (x-r) \\text{ is a factor of } p(x)" }
+  ],
+
+  "workedExamples": [
+    {
+      "problem": "If p(x) = x³ − 2x² − 5x + 6, verify that x = 3 is a zero and factor completely.",
+      "steps": [
+        {
+          "title": "Verify using the Factor Theorem",
+          "content": "Substitute x = 3 into p(x).",
+          "math": "p(3) = 27 - 18 - 15 + 6 = 0 \\checkmark"
+        },
+        {
+          "title": "Divide out (x − 3) using synthetic or polynomial division",
+          "content": "x³ − 2x² − 5x + 6 ÷ (x − 3) = x² + x − 2",
+          "math": null
+        },
+        {
+          "title": "Factor the quotient",
+          "content": "",
+          "math": "x^2 + x - 2 = (x+2)(x-1)"
+        },
+        {
+          "title": "Write the complete factorisation",
+          "content": "",
+          "math": "p(x) = (x-3)(x+2)(x-1)"
+        }
+      ]
+    }
+  ],
+
+  "commonMistakes": [
+    {
+      "mistake": "Multiplying (a + b)² as a² + b² (forgetting the middle term)",
+      "fix": "(a + b)² = a² + 2ab + b². Always square both terms AND include twice their product."
+    },
+    {
+      "mistake": "Confusing a zero of the polynomial with a factor — saying 'the zero is (x − 3)'",
+      "fix": "The zero is the number x = 3. The factor is the expression (x − 3)."
+    }
+  ],
+  "quickTip": "On SAT polynomial questions, try the Remainder Theorem before long division — it's much faster. If p(r) = 0, you immediately know (x − r) is a factor."
+}

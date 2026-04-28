@@ -1,0 +1,53 @@
+{
+  "skillKey": "scatterplot_analysis",
+  "domain": "problem_solving_data",
+  "section": "math",
+  "label": "Scatterplot Analysis",
+  "overview": "Scatterplots display the relationship between two quantitative variables. SAT questions ask you to identify the direction (positive/negative) and strength of association, interpret the line of best fit (slope and y-intercept in context), read predicted values, identify outliers, and distinguish correlation from causation.",
+
+  "conceptDiagram": {
+    "caption": "Direction and strength of association — and the line of best fit",
+    "svg": "<svg viewBox='0 0 340 185' xmlns='http://www.w3.org/2000/svg' font-family=\"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\"><rect width='340' height='185' fill='#f8fafc' rx='10'/><rect x='8' y='8' width='100' height='169' fill='#dcfce7' rx='7'/><text x='58' y='26' font-size='10' font-weight='800' fill='#166534' text-anchor='middle'>Positive</text><line x1='18' y1='160' x2='98' y2='25' stroke='#16a34a' stroke-width='1.5' stroke-dasharray='3,2'/><circle cx='25' cy='148' r='3' fill='#15803d'/><circle cx='35' cy='130' r='3' fill='#15803d'/><circle cx='48' cy='110' r='3' fill='#15803d'/><circle cx='58' cy='95' r='3' fill='#15803d'/><circle cx='70' cy='78' r='3' fill='#15803d'/><circle cx='82' cy='55' r='3' fill='#15803d'/><circle cx='92' cy='40' r='3' fill='#15803d'/><rect x='118' y='8' width='100' height='169' fill='#fee2e2' rx='7'/><text x='168' y='26' font-size='10' font-weight='800' fill='#991b1b' text-anchor='middle'>Negative</text><line x1='128' y1='25' x2='208' y2='160' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3,2'/><circle cx='135' cy='38' r='3' fill='#dc2626'/><circle cx='145' cy='55' r='3' fill='#dc2626'/><circle cx='158' cy='78' r='3' fill='#dc2626'/><circle cx='168' cy='95' r='3' fill='#dc2626'/><circle cx='180' cy='112' r='3' fill='#dc2626'/><circle cx='192' cy='135' r='3' fill='#dc2626'/><circle cx='202' cy='150' r='3' fill='#dc2626'/><rect x='228' y='8' width='104' height='169' fill='#f1f5f9' rx='7'/><text x='280' y='26' font-size='10' font-weight='800' fill='#475569' text-anchor='middle'>No association</text><circle cx='240' cy='50' r='3' fill='#64748b'/><circle cx='268' cy='120' r='3' fill='#64748b'/><circle cx='255' cy='80' r='3' fill='#64748b'/><circle cx='300' cy='45' r='3' fill='#64748b'/><circle cx='288' cy='140' r='3' fill='#64748b'/><circle cx='245' cy='155' r='3' fill='#64748b'/><circle cx='310' cy='95' r='3' fill='#64748b'/><circle cx='325' cy='60' r='3' fill='#64748b'/></svg>"
+  },
+
+  "keyFormulas": [
+    { "name": "Line of best fit", "latex": "\\hat{y} = mx + b \\quad (m=\\text{slope},\\ b=\\text{y-intercept})" },
+    { "name": "Slope interpretation", "latex": "m = \\text{change in } y \\text{ per unit increase in } x" },
+    { "name": "Residual", "latex": "\\text{residual} = \\text{actual } y - \\text{predicted } \\hat{y}" }
+  ],
+
+  "workedExamples": [
+    {
+      "problem": "A line of best fit for a scatterplot of study hours (x) vs test score (y) is ŷ = 5x + 50. Interpret the slope and predict the score for 8 hours of study.",
+      "steps": [
+        {
+          "title": "Interpret the slope",
+          "content": "Slope = 5 means: for each additional hour of study, the predicted test score increases by 5 points.",
+          "math": null
+        },
+        {
+          "title": "Interpret the y-intercept",
+          "content": "y-intercept = 50 means: a student who studies 0 hours is predicted to score 50.",
+          "math": null
+        },
+        {
+          "title": "Predict for x = 8",
+          "content": "",
+          "math": "\\hat{y} = 5(8) + 50 = 90"
+        }
+      ]
+    }
+  ],
+
+  "commonMistakes": [
+    {
+      "mistake": "Confusing correlation with causation — 'more study causes higher scores'",
+      "fix": "A scatterplot shows association, not causation. Two variables can be correlated due to a third hidden variable or by coincidence."
+    },
+    {
+      "mistake": "Reading the y-intercept as the slope, or vice versa",
+      "fix": "Slope (m) is the coefficient of x — the rate of change. Y-intercept (b) is the value when x = 0. In ŷ = 5x + 50, slope is 5, y-intercept is 50."
+    }
+  ],
+  "quickTip": "When interpreting the line of best fit in context, always reference the actual units of x and y in your description. 'For each additional [x-unit], y increases/decreases by [slope] [y-units]' is the template."
+}

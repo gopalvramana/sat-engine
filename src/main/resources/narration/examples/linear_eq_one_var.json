@@ -437,5 +437,192 @@
     ],
     "why_this_difficulty": "Hard: requires simplifying a compound fraction, then applying two simultaneous conditions for infinitely many solutions — coefficient match and constant match.",
     "sat_key_phrases": ["In the given equation, ... are constants", "has infinitely many solutions", "what is the value of"]
+  },
+  {
+    "difficulty": "easy",
+    "framing": "select_modeling_equation",
+    "stem": "A car wash charges $4 per vehicle, plus a flat $10 daily equipment fee. Which equation represents the total amount earned, d, on a day when n vehicles are washed?\nA. d = 4n\nB. d = 10n + 4\nC. d = 4n + 10\nD. d = 4(n + 10)",
+    "type": "mcq",
+    "correct": "C",
+    "distractor_rationales": {
+      "A": "Omits the flat $10 equipment fee entirely",
+      "B": "Swaps the roles of 4 and 10 — treats $10 as the per-vehicle rate and $4 as the flat fee",
+      "D": "Incorrectly distributes 4 over (n + 10), implying the $10 fee also scales with the per-vehicle rate"
+    },
+    "solution_steps": [
+      "Identify the two components: $4 per vehicle → 4n, and $10 flat fee → +10",
+      "Total earned: d = 4n + 10"
+    ],
+    "why_this_difficulty": "Easy: one-step translation; two components (per-unit rate + flat fee) map directly to mx + b form.",
+    "sat_key_phrases": ["which equation represents", "represents this situation", "total amount"]
+  },
+  {
+    "difficulty": "easy",
+    "framing": "select_modeling_equation",
+    "stem": "A group of friends splits a $12 delivery fee equally, and each person also pays $8 for their own meal. Which equation represents the total amount t each person pays if there are p people in the group?\nA. t = 8p + 12\nB. t = 8 + 12p\nC. t = 8 + 12/p\nD. t = (8 + 12)/p",
+    "type": "mcq",
+    "correct": "C",
+    "distractor_rationales": {
+      "A": "Treats both costs as per-person rates — applies p to the delivery fee instead of dividing by it",
+      "B": "Treats the $12 delivery fee as a per-person charge rather than a shared cost",
+      "D": "Divides the entire sum by p, incorrectly splitting the individual $8 meal cost as well"
+    },
+    "solution_steps": [
+      "Each person's share of the delivery fee: 12/p",
+      "Each person's meal cost: 8 (fixed per person)",
+      "Total per person: t = 8 + 12/p"
+    ],
+    "why_this_difficulty": "Easy: two components but one involves division; student must recognise which cost is shared vs individual.",
+    "sat_key_phrases": ["which equation represents", "total amount each person pays"]
+  },
+  {
+    "difficulty": "medium",
+    "framing": "select_modeling_equation",
+    "stem": "A factory produces standard parts at 15 per hour and deluxe parts at 6 per hour. Which equation represents the total number of parts T produced when the factory runs s hours on standard parts and d hours on deluxe parts?\nA. T = 15s + 6d\nB. T = 21(s + d)\nC. T = 6s + 15d\nD. T = 15s − 6d",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Adds both rates (15 + 6 = 21) and applies to total hours — wrong structure; rates only apply to their own hours",
+      "C": "Swaps the rates: applies 6 to standard hours and 15 to deluxe hours",
+      "D": "Subtracts instead of adding the two production totals"
+    },
+    "solution_steps": [
+      "Standard output: 15 parts/hour × s hours = 15s",
+      "Deluxe output: 6 parts/hour × d hours = 6d",
+      "Total: T = 15s + 6d"
+    ],
+    "why_this_difficulty": "Medium: two independent rates applied to two separate time variables; student must resist combining rates incorrectly.",
+    "sat_key_phrases": ["which equation represents", "total number", "per hour"]
+  },
+  {
+    "difficulty": "medium",
+    "framing": "select_modeling_equation",
+    "stem": "A plumber charges $65 for the first hour and $40 for each additional hour. Which equation represents the total charge c, in dollars, for a job that takes h hours, where h ≥ 1?\nA. c = 65h\nB. c = 40h + 65\nC. c = 65 + 40(h − 1)\nD. c = 40 + 65(h − 1)",
+    "type": "mcq",
+    "correct": "C",
+    "distractor_rationales": {
+      "A": "Applies the $65 first-hour rate to every hour — ignores the different rate for additional hours",
+      "B": "Applies $40 to all h hours and adds $65 as a flat fee — wrong structure for a tiered rate",
+      "D": "Swaps the two rates: applies $65 as the additional-hour rate and $40 as the first-hour charge"
+    },
+    "solution_steps": [
+      "First hour costs $65 (fixed)",
+      "Additional hours: (h − 1) hours at $40 each → 40(h − 1)",
+      "Total: c = 65 + 40(h − 1)"
+    ],
+    "why_this_difficulty": "Medium: tiered pricing requires encoding (h − 1) additional hours; student must distinguish first-unit vs subsequent-unit rates.",
+    "sat_key_phrases": ["which equation represents", "for the first", "for each additional"]
+  },
+  {
+    "difficulty": "medium",
+    "framing": "classify_solutions",
+    "stem": "How many solutions does the equation 3(2x + 5) = 2(x + 1) + 13 have?\nA. Exactly one\nB. Exactly two\nC. Infinitely many\nD. Zero",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Linear equations cannot have exactly two solutions; student may be confusing with a quadratic",
+      "C": "After expanding, both sides have matching constants (15); student may stop here and incorrectly classify as an identity without finishing collecting x terms",
+      "D": "Arithmetic error during expansion leads student to a false contradiction"
+    },
+    "solution_steps": [
+      "Expand left side: 3(2x + 5) = 6x + 15",
+      "Expand right side: 2(x + 1) + 13 = 2x + 15",
+      "Set equal: 6x + 15 = 2x + 15 → 4x = 0 → x = 0",
+      "One specific solution → exactly one solution"
+    ],
+    "why_this_difficulty": "Medium: distribution on both sides required; matching +15 constants may mislead students into thinking it is an identity before they collect x terms.",
+    "sat_key_phrases": ["how many solutions does the equation have", "how many solutions"]
+  },
+  {
+    "difficulty": "hard",
+    "framing": "classify_solutions",
+    "stem": "How many solutions does the equation 5(x + 3) = 5x + 9 have?\nA. Exactly one\nB. Exactly two\nC. Infinitely many\nD. Zero",
+    "type": "mcq",
+    "correct": "D",
+    "distractor_rationales": {
+      "A": "Student expands to 5x + 15 = 5x + 9 and assumes x must have a value rather than recognising 15 ≠ 9 is a contradiction",
+      "B": "Never valid for a linear equation",
+      "C": "Student sees 5x on both sides and incorrectly concludes identity without comparing constants"
+    },
+    "solution_steps": [
+      "Expand left side: 5(x + 3) = 5x + 15",
+      "Right side: 5x + 9",
+      "Subtract 5x: 15 = 9 — false for all x → zero solutions"
+    ],
+    "why_this_difficulty": "Hard: after cancelling 5x, result is a numeric contradiction; students must recognise 15 = 9 is always false.",
+    "sat_key_phrases": ["how many solutions does the equation have", "how many solutions"]
+  },
+  {
+    "difficulty": "hard",
+    "framing": "classify_solutions",
+    "stem": "How many solutions does the equation 4(3x − 2) − 2x = 2(5x − 4) have?\nA. Exactly one\nB. Exactly two\nC. Infinitely many\nD. Zero",
+    "type": "mcq",
+    "correct": "C",
+    "distractor_rationales": {
+      "A": "Student reaches 0 = 0 but misreads it as x = 0",
+      "B": "Never valid for a linear equation",
+      "D": "Student misreads 0 = 0 as a contradiction instead of an identity"
+    },
+    "solution_steps": [
+      "Expand left side: 12x − 8 − 2x = 10x − 8",
+      "Expand right side: 10x − 8",
+      "10x − 8 = 10x − 8 → 0 = 0 — true for all x → infinitely many solutions"
+    ],
+    "why_this_difficulty": "Hard: both sides simplify identically; students must recognise 0 = 0 as an identity (always true), not a contradiction.",
+    "sat_key_phrases": ["how many solutions does the equation have", "how many solutions"]
+  },
+  {
+    "difficulty": "easy",
+    "framing": "interpret_solution_context_l1v",
+    "stem": "A bookstore sells notebooks for $4 each. A customer also pays a one-time membership fee of $10. The equation 4n + 10 = 34 represents the total amount in dollars the customer spends, where n is the number of notebooks purchased. What is the value of n, and what does it represent?\nA. n = 6; the total cost in dollars\nB. n = 6; the number of notebooks the customer purchased\nC. n = 34; the total amount spent in dollars\nD. n = 10; the membership fee in dollars",
+    "type": "mcq",
+    "correct": "B",
+    "distractor_rationales": {
+      "A": "Correctly solves n = 6 but misidentifies what n represents — n is the number of notebooks, not a dollar amount",
+      "C": "Reports the total cost (34) as the value of n rather than solving the equation",
+      "D": "Reports the membership fee coefficient (10) as n instead of solving"
+    },
+    "solution_steps": [
+      "Solve: 4n + 10 = 34 → 4n = 24 → n = 6",
+      "n is defined as the number of notebooks, so n = 6 means 6 notebooks were purchased"
+    ],
+    "why_this_difficulty": "Easy: one-step solve followed by identifying the contextual meaning of the variable from the problem statement.",
+    "sat_key_phrases": ["the equation represents", "where n is", "what is the value of n", "what does it represent"]
+  },
+  {
+    "difficulty": "medium",
+    "framing": "interpret_solution_context_l1v",
+    "stem": "A shipping company charges $7 per package plus a flat handling fee of $15 per order. The equation 7p + 15 = 71 represents an order's total cost in dollars, where p is the number of packages. What does the solution to this equation represent in this context?\nA. The total number of dollars charged per package\nB. The number of packages in the order\nC. The handling fee per package\nD. The total number of orders placed",
+    "type": "mcq",
+    "correct": "B",
+    "distractor_rationales": {
+      "A": "Describes the coefficient 7 (rate per package), not the solution p",
+      "C": "Describes the constant 15 divided by something — the handling fee is a flat fee per order, not per package",
+      "D": "p is defined as packages per order, not the number of orders"
+    },
+    "solution_steps": [
+      "Solve: 7p + 15 = 71 → 7p = 56 → p = 8",
+      "p is the number of packages, so the solution p = 8 means the order contained 8 packages"
+    ],
+    "why_this_difficulty": "Medium: student must solve and then correctly map the solution back to the contextual quantity it represents, resisting distractors that reference other quantities in the equation.",
+    "sat_key_phrases": ["the equation represents", "where p is", "what does the solution represent", "in this context"]
+  },
+  {
+    "difficulty": "hard",
+    "framing": "interpret_solution_context_l1v",
+    "stem": "A contractor charges $85 per hour for labor and $120 for materials. The equation 85h + 120 = 715 represents the total charge in dollars for a job, where h is the number of hours worked. What does the solution to this equation represent?\nA. The hourly labor rate charged by the contractor\nB. The number of hours the contractor worked on the job\nC. The total cost of materials for the job\nD. The total charge in dollars for the entire job",
+    "type": "mcq",
+    "correct": "B",
+    "distractor_rationales": {
+      "A": "Describes the coefficient 85, which is the rate — not the solution h",
+      "C": "Describes the constant 120 — the material cost is given, not solved for",
+      "D": "715 is the total charge (the right-hand side of the equation), not the solution h"
+    },
+    "solution_steps": [
+      "Solve: 85h + 120 = 715 → 85h = 595 → h = 7",
+      "h is the number of hours worked, so the solution h = 7 represents 7 hours of labor"
+    ],
+    "why_this_difficulty": "Hard: all four choices describe genuine quantities in the problem; student must distinguish the solution (h = hours) from the coefficient (rate), the constant (materials), and the right-hand side (total).",
+    "sat_key_phrases": ["the equation represents", "where h is", "what does the solution represent"]
   }
 ]

@@ -1,6 +1,5 @@
 package com.satengine.config;
 
-import com.satengine.exception.DuplicateAnswerException;
 import com.satengine.exception.InvalidRequestException;
 import com.satengine.exception.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,18 +28,6 @@ public class GlobalExceptionHandler {
         log.debug("not found: {} [{} {}]", ex.getMessage(), request.getMethod(), request.getRequestURI());
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(Map.of("error", ex.getMessage()));
-    }
-
-    /**
-     * 409 — student tried to answer the same question twice in one session.
-     */
-    @ExceptionHandler(DuplicateAnswerException.class)
-    public ResponseEntity<Map<String, String>> handleDuplicateAnswer(
-            DuplicateAnswerException ex, HttpServletRequest request) {
-        log.debug("duplicate answer: {} [{} {}]", ex.getMessage(), request.getMethod(), request.getRequestURI());
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
                 .body(Map.of("error", ex.getMessage()));
     }
 

@@ -2,7 +2,6 @@ package com.satengine.api.admin;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.satengine.admin.PipelineJobService;
 import com.satengine.domain.sympy.SatQuestion;
 import com.satengine.domain.sympy.SatQuestionRepository;
 import com.satengine.dto.SymPyQuestionResponse;
@@ -24,7 +23,6 @@ public class SymPyAdminController {
     private final SatQuestionRepository          satRepo;
     private final SymPyGenerateStage             sympyGenerateStage;
     private final SymPyPromoteService            sympyPromoteService;
-    private final PipelineJobService             pipelineJobService;
     private final MathObjectService              mathObjectService;
     private final ObjectMapper                   objectMapper;
 
@@ -116,26 +114,13 @@ public class SymPyAdminController {
             @RequestParam(required = false) String template,
             @RequestParam(required = false) String variant) {
 
-        if ("diagnostic".equalsIgnoreCase(pool)) {
-            String jobId = pipelineJobService.startDiagnosticBatch(count);
-            return ResponseEntity.accepted().body(Map.of(
-                "status",     "started",
-                "jobId",      jobId,
-                "skill",      "all",
-                "difficulty", "d3+d4",
-                "count",      count * 2,
-                "pool",       "diagnostic"
-            ));
-        }
-
-        String jobId = pipelineJobService.startSympyJob(skill, difficulty, count, pool, template, variant);
-        return ResponseEntity.accepted().body(Map.of(
-            "status",   "started",
-            "jobId",    jobId,
+        sympyGenerateStage.run(skill, difficulty, count, pool, template, variant);
+        return ResponseEntity.ok(Map.of(
+            "status",   "completed",
             "skill",    skill != null ? skill : "all",
             "difficulty", difficulty,
             "count",    count,
-            "pool",     pool,
+            "pool",     pool != null ? pool : "drill",
             "template", template != null ? template : "",
             "variant",  variant  != null ? variant  : ""
         ));

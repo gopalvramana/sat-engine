@@ -9,7 +9,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Locale;
 
 /**
  * CLI entry point for pipeline stages.
@@ -108,11 +107,6 @@ import java.util.Locale;
 @RequiredArgsConstructor
 public class PipelineRunner implements ApplicationRunner {
 
-    private final GenerateStage          generateStage;
-    private final AgentReviewStage       agentReviewStage;
-    private final EnrichStage            enrichStage;
-    private final VisualCheckStage       visualCheckStage;
-    private final RenderNormalizeStage   renderNormalizeStage;
     private final SymPyGenerateStage     sympyGenerateStage;
 
     @Override
@@ -128,13 +122,8 @@ public class PipelineRunner implements ApplicationRunner {
         String job = jobs.get(0).toLowerCase().strip();
 
         switch (job) {
-            case "generate"          -> runGenerate(args);
             case "sympy-generate"    -> runSympyGenerate(args);
-            case "agent-review"      -> runAgentReview(args);
-            case "enrich"            -> runEnrich(args);
-            case "visual-check"      -> runVisualCheck(args);
-            case "render-normalize"  -> runRenderNormalize(args);
-            default -> log.warn("Unknown --job value: '{}'. Valid: generate, sympy-generate, agent-review, enrich, visual-check, render-normalize", job);
+            default -> log.warn("Unknown --job value: '{}'. Valid: sympy-generate", job);
         }
 
         // Exit after pipeline job — don't start web server
@@ -148,59 +137,6 @@ public class PipelineRunner implements ApplicationRunner {
         String  pool       = stringArg(args, "pool", "drill");
         String  template   = stringArg(args, "template", null);
         sympyGenerateStage.run(skill, difficulty, count, pool, template);
-    }
-
-    private void runGenerate(ApplicationArguments args) {
-        int     count      = intArg(args, "count", 10);
-        String  section    = stringArg(args, "section", null);
-        String  domain     = stringArg(args, "domain", null);
-        String  skill      = stringArg(args, "skill", null);
-        Integer difficulty = args.containsOption("difficulty") ? intArg(args, "difficulty", 4) : null;
-        GenerationMode mode = modeArg(args);
-        generateStage.run(count, section, domain, skill, difficulty, mode);
-    }
-
-    private GenerationMode modeArg(ApplicationArguments args) {
-        String val = stringArg(args, "mode", "drill");
-        return switch (val.toLowerCase(Locale.ROOT)) {
-            case "diagnostic" -> GenerationMode.DIAGNOSTIC;
-            case "test"       -> GenerationMode.TEST;
-            default           -> GenerationMode.DRILL;
-        };
-    }
-
-    private void runEnrich(ApplicationArguments args) {
-        String id = stringArg(args, "id", null);
-        if (id != null) {
-            enrichStage.runById(id);
-            return;
-        }
-        boolean includeApproved = args.containsOption("include-approved");
-        String  section         = stringArg(args, "section", null);
-        String  domain          = stringArg(args, "domain",  null);
-        enrichStage.run(includeApproved, section, domain);
-    }
-
-    private void runAgentReview(ApplicationArguments args) {
-        boolean onlyFailed = args.containsOption("only-failed");
-        String  section    = stringArg(args, "section", null);
-        String  domain     = stringArg(args, "domain",  null);
-        agentReviewStage.run(onlyFailed, section, domain);
-    }
-
-    private void runVisualCheck(ApplicationArguments args) {
-        boolean fix    = args.containsOption("fix");
-        String  onlyId = stringArg(args, "id", null);
-        visualCheckStage.run(fix, onlyId);
-    }
-
-    private void runRenderNormalize(ApplicationArguments args) {
-        boolean dryRun     = args.containsOption("dry-run");
-        boolean allStatuses = args.containsOption("all");
-        String  section    = stringArg(args, "section", null);
-        String  domain     = stringArg(args, "domain",  null);
-        String  onlyId     = stringArg(args, "id",      null);
-        renderNormalizeStage.run(dryRun, allStatuses, section, domain, onlyId);
     }
 
     private int intArg(ApplicationArguments args, String key, int defaultValue) {

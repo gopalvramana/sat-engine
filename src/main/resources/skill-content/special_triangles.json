@@ -1,0 +1,53 @@
+{
+  "skillKey": "special_triangles",
+  "domain": "geometry_trigonometry",
+  "section": "math",
+  "label": "Special Right Triangles",
+  "overview": "The two special right triangles — 45-45-90 and 30-60-90 — have fixed side ratios you can apply without trigonometry. Memorising these ratios lets you find any missing side instantly when you know one side and the triangle type. SAT questions embed these triangles in squares, equilateral triangles, and coordinate geometry problems.",
+
+  "conceptDiagram": {
+    "caption": "45-45-90: sides 1 : 1 : √2 · · · 30-60-90: sides 1 : √3 : 2",
+    "svg": "<svg viewBox='0 0 340 185' xmlns='http://www.w3.org/2000/svg' font-family=\"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\"><rect width='340' height='185' fill='#fff7ed' rx='10'/><rect x='10' y='10' width='148' height='165' fill='#fff' rx='8' stroke='#fed7aa' stroke-width='1.5'/><text x='84' y='30' font-size='12' font-weight='800' fill='#c2410c' text-anchor='middle'>45° – 45° – 90°</text><line x1='30' y1='150' x2='140' y2='150' stroke='#374151' stroke-width='2'/><line x1='30' y1='150' x2='30' y2='55' stroke='#374151' stroke-width='2'/><line x1='30' y1='55' x2='140' y2='150' stroke='#ea580c' stroke-width='2.5'/><text x='84' y='165' font-size='11' font-weight='700' fill='#374151' text-anchor='middle'>x</text><text x='18' y='105' font-size='11' font-weight='700' fill='#374151' text-anchor='middle'>x</text><text x='100' y='98' font-size='11' font-weight='700' fill='#ea580c' text-anchor='middle'>x√2</text><text x='40' y='52' font-size='10' fill='#475569'>45°</text><text x='118' y='148' font-size='10' fill='#475569'>45°</text><rect x='178' y='10' width='152' height='165' fill='#fff' rx='8' stroke='#fed7aa' stroke-width='1.5'/><text x='254' y='30' font-size='12' font-weight='800' fill='#c2410c' text-anchor='middle'>30° – 60° – 90°</text><line x1='195' y1='150' x2='315' y2='150' stroke='#374151' stroke-width='2'/><line x1='315' y1='150' x2='315' y2='65' stroke='#374151' stroke-width='2'/><line x1='195' y1='150' x2='315' y2='65' stroke='#ea580c' stroke-width='2.5'/><text x='254' y='165' font-size='11' font-weight='700' fill='#374151' text-anchor='middle'>x√3</text><text x='323' y='112' font-size='11' font-weight='700' fill='#374151' text-anchor='middle'>x</text><text x='248' y='100' font-size='11' font-weight='700' fill='#ea580c' text-anchor='middle'>2x</text><text x='205' y='148' font-size='10' fill='#475569'>30°</text><text x='300' y='148' font-size='10' fill='#475569'>60°</text></svg>"
+  },
+
+  "keyFormulas": [
+    { "name": "45-45-90 sides", "latex": "1 : 1 : \\sqrt{2} \\quad \\text{(legs equal; hypotenuse = leg} \\times \\sqrt{2})" },
+    { "name": "30-60-90 sides", "latex": "1 : \\sqrt{3} : 2 \\quad \\text{(short : long : hypotenuse)}" },
+    { "name": "Finding any side", "latex": "\\text{Scale the ratio: if short leg} = a, \\text{ then hyp} = 2a, \\text{ long leg} = a\\sqrt{3}" }
+  ],
+
+  "workedExamples": [
+    {
+      "problem": "In a 30-60-90 triangle, the hypotenuse is 10. Find the other two sides.",
+      "steps": [
+        {
+          "title": "Identify the ratio and scaling factor",
+          "content": "30-60-90 sides are in ratio 1 : √3 : 2. Hypotenuse corresponds to '2', so the scale factor is 10/2 = 5.",
+          "math": null
+        },
+        {
+          "title": "Find the short leg (opposite 30°)",
+          "content": "",
+          "math": "\\text{short leg} = 1 \\times 5 = 5"
+        },
+        {
+          "title": "Find the long leg (opposite 60°)",
+          "content": "",
+          "math": "\\text{long leg} = \\sqrt{3} \\times 5 = 5\\sqrt{3}"
+        }
+      ]
+    }
+  ],
+
+  "commonMistakes": [
+    {
+      "mistake": "Multiplying the hypotenuse by √2 instead of dividing when finding a 45-45-90 leg",
+      "fix": "Hypotenuse = leg × √2, so leg = hypotenuse ÷ √2 = hypotenuse × (√2/2). Work backwards from the ratio."
+    },
+    {
+      "mistake": "Swapping the 30° and 60° sides in a 30-60-90 triangle",
+      "fix": "The SHORTER leg is opposite the SMALLER angle (30°). The LONGER leg is opposite 60°. The hypotenuse is always the longest side."
+    }
+  ],
+  "quickTip": "Draw the triangle and label the angles first. Then write the ratio 1:1:√2 or 1:√3:2 next to the sides. Match the ratio to the actual measurements by finding the scale factor (divide the given side by its ratio value)."
+}

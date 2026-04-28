@@ -1,0 +1,55 @@
+{
+  "skillKey": "trigonometry",
+  "domain": "geometry_trigonometry",
+  "section": "math",
+  "label": "Trigonometry",
+  "overview": "SAT trigonometry covers sine, cosine, and tangent of angles in right triangles (SOH-CAH-TOA), complementary angle relationships (sin θ = cos(90°−θ)), and using trig ratios to find missing sides or angles. Advanced questions may involve the unit circle and radian measure. The reference sheet is not provided for trig — these must be memorised.",
+
+  "conceptDiagram": {
+    "caption": "SOH-CAH-TOA: the three basic trig ratios for a right triangle",
+    "svg": "<svg viewBox='0 0 340 185' xmlns='http://www.w3.org/2000/svg' font-family=\"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\"><rect width='340' height='185' fill='#f0f9ff' rx='10'/><line x1='50' y1='160' x2='200' y2='160' stroke='#374151' stroke-width='2'/><line x1='200' y1='160' x2='200' y2='40' stroke='#374151' stroke-width='2'/><line x1='50' y1='160' x2='200' y2='40' stroke='#0369a1' stroke-width='2.5'/><rect x='192' y='152' width='8' height='8' fill='none' stroke='#374151' stroke-width='1.5'/><text x='125' y='178' font-size='11' font-weight='700' fill='#374151' text-anchor='middle'>Adjacent</text><text x='215' y='103' font-size='11' font-weight='700' fill='#374151'>Opposite</text><text x='110' y='93' font-size='11' font-weight='700' fill='#0369a1' text-anchor='middle'>Hypotenuse</text><text x='65' y='155' font-size='11' font-weight='700' fill='#6366f1'>θ</text><rect x='225' y='15' width='110' height='162' fill='#fff' rx='8' stroke='#bae6fd' stroke-width='1.5'/><text x='280' y='36' font-size='12' font-weight='800' fill='#0369a1' text-anchor='middle'>SOH-CAH-TOA</text><text x='235' y='62' font-size='11' font-weight='700' fill='#dc2626'>S</text><text x='247' y='62' font-size='10' fill='#374151'>in θ = Opp/Hyp</text><text x='235' y='88' font-size='11' font-weight='700' fill='#16a34a'>C</text><text x='247' y='88' font-size='10' fill='#374151'>os θ = Adj/Hyp</text><text x='235' y='114' font-size='11' font-weight='700' fill='#7c3aed'>T</text><text x='247' y='114' font-size='10' fill='#374151'>an θ = Opp/Adj</text><line x1='235' y1='128' x2='328' y2='128' stroke='#e2e8f0' stroke-width='1'/><text x='280' y='148' font-size='10' fill='#374151' text-anchor='middle'>sin θ = cos(90°− θ)</text><text x='280' y='166' font-size='9' fill='#64748b' text-anchor='middle'>complementary angles</text></svg>"
+  },
+
+  "keyFormulas": [
+    { "name": "Sine", "latex": "\\sin\\theta = \\dfrac{\\text{opposite}}{\\text{hypotenuse}}" },
+    { "name": "Cosine", "latex": "\\cos\\theta = \\dfrac{\\text{adjacent}}{\\text{hypotenuse}}" },
+    { "name": "Tangent", "latex": "\\tan\\theta = \\dfrac{\\text{opposite}}{\\text{adjacent}}" },
+    { "name": "Complementary identity", "latex": "\\sin\\theta = \\cos(90° - \\theta)" },
+    { "name": "Pythagorean identity", "latex": "\\sin^2\\theta + \\cos^2\\theta = 1" }
+  ],
+
+  "workedExamples": [
+    {
+      "problem": "In a right triangle, the hypotenuse is 13 and one leg is 5. Find sin, cos, and tan of the angle opposite the leg of length 5.",
+      "steps": [
+        {
+          "title": "Find the missing leg using the Pythagorean theorem",
+          "content": "",
+          "math": "5^2 + b^2 = 13^2 \\implies b = 12"
+        },
+        {
+          "title": "Label sides relative to θ",
+          "content": "Opposite = 5, Adjacent = 12, Hypotenuse = 13.",
+          "math": null
+        },
+        {
+          "title": "Compute the three ratios",
+          "content": "",
+          "math": "\\sin\\theta = \\frac{5}{13},\\quad \\cos\\theta = \\frac{12}{13},\\quad \\tan\\theta = \\frac{5}{12}"
+        }
+      ]
+    }
+  ],
+
+  "commonMistakes": [
+    {
+      "mistake": "Using adjacent/opposite for sine or opposite/hypotenuse for cosine",
+      "fix": "Use SOH-CAH-TOA as a mnemonic. Sine = Opposite/Hypotenuse. Cosine = Adjacent/Hypotenuse. Write it out before substituting."
+    },
+    {
+      "mistake": "Confusing which side is 'opposite' vs 'adjacent' to the given angle",
+      "fix": "Opposite is the side across from the angle — it does not touch the angle. Adjacent touches the angle (but is not the hypotenuse)."
+    }
+  ],
+  "quickTip": "For the complementary angle identity: sin(x) = cos(90°−x). If a question says sin(40°) = cos(?), the answer is cos(50°). These appear frequently in SAT and are easy points once you know the rule."
+}

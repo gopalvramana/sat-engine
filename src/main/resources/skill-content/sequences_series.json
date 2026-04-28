@@ -1,0 +1,50 @@
+{
+  "skillKey": "sequences_series",
+  "domain": "advanced_math",
+  "section": "math",
+  "label": "Sequences & Series",
+  "overview": "SAT questions on sequences focus on arithmetic sequences (constant difference between terms) and geometric sequences (constant ratio between terms). You need to find a specific term, find the common difference or ratio, or sum a finite geometric series. Recognising which type of sequence you have is the first step.",
+
+  "conceptDiagram": {
+    "caption": "Arithmetic vs Geometric: constant difference vs constant ratio",
+    "svg": "<svg viewBox='0 0 340 185' xmlns='http://www.w3.org/2000/svg' font-family=\"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\"><rect width='340' height='185' fill='#f8fafc' rx='10'/><rect x='10' y='10' width='150' height='165' fill='#eff6ff' rx='8' stroke='#bfdbfe' stroke-width='1.5'/><text x='85' y='32' font-size='12' font-weight='800' fill='#1d4ed8' text-anchor='middle'>Arithmetic</text><text x='85' y='50' font-size='10' fill='#374151' text-anchor='middle'>constant difference d</text><text x='85' y='72' font-size='11' fill='#1e40af' text-anchor='middle'>2, 5, 8, 11, 14 …</text><text x='85' y='90' font-size='10' fill='#64748b' text-anchor='middle'>d = +3 each time</text><line x1='25' y1='105' x2='145' y2='105' stroke='#bfdbfe' stroke-width='1'/><text x='85' y='122' font-size='10' font-weight='700' fill='#1d4ed8' text-anchor='middle'>aₙ = a₁ + (n−1)d</text><text x='85' y='145' font-size='10' fill='#374151' text-anchor='middle'>10th term:</text><text x='85' y='163' font-size='11' font-weight='700' fill='#1d4ed8' text-anchor='middle'>2 + 9(3) = 29</text><rect x='175' y='10' width='155' height='165' fill='#f0fdf4' rx='8' stroke='#bbf7d0' stroke-width='1.5'/><text x='252' y='32' font-size='12' font-weight='800' fill='#166534' text-anchor='middle'>Geometric</text><text x='252' y='50' font-size='10' fill='#374151' text-anchor='middle'>constant ratio r</text><text x='252' y='72' font-size='11' fill='#15803d' text-anchor='middle'>3, 6, 12, 24, 48 …</text><text x='252' y='90' font-size='10' fill='#64748b' text-anchor='middle'>r = ×2 each time</text><line x1='185' y1='105' x2='320' y2='105' stroke='#bbf7d0' stroke-width='1'/><text x='252' y='122' font-size='10' font-weight='700' fill='#166534' text-anchor='middle'>aₙ = a₁ · rⁿ⁻¹</text><text x='252' y='145' font-size='10' fill='#374151' text-anchor='middle'>5th term:</text><text x='252' y='163' font-size='11' font-weight='700' fill='#166534' text-anchor='middle'>3 · 2⁴ = 48</text></svg>"
+  },
+
+  "keyFormulas": [
+    { "name": "Arithmetic nth term", "latex": "a_n = a_1 + (n-1)d" },
+    { "name": "Arithmetic common difference", "latex": "d = a_{n+1} - a_n" },
+    { "name": "Geometric nth term", "latex": "a_n = a_1 \\cdot r^{n-1}" },
+    { "name": "Geometric common ratio", "latex": "r = \\dfrac{a_{n+1}}{a_n}" },
+    { "name": "Finite geometric sum", "latex": "S_n = a_1 \\cdot \\dfrac{1 - r^n}{1 - r} \\quad (r \\neq 1)" }
+  ],
+
+  "workedExamples": [
+    {
+      "problem": "An arithmetic sequence has first term 7 and common difference 4. What is the 15th term?",
+      "steps": [
+        {
+          "title": "Write the nth term formula",
+          "content": "a₁ = 7, d = 4, n = 15.",
+          "math": "a_n = a_1 + (n-1)d"
+        },
+        {
+          "title": "Substitute and calculate",
+          "content": "",
+          "math": "a_{15} = 7 + (15-1)(4) = 7 + 56 = 63"
+        }
+      ]
+    }
+  ],
+
+  "commonMistakes": [
+    {
+      "mistake": "Using n instead of (n−1) in the nth term formula: a₁ + nd",
+      "fix": "The first term already counts as position 1, so you only add (n−1) steps of d to reach position n."
+    },
+    {
+      "mistake": "Confusing arithmetic and geometric — applying the wrong formula",
+      "fix": "Check: does each term differ by the same amount (arithmetic) or multiply by the same ratio (geometric)? Compute two consecutive differences or ratios to confirm."
+    }
+  ],
+  "quickTip": "For arithmetic sequences subtract consecutive terms to find d. For geometric divide. Once you know the type and the first two values, every other term is mechanical."
+}

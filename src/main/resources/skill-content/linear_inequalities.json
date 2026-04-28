@@ -1,0 +1,54 @@
+{
+  "skillKey": "linear_inequalities",
+  "domain": "algebra",
+  "section": "math",
+  "label": "Linear Inequalities",
+  "overview": "Linear inequalities are like equations but with <, >, ≤, or ≥ instead of =. The solution is a range of values, shown on a number line or coordinate plane. SAT questions ask you to solve one-variable inequalities, graph two-variable inequalities, identify solution regions, and work with compound inequalities (and / or).",
+
+  "conceptDiagram": {
+    "caption": "Inequality direction flips when you multiply or divide by a negative number",
+    "svg": "<svg viewBox='0 0 340 180' xmlns='http://www.w3.org/2000/svg' font-family=\"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\"><rect width='340' height='180' fill='#fefce8' rx='10'/><text x='170' y='28' font-size='13' font-weight='800' fill='#92400e' text-anchor='middle'>Key Rule: Flip the Sign!</text><rect x='15' y='45' width='145' height='120' fill='#fff' rx='8' stroke='#fde68a' stroke-width='1.5'/><text x='87' y='68' font-size='11' font-weight='700' fill='#374151' text-anchor='middle'>Start with:</text><text x='87' y='90' font-size='13' font-weight='800' fill='#6366f1' text-anchor='middle'>−2x &lt; 6</text><text x='87' y='112' font-size='10' fill='#64748b' text-anchor='middle'>Divide both sides by −2</text><text x='87' y='130' font-size='11' font-weight='700' fill='#dc2626' text-anchor='middle'>← flip the sign →</text><text x='87' y='152' font-size='13' font-weight='800' fill='#16a34a' text-anchor='middle'>x &gt; −3</text><rect x='178' y='45' width='148' height='120' fill='#fff' rx='8' stroke='#bbf7d0' stroke-width='1.5'/><text x='252' y='68' font-size='11' font-weight='700' fill='#374151' text-anchor='middle'>Number line:</text><line x1='198' y1='105' x2='318' y2='105' stroke='#374151' stroke-width='2'/><line x1='252' y1='100' x2='252' y2='110' stroke='#374151' stroke-width='1.5'/><text x='252' y='122' font-size='10' fill='#374151' text-anchor='middle'>−3</text><circle cx='252' cy='105' r='5' fill='none' stroke='#6366f1' stroke-width='2'/><line x1='254' y1='105' x2='316' y2='105' stroke='#6366f1' stroke-width='3'/><polygon points='316,101 326,105 316,109' fill='#6366f1'/><text x='252' y='148' font-size='10' fill='#6366f1' text-anchor='middle'>open circle = strict &gt;</text></svg>"
+  },
+
+  "keyFormulas": [
+    { "name": "One-variable solution", "latex": "ax + b < c \\implies x < \\dfrac{c-b}{a} \\text{ (if } a>0\\text{)}" },
+    { "name": "Sign flip rule", "latex": "\\text{Multiply/divide by negative} \\implies \\text{flip } <\\text{ to }>" },
+    { "name": "Compound AND", "latex": "a < x < b \\implies x \\text{ is between } a \\text{ and } b" },
+    { "name": "Compound OR", "latex": "x < a \\text{ or } x > b \\implies \\text{two separate rays}" }
+  ],
+
+  "workedExamples": [
+    {
+      "problem": "Solve for x: 3 − 2x ≥ 9",
+      "steps": [
+        {
+          "title": "Isolate the x-term",
+          "content": "Subtract 3 from both sides.",
+          "math": "-2x \\geq 6"
+        },
+        {
+          "title": "Divide by −2 and flip the inequality",
+          "content": "Dividing by a negative number reverses the direction.",
+          "math": "x \\leq -3"
+        },
+        {
+          "title": "Interpret the solution",
+          "content": "All values of x less than or equal to −3 satisfy the inequality. On a number line, use a closed circle at −3 and shade left.",
+          "math": null
+        }
+      ]
+    }
+  ],
+
+  "commonMistakes": [
+    {
+      "mistake": "Forgetting to flip the inequality sign when multiplying or dividing by a negative",
+      "fix": "Any time you multiply or divide both sides by a negative number, the inequality direction must reverse."
+    },
+    {
+      "mistake": "Using a closed circle (≤) when the inequality is strict (<)",
+      "fix": "Open circle means the endpoint is NOT included (<, >). Closed circle means it IS included (≤, ≥)."
+    }
+  ],
+  "quickTip": "Treat an inequality exactly like an equation until you need to multiply or divide by a negative — that's the only step that's different. Check your answer by plugging in a test value from your solution set."
+}

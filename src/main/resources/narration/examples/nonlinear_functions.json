@@ -205,41 +205,6 @@
     "distractor_rationales": null
   },
   {
-    "difficulty": "easy",
-    "stem": "The function f is defined by the following:\n\n  f(x) = 3x + 1   if x < 2\n  f(x) = x² − 1   if x ≥ 2\n\nWhat is the value of f(4)?\nA. 7\nB. 13\nC. 15\nD. 17",
-    "type": "piecewise_read_value/find_output_formula — select correct piece then evaluate; x falls in second piece (MCQ)",
-    "correct": "C",
-    "sat_key_phrases": ["value of f"],
-    "why_this_difficulty": "Easy — since 4 ≥ 2, use the second piece: 4² − 1 = 16 − 1 = 15; key step is identifying the right piece before computing",
-    "distractor_rationales": {
-      "A": "Student evaluated the first piece at the boundary x = 2: 3(2) + 1 = 7",
-      "B": "Student used the first piece (x < 2) for x = 4: 3(4) + 1 = 13",
-      "D": "Student computed 4² + 1 = 17, adding 1 instead of subtracting in the second piece"
-    }
-  },
-  {
-    "difficulty": "easy",
-    "stem": "The function g is defined by the following:\n\n  g(x) = 2x       if x ≤ −1\n  g(x) = x² + 3   if x > −1\n\nWhat is the value of g(−3)?",
-    "type": "piecewise_read_value/find_output_formula — select correct piece then evaluate; x falls in first piece with negative input (SPR)",
-    "correct": "-6",
-    "sat_key_phrases": ["value of g"],
-    "why_this_difficulty": "Easy — since −3 ≤ −1, use the first piece: 2(−3) = −6; tests piece selection for negative x and correct sign handling",
-    "distractor_rationales": null
-  },
-  {
-    "difficulty": "easy",
-    "stem": "The graph of y = f(x) is shown in the xy-plane. The graph consists of two pieces: a horizontal segment at y = 3 for −4 ≤ x ≤ 0, and a line segment from (0, −2) to (4, 6) for 0 < x ≤ 4. What is the value of f(−2)?\nA. −2\nB. 2\nC. 3\nD. 6",
-    "type": "piecewise_read_value/find_output_graph — read f(a) from graph where a falls in the flat left piece (MCQ)",
-    "correct": "C",
-    "sat_key_phrases": ["value of f"],
-    "why_this_difficulty": "Easy — x = −2 falls in [−4, 0]; read the y-value from the horizontal segment: y = 3",
-    "distractor_rationales": {
-      "A": "Student read from the second piece, which starts at (0, −2); its y-intercept is −2",
-      "B": "Student located x = 2 (not x = −2) on the second segment and read y ≈ 2",
-      "D": "Student read the far endpoint (4, 6) of the second piece instead of locating x = −2"
-    }
-  },
-  {
     "difficulty": "medium",
     "stem": "The function f is defined by f(x) = 7 · (0.1)^x. What is the value of f(0)?\nA. 0\nB. 0.7\nC. 7\nD. 70",
     "type": "evaluate_exponential_zero/find_initial_value — evaluate a·b^0; tests b⁰=1 understanding (MCQ)",
@@ -562,71 +527,6 @@
       "A": "Student reported the constant −8 as the x-intercept",
       "B": "Student reported −log₂(8) = −3, negating the correct answer",
       "D": "Student reported the constant 8 (without the negative sign) as the x-intercept"
-    }
-  },
-  {
-    "difficulty": "medium",
-    "stem": "The functions f and g are defined by f(x) = 2x + 1 and g(x) = x². What is the value of f(g(3))?\nA. 7\nB. 13\nC. 19\nD. 49",
-    "type": "function_composition/evaluate_f_of_g — compute f(g(a)) by evaluating inner then outer (MCQ)",
-    "correct": "C",
-    "sat_key_phrases": ["value of f(g"],
-    "why_this_difficulty": "Medium — g(3) = 9; f(9) = 2(9) + 1 = 19",
-    "distractor_rationales": {
-      "A": "Student computed f(3) = 7, skipping the inner function",
-      "B": "Student computed f(g(2)) = f(4) = 9... or some other mis-ordering",
-      "D": "Student computed g(f(3)) = g(7) = 49, reversing the composition order"
-    }
-  },
-  {
-    "difficulty": "medium",
-    "stem": "The functions f and g are defined by f(x) = x + 5 and g(x) = 3x. What is the value of f(g(4))?\nA. 17\nB. 20\nC. 27\nD. 57",
-    "type": "function_composition/evaluate_f_of_g — linear composed with linear (MCQ)",
-    "correct": "A",
-    "sat_key_phrases": ["value of f(g"],
-    "why_this_difficulty": "Medium — g(4) = 12; f(12) = 12 + 5 = 17",
-    "distractor_rationales": {
-      "B": "Student computed f(4) + g(4) = 9 + 12 = ... no, f(4)=9, g(4)=12; or computed g(f(4)) = g(9) = 27... see C",
-      "C": "Student computed g(f(4)) = g(9) = 27, reversing the order",
-      "D": "Student computed f(4) · g(4) = 9 · ... some product error"
-    }
-  },
-  {
-    "difficulty": "medium",
-    "stem": "The functions f and g are defined by f(x) = x² and g(x) = 2x + 1. What is the value of g(f(3))?\nA. 19\nB. 28\nC. 37\nD. 49",
-    "type": "function_composition/evaluate_g_of_f — compute g(f(a)) — reversed composition order (MCQ)",
-    "correct": "A",
-    "sat_key_phrases": ["value of g(f"],
-    "why_this_difficulty": "Medium — f(3) = 9; g(9) = 2(9) + 1 = 19",
-    "distractor_rationales": {
-      "B": "Student computed f(g(3)) = f(7) = 49... no. f(g(3))=f(7)=49, that's D",
-      "C": "Some order-of-operations error",
-      "D": "Student computed f(g(3)) = (2·3+1)² = 7² = 49, reversing the composition"
-    }
-  },
-  {
-    "difficulty": "medium",
-    "stem": "Which of the following ordered pairs (x, y) satisfies both inequalities below?\n    y > x − 1\n    y < x² − 4\nA. (0, −2)\nB. (0, 3)\nC. (3, 4)\nD. (−3, −7)",
-    "type": "inequality_system_nonlinear/identify_satisfying_point — substitute ordered pairs into linear+quadratic system (MCQ)",
-    "correct": "C",
-    "sat_key_phrases": ["satisfies", "both inequalities"],
-    "why_this_difficulty": "Medium — check (3, 4): y=4 > 3−1=2 ✓; y=4 < 9−4=5 ✓",
-    "distractor_rationales": {
-      "A": "(0, −2): y=−2 > 0−1=−1? No, −2 > −1 is false ✗",
-      "B": "(0, 3): y=3 < 0−4=−4? No ✗",
-      "D": "(−3, −7): y=−7 > −3−1=−4? No, −7 > −4 is false ✗"
-    }
-  },
-  {
-    "difficulty": "medium",
-    "stem": "Which of the following ordered pairs (x, y) satisfies both inequalities below?\n    y ≥ 2x + 3\n    y < x² + 1\nA. (0, 2)\nB. (0, 4)\nC. (4, 15)\nD. (2, 1)",
-    "type": "inequality_system_nonlinear/identify_satisfying_point — check point in combined linear and quadratic inequality (MCQ)",
-    "correct": "C",
-    "sat_key_phrases": ["satisfies", "both inequalities"],
-    "why_this_difficulty": "Medium — check (4, 15): y=15 ≥ 2(4)+3=11 ✓; y=15 < 16+1=17 ✓",
-    "distractor_rationales": {
-      "A": "(0, 2): y=2 ≥ 2(0)+3=3? No, 2 < 3 ✗",
-      "B": "(0, 4): y=4 ≥ 3 ✓; y=4 < 0+1=1? No, 4 > 1 ✗",
-      "D": "(2, 1): y=1 ≥ 2(2)+3=7? No, 1 < 7 ✗"
     }
   },
   {
@@ -973,19 +873,6 @@
     }
   },
   {
-    "difficulty": "medium",
-    "stem": "The graph shows the parabola y = x² and the line y = 2x + 8 in the xy-plane. The two curves intersect at (−2, 4) and (4, 16) and divide the plane into four regions labeled I, II, III, and IV. Region I lies between the two curves (above the parabola and below the line for −2 < x < 4). Which region contains all points (x, y) that satisfy both y ≥ x² and y ≤ 2x + 8?\nA. Region I\nB. Region II\nC. Region III\nD. Region IV",
-    "type": "inequality_system_nonlinear/identify_satisfying_region — identify the graph region that satisfies both a linear and a nonlinear inequality (MCQ)",
-    "correct": "A",
-    "sat_key_phrases": ["satisfy", "both", "region"],
-    "why_this_difficulty": "Medium — y ≥ x² = on or above the parabola; y ≤ 2x + 8 = on or below the line; only Region I (between the curves) satisfies both at once",
-    "distractor_rationales": {
-      "B": "Region II is above the line — fails y ≤ 2x + 8",
-      "C": "Region III is below the parabola — fails y ≥ x²",
-      "D": "Region IV is outside both curves — fails both inequalities"
-    }
-  },
-  {
     "difficulty": "hard",
     "stem": "The function f is defined by f(x) = ax² + bx + c, where a, b, and c are nonzero constants. The graph of y = f(x) opens upward and has its axis of symmetry at x = 3. Which of the following must be true?\nA. b > 0\nB. b = 0\nC. b < 0\nD. The sign of b cannot be determined",
     "type": "quadratic_parameter_properties/determine_sign_of_param — use axis-of-symmetry formula to deduce sign of parameter b (MCQ)",
@@ -996,6 +883,136 @@
       "A": "Student assumed positive axis of symmetry directly implies b > 0; forgot the negative sign in the formula x = −b/(2a)",
       "B": "b = 0 would give axis x = 0, contradicting x = 3",
       "D": "The sign is fully determined: with a > 0 and a positive axis of symmetry, b must be negative"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "The graph of h, where h(t) represents the height in feet of a ball t seconds after it is thrown upward, is shown. The point (3, 56) is labeled on the graph. Which of the following best describes the meaning of the point (3, 56) in this context?\nA. The ball was thrown from a height of 3 feet, and it took 56 seconds to land.\nB. The ball reaches a height of 56 feet exactly 3 seconds after it is thrown.\nC. The ball reaches a height of 3 feet exactly 56 seconds after it is thrown.\nD. The ball's maximum height of 56 feet occurs when it has traveled 3 horizontal feet.",
+    "type": "A-29 — interpret non-intercept graph point in context: quadratic height model (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["the point (3, 56)", "describes the meaning of the point", "in this context"],
+    "why_this_difficulty": "Medium — student must correctly identify which coordinate is input (time = 3) and which is output (height = 56); distractors swap the roles or introduce unrelated concepts (horizontal distance, total flight time)",
+    "distractor_rationales": {
+      "A": "Swaps the roles: 3 is time (input), not initial height; 56 is height (output), not time to land",
+      "C": "Reverses input and output: t = 56 and h = 3",
+      "D": "Horizontal distance is not a variable in this model; the axis label is time, not distance"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "The graph of P, where P(n) represents the number of bacteria in a culture after n hours, is shown. The point (5, 3200) is labeled on the graph. What is the best interpretation of the point (5, 3200)?\nA. The culture starts with 5 bacteria and reaches 3200 bacteria at some point.\nB. After 3200 hours, there are 5 bacteria in the culture.\nC. After 5 hours, there are 3200 bacteria in the culture.\nD. The culture grows by 3200 bacteria every 5 hours.",
+    "type": "A-29 — interpret non-intercept graph point in context: exponential growth model (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["the point (5, 3200)", "best interpretation", "after n hours"],
+    "why_this_difficulty": "Medium — exponential context; student reads (input, output) = (5 hours, 3200 bacteria); distractors swap input/output or mis-read as a rate",
+    "distractor_rationales": {
+      "A": "Confuses the y-intercept (initial bacteria count) with the labeled point; the point (5, 3200) says nothing about the starting count",
+      "B": "Reverses input and output: n = 5 hours, P = 3200 bacteria — not n = 3200 hours",
+      "D": "A constant-per-period rate would be linear growth, not the exponential model shown; the point represents a specific value at a specific time, not a rate"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "The function R models the daily revenue in dollars of a food stand, where R(p) is the revenue when the price of one item is p dollars. The graph of y = R(p) is a downward-opening parabola. The point (8, 480) is labeled on the graph. Which of the following best describes what this labeled point means?\nA. When the price is $480 per item, daily revenue is $8.\nB. When the price is $8 per item, the stand sells 480 items per day.\nC. When the price is $8 per item, daily revenue is $480.\nD. The maximum daily revenue of $8 occurs when the price is $480.",
+    "type": "A-29 — interpret non-intercept graph point in context: quadratic revenue model, requires distinguishing output type (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["the point (8, 480)", "best describes what this labeled point means", "daily revenue"],
+    "why_this_difficulty": "Hard — the output R(p) is revenue in dollars, not units sold; choice B tempts students who confuse revenue with quantity; choice A swaps axes; choice D misidentifies the vertex",
+    "distractor_rationales": {
+      "A": "Swaps input and output: p = 8 dollars (price) and R = 480 dollars (revenue)",
+      "B": "Confuses revenue with number of items sold; R(p) is measured in dollars, not units",
+      "D": "The point (8, 480) is not the vertex; the vertex (maximum) would be stated separately and R = 8 as a maximum is implausibly small"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "A city's population is modeled by P(t) = 4000 · 2^(t/6), where t is the number of years since 2010. Which of the following equivalent expressions for P(t) most directly reveals the annual growth factor of the population?\nA. 4000 · 2^(t/6)\nB. 4000 · (2^6)^t\nC. 4000 · (2^(1/6))^t\nD. 4000 · e^(0.1155t)",
+    "type": "A-31 — identify equivalent exponential form revealing annual growth factor (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["most directly reveals the annual growth factor", "equivalent expressions"],
+    "why_this_difficulty": "Medium — student must recognise that writing P(t) = 4000·(b)^t with b = 2^(1/6) puts the base in the role of the per-year multiplier; choice A hides the annual factor; choice B raises 2 to the sixth power instead of one-sixth; choice D uses the natural base which doesn't directly show a simple doubling structure",
+    "distractor_rationales": {
+      "A": "This is the original form; the annual factor 2^(1/6) is implicit, not directly visible",
+      "B": "2^6 = 64 would be an annual factor greater than 1 only if the population were multiplying by 64 per year, which contradicts the original model",
+      "D": "The natural-base form reveals the continuous growth rate 0.1155 per year, not the annual growth factor"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "A radioactive substance decays according to the model M(t) = 800 · (0.5)^(t/24), where M(t) is the mass in grams and t is the time in hours. Which of the following equivalent forms of M(t) most directly shows the half-life of the substance?\nA. 800 · (0.5)^(t/24)\nB. 800 · (0.5^(1/24))^t\nC. 800 · e^(−0.02888t)\nD. 400 · (0.5)^((t−24)/24)",
+    "type": "A-31 — identify equivalent exponential form revealing half-life (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["most directly shows the half-life", "equivalent forms"],
+    "why_this_difficulty": "Hard — the original form P = 800·(0.5)^(t/24) is already the most direct because the denominator 24 is exactly the half-life in hours; choice B rewrites as per-hour factor hiding the half-life period; choice C uses continuous decay rate; choice D shifts time but doesn't clarify the half-life value",
+    "distractor_rationales": {
+      "B": "0.5^(1/24) is the per-hour decay factor, which does not directly show the half-life period of 24 hours",
+      "C": "The continuous decay rate −0.0289 per hour must be converted to find the half-life (t₁/₂ = ln 2 / 0.0289 ≈ 24); this is indirect",
+      "D": "The shift by 24 in the exponent creates an equivalent expression but the half-life 24 is now less obvious than in the original"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "A store sells items at p dollars each. The daily revenue R in dollars is modeled by R(p) = p(120 − p), where 0 < p < 120. Which of the following best describes the meaning of the factor (120 − p) in this context?\nA. The maximum daily revenue when p equals 120 dollars\nB. The number of items sold per day when the price is p dollars\nC. The profit per item after subtracting the cost from the price\nD. The number of dollars remaining in the daily budget after pricing",
+    "type": "A-32 — interpret factor of factored-form quadratic in context: revenue model (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["best describes the meaning of the factor (120 − p)", "daily revenue", "p dollars each"],
+    "why_this_difficulty": "Hard — the revenue equation has the structure R = price × quantity; student must identify that (120 − p) is the demand (quantity sold), which decreases as price increases; distractors invoke related but incorrect concepts (max revenue, profit margin, budget)",
+    "distractor_rationales": {
+      "A": "When p = 120, R = 120(120 − 120) = 0, not maximum revenue; maximum occurs at p = 60",
+      "C": "The model gives total revenue, not per-item profit; cost information is not part of this model",
+      "D": "There is no budget constraint in this model; (120 − p) is a demand quantity, not a remaining dollar amount"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "The area A in square feet of a rectangular garden is modeled by A(w) = w(w + 7), where w is the width of the garden in feet. What does the factor (w + 7) represent in this context?\nA. The perimeter of the garden in feet\nB. The length of the garden in feet\nC. The total area added when the width increases by 7 feet\nD. The diagonal of the garden in feet",
+    "type": "A-32 — interpret factor of factored-form quadratic in context: area model (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["what does the factor (w + 7) represent", "area", "width of the garden"],
+    "why_this_difficulty": "Medium — area equals length times width; since one factor is w (the width), the other factor (w + 7) must be the length; distractors use perimeter, diagonal, or area-change language that sounds plausible for a geometry context",
+    "distractor_rationales": {
+      "A": "Perimeter = 2(w + length) = 2(w + w + 7) = 2(2w + 7), which is different from the factor (w + 7) alone",
+      "C": "The factor represents length, not an incremental area change; an area increase would require comparing A(w) to A(w+7)",
+      "D": "The diagonal would require the Pythagorean theorem: √(w² + (w+7)²), not the product formula"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "A technician finds that the time T, in hours, to process a batch of n items on a machine is given by T(n) = 120/n + 2, where n > 0. Which of the following is the best interpretation of T(5) in this context?\nA. Processing 5 items always takes exactly 2 hours.\nB. When 5 items are processed, the total processing time is 26 hours.\nC. When 5 items are processed, the machine runs for 24 hours with no fixed overhead.\nD. The machine processes 5 items per hour.",
+    "type": "A-30 — simple rational function in context: evaluate and interpret at a specific input (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["given by T(n) =", "which of the following is the best interpretation of T(5)"],
+    "why_this_difficulty": "Medium — student must substitute n = 5 to get T(5) = 120/5 + 2 = 26 hours, then recognise the output as total time; choice A isolates the constant 2 (fixed overhead only); choice C gives only the variable term 24; choice D inverts the relationship into a rate",
+    "distractor_rationales": {
+      "A": "2 is the fixed-overhead constant; T(5) = 26 includes both the variable term 120/5 = 24 and the constant 2",
+      "C": "120/5 = 24 is the variable component only; the total includes the +2 fixed overhead, giving 26",
+      "D": "T(n) gives total hours for a batch of n items, not items processed per hour; that interpretation inverts the function"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "The average cost per unit C(q) in dollars to manufacture q units of a product is modeled by C(q) = 500/q + 12, where q > 0. As the number of units produced increases without bound, what value does C(q) approach?\nA. 0\nB. 12\nC. 500\nD. 512",
+    "type": "A-30 — simple rational function in context: limiting behavior as input grows large (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["as the number of units produced increases without bound", "what value does C(q) approach"],
+    "why_this_difficulty": "Hard — as q → ∞, 500/q → 0, so C(q) → 12; student must recognize the fixed cost term 12 as the horizontal asymptote; distractors offer 0 (only the variable term), 500 (the numerator alone), and 512 (sum of both constants)",
+    "distractor_rationales": {
+      "A": "500/q → 0 but C(q) = 500/q + 12; the function approaches 12, not 0",
+      "C": "500 is the numerator of the variable term; it does not represent a limiting value",
+      "D": "512 would be C(1), the cost at q = 1 unit, not the limiting value as production scales up"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "The number of hours h it takes a crew of w workers to complete a renovation project is modeled by h(w) = 240/w, where w ≥ 1. Which table correctly shows values of w and h(w)?\nA. w: 4, 6, 8 | h: 60, 40, 30\nB. w: 4, 6, 8 | h: 60, 40, 31\nC. w: 4, 6, 8 | h: 244, 246, 248\nD. w: 4, 6, 8 | h: 60, 44, 32",
+    "type": "A-30 — simple rational function in context: match rational function to table (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["modeled by h(w) = 240/w", "which table correctly shows values"],
+    "why_this_difficulty": "Hard — student must evaluate h(4) = 60, h(6) = 40, h(8) = 30 and match all three entries; distractors use off-by-one errors or addition instead of division",
+    "distractor_rationales": {
+      "B": "h(8) = 240/8 = 30, not 31; student rounded or computed 240/7.75",
+      "C": "Student added w to 240 rather than dividing: 240 + 4 = 244, etc.",
+      "D": "h(6) = 240/6 = 40, not 44; student divided 240/5.5 or made a computation error"
     }
   }
 ]

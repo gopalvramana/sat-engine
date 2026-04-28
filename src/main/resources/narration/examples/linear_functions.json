@@ -1663,5 +1663,93 @@
     ],
     "why_this_difficulty": "Medium: tests the definition of parallel lines (equal slopes) when one line is given in function-notation form.",
     "sat_key_phrases": ["the function f is defined by", "parallel to the graph", "what is the slope"]
+  },
+  {
+    "difficulty": "medium",
+    "sat_level": 2,
+    "framing": "coefficient_expression_from_table",
+    "variant": "find_a_minus_b",
+    "stem": "The function f is defined by f(x) = ax + b, where a and b are constants. The table below gives some values of x and their corresponding values of f(x).\n\nx | f(x)\n1 | −64\n2 | 0\n3 | 64\n\nWhat is the value of a − b?",
+    "type": "spr",
+    "choices": {},
+    "correct": "192",
+    "distractor_rationales": {
+      "64": "Student found slope a = 64 but did not find b or evaluate a − b",
+      "−192": "Student computed b − a = −128 − 64 instead of a − b",
+      "−64": "Student used b = −64 (mistaking the f(1) value for the y-intercept) and computed 64 − (−64) = 128, or made a sign error"
+    },
+    "solution_steps": [
+      "Find slope a: a = (f(2) − f(1)) / (2 − 1) = (0 − (−64)) / 1 = 64",
+      "Find y-intercept b: f(x) = 64x + b; use (2, 0): 0 = 64(2) + b → b = −128",
+      "Compute a − b = 64 − (−128) = 192"
+    ],
+    "why_this_difficulty": "Medium: student must derive both parameters from the table and then evaluate an algebraic expression of them, not just report slope or intercept individually.",
+    "sat_key_phrases": ["where a and b are constants", "the table below gives some values", "what is the value of a − b"]
+  },
+  {
+    "difficulty": "medium",
+    "sat_level": 2,
+    "framing": "coefficient_expression_from_table",
+    "variant": "find_a_plus_b",
+    "stem": "The function g is defined by g(x) = ax + b, where a and b are constants. The table below gives some values of x and their corresponding values of g(x).\n\nx | g(x)\n2 | 6\n4 | 14\n6 | 22\n\nWhat is the value of a + b?",
+    "type": "spr",
+    "choices": {},
+    "correct": "2",
+    "distractor_rationales": {
+      "4": "Student found slope a = 4 but did not add b",
+      "−2": "Student found b = −2 but did not add a",
+      "6": "Student confused g(2) = 6 with the answer"
+    },
+    "solution_steps": [
+      "Find slope a: a = (14 − 6) / (4 − 2) = 8 / 2 = 4",
+      "Find y-intercept b: 6 = 4(2) + b → b = 6 − 8 = −2",
+      "Compute a + b = 4 + (−2) = 2"
+    ],
+    "why_this_difficulty": "Medium: slope from table (equal spacing) plus y-intercept back-calculation, then evaluate combined expression.",
+    "sat_key_phrases": ["where a and b are constants", "the table below gives some values", "what is the value of a + b"]
+  },
+  {
+    "difficulty": "hard",
+    "sat_level": 3,
+    "framing": "coefficient_expression_from_table",
+    "variant": "find_3a_minus_b",
+    "stem": "The function h is defined by h(x) = ax + b, where a and b are constants. The table below gives some values of x and their corresponding values of h(x).\n\nx | h(x)\n−2 | 11\n1 | 2\n4 | −7\n\nWhat is the value of 3a − b?",
+    "type": "spr",
+    "choices": {},
+    "correct": "−14",
+    "distractor_rationales": {
+      "−3": "Student found a = −3 but gave only a instead of 3a − b",
+      "5": "Student found b = 5 and negated it to give −5, or only found b",
+      "−4": "Student computed a − b = −3 − 5 = −8 instead of 3a − b = −9 − 5 = −14"
+    },
+    "solution_steps": [
+      "Find slope a: a = (2 − 11) / (1 − (−2)) = −9 / 3 = −3",
+      "Find y-intercept b: 2 = −3(1) + b → b = 5",
+      "Compute 3a − b = 3(−3) − 5 = −9 − 5 = −14"
+    ],
+    "why_this_difficulty": "Hard: table has unequal spacing (confirm constant slope), both params negative/positive, and the expression to evaluate is 3a − b (not a−b or a+b), so sign management is critical.",
+    "sat_key_phrases": ["where a and b are constants", "the table below gives some values", "what is the value of 3a − b"]
+  },
+  {
+    "difficulty": "medium",
+    "sat_level": 2,
+    "framing": "both_intercepts_expression",
+    "variant": "find_sum_of_intercepts",
+    "stem": "The function f is defined by f(x) = 4x − 8. The graph of y = f(x) has an x-intercept at (a, 0) and a y-intercept at (0, c). What is the value of a + c?",
+    "type": "spr",
+    "choices": {},
+    "correct": "−6",
+    "distractor_rationales": {
+      "2": "Student found a = 2 (x-intercept) but forgot to include c = −8",
+      "−8": "Student found c = −8 (y-intercept) but forgot to include a = 2",
+      "6": "Student computed |a| + |c| or confused signs: 2 + 8 = 10, or took a = −2"
+    },
+    "solution_steps": [
+      "Find a: set f(a) = 0 → 4a − 8 = 0 → a = 2",
+      "Find c: f(0) = 4(0) − 8 = −8, so c = −8",
+      "Compute a + c = 2 + (−8) = −6"
+    ],
+    "why_this_difficulty": "Medium: requires computing BOTH intercepts of the same line then evaluating a combined expression; distinct from single-intercept templates.",
+    "sat_key_phrases": ["x-intercept at (a, 0)", "y-intercept at (0, c)", "what is the value of a + c"]
   }
 ]

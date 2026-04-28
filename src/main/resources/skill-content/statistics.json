@@ -1,0 +1,54 @@
+{
+  "skillKey": "statistics",
+  "domain": "problem_solving_data",
+  "section": "math",
+  "label": "Statistics",
+  "overview": "SAT statistics questions cover mean, median, mode, range, and standard deviation; interpreting data displays (box plots, histograms, dot plots); and understanding what changes to a data set do to these measures. You also need to understand margin of error, sample vs. population, and when a statistical claim is valid.",
+
+  "conceptDiagram": {
+    "caption": "Mean is pulled by outliers; median is resistant to them",
+    "svg": "<svg viewBox='0 0 340 185' xmlns='http://www.w3.org/2000/svg' font-family=\"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\"><rect width='340' height='185' fill='#f0f9ff' rx='10'/><rect x='10' y='10' width='148' height='165' fill='#fff' rx='8' stroke='#bae6fd' stroke-width='1.5'/><text x='84' y='32' font-size='11' font-weight='800' fill='#0369a1' text-anchor='middle'>Symmetric data</text><text x='84' y='52' font-size='10' fill='#374151' text-anchor='middle'>2, 4, 5, 6, 8</text><line x1='25' y1='68' x2='143' y2='68' stroke='#e2e8f0' stroke-width='1'/><text x='84' y='88' font-size='10' fill='#374151' text-anchor='middle'>Mean = (2+4+5+6+8)/5 = 5</text><text x='84' y='108' font-size='10' fill='#374151' text-anchor='middle'>Median = 5</text><text x='84' y='130' font-size='11' font-weight='700' fill='#0369a1' text-anchor='middle'>Mean ≈ Median</text><rect x='175' y='10' width='155' height='165' fill='#fff' rx='8' stroke='#bae6fd' stroke-width='1.5'/><text x='252' y='32' font-size='11' font-weight='800' fill='#0369a1' text-anchor='middle'>With outlier</text><text x='252' y='52' font-size='10' fill='#374151' text-anchor='middle'>2, 4, 5, 6, 100</text><line x1='185' y1='68' x2='322' y2='68' stroke='#e2e8f0' stroke-width='1'/><text x='252' y='88' font-size='10' fill='#374151' text-anchor='middle'>Mean = 117/5 = 23.4</text><text x='252' y='108' font-size='10' fill='#374151' text-anchor='middle'>Median = 5</text><text x='252' y='132' font-size='10' font-weight='700' fill='#dc2626' text-anchor='middle'>Mean pulled by outlier!</text><text x='252' y='150' font-size='9' fill='#64748b' text-anchor='middle'>Median unchanged.</text></svg>"
+  },
+
+  "keyFormulas": [
+    { "name": "Mean", "latex": "\\bar{x} = \\dfrac{\\sum x_i}{n}" },
+    { "name": "Median", "latex": "\\text{Middle value when data is ordered (or avg of two middle values)}" },
+    { "name": "Range", "latex": "\\text{Range} = \\text{max} - \\text{min}" },
+    { "name": "Standard deviation (concept)", "latex": "\\text{Larger SD} \\implies \\text{data more spread out from mean}" }
+  ],
+
+  "workedExamples": [
+    {
+      "problem": "A data set has values 4, 7, 7, 9, 13. A new value of 40 is added. What happens to the mean and median?",
+      "steps": [
+        {
+          "title": "Find original mean and median",
+          "content": "Original: 4, 7, 7, 9, 13 (already ordered). Mean = 40/5 = 8. Median = 7.",
+          "math": null
+        },
+        {
+          "title": "Find new mean and median after adding 40",
+          "content": "New list (ordered): 4, 7, 7, 9, 13, 40. Mean = 80/6 ≈ 13.3. Median = average of 7 and 9 = 8.",
+          "math": null
+        },
+        {
+          "title": "Compare",
+          "content": "Mean increased significantly (8 → 13.3). Median increased only slightly (7 → 8). The outlier 40 has a much larger effect on the mean.",
+          "math": null
+        }
+      ]
+    }
+  ],
+
+  "commonMistakes": [
+    {
+      "mistake": "Forgetting to sort the data before finding the median",
+      "fix": "Always order values from least to greatest first, then identify the middle value."
+    },
+    {
+      "mistake": "Thinking standard deviation measures the average value rather than spread",
+      "fix": "Standard deviation measures how far values are from the mean on average. A high SD means data is spread out; a low SD means data is clustered near the mean."
+    }
+  ],
+  "quickTip": "On SAT stat questions, ask yourself: is the question about the centre (mean/median) or spread (range/SD)? Then ask: are there outliers that would pull the mean away from the median? Those two questions cover most stat scenarios."
+}

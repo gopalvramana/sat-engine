@@ -1,6 +1,5 @@
 package com.satengine.dto;
 
-import com.satengine.domain.question.Question;
 import com.satengine.domain.sympy.SatQuestion;
 
 import java.math.BigDecimal;
@@ -82,40 +81,4 @@ public record QuestionResponse(
         );
     }
 
-    /**
-     * Factory method — maps from the Question entity, omitting the correct answer.
-     */
-    public static QuestionResponse from(Question q) {
-        return new QuestionResponse(
-                q.getId(),
-                q.getExternalId(),
-                q.getSection(),
-                q.getDomain(),
-                q.getSkill(),
-                q.getDifficulty(),
-                q.getQuestionType(),
-                q.getQuestionStem(),
-                q.getOptionA(),
-                q.getOptionB(),
-                q.getOptionC(),
-                q.getOptionD(),
-                q.getSprMin(),
-                q.getSprMax(),
-                q.getExplanationShort(),
-                q.getExplanationSteps(),
-                q.getTrapCategory(),
-                q.getTrapExplanation(),
-                q.getCoreConcept(),
-                q.getPrerequisites(),
-                q.getAnimation(),
-                q.getChoiceExplanations(),
-                q.getAlternativeApproach(),
-                q.getPool(),
-                q.getPassageText(),
-                q.getPassageSource(),
-                q.getDiagram(),
-                q.getCalculatorOk(),
-                q.getSkillKey()
-        );
-    }
 }

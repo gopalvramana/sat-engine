@@ -151,6 +151,7 @@ public class SatQuestion {
 
     public String getRawExplanationSteps()    { return rawJson("explanationSteps"); }
     public String getRawDistractorRationale() { return rawJson("distractorRationale"); }
+    public String getRawCoreConcept()         { return rawJson("coreConcept"); }
     public String getRawPrerequisites()       { return rawJson("prerequisites"); }
     public String getRawDiagram()             { return rawJson("diagram"); }
     public String getRawMathObject()          { return rawJson("mathObject"); }

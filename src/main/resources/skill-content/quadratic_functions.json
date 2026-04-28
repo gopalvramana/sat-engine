@@ -1,0 +1,55 @@
+{
+  "skillKey": "quadratic_functions",
+  "domain": "advanced_math",
+  "section": "math",
+  "label": "Quadratic Functions",
+  "overview": "A quadratic function f(x) = ax² + bx + c produces a parabola. SAT questions ask you to identify the vertex, axis of symmetry, x-intercepts (zeros), and y-intercept; convert between standard, vertex, and factored forms; and interpret these features in context. The sign of a tells you whether the parabola opens up (a > 0) or down (a < 0).",
+
+  "conceptDiagram": {
+    "caption": "Key features of a parabola: vertex, axis of symmetry, and intercepts",
+    "svg": "<svg viewBox='0 0 340 200' xmlns='http://www.w3.org/2000/svg' font-family=\"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\"><rect width='340' height='200' fill='#f0fdf4' rx='10'/><line x1='170' y1='10' x2='170' y2='190' stroke='#d1d5db' stroke-width='1' stroke-dasharray='4,3'/><line x1='20' y1='140' x2='320' y2='140' stroke='#d1d5db' stroke-width='1'/><path d='M 60,170 Q 170,20 280,170' fill='none' stroke='#16a34a' stroke-width='2.5'/><circle cx='170' cy='20' r='5' fill='#6366f1'/><text x='185' y='25' font-size='10' font-weight='700' fill='#4f46e5'>vertex (h, k)</text><line x1='170' y1='10' x2='170' y2='190' stroke='#6366f1' stroke-width='1' stroke-dasharray='3,2'/><text x='178' y='185' font-size='9' fill='#4f46e5'>axis: x = h</text><circle cx='95' cy='140' r='5' fill='#ef4444'/><text x='75' y='157' font-size='10' font-weight='700' fill='#dc2626'>zero</text><circle cx='245' cy='140' r='5' fill='#ef4444'/><text x='232' y='157' font-size='10' font-weight='700' fill='#dc2626'>zero</text><circle cx='170' cy='137' r='4' fill='#f59e0b'/><text x='118' y='132' font-size='9' fill='#92400e'>y-intercept (x=0)</text><text x='22' y='20' font-size='10' font-weight='800' fill='#166534'>a &gt; 0: opens UP</text><text x='22' y='35' font-size='9' fill='#374151'>vertex = minimum</text></svg>"
+  },
+
+  "keyFormulas": [
+    { "name": "Standard form", "latex": "f(x) = ax^2 + bx + c" },
+    { "name": "Vertex form", "latex": "f(x) = a(x - h)^2 + k \\quad \\text{vertex at } (h, k)" },
+    { "name": "Factored form", "latex": "f(x) = a(x - r_1)(x - r_2) \\quad \\text{zeros at } r_1, r_2" },
+    { "name": "Axis of symmetry", "latex": "x = -\\dfrac{b}{2a}" },
+    { "name": "Vertex x-coordinate", "latex": "h = -\\dfrac{b}{2a}, \\quad k = f(h)" }
+  ],
+
+  "workedExamples": [
+    {
+      "problem": "For f(x) = x² − 4x + 3, find the vertex and zeros.",
+      "steps": [
+        {
+          "title": "Find the axis of symmetry",
+          "content": "Use x = −b/(2a) with a = 1, b = −4.",
+          "math": "x = -\\frac{-4}{2(1)} = 2"
+        },
+        {
+          "title": "Find the vertex y-value",
+          "content": "Evaluate f(2).",
+          "math": "f(2) = 4 - 8 + 3 = -1 \\implies \\text{vertex } (2, -1)"
+        },
+        {
+          "title": "Find the zeros by factoring",
+          "content": "Factor x² − 4x + 3 = (x − 1)(x − 3).",
+          "math": "x = 1 \\quad \\text{or} \\quad x = 3"
+        }
+      ]
+    }
+  ],
+
+  "commonMistakes": [
+    {
+      "mistake": "Confusing vertex form h and k signs: f(x) = (x + 3)² + 1 has vertex (3, 1)",
+      "fix": "In f(x) = a(x − h)² + k, the vertex is at (h, k). Since (x + 3) = (x − (−3)), h = −3, not +3."
+    },
+    {
+      "mistake": "Thinking a > 0 means the vertex is a maximum",
+      "fix": "When a > 0 the parabola opens upward, so the vertex is a MINIMUM. It's a maximum only when a < 0."
+    }
+  ],
+  "quickTip": "To quickly convert standard form to vertex form, complete the square or use x = −b/(2a) to find h, then plug back in to get k. Knowing all three forms (standard, vertex, factored) and when to use each one is the whole skill."
+}

@@ -1,0 +1,60 @@
+{
+  "skillKey": "circles",
+  "domain": "geometry_trigonometry",
+  "section": "math",
+  "label": "Circles",
+  "overview": "Circle questions on the SAT cover arc length, sector area, central angles, inscribed angles, and the equation of a circle in the coordinate plane. The key relationships: a central angle equals its arc in degrees; an inscribed angle equals half its arc. The standard equation (x−h)² + (y−k)² = r² has centre (h, k) and radius r.",
+
+  "conceptDiagram": {
+    "caption": "Central angle = arc; inscribed angle = half the arc",
+    "svg": "<svg viewBox='0 0 340 185' xmlns='http://www.w3.org/2000/svg' font-family=\"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\"><rect width='340' height='185' fill='#fdf4ff' rx='10'/><rect x='8' y='8' width='155' height='169' fill='#fff' rx='8' stroke='#ddd6fe' stroke-width='1.5'/><text x='85' y='28' font-size='10' font-weight='800' fill='#5b21b6' text-anchor='middle'>Central Angle</text><circle cx='85' cy='105' r='55' fill='none' stroke='#7c3aed' stroke-width='1.5'/><circle cx='85' cy='105' r='3' fill='#7c3aed'/><line x1='85' y1='105' x2='130' y2='65' stroke='#7c3aed' stroke-width='1.5'/><line x1='85' y1='105' x2='40' y2='65' stroke='#7c3aed' stroke-width='1.5'/><path d='M 40,65 A 55,55 0 0,1 130,65' fill='none' stroke='#f59e0b' stroke-width='3'/><text x='85' y='55' font-size='10' font-weight='800' fill='#d97706' text-anchor='middle'>arc</text><text x='85' y='118' font-size='10' fill='#5b21b6' text-anchor='middle'>central ∠ = arc°</text><rect x='178' y='8' width='155' height='169' fill='#fff' rx='8' stroke='#ddd6fe' stroke-width='1.5'/><text x='255' y='28' font-size='10' font-weight='800' fill='#5b21b6' text-anchor='middle'>Inscribed Angle</text><circle cx='255' cy='105' r='55' fill='none' stroke='#7c3aed' stroke-width='1.5'/><line x1='210' y1='65' x2='300' y2='65' stroke='#f59e0b' stroke-width='3'/><line x1='255' y1='155' x2='210' y2='65' stroke='#6366f1' stroke-width='1.5'/><line x1='255' y1='155' x2='300' y2='65' stroke='#6366f1' stroke-width='1.5'/><circle cx='255' cy='155' r='4' fill='#6366f1'/><text x='255' y='118' font-size='10' fill='#5b21b6' text-anchor='middle'>inscribed ∠ = arc°/2</text></svg>"
+  },
+
+  "keyFormulas": [
+    { "name": "Circumference", "latex": "C = 2\\pi r" },
+    { "name": "Area", "latex": "A = \\pi r^2" },
+    { "name": "Arc length", "latex": "\\ell = \\dfrac{\\theta}{360} \\cdot 2\\pi r \\quad (\\theta \\text{ in degrees})" },
+    { "name": "Sector area", "latex": "A_{\\text{sector}} = \\dfrac{\\theta}{360} \\cdot \\pi r^2" },
+    { "name": "Standard equation", "latex": "(x - h)^2 + (y - k)^2 = r^2" }
+  ],
+
+  "workedExamples": [
+    {
+      "problem": "A circle has equation x² + y² − 6x + 4y = 12. Find the centre and radius.",
+      "steps": [
+        {
+          "title": "Complete the square for x",
+          "content": "Group x terms: x² − 6x. Add (−6/2)² = 9 to both sides.",
+          "math": "(x^2 - 6x + 9)"
+        },
+        {
+          "title": "Complete the square for y",
+          "content": "Group y terms: y² + 4y. Add (4/2)² = 4 to both sides.",
+          "math": "(y^2 + 4y + 4)"
+        },
+        {
+          "title": "Rewrite and identify",
+          "content": "",
+          "math": "(x-3)^2 + (y+2)^2 = 12 + 9 + 4 = 25"
+        },
+        {
+          "title": "State centre and radius",
+          "content": "Centre (3, −2), radius = √25 = 5.",
+          "math": null
+        }
+      ]
+    }
+  ],
+
+  "commonMistakes": [
+    {
+      "mistake": "Reading the centre of (x−3)² + (y+2)² = 25 as (−3, 2) instead of (3, −2)",
+      "fix": "The standard form is (x−h)² + (y−k)². Match signs carefully: (x−3) means h = 3; (y+2) = (y−(−2)) means k = −2."
+    },
+    {
+      "mistake": "Confusing arc length with arc measure (degrees)",
+      "fix": "Arc measure is the central angle in degrees. Arc length is the actual distance along the curve — it depends on both the angle and the radius."
+    }
+  ],
+  "quickTip": "Whenever you see a circle equation not in standard form, complete the square immediately. The SAT frequently tests whether students can recognise a circle equation that needs rearranging."
+}

@@ -658,5 +658,44 @@
       "C": "Student identified the second time the ball is at 48 ft (descending), not the first",
       "D": "Student found when the ball hits the ground (t = 4) rather than when it reaches 48 ft"
     }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "x² + 6x + 2 = 0\nWhich of the following correctly solves the equation by completing the square?\nA. (x + 3)² = 7\nB. (x + 3)² = 11\nC. (x + 6)² = 34\nD. (x + 3)² = 3",
+    "type": "A-28 — complete the square from standard form: identify correct completed-square form (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["completing the square", "solves the equation"],
+    "why_this_difficulty": "Hard — x² + 6x + 2 = 0; half of 6 is 3; add (3)² = 9 to both sides: x² + 6x + 9 = −2 + 9 = 7; left side factors as (x+3)² = 7",
+    "distractor_rationales": {
+      "B": "Student added 9 to the right but started from +2 rather than −2, giving (x+3)² = 2+9 = 11",
+      "C": "Student used 6 instead of 3 as the bracket value: (x+6)² requires adding 36 to both sides → (x+6)² = −2+36 = 34",
+      "D": "Student correctly identified the bracket (x+3) but placed the original constant 2+1 on the right without computing 3² = 9"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "x² − 8x + 5 = 0\nWhich of the following is equivalent to the equation above, written in the form (x − h)² = k?\nA. (x − 4)² = 11\nB. (x − 8)² = 59\nC. (x − 4)² = 21\nD. (x − 4)² = 5",
+    "type": "A-28 — complete the square from standard form: convert to vertex form (x−h)²=k (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["equivalent to the equation above", "written in the form (x − h)² = k"],
+    "why_this_difficulty": "Hard — x² − 8x + 5 = 0; half of −8 is −4; add (−4)² = 16 to both sides: x² − 8x + 16 = −5 + 16 = 11; (x−4)² = 11",
+    "distractor_rationales": {
+      "B": "Student used −8 (not −4) as h: (x−8)² requires adding 64 → right side = −5 + 64 = 59",
+      "C": "Student correctly formed (x−4)² on the left but added 16 to the original +5 instead of to −5: gives 5 + 16 = 21",
+      "D": "Student formed (x−4)² correctly but forgot to add 16 to the right side, leaving it at the original 5"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "x² + 10x − 3 = 0\nBy completing the square, this equation can be written as (x + p)² = q, where p and q are constants. What is the value of q?\nA. 22\nB. 28\nC. 25\nD. 3",
+    "type": "A-28 — complete the square from standard form: find k value after completing (SPR-style MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["completing the square", "can be written as (x + p)² = q", "What is the value of q"],
+    "why_this_difficulty": "Hard — x² + 10x − 3 = 0; half of 10 is 5; add (5)² = 25 to both sides: left = (x+5)², right = 3 + 25 = 28; q = 28",
+    "distractor_rationales": {
+      "A": "Student moved −3 as −3 − 25 = −28 or computed 25 − 3 = 22 instead of 25 + 3 = 28",
+      "C": "Student identified p = 5 but gave 25 = p² as the answer for q instead of computing 3 + 25",
+      "D": "Student left q as the original constant 3 without adding the completing-square term 25"
+    }
   }
 ]

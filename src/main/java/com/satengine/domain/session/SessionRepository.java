@@ -9,7 +9,8 @@ import java.util.UUID;
 
 public interface SessionRepository extends JpaRepository<Session, UUID> {
 
-    List<Session> findByUserIdOrderByStartedAtDesc(UUID userId);
+    @Query("SELECT s FROM Session s WHERE s.userId = :userId AND s.status != 'archived' ORDER BY s.startedAt DESC")
+    List<Session> findByUserIdOrderByStartedAtDesc(@Param("userId") UUID userId);
 
     @Query("""
         SELECT COUNT(s) FROM Session s

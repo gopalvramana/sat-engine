@@ -628,5 +628,235 @@
       "C": "Student found x = 4 and reported x instead of xy",
       "D": "Student found xy = −6 but dropped the negative sign"
     }
+  },
+  {
+    "difficulty": "easy",
+    "framing": "graph_to_system",
+    "stem": "[Diagram: coordinate plane with two lines. Line 1 has slope 2 and y-intercept 4. Line 2 has slope −1 and y-intercept −1.]\nWhich system of equations is represented by the graph?\nA.  y = 2x + 4\n    y = −x − 1\nB.  y = 2x − 4\n    y = −x − 1\nC.  y = −2x + 4\n    y = −x − 1\nD.  y = 2x + 4\n    y = x − 1",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Sign of Line 1 y-intercept flipped — student read the y-intercept as −4 instead of +4",
+      "C": "Slope of Line 1 negated — student read the upward-slanting line as downward (−2 instead of +2)",
+      "D": "Slope of Line 2 negated — student read the downward-slanting line as upward (+1 instead of −1)"
+    },
+    "solution_steps": [
+      "Line 1: crosses y-axis at 4 (y-intercept = 4); rises 2 units for every 1 unit right (slope = 2) → y = 2x + 4",
+      "Line 2: crosses y-axis at −1 (y-intercept = −1); falls 1 unit for every 1 unit right (slope = −1) → y = −x − 1",
+      "Correct system: y = 2x + 4 and y = −x − 1"
+    ],
+    "why_this_difficulty": "Easy: both lines have integer slopes and y-intercepts readable at whole-number grid intersections; no fractional counting required.",
+    "sat_key_phrases": ["which system of equations is represented by the graph", "which system does the graph represent"]
+  },
+  {
+    "difficulty": "easy",
+    "framing": "graph_to_system",
+    "stem": "[Diagram: coordinate plane with two lines. Line 1 is horizontal at y = 4. Line 2 has slope 3 and y-intercept −2.]\nWhich system of equations is represented by the graph?\nA.  y = 4\n    y = 3x − 2\nB.  y = −4\n    y = 3x − 2\nC.  y = 4\n    y = −3x − 2\nD.  y = 4\n    y = 3x + 2",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Sign of the horizontal line y-value flipped — student read y = 4 as y = −4",
+      "C": "Slope of Line 2 negated — student read the upward-slanting line as downward",
+      "D": "Sign of Line 2 y-intercept flipped — student read the y-intercept as +2 instead of −2"
+    },
+    "solution_steps": [
+      "Line 1 is horizontal — it crosses the y-axis at 4 and has slope 0 → y = 4",
+      "Line 2: crosses y-axis at −2; rises 3 units per 1 unit right (slope = 3) → y = 3x − 2",
+      "Correct system: y = 4 and y = 3x − 2"
+    ],
+    "why_this_difficulty": "Easy: horizontal line tests recognition of slope = 0 form (y = c); only one line has a slope to read.",
+    "sat_key_phrases": ["which system of equations is represented by the graph"]
+  },
+  {
+    "difficulty": "medium",
+    "framing": "graph_to_system",
+    "stem": "[Diagram: coordinate plane with two lines. Line 1 has slope 1/2 and y-intercept 3. Line 2 has slope −2 and y-intercept −1.]\nWhich system of equations is represented by the graph?\nA.  y = (1/2)x + 3\n    y = −2x − 1\nB.  y = 2x + 3\n    y = −2x − 1\nC.  y = (1/2)x − 3\n    y = −2x − 1\nD.  y = (1/2)x + 3\n    y = 2x − 1",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Fractional slope of Line 1 misread as its reciprocal — student counted 2 rise per 1 run instead of 1 rise per 2 run",
+      "C": "Sign of Line 1 y-intercept flipped — student read the y-intercept as −3 instead of +3",
+      "D": "Slope of Line 2 negated — student read the downward-slanting line as upward (+2 instead of −2)"
+    },
+    "solution_steps": [
+      "Line 1: crosses y-axis at 3; rises 1 unit for every 2 units right (slope = 1/2) → y = (1/2)x + 3",
+      "Line 2: crosses y-axis at −1; falls 2 units for every 1 unit right (slope = −2) → y = −2x − 1",
+      "Note: these two lines are perpendicular since (1/2)(−2) = −1"
+    ],
+    "why_this_difficulty": "Medium: fractional slope (rise 1, run 2) on Line 1 requires careful grid counting; steep negative slope on Line 2 may be misread as positive.",
+    "sat_key_phrases": ["which system of equations is represented by the graph"]
+  },
+  {
+    "difficulty": "medium",
+    "framing": "graph_to_system",
+    "stem": "[Diagram: coordinate plane with two lines. Line 1 has slope −3 and y-intercept 5. Line 2 has slope 1 and y-intercept −4.]\nWhich system of equations is represented by the graph?\nA.  y = −3x + 5\n    y = x − 4\nB.  y = 3x + 5\n    y = x − 4\nC.  y = −3x − 5\n    y = x − 4\nD.  y = −3x + 5\n    y = −x − 4",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Sign of Line 1 slope flipped — student read the steeply falling line as rising (3 instead of −3)",
+      "C": "Sign of Line 1 y-intercept flipped — student read the y-intercept as −5 instead of +5",
+      "D": "Sign of Line 2 slope flipped — student read the gently rising line as falling (−1 instead of +1)"
+    },
+    "solution_steps": [
+      "Line 1: crosses y-axis at 5; falls 3 units per 1 unit right (slope = −3) → y = −3x + 5",
+      "Line 2: crosses y-axis at −4 (below origin); rises 1 unit per 1 unit right (slope = 1) → y = x − 4",
+      "Correct system: y = −3x + 5 and y = x − 4"
+    ],
+    "why_this_difficulty": "Medium: steep negative slope on Line 1 is easy to confuse with a positive slope; Line 2 y-intercept is below the origin requiring careful reading.",
+    "sat_key_phrases": ["which system of equations is represented by the graph"]
+  },
+  {
+    "difficulty": "hard",
+    "framing": "infinite_solutions_point",
+    "stem": "The system of equations below has infinitely many solutions.\n  6x − 2y = 10\n  3x − y = 5\nWhich ordered pair (x, y) is a solution to the system for every real number r?\nA. (r, 3r − 5)\nB. (r, 3r + 5)\nC. (r, −3r − 5)\nD. (r, 3r − 10)",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Student flipped the sign of the constant: wrote +5 instead of −5 when rearranging y = 3x − 5",
+      "C": "Student negated the slope (3 → −3) and flipped the constant sign — double error in rearrangement",
+      "D": "Student used the constant 10 from the first equation rather than 5 from the simplified form"
+    },
+    "solution_steps": [
+      "Verify the system is coincident: multiply 3x − y = 5 by 2 → 6x − 2y = 10 ✓",
+      "Use the simpler equation: 3x − y = 5 → y = 3x − 5",
+      "Set x = r: y = 3r − 5",
+      "The ordered pair (r, 3r − 5) satisfies both equations for every real r"
+    ],
+    "why_this_difficulty": "Hard: requires recognising the system is coincident, choosing which variable to parameterise, and correctly rearranging to express the other in terms of r.",
+    "sat_key_phrases": ["has infinitely many solutions", "which ordered pair", "for every real number r", "solution to the system for every"]
+  },
+  {
+    "difficulty": "hard",
+    "framing": "infinite_solutions_point",
+    "stem": "The system of equations below has infinitely many solutions.\n  4x − 8y = 12\n  x − 2y = 3\nWhich ordered pair (x, y) is a solution to the system for every real number r?\nA. (2r + 3, r)\nB. (2r − 3, r)\nC. (r, 2r + 3)\nD. (r, 2r − 3)",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Student flipped the sign of the constant: wrote 2r − 3 instead of 2r + 3",
+      "C": "Student set x = r (instead of y = r) and solved in the wrong direction, then placed values in wrong positions",
+      "D": "Student made both errors: wrong parameterisation and sign flip"
+    },
+    "solution_steps": [
+      "Verify: multiply x − 2y = 3 by 4 → 4x − 8y = 12 ✓",
+      "Use simpler equation: x − 2y = 3 → x = 2y + 3",
+      "Set y = r: x = 2r + 3",
+      "Ordered pair: (2r + 3, r)"
+    ],
+    "why_this_difficulty": "Hard: the free parameter is assigned to y (not x) — students must notice that isolating x is more natural here and place values in the correct (x, y) order.",
+    "sat_key_phrases": ["has infinitely many solutions", "which ordered pair", "for every real number r"]
+  },
+  {
+    "difficulty": "hard",
+    "framing": "infinite_solutions_point",
+    "stem": "The system of equations below has infinitely many solutions.\n  2x + 6y = 14\n  x + 3y = 7\nWhich ordered pair (x, y) is a solution to the system for every real number r?\nA. (r, −(1/3)r + 7/3)\nB. (r, (1/3)r + 7/3)\nC. (r, −(1/3)r − 7/3)\nD. (r, 3r + 7)",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "Student dropped the negative sign when rearranging: y = (7 − x)/3 → wrote +(1/3)x instead of −(1/3)x",
+      "C": "Student negated both terms in the rearrangement, flipping both slope and constant signs",
+      "D": "Student inverted the coefficient of x: used 3 instead of 1/3 when solving for y"
+    },
+    "solution_steps": [
+      "Verify: multiply x + 3y = 7 by 2 → 2x + 6y = 14 ✓",
+      "Rearrange: x + 3y = 7 → y = (7 − x)/3 = −(1/3)x + 7/3",
+      "Set x = r: y = −(1/3)r + 7/3",
+      "Ordered pair: (r, −(1/3)r + 7/3)"
+    ],
+    "why_this_difficulty": "Hard: fractional coefficient (1/3) in the parametric expression; sign errors when dividing through by 3 are the most common mistake.",
+    "sat_key_phrases": ["has infinitely many solutions", "which ordered pair", "for every real number r"]
+  },
+  {
+    "difficulty": "hard",
+    "framing": "unique_intersection_find_constant",
+    "stem": "In the system of equations below, k is a constant. The system has a unique solution at x = 3.\n  kx + 2y = 25\n  x + y = 8\nWhat is the value of k?\nA. 1\nB. 3\nC. 5\nD. 7",
+    "type": "mcq",
+    "correct": "C",
+    "distractor_rationales": {
+      "A": "Student substituted x = 3 into kx + 2y = 25 without first finding y: k(3) = 25 → k ≈ 8 (wrong approach)",
+      "B": "Student found y = 5 correctly but then solved 3k = 15 instead of 3k + 10 = 25 (forgot to include the 2y term)",
+      "D": "Student used y = 3 (copying x value) instead of computing y = 5 from the second equation"
+    },
+    "solution_steps": [
+      "Substitute x = 3 into the second equation: 3 + y = 8 → y = 5",
+      "Substitute (x, y) = (3, 5) into the first equation: k(3) + 2(5) = 25",
+      "3k + 10 = 25 → 3k = 15 → k = 5"
+    ],
+    "why_this_difficulty": "Hard: two-step process — first find the missing coordinate from the simpler equation, then back-substitute into the equation containing the unknown constant.",
+    "sat_key_phrases": ["k is a constant", "has a unique solution", "what is the value of k", "the system has a solution at"]
+  },
+  {
+    "difficulty": "hard",
+    "framing": "unique_intersection_find_constant",
+    "stem": "In the system of equations below, w is a constant. The system has a unique solution at y = 5.\n  3x + wy = 19\n  2x − y = 1\nWhat is the value of w?\nA. 1\nB. 2\nC. 3\nD. 4",
+    "type": "mcq",
+    "correct": "B",
+    "distractor_rationales": {
+      "A": "Student substituted y = 5 into 3x + wy = 19 and set 3x = 19, ignoring the wy term and not using the second equation to find x",
+      "C": "Student found x = 3 correctly but computed 3(3) + w(5) = 19 and solved 9 + 5w = 19 → w = 2 is correct — distractor uses arithmetic error: student gets 5w = 13",
+      "D": "Student made a sign error: treated 2x − y = 1 with y = 5 as 2x + 5 = 1, finding x = −2, then substituting incorrectly"
+    },
+    "solution_steps": [
+      "Substitute y = 5 into the second equation: 2x − 5 = 1 → 2x = 6 → x = 3",
+      "Substitute (x, y) = (3, 5) into the first equation: 3(3) + w(5) = 19",
+      "9 + 5w = 19 → 5w = 10 → w = 2"
+    ],
+    "why_this_difficulty": "Hard: y-coordinate is given (not x), so student must use the simpler equation to find x first, then back-substitute — same two-step structure but with opposite coordinate given.",
+    "sat_key_phrases": ["w is a constant", "has a unique solution", "what is the value of w", "the system has a solution at"]
+  },
+  {
+    "difficulty": "medium",
+    "framing": "interpret_system_intersection_context",
+    "stem": "A small business tracks its monthly costs and revenues. The cost of producing x items per month is given by C = 4x + 300, and the revenue from selling x items is given by R = 9x. The graphs of these two equations intersect at a single point. What does the x-coordinate of the intersection point represent in this context?\nA. The number of items at which the monthly cost equals the monthly revenue\nB. The maximum number of items the business can produce in a month\nC. The number of items at which revenue is three times the cost\nD. The monthly profit when the business sells all its items",
+    "type": "mcq",
+    "correct": "A",
+    "distractor_rationales": {
+      "B": "The intersection is a break-even condition, not a production capacity constraint",
+      "C": "At the intersection R = C, not R = 3C; that relationship would require a different calculation",
+      "D": "Profit = R − C; the intersection is where profit = 0 (break-even), not a profit value itself"
+    },
+    "solution_steps": [
+      "Intersection: 9x = 4x + 300 → 5x = 300 → x = 60",
+      "At x = 60, C = R = 540; this is the break-even point where monthly cost equals revenue"
+    ],
+    "why_this_difficulty": "Medium: student must interpret what R = C means in the real-world scenario (break-even), not just compute the intersection.",
+    "sat_key_phrases": ["the graphs of these two equations intersect", "what does the x-coordinate of the intersection point represent"]
+  },
+  {
+    "difficulty": "medium",
+    "framing": "interpret_system_intersection_context",
+    "stem": "Two friends, Maya and Carlos, are saving money. Maya currently has $120 saved and saves $15 per week. Carlos currently has $40 saved and saves $35 per week. The graphs of their savings over w weeks intersect at one point. What does the intersection point represent?\nA. The week when Maya has saved $120 more than Carlos\nB. The week when Maya and Carlos have saved the same total amount\nC. The total amount saved by both friends combined after one week\nD. The week when Carlos begins saving more per week than Maya",
+    "type": "mcq",
+    "correct": "B",
+    "distractor_rationales": {
+      "A": "That would require Maya's savings − Carlos's savings = 120, a different equation",
+      "C": "The combined savings after one week is 135 + 75 = 210, a fixed value unrelated to the intersection",
+      "D": "Carlos already saves more per week (35 > 15) from the start; the intersection is about equal totals, not rates"
+    },
+    "solution_steps": [
+      "Maya: M(w) = 120 + 15w; Carlos: C(w) = 40 + 35w",
+      "Intersection: 120 + 15w = 40 + 35w → 80 = 20w → w = 4",
+      "At w = 4 both have saved $180; the intersection means their cumulative savings are equal"
+    ],
+    "why_this_difficulty": "Medium: two saving-rate models; intersection = equal totals (not equal rates, not difference); distractors invoke rate comparison and combined totals.",
+    "sat_key_phrases": ["the graphs of their savings", "what does the intersection point represent"]
+  },
+  {
+    "difficulty": "hard",
+    "framing": "interpret_system_intersection_context",
+    "stem": "A city's transit authority models passenger demand for two bus routes. Route A carries d = 800 − 20p passengers per day when the fare is p dollars. Route B carries d = 200 + 10p passengers per day at the same fare. The graphs of the two demand equations intersect at a point (p₀, d₀). What does d₀ represent?\nA. The fare in dollars at which both routes carry the same number of passengers\nB. The number of passengers per day that both routes carry when their ridership is equal\nC. The combined daily ridership of both routes when the fare is p₀\nD. The maximum daily ridership of Route A",
+    "type": "mcq",
+    "correct": "B",
+    "distractor_rationales": {
+      "A": "p₀ is the fare (x-coordinate); d₀ is the ridership (y-coordinate) — this choice describes p₀, not d₀",
+      "C": "At the intersection, each route carries d₀ passengers, not both combined; combined would be 2d₀",
+      "D": "Route A's maximum ridership occurs at p = 0 (d = 800), not at the intersection"
+    },
+    "solution_steps": [
+      "Intersection: 800 − 20p = 200 + 10p → 600 = 30p → p₀ = 20",
+      "d₀ = 200 + 10(20) = 400",
+      "d₀ is the equal ridership value both routes share when the fare is $20"
+    ],
+    "why_this_difficulty": "Hard: student must distinguish p₀ (the x-coordinate = fare) from d₀ (the y-coordinate = ridership), and also resist the choice that describes the combined rather than individual ridership at the intersection.",
+    "sat_key_phrases": ["the graphs of the two demand equations intersect", "what does d₀ represent"]
   }
 ]

@@ -1,0 +1,49 @@
+{
+  "skillKey": "probability",
+  "domain": "problem_solving_data",
+  "section": "math",
+  "label": "Probability",
+  "overview": "Probability measures how likely an event is, expressed as a fraction between 0 (impossible) and 1 (certain). SAT questions involve basic probability (favourable outcomes ÷ total outcomes), complementary events (P(not A) = 1 − P(A)), and conditional probability (probability given that something else is known). Two-way tables are a common data format.",
+
+  "conceptDiagram": {
+    "caption": "P(A) = favourable ÷ total; P(A and B) uses intersection; P(A|B) conditions on B",
+    "svg": "<svg viewBox='0 0 340 185' xmlns='http://www.w3.org/2000/svg' font-family=\"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\"><rect width='340' height='185' fill='#f0fdf4' rx='10'/><rect x='10' y='10' width='100' height='165' fill='#dcfce7' rx='8'/><text x='60' y='32' font-size='11' font-weight='800' fill='#166534' text-anchor='middle'>Basic</text><text x='60' y='54' font-size='10' fill='#374151' text-anchor='middle'>6-sided die</text><text x='60' y='72' font-size='10' fill='#374151' text-anchor='middle'>Roll a 3:</text><text x='60' y='95' font-size='13' font-weight='800' fill='#15803d' text-anchor='middle'>1/6</text><text x='60' y='120' font-size='9' fill='#374151' text-anchor='middle'>1 favourable</text><text x='60' y='136' font-size='9' fill='#374151' text-anchor='middle'>6 total</text><rect x='120' y='10' width='100' height='165' fill='#dbeafe' rx='8'/><text x='170' y='32' font-size='11' font-weight='800' fill='#1d4ed8' text-anchor='middle'>Complement</text><text x='170' y='54' font-size='10' fill='#374151' text-anchor='middle'>P(not A)</text><text x='170' y='80' font-size='13' font-weight='800' fill='#2563eb' text-anchor='middle'>= 1 − P(A)</text><text x='170' y='108' font-size='9' fill='#374151' text-anchor='middle'>P(not 3) = 1 − 1/6</text><text x='170' y='126' font-size='11' font-weight='700' fill='#1d4ed8' text-anchor='middle'>= 5/6</text><rect x='230' y='10' width='100' height='165' fill='#ede9fe' rx='8'/><text x='280' y='32' font-size='11' font-weight='800' fill='#5b21b6' text-anchor='middle'>Conditional</text><text x='280' y='52' font-size='10' fill='#374151' text-anchor='middle'>P(A | B)</text><text x='280' y='76' font-size='12' font-weight='800' fill='#6d28d9' text-anchor='middle'>=P(A∩B)/P(B)</text><text x='280' y='108' font-size='9' fill='#374151' text-anchor='middle'>"given B occurred,</text><text x='280' y='122' font-size='9' fill='#374151' text-anchor='middle'>what's P(A)?"</text><text x='280' y='148' font-size='9' fill='#5b21b6' text-anchor='middle'>restrict to B's row/col</text></svg>"
+  },
+
+  "keyFormulas": [
+    { "name": "Basic probability", "latex": "P(A) = \\dfrac{\\text{number of favourable outcomes}}{\\text{total outcomes}}" },
+    { "name": "Complement", "latex": "P(\\text{not } A) = 1 - P(A)" },
+    { "name": "Conditional probability", "latex": "P(A \\mid B) = \\dfrac{P(A \\cap B)}{P(B)}" },
+    { "name": "Independent events", "latex": "P(A \\text{ and } B) = P(A) \\cdot P(B) \\text{ (if independent)}" }
+  ],
+
+  "workedExamples": [
+    {
+      "problem": "A bag has 4 red and 6 blue marbles. One marble is drawn at random. What is the probability it is NOT red?",
+      "steps": [
+        {
+          "title": "Find P(red)",
+          "content": "4 red marbles out of 10 total.",
+          "math": "P(\\text{red}) = \\frac{4}{10} = \\frac{2}{5}"
+        },
+        {
+          "title": "Use the complement rule",
+          "content": "",
+          "math": "P(\\text{not red}) = 1 - \\frac{2}{5} = \\frac{3}{5}"
+        }
+      ]
+    }
+  ],
+
+  "commonMistakes": [
+    {
+      "mistake": "Using the full table total instead of the given row/column total for conditional probability",
+      "fix": "Conditional probability restricts the sample space to just the given condition. Use the row or column total for that condition as the denominator."
+    },
+    {
+      "mistake": "Adding probabilities for AND events instead of multiplying",
+      "fix": "P(A and B) = P(A) × P(B) for independent events. Only use addition for OR events: P(A or B) = P(A) + P(B) − P(A and B)."
+    }
+  ],
+  "quickTip": "On two-way table probability questions, the denominator is almost always the key. Basic probability: use the grand total. Conditional probability: use the row or column total matching the given condition."
+}

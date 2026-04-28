@@ -1,0 +1,50 @@
+{
+  "skillKey": "volume_3d",
+  "domain": "geometry_trigonometry",
+  "section": "math",
+  "label": "Volume (3D Shapes)",
+  "overview": "SAT geometry includes volume of rectangular prisms, cylinders, cones, spheres, and pyramids. The reference sheet is provided — the key skill is identifying which formula to use and correctly substituting dimensions. Questions also test proportional reasoning: if a dimension doubles, how does the volume change?",
+
+  "conceptDiagram": {
+    "caption": "Volume formulas for the five 3D shapes tested on the SAT",
+    "svg": "<svg viewBox='0 0 340 185' xmlns='http://www.w3.org/2000/svg' font-family=\"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\"><rect width='340' height='185' fill='#f0f9ff' rx='10'/><rect x='5' y='8' width='64' height='169' fill='#dbeafe' rx='7'/><text x='37' y='24' font-size='9' font-weight='800' fill='#1e40af' text-anchor='middle'>Prism</text><rect x='14' y='60' width='40' height='30' fill='none' stroke='#2563eb' stroke-width='1.5'/><line x1='14' y1='60' x2='24' y2='48' stroke='#2563eb' stroke-width='1'/><line x1='54' y1='60' x2='64' y2='48' stroke='#2563eb' stroke-width='1'/><line x1='24' y1='48' x2='64' y2='48' stroke='#2563eb' stroke-width='1'/><text x='37' y='112' font-size='9' font-weight='700' fill='#1e40af' text-anchor='middle'>V = lwh</text><rect x='73' y='8' width='64' height='169' fill='#ede9fe' rx='7'/><text x='105' y='24' font-size='9' font-weight='800' fill='#4c1d95' text-anchor='middle'>Cylinder</text><ellipse cx='105' cy='65' rx='22' ry='8' fill='none' stroke='#7c3aed' stroke-width='1.5'/><ellipse cx='105' cy='95' rx='22' ry='8' fill='none' stroke='#7c3aed' stroke-width='1.5'/><line x1='83' y1='65' x2='83' y2='95' stroke='#7c3aed' stroke-width='1.5'/><line x1='127' y1='65' x2='127' y2='95' stroke='#7c3aed' stroke-width='1.5'/><text x='105' y='118' font-size='9' font-weight='700' fill='#4c1d95' text-anchor='middle'>V = πr²h</text><rect x='141' y='8' width='64' height='169' fill='#dcfce7' rx='7'/><text x='173' y='24' font-size='9' font-weight='800' fill='#166534' text-anchor='middle'>Cone</text><ellipse cx='173' cy='95' rx='22' ry='8' fill='none' stroke='#16a34a' stroke-width='1.5'/><line x1='151' y1='95' x2='173' y2='50' stroke='#16a34a' stroke-width='1.5'/><line x1='195' y1='95' x2='173' y2='50' stroke='#16a34a' stroke-width='1.5'/><text x='173' y='118' font-size='9' font-weight='700' fill='#166534' text-anchor='middle'>V = ⅓πr²h</text><rect x='209' y='8' width='64' height='169' fill='#fef3c7' rx='7'/><text x='241' y='24' font-size='9' font-weight='800' fill='#92400e' text-anchor='middle'>Sphere</text><circle cx='241' cy='78' r='28' fill='none' stroke='#d97706' stroke-width='1.5'/><text x='241' y='118' font-size='9' font-weight='700' fill='#92400e' text-anchor='middle'>V = 4/3πr³</text><rect x='277' y='8' width='60' height='169' fill='#fee2e2' rx='7'/><text x='307' y='24' font-size='9' font-weight='800' fill='#991b1b' text-anchor='middle'>Pyramid</text><polygon points='307,50 285,100 329,100' fill='none' stroke='#dc2626' stroke-width='1.5'/><rect x='285' y='100' width='44' height='20' fill='none' stroke='#dc2626' stroke-width='1.5'/><text x='307' y='136' font-size='9' font-weight='700' fill='#991b1b' text-anchor='middle'>V = ⅓Bh</text></svg>"
+  },
+
+  "keyFormulas": [
+    { "name": "Rectangular prism", "latex": "V = l \\cdot w \\cdot h" },
+    { "name": "Cylinder", "latex": "V = \\pi r^2 h" },
+    { "name": "Cone", "latex": "V = \\dfrac{1}{3}\\pi r^2 h" },
+    { "name": "Sphere", "latex": "V = \\dfrac{4}{3}\\pi r^3" },
+    { "name": "Pyramid", "latex": "V = \\dfrac{1}{3}Bh \\quad (B = \\text{base area})" }
+  ],
+
+  "workedExamples": [
+    {
+      "problem": "A cylindrical tank has radius 3 m and height 8 m. What is its volume in terms of π?",
+      "steps": [
+        {
+          "title": "Identify the formula",
+          "content": "V = πr²h for a cylinder.",
+          "math": null
+        },
+        {
+          "title": "Substitute r = 3, h = 8",
+          "content": "",
+          "math": "V = \\pi(3)^2(8) = 72\\pi \\text{ m}^3"
+        }
+      ]
+    }
+  ],
+
+  "commonMistakes": [
+    {
+      "mistake": "Forgetting the 1/3 factor for cones and pyramids",
+      "fix": "Cones and pyramids hold exactly one-third the volume of a cylinder or prism with the same base and height. Always include the 1/3."
+    },
+    {
+      "mistake": "Using diameter instead of radius in the formula",
+      "fix": "All volume formulas use r (radius). If given the diameter d, divide by 2 first: r = d/2."
+    }
+  ],
+  "quickTip": "The SAT reference sheet lists all volume formulas — you don't need to memorise them, but you do need to identify which shape you're dealing with and substitute correctly. Double-check whether you're given radius or diameter."
+}

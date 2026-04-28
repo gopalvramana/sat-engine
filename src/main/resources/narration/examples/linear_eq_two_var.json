@@ -460,5 +460,96 @@
       "C": "Substituting (0, 10) into Rx − 20y = 80 gives R(0) − 200 = 80, which is also false regardless of R",
       "D": "Substituting (0, 10) into 20x − Ry = 80 gives −R(10) = 80, yielding R = −8; since R must be positive, this choice is eliminated"
     }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "A school district transports students using standard buses at a cost of $280 per trip and charter buses at a cost of $420 per trip. The equation 280s + 420c = B gives the total transportation budget B in dollars, where s is the number of standard bus trips and c is the number of charter bus trips. What does the value 420 − 280 represent in this context?\nA. The total number of bus trips when the budget is spent equally between the two bus types\nB. The total cost, in dollars, of one standard bus trip and one charter bus trip combined\nC. The additional cost, in dollars, of each charter bus trip compared to each standard bus trip\nD. The number of standard bus trips that cost the same as one charter bus trip",
+    "type": "A-15 — interpret coefficient difference: additional cost per unit (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["What does the value 420 − 280 represent in this context", "cost of", "per trip"],
+    "why_this_difficulty": "Hard — student must recognise that 420 − 280 = 140 is the per-trip rate difference, not a total, a ratio, or a count; all four choices use plausible-sounding language about costs and trips",
+    "distractor_rationales": {
+      "A": "420 − 280 is a rate difference, not a condition on how the budget is split",
+      "B": "The combined cost of one of each is 420 + 280 = 700, not their difference",
+      "D": "The ratio 420/280 = 1.5 would describe a trip-for-trip equivalence, not the difference"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "Two workers are assembling products. Worker A assembles 12 products per hour and earns a flat daily fee of $50. Worker B assembles 7 products per hour and earns a flat daily fee of $50. After h hours on the same day, the total number of products assembled by both workers is given by 12h + 7h + 100. Which of the following best describes what 12 − 7 represents in this context?\nA. The total number of products assembled when both workers have worked the same number of hours\nB. The number of hours until Worker A has assembled twice as many products as Worker B\nC. The number of additional products per hour Worker A assembles compared to Worker B\nD. The combined hourly assembly rate of both workers",
+    "type": "A-15 — interpret coefficient difference: additional output rate (MCQ)",
+    "correct": "C",
+    "sat_key_phrases": ["Which of the following best describes what 12 − 7 represents", "per hour", "assembles"],
+    "why_this_difficulty": "Hard — both coefficients appear in the same expression; student must isolate what the difference of the two hourly rates means (per-hour gap) versus the combined rate (sum) or other tempting interpretations",
+    "distractor_rationales": {
+      "A": "Total products at the same hours is 12h + 7h = 19h, not related to 12 − 7",
+      "B": "That comparison requires setting 12h = 2(7h), which involves neither their difference nor 5",
+      "D": "The combined hourly rate is 12 + 7 = 19, not 12 − 7 = 5"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "A streaming platform offers a basic plan for $9 per month and a premium plan for $15 per month. The total monthly revenue R in dollars from b basic subscribers and p premium subscribers satisfies 9b + 15p = R. A marketing analyst notes that switching one subscriber from the basic plan to the premium plan changes R by a fixed amount. What is that fixed amount?\nA. $6\nB. $9\nC. $15\nD. $24",
+    "type": "A-15 — interpret coefficient difference: per-unit substitution effect (SPR-style MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["switching one subscriber", "changes R by a fixed amount", "What is that fixed amount"],
+    "why_this_difficulty": "Hard — the revenue change when replacing one basic subscriber with one premium subscriber is 15 − 9 = 6; student must model the substitution algebraically (R increases by 15, decreases by 9, net change = 6) rather than treating 9 or 15 as the answer",
+    "distractor_rationales": {
+      "B": "9 is the rate lost from the basic plan alone, ignoring the gain from the premium plan",
+      "C": "15 is the rate gained from the premium plan alone, ignoring the loss from removing the basic subscriber",
+      "D": "24 = 9 + 15 is the combined rate, which applies when both plans are added, not substituted"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "The table below gives three values of x and their corresponding values of y for a linear function h.\n\nx | y\n0 | 9\n1 | 14\n2 | 19\n\nLine k in the xy-plane is obtained by shifting the graph of h down 14 units. What is the x-intercept of line k?\nA. (−1, 0)\nB. (1, 0)\nC. (9/5, 0)\nD. (−9/5, 0)",
+    "type": "A-35 — translated line + find x-intercept: table → translate down → x-int (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["shifting the graph of h down", "x-intercept of line k"],
+    "why_this_difficulty": "Medium — h(x) = 5x + 9 from table (slope = 5, y-intercept = 9); k(x) = 5x + 9 − 14 = 5x − 5; x-intercept: 5x − 5 = 0 → x = 1",
+    "distractor_rationales": {
+      "A": "Student subtracted 14 from the wrong side: 5x + 9 − 14 = 0 gives x = 1, but student computed −9/5 using the original intercept",
+      "C": "Student found x-intercept of original line h (9/5) without applying the vertical shift",
+      "D": "Student negated the x-intercept of h: −9/5, ignoring the shift entirely"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "In the xy-plane, the equation of line h is 27x + 33y = 297. Line k is obtained by shifting the graph of line h down 5 units. What is the y-intercept of line k?\nA. (0, 4)\nB. (0, 14)\nC. (0, −5)\nD. (0, 9)",
+    "type": "A-35 — translated line + find y-intercept: standard-form eq → translate down → y-int (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["obtained by shifting the graph of line h down", "y-intercept of line k"],
+    "why_this_difficulty": "Hard — rewrite h in slope-intercept form: 33y = 297 − 27x → y = 9 − (9/11)x; y-intercept of h is 9; shift down 5 → y-intercept of k is 9 − 5 = 4",
+    "distractor_rationales": {
+      "B": "Student added 5 to the y-intercept instead of subtracting: 9 + 5 = 14",
+      "C": "Student reported the shift amount alone (−5) as the new y-intercept, ignoring the original intercept",
+      "D": "Student found the y-intercept of h (9) without applying the shift"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "In the xy-plane, the equation of line h is 9x − 10y = 19. Line k is obtained by shifting the graph of line h down 4 units. What is the x-intercept of line k?\nA. (59/9, 0)\nB. (19/9, 0)\nC. (3, 0)\nD. (−41/9, 0)",
+    "type": "A-35 — translated line + find x-intercept: standard-form eq → translate → x-int (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["obtained by shifting the graph of line h down", "x-intercept of line k"],
+    "why_this_difficulty": "Hard — rewrite h as y = (9/10)x − 19/10; shift down 4: k is y = (9/10)x − 19/10 − 40/10 = (9/10)x − 59/10; x-int: (9/10)x = 59/10 → x = 59/9",
+    "distractor_rationales": {
+      "B": "Student found x-intercept of original h (set y=0: 9x = 19 → x = 19/9) without applying the shift",
+      "C": "Student computed 19/9 ≈ 2.1 and rounded incorrectly to 3",
+      "D": "Student subtracted 4 from the numerator of the x-intercept rather than adjusting the y-intercept: (19 − 4·10)/9 = −21/9"
+    }
+  },
+  {
+    "difficulty": "hard",
+    "stem": "The table below shows two points on a line in the xy-plane, where k is a constant.\n\nx | y\nk | 13k + 7\n3 | 46\n\nThe y-intercept of the line is (k − 5, b). What is the value of b?\nA. −8\nB. 7\nC. 72\nD. −58",
+    "type": "A-36 — parametric intercept coordinates: solve for k from intercept condition, then find y-intercept value (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["the y-intercept of the line is (k − 5, b)", "what is the value of b"],
+    "why_this_difficulty": "Hard — the y-intercept must have x-coordinate 0, so k − 5 = 0 → k = 5; the line passes through (5, 72) and (3, 46); slope = (72 − 46)/(5 − 3) = 13; y-intercept: b = 46 − 13 × 3 = 7",
+    "distractor_rationales": {
+      "A": "Student set k − 5 = 0 correctly (k = 5) but subtracted instead of solving for b via the line equation",
+      "C": "Student evaluated 13k + 7 = 13(5) + 7 = 72 (the y-value of the first table point) and used that as b",
+      "D": "Student used k = −5 (solving k − 5 = −10 or similar sign error) and incorrectly computed b"
+    }
   }
 ]
