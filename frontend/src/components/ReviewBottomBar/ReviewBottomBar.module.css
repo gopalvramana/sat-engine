@@ -1,0 +1,85 @@
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  border-top: 1px solid var(--border);
+  background: var(--white);
+  flex-shrink: 0;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ghostBtn {
+  background: none;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 13px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--slate);
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.ghostBtn:hover { background: var(--surface); }
+
+.qPill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--dark);
+  padding: 7px 12px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  user-select: none;
+}
+
+.pillChevron {
+  font-size: 9px;
+  color: var(--muted);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.navBtn {
+  background: none;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--slate);
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.navBtn:hover:not(:disabled) { background: var(--surface); }
+.navBtn:disabled { opacity: 0.35; cursor: default; }
+
+.resultsBtn {
+  background: linear-gradient(135deg, var(--indigo), var(--violet));
+  border: none;
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-size: 12px;
+  font-weight: 900;
+  color: #fff;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  transition: opacity 0.15s;
+}
+.resultsBtn:hover { opacity: 0.9; }

@@ -16,10 +16,10 @@
 .domain {
   font-size: 12px;
   font-weight: 600;
-  color: #d97706;
+  color: #444444;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  background: #fffbeb;
+  background: #f0f0f0;
   padding: 3px 10px;
   border-radius: 20px;
 }
@@ -56,7 +56,7 @@
   display: inline-block;
   width: 8px; height: 8px;
   border-radius: 50%;
-  background: #d97706;
+  background: #444444;
 }
 .dotEmpty {
   display: inline-block;
@@ -67,7 +67,7 @@
 
 .passage {
   background: #f8fafc;
-  border-left: 3px solid #d97706;
+  border-left: 3px solid #444444;
   padding: 14px 16px;
   border-radius: 0 8px 8px 0;
   margin-bottom: 16px;
@@ -136,12 +136,12 @@
   font-size: 15px;
 }
 .choice:hover:not(:disabled) {
-  border-color: #fbbf24;
-  background: #faf5ff;
+  border-color: #0a0a0a;
+  background: #f8f8f8;
 }
 .choiceSelected {
-  border-color: #d97706;
-  background: #fffbeb;
+  border-color: #0a0a0a;
+  background: #f0f0f0;
 }
 .choice:disabled {
   cursor: not-allowed;
@@ -149,13 +149,13 @@
 
 /* ── Post-submit color coding ──────────────────────────────── */
 .choiceCorrect {
-  border-color: #22c55e !important;
-  background: #f0fdf4 !important;
+  border-color: #555555 !important;
+  background: #f8f8f8 !important;
   opacity: 1 !important;
 }
 .choiceWrong {
-  border-color: #ef4444 !important;
-  background: #fef2f2 !important;
+  border-color: #444444 !important;
+  background: #f8f8f8 !important;
   opacity: 1 !important;
 }
 .choiceDimmed {
@@ -164,23 +164,23 @@
 
 .choiceLetter {
   font-weight: 700;
-  color: #d97706;
+  color: #444444;
   font-size: 14px;
   min-width: 20px;
 }
-.choiceLetterCorrect { color: #16a34a; }
-.choiceLetterWrong   { color: #dc2626; }
+.choiceLetterCorrect { color: #333333; }
+.choiceLetterWrong   { color: #333333; }
 .choiceText { color: #334155; flex: 1; }
 
 .choiceBadge {
   font-size: 11px; font-weight: 700;
-  color: #16a34a; background: #dcfce7;
+  color: #333333; background: #f0f0f0;
   padding: 2px 8px; border-radius: 999px;
   flex-shrink: 0; margin-left: auto;
 }
 .choiceBadgeWrong {
   font-size: 11px; font-weight: 700;
-  color: #dc2626; background: #fee2e2;
+  color: #333333; background: #f0f0f0;
   padding: 2px 8px; border-radius: 999px;
   flex-shrink: 0; margin-left: auto;
 }
@@ -200,7 +200,7 @@
   transition: border-color 0.15s;
   box-sizing: border-box;
 }
-.sprInput:focus { border-color: #d97706; }
+.sprInput:focus { border-color: #444444; }
 
 /* SPR answer summary shown after submission */
 .sprFeedbackRow {
@@ -215,18 +215,34 @@
   font-size: 14px;
   max-width: 320px;
 }
-.sprAnswerWrong  { color: #dc2626; }
-.sprAnswerCorrect { color: #16a34a; }
-.sprAnswerCorrectLabel { color: #16a34a; }
+.sprAnswerWrong  { color: #333333; }
+.sprAnswerCorrect { color: #333333; }
+.sprAnswerCorrectLabel { color: #333333; }
 
 .submitRow {
   display: flex;
 }
 
+.nextBtn {
+  width: 100%;
+  padding: 13px 28px;
+  background: #fff;
+  color: #0a0a0a;
+  border: 2px solid #0a0a0a;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, color 0.15s;
+  letter-spacing: 0.01em;
+}
+.nextBtn:hover { background: #0a0a0a; color: #fff; }
+
 .submitBtn {
   width: 100%;
   padding: 13px 28px;
-  background: #d97706;
+  background: #0a0a0a;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -237,8 +253,8 @@
   transition: background 0.15s;
   letter-spacing: 0.01em;
 }
-.submitBtn:hover:not(:disabled) { background: #b45309; }
-.submitBtn:disabled { background: #fcd34d; cursor: not-allowed; }
+.submitBtn:hover:not(:disabled) { background: #333333; }
+.submitBtn:disabled { background: #d1d5db; cursor: not-allowed; }
 
 /* ── Mark for Review button ─────────────────────────────────── */
 .markBtn {
@@ -257,10 +273,10 @@
   flex-shrink: 0;
 }
 .markBtn:hover {
-  color: #d97706;
-  background: #fffbeb;
-  border-color: #fcd34d;
+  color: #0a0a0a;
+  background: #f1f5f9;
+  border-color: #e2e8f0;
 }
 .markBtnActive {
-  color: #d97706;
+  color: #444444;
 }

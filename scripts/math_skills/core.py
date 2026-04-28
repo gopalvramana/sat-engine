@@ -66,6 +66,7 @@ SKILL_CODES = {
     "scatterplot_analysis":       "SCA",
     "equivalent_expressions":     "EXP",
     "nonlinear_equations":        "NLE",
+    "nonlinear_functions":        "NLF",
 }
 
 ALL_SKILLS = list(SKILL_CODES.keys())

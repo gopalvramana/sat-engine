@@ -37,7 +37,7 @@ export default class ErrorBoundary extends Component {
   render() {
     if (this.state.hasError) {
       return this.props.fallback ?? (
-        <div style={{ padding: 40, textAlign: 'center', fontFamily: 'system-ui' }}>
+        <div style={{ padding: 40, textAlign: 'center', fontFamily: 'Plus Jakarta Sans, system-ui' }}>
           <div style={{ fontSize: 18, fontWeight: 700, color: '#ef4444', marginBottom: 8 }}>
             Something went wrong
           </div>

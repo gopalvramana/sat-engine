@@ -15,7 +15,7 @@
   margin-bottom: 8px;
   overflow: hidden;
 }
-.stepOpen { border-color: #d97706; }
+.stepOpen { border-color: #444444; }
 
 .stepHeader {
   display: flex;
@@ -34,7 +34,7 @@
 .stepNum {
   font-size: 11px;
   font-weight: 600;
-  color: #d97706;
+  color: #444444;
   white-space: nowrap;
   min-width: 80px;
 }

@@ -1,91 +1,36 @@
 .shell {
-  display: flex;
   min-height: 100vh;
-  background: #f5f0e8;
-  padding: 14px;
-  gap: 14px;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+}
+
+/*
+ * Three-column body:
+ *   GamificationPanel (212px) | main content (flex:1) | RightPanel (256px)
+ * Both panels hide themselves via their own @media queries, so .body stays
+ * a simple flex row at all breakpoints.
+ */
+.body {
+  flex: 1;
+  max-width: 1440px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 28px 24px 48px;
+  display: flex;
+  gap: 20px;
   align-items: flex-start;
 }
 
+/* Page content fills remaining space */
 .main {
   flex: 1;
   min-width: 0;
-  overflow-y: auto;
-}
-
-/* ── Mobile ─────────────────────────────────────────────────── */
-.overlay {
-  display: none;
-}
-
-.mobileTopBar {
-  display: none;
 }
 
 @media (max-width: 767px) {
-  .shell {
-    padding: 0;
+  .body {
+    padding: 16px 14px 40px;
     gap: 0;
-    flex-direction: column;
-    padding-bottom: 64px; /* space for bottom nav */
-  }
-
-  .main {
-    width: 100%;
-    padding: 0 16px 16px;
-  }
-
-  /* Dim overlay behind open drawer */
-  .overlay {
-    display: block;
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.45);
-    z-index: 98;
-  }
-
-  /* Top bar with hamburger */
-  .mobileTopBar {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 16px 10px;
-    position: sticky;
-    top: 0;
-    background: #f5f0e8;
-    z-index: 10;
-  }
-
-  .mobileTitle {
-    font-family: 'Inter', sans-serif;
-    font-size: 17px;
-    font-weight: 800;
-    color: #1c1008;
-  }
-
-  .hamburger {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 5px;
-    width: 32px;
-    height: 32px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 4px;
-    border-radius: 6px;
-  }
-
-  .hamburger span {
-    display: block;
-    height: 2px;
-    background: #1c1008;
-    border-radius: 2px;
-    width: 100%;
-  }
-
-  .hamburger:hover {
-    background: rgba(28, 16, 8, 0.06);
   }
 }

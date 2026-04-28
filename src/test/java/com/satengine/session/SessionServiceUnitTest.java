@@ -1,19 +1,12 @@
 package com.satengine.session;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.satengine.domain.question.Question;
-import com.satengine.domain.question.QuestionAnswer;
-import com.satengine.domain.question.QuestionAnswerRepository;
-import com.satengine.domain.question.QuestionRepository;
-import com.satengine.domain.session.Session;
-import com.satengine.domain.session.SessionAnswer;
-import com.satengine.domain.session.SessionAnswerRepository;
-import com.satengine.domain.session.SessionRepository;
-import com.satengine.domain.session.SessionService;
+import com.satengine.domain.session.*;
+import com.satengine.domain.sympy.SatQuestion;
+import com.satengine.domain.sympy.SatQuestionRepository;
 import com.satengine.dto.CreateSessionRequest;
 import com.satengine.dto.SessionResponse;
 import com.satengine.dto.SubmitAnswerRequest;
-import com.satengine.exception.DuplicateAnswerException;
 import com.satengine.exception.InvalidRequestException;
 import com.satengine.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,30 +29,18 @@ import static org.mockito.Mockito.*;
 
 /**
  * Pure unit tests for SessionService business logic.
- *
  * All dependencies are mocked — no database or Spring context required.
- * Runs in milliseconds.
- *
- * Covers:
- *  - createSession: persists correct fields, serialises bandCounts, null bandCounts
- *  - submitAnswer: correct/wrong, case-insensitive, trim, blank guard, duplicate guard,
- *                  session not found, question answer not found, typed exceptions
- *  - getNextQuestion: session not found throws ResourceNotFoundException
- *  - getSessionStatus: correct/answered counts, totalQuestions from JSON,
- *                      malformed JSON falls back to 0, session not found
- *  - difficultyToBand: all 7 boundary values
  */
 @ExtendWith(MockitoExtension.class)
 class SessionServiceUnitTest {
 
-    @Mock private SessionRepository        sessionRepository;
-    @Mock private SessionAnswerRepository  sessionAnswerRepository;
-    @Mock private QuestionRepository       questionRepository;
-    @Mock private QuestionAnswerRepository questionAnswerRepository;
+    @Mock private SessionRepository         sessionRepository;
+    @Mock private SessionAnswerRepository   sessionAnswerRepository;
+    @Mock private SessionQuestionRepository sessionQuestionRepository;
+    @Mock private SatQuestionRepository     satQuestionRepository;
 
     private SessionService service;
 
-    // Shared test user ID — passed to every createSession call
     private static final UUID TEST_USER = UUID.randomUUID();
 
     @BeforeEach
@@ -67,8 +48,8 @@ class SessionServiceUnitTest {
         service = new SessionService(
                 sessionRepository,
                 sessionAnswerRepository,
-                questionRepository,
-                questionAnswerRepository,
+                sessionQuestionRepository,
+                satQuestionRepository,
                 new ObjectMapper());
     }
 
@@ -168,7 +149,6 @@ class SessionServiceUnitTest {
         @DisplayName("totalQuestions sums all band counts across multiple domains")
         void bandCounts_totalSumsCorrectly() throws Exception {
             var sessionId = UUID.randomUUID();
-            // algebra: easy=2, medium=3  +  geometry: hard=1  =  total 6
             String bandJson = new ObjectMapper().writeValueAsString(Map.of(
                     "algebra",               Map.of("easy", 2, "medium", 3),
                     "geometry_trigonometry", Map.of("hard", 1)));
@@ -185,7 +165,6 @@ class SessionServiceUnitTest {
             mockSession(sessionId, "{not valid json{{");
             when(sessionAnswerRepository.findBySessionId(sessionId)).thenReturn(List.of());
 
-            // Must not throw — graceful fallback
             assertThat(service.getSessionStatus(sessionId).totalQuestions()).isEqualTo(0);
         }
 
@@ -279,21 +258,6 @@ class SessionServiceUnitTest {
         }
 
         @Test
-        @DisplayName("already answered → DuplicateAnswerException")
-        void alreadyAnswered_throws() {
-            var sessionId  = UUID.randomUUID();
-            var questionId = UUID.randomUUID();
-            mockSession(sessionId, null);
-            when(sessionAnswerRepository.findBySessionIdAndQuestionId(sessionId, questionId))
-                    .thenReturn(Optional.of(new SessionAnswer()));
-
-            assertThatThrownBy(() -> service.submitAnswer(sessionId,
-                    new SubmitAnswerRequest(questionId, "A", null)))
-                    .isInstanceOf(DuplicateAnswerException.class)
-                    .hasMessageContainingAll("already answered");
-        }
-
-        @Test
         @DisplayName("correct answer → isCorrect=true, correctAnswer returned")
         void correctAnswer_returnsTrue() {
             var sessionId  = UUID.randomUUID();
@@ -301,8 +265,7 @@ class SessionServiceUnitTest {
             mockSession(sessionId, null);
             when(sessionAnswerRepository.findBySessionIdAndQuestionId(any(), any()))
                     .thenReturn(Optional.empty());
-            mockAnswer(questionId, "B");
-            mockQuestion(questionId);
+            mockSatQuestion(questionId, "B");
 
             var fb = service.submitAnswer(sessionId,
                     new SubmitAnswerRequest(questionId, "B", null));
@@ -319,8 +282,7 @@ class SessionServiceUnitTest {
             mockSession(sessionId, null);
             when(sessionAnswerRepository.findBySessionIdAndQuestionId(any(), any()))
                     .thenReturn(Optional.empty());
-            mockAnswer(questionId, "B");
-            mockQuestion(questionId);
+            mockSatQuestion(questionId, "B");
 
             var fb = service.submitAnswer(sessionId,
                     new SubmitAnswerRequest(questionId, "A", null));
@@ -337,8 +299,7 @@ class SessionServiceUnitTest {
             mockSession(sessionId, null);
             when(sessionAnswerRepository.findBySessionIdAndQuestionId(any(), any()))
                     .thenReturn(Optional.empty());
-            mockAnswer(questionId, "B");
-            mockQuestion(questionId);
+            mockSatQuestion(questionId, "B");
 
             var fb = service.submitAnswer(sessionId,
                     new SubmitAnswerRequest(questionId, "b", null));
@@ -347,32 +308,35 @@ class SessionServiceUnitTest {
         }
 
         @Test
-        @DisplayName("answer is trimmed before comparison — '  B  ' matches 'B'")
-        void answerTrimmed() {
+        @DisplayName("re-submission upserts existing answer (SAT free-navigation)")
+        void resubmit_updatesExistingAnswer() {
             var sessionId  = UUID.randomUUID();
             var questionId = UUID.randomUUID();
             mockSession(sessionId, null);
-            when(sessionAnswerRepository.findBySessionIdAndQuestionId(any(), any()))
-                    .thenReturn(Optional.empty());
-            mockAnswer(questionId, "B");
-            mockQuestion(questionId);
+            var existing = SessionAnswer.builder()
+                    .sessionId(sessionId).questionId(questionId)
+                    .studentAnswer("A").isCorrect(false).build();
+            when(sessionAnswerRepository.findBySessionIdAndQuestionId(sessionId, questionId))
+                    .thenReturn(Optional.of(existing));
+            mockSatQuestion(questionId, "B");
 
+            // Change answer from A to B
             var fb = service.submitAnswer(sessionId,
-                    new SubmitAnswerRequest(questionId, "  B  ", null));
+                    new SubmitAnswerRequest(questionId, "B", null));
 
             assertThat(fb.isCorrect()).isTrue();
+            verify(sessionAnswerRepository).save(existing); // same object, updated
         }
 
         @Test
-        @DisplayName("answer record not found in DB → ResourceNotFoundException")
-        void answerRecordMissing_throws() {
+        @DisplayName("question not found → ResourceNotFoundException")
+        void questionNotFound_throws() {
             var sessionId  = UUID.randomUUID();
             var questionId = UUID.randomUUID();
             mockSession(sessionId, null);
             when(sessionAnswerRepository.findBySessionIdAndQuestionId(any(), any()))
                     .thenReturn(Optional.empty());
-            when(questionAnswerRepository.findByQuestionId(questionId))
-                    .thenReturn(Optional.empty());
+            when(satQuestionRepository.findById(questionId)).thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> service.submitAnswer(sessionId,
                     new SubmitAnswerRequest(questionId, "A", null)))
@@ -382,24 +346,20 @@ class SessionServiceUnitTest {
     }
 
     // ═══════════════════════════════════════════════════════════════
-    //  difficultyToBand — all 7 boundary values
+    //  difficultyToBand — d1=easy, d2=medium, d3=hard
     // ═══════════════════════════════════════════════════════════════
 
     @ParameterizedTest(name = "difficulty {0} → band \"{1}\"")
     @CsvSource({
             "1, easy",
-            "2, easy",
-            "3, medium",
-            "4, medium",
-            "5, medium",
-            "6, hard",
-            "7, hard"
+            "2, medium",
+            "3, hard"
     })
     @DisplayName("difficultyToBand — maps each difficulty value to correct band")
     void difficultyToBand_allValues(short difficulty, String expectedBand) {
         var exposed = new ExposedSessionService(
                 sessionRepository, sessionAnswerRepository,
-                questionRepository, questionAnswerRepository,
+                sessionQuestionRepository, satQuestionRepository,
                 new ObjectMapper());
 
         assertThat(exposed.exposeDifficultyToBand(difficulty)).isEqualTo(expectedBand);
@@ -420,16 +380,11 @@ class SessionServiceUnitTest {
         when(sessionRepository.findById(sessionId)).thenReturn(Optional.of(session));
     }
 
-    private void mockAnswer(UUID questionId, String correctAnswer) {
-        var qa = new QuestionAnswer();
-        qa.setCorrectAnswer(correctAnswer);
-        when(questionAnswerRepository.findByQuestionId(questionId)).thenReturn(Optional.of(qa));
-    }
-
-    private void mockQuestion(UUID questionId) {
-        var q = new Question();
+    private void mockSatQuestion(UUID questionId, String correctAnswer) {
+        var q = new SatQuestion();
         q.setId(questionId);
-        when(questionRepository.findById(questionId)).thenReturn(Optional.of(q));
+        q.setCorrectAnswer(correctAnswer);
+        when(satQuestionRepository.findById(questionId)).thenReturn(Optional.of(q));
     }
 
     private SessionAnswer answer(boolean correct) {
@@ -438,14 +393,11 @@ class SessionServiceUnitTest {
         return a;
     }
 
-    /**
-     * Thin subclass that exposes the private difficultyToBand method for boundary testing.
-     */
     static class ExposedSessionService extends SessionService {
         ExposedSessionService(SessionRepository sr, SessionAnswerRepository sar,
-                              QuestionRepository qr, QuestionAnswerRepository qar,
+                              SessionQuestionRepository sqr, SatQuestionRepository satQr,
                               ObjectMapper om) {
-            super(sr, sar, qr, qar, om);
+            super(sr, sar, sqr, satQr, om);
         }
 
         String exposeDifficultyToBand(short d) {

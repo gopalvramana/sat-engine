@@ -3,7 +3,7 @@
   border-radius: 16px;
   padding: 24px;
   color: #f1f5f9;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   min-width: 300px;
   max-width: 380px;
 }
@@ -100,7 +100,7 @@
 .tooFastLabel {
   font-size: 11px;
   font-style: italic;
-  color: #a78bfa;
+  color: #888888;
   font-weight: 500;
 }
 .tooSlowLabel {
@@ -167,7 +167,7 @@
   min-height: 3px;
 }
 .chartBarSlow { background: #fbbf24; }
-.chartBarFast { background: #a78bfa; }
+.chartBarFast { background: #888888; }
 
 .chartQLabel {
   font-size: 8px;

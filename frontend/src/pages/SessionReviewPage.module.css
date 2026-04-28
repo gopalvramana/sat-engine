@@ -1,7 +1,9 @@
+/* ── Page shell: sidebar + right panel ───────────────────── */
 .page {
+  display: flex;
   min-height: 100vh;
-  background: #f1f5f9;
-  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--surface);
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }
 
 .centred {
@@ -10,126 +12,48 @@
   justify-content: center;
   min-height: 60vh;
   font-size: 15px;
-  color: #64748b;
+  color: var(--muted);
+  width: 100%;
 }
 
-/* ── Top bar ─────────────────────────────────────────────── */
-.topBar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 10px 20px;
-  background: #fff;
-  border-bottom: 1px solid #e2e8f0;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-.backBtn {
-  font-size: 13px;
-  font-weight: 600;
-  color: #64748b;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 6px 10px;
-  border-radius: 7px;
-  white-space: nowrap;
-  font-family: inherit;
-  transition: background 0.15s, color 0.15s;
-  flex-shrink: 0;
-}
-.backBtn:hover { background: #f1f5f9; color: #1e293b; }
-
-.navCenter {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
+/* ── Right panel (everything except the sidebar) ─────────── */
+.rightPanel {
   flex: 1;
   min-width: 0;
-}
-
-/* Dot progress row */
-.dotRow {
   display: flex;
-  align-items: center;
-  gap: 4px;
-  flex-wrap: wrap;
-  justify-content: center;
+  flex-direction: column;
+  /* toolbar + bottom bar are sticky; content scrolls between them */
 }
 
-.dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  transition: transform 0.15s;
-  flex-shrink: 0;
-}
-.dot:hover { transform: scale(1.3); }
-.dotCorrect  { background: #22c55e; }
-.dotWrong    { background: #ef4444; }
-.dotCurrent  { background: #d97706; transform: scale(1.35); box-shadow: 0 0 0 2px #fff, 0 0 0 3px #d97706; }
-
-.navLabel {
-  font-size: 11px;
-  font-weight: 600;
-  color: #94a3b8;
-  text-align: center;
-}
-
-.navBtns {
-  display: flex;
-  gap: 6px;
-  flex-shrink: 0;
-}
-
-.navBtn {
-  font-size: 13px;
-  font-weight: 600;
-  color: #1e293b;
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
-  border-radius: 7px;
-  padding: 6px 14px;
-  cursor: pointer;
-  font-family: inherit;
-  transition: background 0.15s;
-  white-space: nowrap;
-}
-.navBtn:hover:not(:disabled) { background: #e2e8f0; }
-.navBtn:disabled { opacity: 0.35; cursor: default; }
-
-/* ── Content / two-column layout ─────────────────────────── */
-.content {
-  padding: 20px 20px 60px;
-}
-
-.questionWrap {
+/* ── Scrollable content between toolbar and bottom bar ──── */
+.contentWrap {
+  flex: 1;
   display: flex;
   gap: 20px;
+  padding: 20px 24px;
+  overflow-y: auto;
   align-items: flex-start;
+  /* leave room for sticky bottom bar */
+  padding-bottom: 80px;
 }
 
-.leftCol {
+/* ── Q-col: question card + distractor rationale ─────────── */
+.qCol {
   width: 44%;
   flex-shrink: 0;
   position: sticky;
-  top: 57px;
-  max-height: calc(100vh - 57px - 24px);
+  /* offset = toolbar height (~90px) */
+  top: 90px;
+  max-height: calc(100vh - 90px - 80px);
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: #e2e8f0 transparent;
+  scrollbar-color: var(--border) transparent;
 }
-.leftCol::-webkit-scrollbar { width: 4px; }
-.leftCol::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 2px; }
+.qCol::-webkit-scrollbar        { width: 4px; }
+.qCol::-webkit-scrollbar-thumb  { background: var(--border); border-radius: 2px; }
 
-.rightCol {
+/* ── Exp-col: solution steps + alternative approach ──────── */
+.expCol {
   flex: 1;
   min-width: 0;
   padding-bottom: 2rem;
@@ -137,24 +61,20 @@
 
 /* ── Mobile ──────────────────────────────────────────────── */
 @media (max-width: 767px) {
-  .topBar { padding: 8px 12px; gap: 8px; }
-  .navBtns { gap: 4px; }
-  .navBtn { padding: 5px 10px; font-size: 12px; }
-  .backBtn { font-size: 12px; padding: 5px 6px; }
+  .page { flex-direction: column; }
 
-  .content { padding: 12px 12px 80px; }
-
-  .questionWrap {
+  .contentWrap {
     flex-direction: column;
     gap: 12px;
+    padding: 12px 12px 80px;
   }
 
-  .leftCol {
+  .qCol {
     width: 100%;
     position: static;
     max-height: none;
     overflow-y: visible;
   }
 
-  .rightCol { width: 100%; }
+  .expCol { width: 100%; }
 }

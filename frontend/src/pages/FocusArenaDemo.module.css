@@ -4,7 +4,7 @@
   background: #0f172a;              /* slate-900 — blue-focus per color science */
   display: flex;
   flex-direction: column;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   position: relative;
   overflow-x: hidden;
 }
@@ -22,7 +22,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   font-size: 13px;
   font-weight: 500;
   color: #475569;
@@ -32,7 +32,7 @@
   transition: color 0.15s;
 }
 .backBtn:hover { color: #94a3b8; }
-.endBtn { color: #ef4444; }
+.endBtn { color: #444444; }
 .endBtn:hover { color: #f87171; }
 
 .progressWrap {
@@ -59,7 +59,7 @@
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #0d9488;
+  color: #444444;
   background: rgba(13, 148, 136, 0.1);
   border-radius: 4px;
   padding: 1px 7px;
@@ -80,7 +80,7 @@
 }
 .progressFill {
   height: 100%;
-  background: #0d9488;
+  background: #444444;
   border-radius: 2px;
   transition: width 0.5s ease;
 }
@@ -187,7 +187,7 @@
   border-radius: 12px;
   cursor: pointer;
   text-align: left;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   font-size: 14px;
   color: #334155;
   transition: all 0.12s ease;
@@ -195,19 +195,19 @@
   position: relative;
 }
 .choice:hover:not(:disabled) {
-  border-color: #0d9488;
+  border-color: #444444;
   background: #f0fdfa;
   transform: translateX(2px);
 }
 
 .choiceSelected {
-  border-color: #0d9488;
+  border-color: #444444;
   background: #f0fdfa;
   box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
 }
 
 .choiceCorrect {
-  border-color: #0d9488;
+  border-color: #444444;
   background: #f0fdfa;
 }
 .choiceWrong {
@@ -226,8 +226,8 @@
   color: #475569;
   flex-shrink: 0;
 }
-.choiceSelected .choiceLetter { background: #0d9488; color: #fff; }
-.choiceCorrect  .choiceLetter { background: #0d9488; color: #fff; }
+.choiceSelected .choiceLetter { background: #444444; color: #fff; }
+.choiceCorrect  .choiceLetter { background: #444444; color: #fff; }
 .choiceWrong    .choiceLetter { background: #f43f5e; color: #fff; }
 
 .choiceText { flex: 1; }
@@ -237,7 +237,7 @@
   font-weight: 700;
   margin-left: auto;
 }
-.choiceCorrect .choiceMark { color: #0f766e; }
+.choiceCorrect .choiceMark { color: #222222; }
 .choiceWrong   .choiceMark { color: #be123c; }
 
 /* Submit zone */
@@ -253,7 +253,7 @@
   padding: 14px;
   border: none;
   border-radius: 12px;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;

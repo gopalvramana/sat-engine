@@ -1,0 +1,78 @@
+.bar {
+  position: sticky; bottom: 0; z-index: 50;
+  background: #fff;
+  border-top: 1.5px solid #e2e8f0;
+  padding: 10px 20px;
+  display: flex; align-items: center; gap: 12px;
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.06);
+}
+
+/* Prev / Next */
+.navBtn {
+  padding: 9px 18px;
+  background: #fff; color: #374151;
+  border: 1.5px solid #e2e8f0; border-radius: 9px;
+  font-size: 13px; font-weight: 700; cursor: pointer;
+  font-family: inherit; white-space: nowrap;
+  transition: border-color 0.12s, color 0.12s;
+  flex-shrink: 0;
+}
+.navBtn:hover:not(:disabled) { border-color: #0a0a0a; color: #0a0a0a; }
+.navBtn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* Center cluster */
+.center {
+  flex: 1;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Q-number chip */
+.gridChip {
+  display: flex; align-items: baseline; gap: 2px;
+  padding: 8px 14px;
+  background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 999px;
+  cursor: pointer; font-family: inherit;
+  transition: border-color 0.12s, background 0.12s;
+}
+.gridChip:hover { border-color: #0a0a0a; background: #f1f5f9; }
+.chipLabel { font-size: 14px; font-weight: 800; color: #0f172a; }
+.chipTotal { font-size: 12px; color: #64748b; font-weight: 600; }
+.chipArrow { font-size: 10px; color: #94a3b8; margin-left: 2px; }
+
+/* Mark button */
+.markBtn {
+  padding: 8px 14px;
+  background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 999px;
+  font-size: 12px; font-weight: 700; color: #64748b;
+  cursor: pointer; font-family: inherit; white-space: nowrap;
+  transition: all 0.12s;
+}
+.markBtn:hover  { border-color: #0a0a0a; color: #0a0a0a; background: #f1f5f9; }
+.markBtnActive  { background: #0a0a0a; border-color: #0a0a0a; color: #fff; }
+.markBtnActive:hover { background: #333; }
+
+/* Right cluster */
+.right {
+  display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+}
+
+/* Submit */
+.submitBtn {
+  padding: 9px 20px;
+  background: #0a0a0a; color: #fff;
+  border: none; border-radius: 9px;
+  font-size: 13px; font-weight: 700; cursor: pointer;
+  font-family: inherit; white-space: nowrap;
+  transition: opacity 0.15s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.submitBtn:hover:not(:disabled) { opacity: 0.88; }
+.submitBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+@media (max-width: 600px) {
+  .bar { padding: 8px 12px; gap: 8px; }
+  .navBtn { padding: 8px 12px; font-size: 12px; }
+  .submitBtn { padding: 8px 14px; font-size: 12px; }
+  .markBtn { padding: 7px 10px; font-size: 11px; }
+}

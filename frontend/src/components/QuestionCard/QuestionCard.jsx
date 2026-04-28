@@ -14,7 +14,11 @@ const LETTERS = ['A', 'B', 'C', 'D']
  *   onSubmit   — called with the chosen answer string (letter for MCQ, number for SPR)
  *   disabled   — true while submitting
  */
-export default function QuestionCard({ question, onSubmit, disabled, feedback, studentAnswer, timeTaken, isMarked, onMarkToggle, reviewMode }) {
+/**
+ * satMode — SAT-style: clicking a choice fires onAnswerSelect(letter) immediately,
+ *   no Confirm button. selectedAnswer comes from parent state.
+ */
+export default function QuestionCard({ question, onSubmit, disabled, feedback, studentAnswer, timeTaken, isMarked, onMarkToggle, reviewMode, onNext, isLastQuestion, satMode, selectedAnswer, onAnswerSelect }) {
   const [selected, setSelected] = useState(null)
   const [sprValue, setSprValue] = useState('')
 
@@ -34,7 +38,7 @@ export default function QuestionCard({ question, onSubmit, disabled, feedback, s
     setSprValue('')
   }
 
-  const diffDots = Array.from({ length: 7 }, (_, i) => (
+  const diffDots = Array.from({ length: 3 }, (_, i) => (
     <span key={i} className={i < question.difficulty ? styles.dotFilled : styles.dotEmpty} />
   ))
 
@@ -90,12 +94,28 @@ export default function QuestionCard({ question, onSubmit, disabled, feedback, s
           {LETTERS.map(letter => {
             const text = options[letter]
             if (!text) return null
-            // Color-code after submission
-            const isCorrect  = feedback && letter === feedback.correctAnswer
+            if (satMode) {
+              // SAT mode: click immediately selects, no confirm step
+              const isSatSelected = selectedAnswer === letter
+              return (
+                <button
+                  key={letter}
+                  className={`${styles.choice} ${isSatSelected ? styles.choiceSelected : ''}`}
+                  onClick={() => !disabled && onAnswerSelect?.(letter)}
+                  disabled={disabled}
+                >
+                  <span className={styles.choiceLetter}>{letter}</span>
+                  <MathText text={text} as="span" className={styles.choiceText} />
+                  {isSatSelected && <span className={styles.choiceBadge}>✓ Selected</span>}
+                </button>
+              )
+            }
+            // Color-code after submission (practice mode)
+            const isCorrect      = feedback && letter === feedback.correctAnswer
             const isStudentWrong = feedback && letter === studentAnswer && letter !== feedback.correctAnswer
-            const colorClass = isCorrect ? styles.choiceCorrect
-                             : isStudentWrong ? styles.choiceWrong
-                             : feedback ? styles.choiceDimmed : ''
+            const colorClass     = isCorrect ? styles.choiceCorrect
+                                 : isStudentWrong ? styles.choiceWrong
+                                 : feedback ? styles.choiceDimmed : ''
             return (
               <button
                 key={letter}
@@ -142,16 +162,22 @@ export default function QuestionCard({ question, onSubmit, disabled, feedback, s
         </div>
       )}
 
-      {/* ── Submit (hidden in review mode) ───────────────────── */}
-      {!reviewMode && (
+      {/* ── Submit / Next (hidden in review mode and SAT mode) ──── */}
+      {!reviewMode && !satMode && (
         <div className={styles.submitRow}>
-          <button
-            className={styles.submitBtn}
-            onClick={handleSubmit}
-            disabled={disabled || (isMCQ && !selected) || (isSPR && !sprValue.trim())}
-          >
-            Confirm Answer
-          </button>
+          {feedback ? (
+            <button className={styles.nextBtn} onClick={onNext}>
+              {isLastQuestion ? 'See Results →' : 'Next →'}
+            </button>
+          ) : (
+            <button
+              className={styles.submitBtn}
+              onClick={handleSubmit}
+              disabled={disabled || (isMCQ && !selected) || (isSPR && !sprValue.trim())}
+            >
+              Confirm Answer
+            </button>
+          )}
         </div>
       )}
     </div>

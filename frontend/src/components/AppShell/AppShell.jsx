@@ -1,40 +1,26 @@
-import { useState } from 'react'
 import { Outlet } from 'react-router-dom'
-import Sidebar from '../Sidebar/Sidebar'
+import TopNav from '../TopNav/TopNav'
+import GamificationPanel from '../GamificationPanel/GamificationPanel'
+import RightPanel from '../RightPanel/RightPanel'
 import styles from './AppShell.module.css'
 
 /**
- * Persistent layout wrapper for authenticated pages.
- * On desktop: sidebar always visible on the left.
- * On mobile: sidebar hidden; bottom nav + hamburger drawer instead.
+ * Three-column authenticated layout:
+ *   GamificationPanel (220px, hidden <1280px)
+ *   main content (flex:1)
+ *   RightPanel (256px, hidden <1020px)
  */
 export default function AppShell() {
-  const [drawerOpen, setDrawerOpen] = useState(false)
-
   return (
     <div className={styles.shell}>
-      <Sidebar drawerOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
-
-      {/* Overlay — tap outside drawer to close */}
-      {drawerOpen && (
-        <div className={styles.overlay} onClick={() => setDrawerOpen(false)} />
-      )}
-
-      <main className={styles.main}>
-        {/* Mobile-only top bar */}
-        <div className={styles.mobileTopBar}>
-          <button
-            className={styles.hamburger}
-            onClick={() => setDrawerOpen(true)}
-            aria-label="Open menu"
-          >
-            <span /><span /><span />
-          </button>
-          <span className={styles.mobileTitle}>Aptify</span>
-        </div>
-
-        <Outlet />
-      </main>
+      <TopNav />
+      <div className={styles.body}>
+        <GamificationPanel />
+        <main className={styles.main}>
+          <Outlet />
+        </main>
+        <RightPanel />
+      </div>
     </div>
   )
 }

@@ -1,0 +1,356 @@
+/* ── Outer card ──────────────────────────────────────────────────────────── */
+.panel {
+  width: 212px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 72px;
+  align-self: flex-start;
+  background: #fff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 18px 15px 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.divider {
+  height: 1px;
+  background: #f1f5f9;
+  margin: 14px 0;
+  flex-shrink: 0;
+}
+
+.sectionHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  margin-bottom: 10px;
+}
+
+/* ── Level + XP ──────────────────────────────────────────────────────────── */
+.levelSection { }
+
+.levelTopRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.levelChip {
+  display: inline-flex;
+  align-items: center;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid #fcd34d;
+}
+
+.totalXp {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+.levelName {
+  font-size: 22px;
+  font-weight: 900;
+  color: #0f172a;
+  letter-spacing: -0.8px;
+  line-height: 1.1;
+  margin-bottom: 10px;
+}
+
+.xpTrack {
+  height: 6px;
+  background: #f1f5f9;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 5px;
+}
+
+.xpFill {
+  height: 100%;
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  border-radius: 999px;
+  transition: width 0.6s ease;
+}
+
+.xpCaption {
+  font-size: 10px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+/* ── Streak ──────────────────────────────────────────────────────────────── */
+.streakSection { }
+
+.streakHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.streakFlame {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.streakNum {
+  font-size: 26px;
+  font-weight: 900;
+  color: #0f172a;
+  letter-spacing: -1px;
+  line-height: 1;
+}
+
+.streakLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.weekDots {
+  display: flex;
+  justify-content: space-between;
+  gap: 2px;
+}
+
+.dotCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+}
+
+.dotActive   { background: #22c55e; }
+.dotInactive { background: #f1f5f9; }
+.dotToday    { box-shadow: 0 0 0 2px #22c55e, 0 0 0 4px #dcfce7; }
+
+.dotLabel {
+  font-size: 9px;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+/* ── Daily Goal ──────────────────────────────────────────────────────────── */
+.goalSection { }
+
+.goalXpTag {
+  font-size: 9.5px;
+  font-weight: 700;
+  background: #fef3c7;
+  color: #92400e;
+  padding: 2px 6px;
+  border-radius: 5px;
+  border: 1px solid #fcd34d;
+  letter-spacing: 0;
+}
+
+.goalCount {
+  margin-bottom: 7px;
+  line-height: 1;
+}
+
+.goalDone {
+  font-size: 26px;
+  font-weight: 900;
+  color: #0f172a;
+  letter-spacing: -0.8px;
+}
+
+.goalOf {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.goalTrack {
+  height: 6px;
+  background: #f1f5f9;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 5px;
+}
+
+.goalFill {
+  height: 100%;
+  background: #1e293b;
+  border-radius: 999px;
+  transition: width 0.6s ease;
+}
+
+.goalComplete { background: #22c55e; }
+
+.goalDoneMsg {
+  font-size: 11px;
+  font-weight: 700;
+  color: #16a34a;
+  margin-top: 4px;
+}
+
+/* ── Badges ──────────────────────────────────────────────────────────────── */
+.badgesSection { }
+
+.badgeCount {
+  font-size: 10px;
+  font-weight: 700;
+  color: #64748b;
+  letter-spacing: 0;
+}
+
+/* 3-column grid */
+.badgeGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  justify-items: center;
+  margin-bottom: 10px;
+}
+
+/* Individual circular badge */
+.badge {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 2.5px solid #e2e8f0;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: default;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.badgeEarned:hover { transform: scale(1.18); }
+
+/* Locked: washed-out with a tiny lock overlay */
+.badgeLocked { filter: grayscale(1) opacity(0.35); }
+
+.badgeEmoji { font-size: 20px; line-height: 1; user-select: none; }
+
+/* 🔒 dot pinned to bottom-right corner */
+.badgeLockDot {
+  position: absolute;
+  bottom: -3px;
+  right: -3px;
+  font-size: 10px;
+  background: #fff;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Next badge to unlock */
+.nextBadge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8fafc;
+  border: 1px dashed #e2e8f0;
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+
+.nextBadgeEmoji { font-size: 16px; flex-shrink: 0; opacity: 0.7; }
+
+.nextBadgeInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.nextBadgeName {
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.nextBadgeDesc {
+  font-size: 10px;
+  font-weight: 500;
+  color: #64748b;
+  line-height: 1.3;
+}
+
+/* ── Score estimate ──────────────────────────────────────────────────────── */
+.scoreSection { }
+
+.scoreNum {
+  font-size: 36px;
+  font-weight: 900;
+  color: #0f172a;
+  letter-spacing: -1.5px;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.scoreSub {
+  margin-bottom: 10px;
+}
+
+.scoreDelta {
+  font-size: 11px;
+  font-weight: 700;
+  color: #16a34a;
+}
+
+.scoreBar {
+  height: 5px;
+  background: #f1f5f9;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.scoreBarFill {
+  height: 100%;
+  background: linear-gradient(90deg, #1e293b, #475569);
+  border-radius: 999px;
+  transition: width 0.6s ease;
+}
+
+.scoreRange {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9.5px;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.scoreBlank {
+  font-size: 11.5px;
+  color: #94a3b8;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+/* ── Responsive: hide on narrow screens ─────────────────────────────────── */
+@media (max-width: 1280px) {
+  .panel { display: none; }
+}

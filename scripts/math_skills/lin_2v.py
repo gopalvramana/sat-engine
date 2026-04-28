@@ -1766,6 +1766,286 @@ def _d3_table_to_equation_hard(rng_obj, exclude_params, variant=None):
     raise RuntimeError("table_to_equation_hard d3: could not generate unique params")
 
 
+# ── New templates: T2e / T3 / T4b / T5-full / T7c ────────────────────────────
+
+# Term-interpretation strings for _d2_interpret_term_in_context
+_L2V_TERM_INTERP = {
+    "items sold":        "the total earnings, in dollars, from all items sold",
+    "hours worked":      "the total pay, in dollars, for all hours worked",
+    "weeks elapsed":     "the total amount added to savings, in dollars, over all weeks",
+    "miles driven":      "the total fuel cost, in dollars, for all miles driven",
+    "sessions attended": "the total program cost, in dollars, from all sessions attended",
+}
+
+
+def _d2_slope_from_table(rng_obj, exclude_params, variant=None):
+    """T2e Medium: compute slope from two rows of an (x, y) table."""
+    for _ in range(200):
+        dx = rng_obj.choice([1, 2, 3, 4])
+        dy = rng_obj.choice([i for i in range(-10, 11) if i != 0])
+        slope_rat = Rational(dy, dx)
+        sub = variant or ("integer_slope" if slope_rat.denominator == 1 else "frac_slope")
+        if sub == "integer_slope" and slope_rat.denominator != 1:
+            continue
+        if sub == "frac_slope" and slope_rat.denominator == 1:
+            continue
+
+        x1 = rng_obj.choice(range(-4, 5))
+        x2 = x1 + dx
+        y1 = rng_obj.randint(-8, 8)
+        y2 = y1 + dy
+        assert Rational(y2 - y1, x2 - x1) == slope_rat
+
+        params = {"x1": x1, "y1": y1, "x2": x2, "y2": y2,
+                  "tpl": "slope_from_table", "variant": sub}
+        ph = param_hash(params)
+        if ph in exclude_params:
+            continue
+
+        ans      = fmt_num(slope_rat)
+        d_recip  = fmt_num(Rational(dx, dy))
+        d_neg    = fmt_num(-slope_rat)
+        d_dy     = str(dy)
+        if len({ans, d_recip, d_neg, d_dy}) < 4:
+            continue
+
+        distractors = make_distractors(ans, [d_recip, d_neg, d_dy])
+        ctx = (f"T2e slope_from_table (Medium MCQ). "
+               f"Table rows: x={x1},y={y1}; x={x2},y={y2}. "
+               f"slope = ({y2}−{y1})/({x2}−{x1}) = {dy}/{dx} = {ans}. "
+               f"Correct: {ans}. "
+               f"Distractor {d_recip}: Δx/Δy reciprocal error. "
+               f"Distractor {d_neg}: negated slope. "
+               f"Distractor {d_dy}: used only Δy. "
+               f"STEM FORMAT: Write a sentence that presents the two ordered pairs inline, "
+               f"e.g. 'The table shows two (x, y) pairs: ({x1}, {y1}) and ({x2}, {y2}).' "
+               f"Do NOT use markdown table syntax (pipes/dashes) — the renderer does not support it. "
+               f"Ask for the slope of the line through these two points. "
+               f"CRITICAL: do NOT reveal the slope value in the stem.")
+        result = _l2v(2, params, ph, ans, distractors, None, None, "mcq", ctx)
+        if validate_math_object(result):
+            continue
+        return result
+    raise RuntimeError("slope_from_table d2: could not generate unique params")
+
+
+def _d2_match_equation_to_table(rng_obj, exclude_params, variant=None):
+    """T3 Medium: given y = mx + b, which set of (x, y) pairs satisfies it?"""
+    for _ in range(200):
+        m = rng_obj.choice([i for i in range(-4, 5) if i not in (0, 1, -1)])
+        b = rng_obj.choice([i for i in range(-6, 7)])
+        if variant == "pos_slope" and m < 0:
+            continue
+        if variant == "neg_slope" and m > 0:
+            continue
+        sub = variant or ("pos_slope" if m > 0 else "neg_slope")
+
+        x_vals = sorted(rng_obj.sample([-2, -1, 0, 1, 2, 3], 3))
+        y_vals = [m * x + b for x in x_vals]
+
+        def fmt_table(xs, ys):
+            return "; ".join(f"({x}, {y})" for x, y in zip(xs, ys))
+
+        ans = fmt_table(x_vals, y_vals)
+
+        # Wrong choice 1: one y-value off by +1
+        err_idx  = rng_obj.randint(0, 2)
+        w1_ys    = y_vals.copy()
+        w1_ys[err_idx] += 1
+        w1 = fmt_table(x_vals, w1_ys)
+
+        # Wrong choice 2: wrong slope (m ± 1, keep ≠ 0)
+        m2   = m + 1 if m + 1 != 0 else m - 1
+        w2   = fmt_table(x_vals, [m2 * x + b for x in x_vals])
+
+        # Wrong choice 3: wrong intercept
+        b3   = b + rng_obj.choice([i for i in range(-3, 4) if i != 0])
+        w3   = fmt_table(x_vals, [m * x + b3 for x in x_vals])
+
+        if len({ans, w1, w2, w3}) < 4:
+            continue
+
+        params = {"m": m, "b": b, "x0": x_vals[0],
+                  "tpl": "match_equation_to_table", "variant": sub}
+        ph = param_hash(params)
+        if ph in exclude_params:
+            continue
+
+        distractors = make_distractors(ans, [w1, w2, w3])
+        eq_str = fmt_fn(m, b)
+        exact  = (f"Which of the following sets of (x, y) values satisfies the equation {eq_str}?")
+        ctx = (f"T3 match_equation_to_table (Medium MCQ). "
+               f"Equation: {eq_str}. "
+               f"Correct: {ans}. "
+               f"Distractor (off-by-1 at x={x_vals[err_idx]}): {w1}. "
+               f"Distractor (wrong slope m={m2}): {w2}. "
+               f"Distractor (wrong intercept b={b3}): {w3}. "
+               f"CRITICAL — stem is locked (exactStem). "
+               f"Present each choice as a list of ordered pairs (x, y).")
+        result = _l2v(2, params, ph, ans, distractors, None, None, "mcq", ctx)
+        result["exactStem"] = exact
+        if validate_math_object(result):
+            continue
+        return result
+    raise RuntimeError("match_equation_to_table d2: could not generate unique params")
+
+
+def _d2_interpret_term_in_context(rng_obj, exclude_params, variant=None):
+    """T4b Medium: given y = mx + b with real context, what does the term mx represent?"""
+    for _ in range(200):
+        sc_idx = rng_obj.randint(0, len(_L2V_INTERP_SCENARIOS) - 1)
+        sc     = _L2V_INTERP_SCENARIOS[sc_idx]
+        x_sym, x_label, y_label, ctx_fmt, slope_interp, intercept_interp = sc
+
+        if variant == "revenue_term" and x_label not in ("items sold", "sessions attended"):
+            continue
+        if variant == "cost_term" and x_label not in ("hours worked", "miles driven"):
+            continue
+        sub = variant or (
+            "revenue_term" if x_label in ("items sold", "sessions attended") else "cost_term"
+        )
+
+        m = rng_obj.choice([2, 3, 4, 5, 8, 10, 12, 15])
+        b = rng_obj.choice([10, 15, 20, 25, 30, 40, 50])
+        if m == b:
+            continue
+
+        term_interp = _L2V_TERM_INTERP.get(
+            x_label, f"the total {y_label} from {x_label}"
+        )
+        ans = term_interp
+        d1  = slope_interp           # just the per-unit rate (m alone)
+        d2  = intercept_interp       # the fixed/initial value (b alone)
+        d3  = f"the {y_label}, including both fixed and variable portions"
+        if len({ans, d1, d2, d3}) < 4:
+            continue
+
+        params = {"m": m, "b": b, "sc_idx": sc_idx,
+                  "tpl": "interpret_term_in_context", "variant": sub}
+        ph = param_hash(params)
+        if ph in exclude_params:
+            continue
+
+        ctx_desc    = ctx_fmt.format(m=m, b=b)
+        distractors = make_distractors(ans, [d1, d2, d3])
+        ctx = (f"T4b interpret_term_in_context (Medium MCQ). "
+               f"Context: {ctx_desc} "
+               f"Question: which best describes what the term {m}{x_sym} represents? "
+               f"Correct: '{ans}'. "
+               f"Distractor (rate only): '{d1}'. "
+               f"Distractor (intercept): '{d2}'. "
+               f"Distractor (full equation): '{d3}'. "
+               f"Do NOT include the equation in the stem — describe the context in words only. "
+               f"Ask what the term containing {x_sym} represents (not just the coefficient). "
+               f"Present all 4 choices verbatim as answer options.")
+        result = _l2v(2, params, ph, ans, distractors, None, None, "mcq", ctx)
+        if validate_math_object(result):
+            continue
+        return result
+    raise RuntimeError("interpret_term_in_context d2: could not generate unique params")
+
+
+def _d2_write_parallel_eq_through_point(rng_obj, exclude_params, variant=None):
+    """T5 Medium: given reference line and a point, write equation of the parallel line through that point."""
+    for _ in range(200):
+        m  = rng_obj.choice([i for i in range(-4, 5) if i not in (0, 1, -1)])
+        b0 = rng_obj.choice([i for i in range(-5, 6)])
+        x0 = rng_obj.choice([i for i in range(-4, 5) if i != 0])
+        # y0 must NOT lie on the reference line
+        y0_offset = rng_obj.choice([i for i in range(-4, 5) if i != 0])
+        y0        = m * x0 + b0 + y0_offset
+        b_new     = y0 - m * x0          # b_new = b0 + y0_offset
+        assert b_new != b0
+
+        if variant == "pos_slope" and m < 0:
+            continue
+        if variant == "neg_slope" and m > 0:
+            continue
+        sub = variant or ("pos_slope" if m > 0 else "neg_slope")
+
+        params = {"m": m, "b0": b0, "x0": x0, "y0": y0,
+                  "tpl": "write_parallel_eq_through_point", "variant": sub}
+        ph = param_hash(params)
+        if ph in exclude_params:
+            continue
+
+        ans = fmt_fn(m, b_new)
+        d1  = fmt_fn(m, b0)          # original reference line (parallel but wrong)
+        d2  = fmt_fn(m, b_new + 1)   # correct slope, intercept off by 1
+        d3  = fmt_fn(-m, b_new)      # negated slope, correct intercept
+        if len({ans, d1, d2, d3}) < 4:
+            continue
+
+        ref_str     = fmt_fn(m, b0)
+        distractors = make_distractors(ans, [d1, d2, d3])
+        exact = (f"Line l is defined by {ref_str}. Line k is parallel to line l and passes "
+                 f"through the point ({x0}, {y0}). Which equation defines line k?")
+        ctx = (f"T5 write_parallel_eq_through_point (Medium MCQ). "
+               f"Reference: {ref_str}. Point: ({x0},{y0}). "
+               f"Parallel → same slope m={m}. New intercept: {y0}−({m})×({x0}) = {b_new}. "
+               f"Correct: {ans}. "
+               f"Distractor (original line): {d1}. "
+               f"Distractor (intercept off by 1): {d2}. "
+               f"Distractor (negated slope): {d3}. "
+               f"CRITICAL — stem is locked (exactStem). Do NOT rewrite it.")
+        result = _l2v(2, params, ph, ans, distractors, None, None, "mcq", ctx)
+        result["exactStem"] = exact
+        if validate_math_object(result):
+            continue
+        return result
+    raise RuntimeError("write_parallel_eq_through_point d2: could not generate unique params")
+
+
+def _d3_find_intercept_from_slope_and_x_int(rng_obj, exclude_params, variant=None):
+    """T7c Hard: given slope m and x-intercept r, find the y-intercept."""
+    for _ in range(200):
+        m = rng_obj.choice([i for i in range(-5, 6) if i not in (0, 1, -1)])
+        r = rng_obj.choice([i for i in range(-6, 7) if i != 0])
+        y_int = -m * r
+
+        if y_int == 0:
+            continue
+        if variant == "pos_y_int" and y_int <= 0:
+            continue
+        if variant == "neg_y_int" and y_int >= 0:
+            continue
+        sub = variant or ("pos_y_int" if y_int > 0 else "neg_y_int")
+
+        params = {"m": m, "r": r, "tpl": "find_intercept_from_slope_and_x_int", "variant": sub}
+        ph = param_hash(params)
+        if ph in exclude_params:
+            continue
+
+        # Line: y = m(x − r).  At x=0: y = −mr
+        assert m * (0 - r) == y_int
+
+        ans = str(y_int)
+        d1  = str(m * r)     # sign error: +mr instead of −mr
+        d2  = str(m + r)     # adds slope + x-intercept
+        d3  = str(r)         # returns x-intercept as y-intercept
+        if len({ans, d1, d2, d3}) < 4:
+            continue
+
+        distractors = make_distractors(ans, [d1, d2, d3])
+        exact = (f"In the xy-plane, a line has slope {m} and x-intercept {r}. "
+                 f"What is the y-intercept of the line?")
+        ctx = (f"T7c find_intercept_from_slope_and_x_int (Hard MCQ). "
+               f"Slope m={m}, x-intercept r={r}. "
+               f"Line: y = {m}(x − {r}) = {m}x − {m*r}. "
+               f"y-intercept (x=0): y = {m}(0 − {r}) = {y_int}. "
+               f"Correct: {ans}. "
+               f"Distractor {d1}: sign error — used +mr. "
+               f"Distractor {d2}: added slope and x-intercept. "
+               f"Distractor {d3}: confused x-intercept for y-intercept. "
+               f"CRITICAL — stem is locked (exactStem). Do NOT rewrite it.")
+        result = _l2v(3, params, ph, ans, distractors, None, None, "mcq", ctx)
+        result["exactStem"] = exact
+        if validate_math_object(result):
+            continue
+        return result
+    raise RuntimeError("find_intercept_from_slope_and_x_int d3: could not generate unique params")
+
+
 # ── Routing dicts ─────────────────────────────────────────────────────────────
 
 _D1 = {
@@ -1791,10 +2071,15 @@ _D2 = {
     "parallel_slope":                {"fn": _d2_parallel_slope,                "variants": ["proper_frac", "improper_frac"]},
     "parallel_from_standard_form":   {"fn": _d2_parallel_from_standard_form,   "variants": ["identify_parallel", "identify_perpendicular"]},
     # NEW T1/T6/T7 coverage
-    "word_problem_rate_model":       {"fn": _d2_word_problem_rate_model,       "variants": ["solve_quantity", "solve_cost"]},
-    "write_equation_slope_point":    {"fn": _d2_write_equation_slope_point,    "variants": ["pos_slope", "neg_slope"]},
-    "write_equation_two_points":     {"fn": _d2_write_equation_two_points,     "variants": ["pos_slope", "neg_slope"]},
-    "find_x_intercept_standard_form":{"fn": _d2_find_x_intercept_standard_form,"variants": ["integer_result", "frac_result"]},
+    "word_problem_rate_model":        {"fn": _d2_word_problem_rate_model,        "variants": ["solve_quantity", "solve_cost"]},
+    "write_equation_slope_point":     {"fn": _d2_write_equation_slope_point,     "variants": ["pos_slope", "neg_slope"]},
+    "write_equation_two_points":      {"fn": _d2_write_equation_two_points,      "variants": ["pos_slope", "neg_slope"]},
+    "find_x_intercept_standard_form": {"fn": _d2_find_x_intercept_standard_form, "variants": ["integer_result", "frac_result"]},
+    # NEW T2e/T3/T4b/T5-full coverage
+    "slope_from_table":               {"fn": _d2_slope_from_table,               "variants": ["integer_slope", "frac_slope"]},
+    "match_equation_to_table":        {"fn": _d2_match_equation_to_table,        "variants": ["pos_slope", "neg_slope"]},
+    "interpret_term_in_context":      {"fn": _d2_interpret_term_in_context,      "variants": ["revenue_term", "cost_term"]},
+    "write_parallel_eq_through_point":{"fn": _d2_write_parallel_eq_through_point,"variants": ["pos_slope", "neg_slope"]},
 }
 
 _D3 = {
@@ -1803,9 +2088,10 @@ _D3 = {
     "slope_complex_expr":            {"fn": _d3_slope_complex_expr,            "variants": ["single_fraction", "two_fraction_terms"]},
     "match_graph_to_equation":       {"fn": _d3_match_graph_to_equation,       "variants": ["small_intercepts", "large_intercepts"]},
     "parallel_from_standard_form":   {"fn": _d3_parallel_from_standard_form,   "variants": ["find_y_coeff", "which_equation_parallel"]},
-    # NEW T1/T3 coverage
-    "word_problem_hard":             {"fn": _d3_word_problem_hard,             "variants": ["spr_value", "mcq_equation"]},
-    "table_to_equation_hard":        {"fn": _d3_table_to_equation_hard,        "variants": ["frac_slope", "neg_frac_slope"]},
+    # NEW T1/T3/T7c coverage
+    "word_problem_hard":                  {"fn": _d3_word_problem_hard,                  "variants": ["spr_value", "mcq_equation"]},
+    "table_to_equation_hard":             {"fn": _d3_table_to_equation_hard,             "variants": ["frac_slope", "neg_frac_slope"]},
+    "find_intercept_from_slope_and_x_int":{"fn": _d3_find_intercept_from_slope_and_x_int,"variants": ["pos_y_int", "neg_y_int"]},
 }
 
 _ROUTING = {1: _D1, 2: _D2, 3: _D3}

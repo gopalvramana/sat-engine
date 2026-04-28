@@ -24,9 +24,9 @@
   border-bottom: 1px solid #f1f5f9; color: #475569; background: transparent;
   transition: background 0.1s; border: none;
 }
-.filter-btn:hover  { background: #eff6ff; }
-.filter-btn.active { background: #dbeafe; color: #1d4ed8; font-weight: 600;
-                     border-left: 3px solid #2563eb; padding-left: calc(1rem - 3px); }
+.filter-btn:hover  { background: #f0fdf4; }
+.filter-btn.active { background: #dcfce7; color: #15803d; font-weight: 600;
+                     border-left: 3px solid #16a34a; padding-left: calc(1rem - 3px); }
 
 .q-list-item {
   display: flex; align-items: center; gap: 0.5rem;
@@ -35,8 +35,8 @@
   transition: background 0.1s; user-select: none;
 }
 .q-list-item:hover  { background: #f1f5f9; }
-.q-list-item.active { background: #eff6ff; color: #1d4ed8; font-weight: 600;
-                      border-left: 3px solid #2563eb; }
+.q-list-item.active { background: #f0fdf4; color: #15803d; font-weight: 600;
+                      border-left: 3px solid #16a34a; }
 .q-status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
 
 /* ── Two-column question body ─────────────────────────────── */
@@ -99,7 +99,7 @@
 .expl-step-num {
   display: inline-flex; align-items: center; justify-content: center;
   width: 1.35rem; height: 1.35rem; border-radius: 50%;
-  background: #2563eb; color: #fff; font-size: 0.67rem; font-weight: 700;
+  background: #15803d; color: #fff; font-size: 0.67rem; font-weight: 700;
   flex-shrink: 0; margin-top: 1px;
 }
 .expl-step-body { flex: 1; min-width: 0; }
@@ -110,15 +110,15 @@
   font-size: 0.82rem; color: #475569; line-height: 1.6;
 }
 .expl-step-math {
-  font-size: 0.82rem; color: #1e40af; margin-top: 0.35rem;
-  background: #eff6ff; border: 1px solid #bfdbfe;
+  font-size: 0.82rem; color: #1e293b; margin-top: 0.35rem;
+  background: #f0fdf4; border: 1px solid #bbf7d0;
   border-radius: 0.4rem; padding: 0.3rem 0.6rem;
   display: inline-block;
 }
 
 /* ── Core Concept strip ──────────────────────────────────── */
 .concept-strip {
-  background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 0.75rem;
+  background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 0.75rem;
   padding: 0.65rem 0.9rem;
 }
 .concept-strip-top {
@@ -127,18 +127,18 @@
 }
 .concept-strip-tag {
   font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.05em; color: #3b82f6; flex-shrink: 0;
+  letter-spacing: 0.05em; color: #16a34a; flex-shrink: 0;
 }
 .concept-strip-title {
-  font-size: 0.82rem; font-weight: 700; color: #1e3a8a;
+  font-size: 0.82rem; font-weight: 700; color: #14532d;
 }
 .concept-strip-summary {
-  font-size: 0.78rem; color: #1d4ed8; line-height: 1.5; margin-bottom: 0.3rem;
+  font-size: 0.78rem; color: #15803d; line-height: 1.5; margin-bottom: 0.3rem;
 }
 .concept-strip-formula {
-  display: inline-block; background: #fff; border: 1px solid #bfdbfe;
+  display: inline-block; background: #fff; border: 1px solid #bbf7d0;
   border-radius: 0.35rem; padding: 0.2rem 0.5rem;
-  font-size: 0.8rem; color: #1e40af;
+  font-size: 0.8rem; color: #14532d;
 }
 
 /* ── Prerequisites chips ─────────────────────────────────── */
@@ -155,7 +155,7 @@
   background: #f1f5f9; border: 1.5px solid #e2e8f0; color: #475569;
   cursor: default; white-space: nowrap; transition: all 0.12s;
 }
-.prereq-chip:hover { background: #e0e7ff; border-color: #a5b4fc; color: #3730a3; }
+.prereq-chip:hover { background: #dcfce7; border-color: #86efac; color: #14532d; }
 .prereq-chip[data-tip]:hover::after {
   content: attr(data-tip);
   position: absolute; bottom: calc(100% + 6px); left: 50%;
@@ -218,25 +218,26 @@
 .verdict-details.verdict-pass .verdict-meta { color: #16a34a; }
 .verdict-details.verdict-fail .verdict-meta { color: #ef4444; }
 .verdict-body { padding: 0.65rem 1rem 0.75rem; }
+
 /* ── Alternative Approach panel ─────────────────────────────── */
-.alt-approach-panel { background: #f0f9ff; border: 1.5px solid #7dd3fc; border-radius: 1rem; padding: 0; }
+.alt-approach-panel { background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 1rem; padding: 0; }
 .alt-approach-summary {
   display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
   padding: 0.75rem 1.25rem; cursor: pointer; list-style: none;
   border-radius: 1rem;
 }
 .alt-approach-summary::-webkit-details-marker { display: none; }
-.alt-approach-panel[open] .alt-approach-summary { border-bottom: 1px solid #bae6fd; border-radius: 1rem 1rem 0 0; }
-.alt-approach-icon  { font-size: 1.1rem; color: #0284c7; }
-.alt-approach-label { font-size: 0.8rem; font-weight: 700; color: #0369a1; text-transform: uppercase; letter-spacing: 0.04em; }
-.alt-approach-method { font-size: 0.75rem; background: #bae6fd; color: #0369a1; font-weight: 600; padding: 0.1rem 0.6rem; border-radius: 999px; }
+.alt-approach-panel[open] .alt-approach-summary { border-bottom: 1px solid #bbf7d0; border-radius: 1rem 1rem 0 0; }
+.alt-approach-icon  { font-size: 1.1rem; color: #16a34a; }
+.alt-approach-label { font-size: 0.8rem; font-weight: 700; color: #15803d; text-transform: uppercase; letter-spacing: 0.04em; }
+.alt-approach-method { font-size: 0.75rem; background: #dcfce7; color: #15803d; font-weight: 600; padding: 0.1rem 0.6rem; border-radius: 999px; }
 .alt-approach-body  { padding: 0.75rem 1.25rem 1rem; display: flex; flex-direction: column; gap: 0.75rem; }
-.alt-step { background: #fff; border: 1px solid #e0f2fe; border-radius: 0.5rem; padding: 0.6rem 0.9rem; }
+.alt-step { background: #fff; border: 1px solid #dcfce7; border-radius: 0.5rem; padding: 0.6rem 0.9rem; }
 .alt-step-header { display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 0.25rem; }
-.alt-step-num  { background: #0284c7; color: #fff; font-size: 0.7rem; font-weight: 700; width: 1.2rem; height: 1.2rem; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.alt-step-title { font-size: 0.8rem; font-weight: 600; color: #0369a1; }
+.alt-step-num  { background: #15803d; color: #fff; font-size: 0.7rem; font-weight: 700; width: 1.2rem; height: 1.2rem; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.alt-step-title { font-size: 0.8rem; font-weight: 600; color: #15803d; }
 .alt-step-content { font-size: 0.82rem; color: #374151; margin: 0; line-height: 1.5; }
-.alt-step-math  { font-size: 0.82rem; color: #1e40af; margin-top: 0.3rem; }
+.alt-step-math  { font-size: 0.82rem; color: #1e293b; margin-top: 0.3rem; }
 
 /* ── Issue list ───────────────────────────────────────────── */
 .issue-item { display: flex; gap: 0.5rem; font-size: 0.8rem; padding: 0.35rem 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
@@ -275,17 +276,17 @@
   color: #475569; background: #f8fafc; cursor: pointer; transition: all 0.15s;
 }
 .pool-btn:hover { background: #f1f5f9; }
-.pool-btn.active-diagnostic { background: #7c3aed; color: #fff; border-color: #6d28d9; }
+.pool-btn.active-diagnostic { background: #0f172a; color: #fff; border-color: #1e293b; }
 .pool-btn.active-drill      { background: #0284c7; color: #fff; border-color: #0369a1; }
 .pool-btn.active-test       { background: #059669; color: #fff; border-color: #047857; }
 .pool-btn.active-drill-test { background: #475569; color: #fff; border-color: #334155; }
 
 .btn-fix {
   padding: 0.3rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700;
-  border: 1.5px solid #2563eb; color: #1d4ed8; background: #eff6ff;
+  border: 1.5px solid #16a34a; color: #15803d; background: #f0fdf4;
   cursor: pointer; transition: all 0.15s;
 }
-.btn-fix:hover { background: #dbeafe; }
+.btn-fix:hover { background: #dcfce7; }
 
 .btn-edit {
   padding: 0.42rem 1rem; border-radius: 9999px; font-size: 0.82rem; font-weight: 700;
@@ -293,7 +294,7 @@
   cursor: pointer; transition: all 0.15s;
 }
 .btn-edit:hover  { background: #f1f5f9; border-color: #64748b; }
-.btn-edit.active { background: #1e40af; color: #fff; border-color: #1d4ed8; }
+.btn-edit.active { background: #0f172a; color: #fff; border-color: #1e293b; }
 
 /* ── Nav buttons ──────────────────────────────────────────── */
 .nav-btn {
@@ -303,7 +304,7 @@
   border: 1.5px solid #e2e8f0; background: #fff; color: #334155;
   cursor: pointer; transition: all 0.13s;
 }
-.nav-btn:hover:not(:disabled) { border-color: #93c5fd; background: #eff6ff; color: #1d4ed8; }
+.nav-btn:hover:not(:disabled) { border-color: #86efac; background: #f0fdf4; color: #15803d; }
 .nav-btn:disabled { opacity: 0.38; cursor: not-allowed; }
 
 /* ── Passage ─────────────────────────────────────────────── */
@@ -332,11 +333,11 @@ th { background: #f1f5f9; font-weight: 600; }
 
 /* ── Queue search ────────────────────────────────────────── */
 .q-search {
-  width: 100%; font-size: 0.76rem; font-family: 'Inter', sans-serif;
+  width: 100%; font-size: 0.76rem; font-family: 'Nunito', sans-serif;
   padding: 0.35rem 0.6rem; border: 1.5px solid #e2e8f0; border-radius: 0.4rem;
   outline: none; color: #334155; background: #fff;
 }
-.q-search:focus { border-color: #93c5fd; }
+.q-search:focus { border-color: #86efac; }
 .q-search::placeholder { color: #94a3b8; }
 
 /* ── Section pills ───────────────────────────────────────── */
@@ -347,7 +348,7 @@ th { background: #f1f5f9; font-weight: 600; }
   transition: all 0.12s;
 }
 .sec-pill:hover  { background: #f1f5f9; }
-.sec-pill.active { background: #2563eb; border-color: #2563eb; color: #fff; }
+.sec-pill.active { background: #0f172a; border-color: #0f172a; color: #fff; }
 
 /* ── Domain filter buttons ───────────────────────────────── */
 .domain-btn {
@@ -358,14 +359,14 @@ th { background: #f1f5f9; font-weight: 600; }
   transition: background 0.1s; border-top: none; border-left: none; border-right: none;
 }
 .domain-btn:hover  { background: #f8fafc; }
-.domain-btn.active { background: #eff6ff; color: #1d4ed8; font-weight: 600;
-                     border-left: 3px solid #2563eb; padding-left: calc(1rem - 3px); }
+.domain-btn.active { background: #f0fdf4; color: #15803d; font-weight: 600;
+                     border-left: 3px solid #16a34a; padding-left: calc(1rem - 3px); }
 .domain-count {
   font-size: 0.68rem; font-weight: 600; padding: 0 5px;
   border-radius: 9999px; background: #e2e8f0; color: #64748b; min-width: 18px;
   text-align: center; flex-shrink: 0;
 }
-.domain-btn.active .domain-count { background: #bfdbfe; color: #1d4ed8; }
+.domain-btn.active .domain-count { background: #bbf7d0; color: #15803d; }
 
 /* ── Coverage view ───────────────────────────────────────── */
 .cov-grid {

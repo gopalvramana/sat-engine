@@ -2,7 +2,7 @@
   min-height: 100vh;
   background: #f1f5f9;
   padding: 40px 32px;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }
 
 .header {
@@ -14,8 +14,8 @@
   font-weight: 600;
   letter-spacing: 0.07em;
   text-transform: uppercase;
-  background: #fef3c7;
-  color: #92400e;
+  background: #f0f0f0;
+  color: #333333;
   border-radius: 4px;
   padding: 2px 8px;
   margin-bottom: 8px;
@@ -62,13 +62,13 @@
   border-radius: 8px;
   cursor: pointer;
   font-size: 13px;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   font-weight: 600;
   transition: opacity 0.15s;
 }
 .burstCorrect:hover, .burstWrong:hover { opacity: 0.85; }
-.burstCorrect { background: #dcfce7; color: #166534; }
-.burstWrong   { background: #fef2f2; color: #991b1b; }
+.burstCorrect { background: #f0f0f0; color: #111111; }
+.burstWrong   { background: #f8f8f8; color: #111111; }
 
 .reopen {
   padding: 10px 20px;
@@ -78,6 +78,6 @@
   border-radius: 8px;
   cursor: pointer;
   font-size: 13px;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }
 .reopen:hover { background: #334155; }

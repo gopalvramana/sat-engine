@@ -1,5 +1,5 @@
 .panel {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -19,7 +19,7 @@
   border-radius: 14px;
   font-weight: 700;
 }
-.resultCorrect { background: #f0fdfa; border: 1.5px solid #99f6e4; }
+.resultCorrect { background: #f0fdfa; border: 1.5px solid #dddddd; }
 .resultWrong   { background: #fff1f2; border: 1.5px solid #fecdd3; }
 
 .resultIcon {
@@ -28,13 +28,13 @@
   display: flex; align-items: center; justify-content: center;
   border-radius: 50%;
 }
-.resultCorrect .resultIcon { background: #0d9488; color: #fff; font-size: 15px; }
+.resultCorrect .resultIcon { background: #444444; color: #fff; font-size: 15px; }
 .resultWrong   .resultIcon { background: #f43f5e; color: #fff; font-size: 15px; }
 
 .resultText {
   font-size: 17px;
 }
-.resultCorrect .resultText { color: #0f766e; }
+.resultCorrect .resultText { color: #222222; }
 .resultWrong   .resultText { color: #be123c; }
 
 /* ── Post-answer confidence tap ─────────────────── */
@@ -91,14 +91,14 @@
   cursor: pointer;
   font-size: 16px;
   transition: all 0.12s ease;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }
 .confBtn:hover {
   border-color: #94a3b8;
   transform: translateY(-1px);
 }
 .confBtnActive {
-  border-color: #0d9488;
+  border-color: #444444;
   background: #f0fdfa;
   box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.15);
 }
@@ -107,7 +107,7 @@
   font-weight: 600;
   color: #64748b;
 }
-.confBtnActive .confBtnLabel { color: #0d9488; }
+.confBtnActive .confBtnLabel { color: #444444; }
 
 /* Metacognitive alert */
 .metaAlert {
@@ -116,20 +116,20 @@
   align-items: flex-start;
   padding: 12px 14px;
   background: #fffbeb;
-  border: 1.5px solid #fde68a;
+  border: 1.5px solid #dddddd;
   border-radius: 10px;
-  border-left: 4px solid var(--meta-color, #d97706);
+  border-left: 4px solid var(--meta-color, #444444);
 }
 .metaIcon { font-size: 18px; flex-shrink: 0; }
 .metaTitle {
   font-size: 13px;
   font-weight: 700;
-  color: #92400e;
+  color: #333333;
   margin-bottom: 2px;
 }
 .metaDesc {
   font-size: 12px;
-  color: #78350f;
+  color: #222222;
   line-height: 1.4;
 }
 
@@ -153,7 +153,7 @@
 }
 .chipStreak {
   background: #fffbeb;
-  border-color: #fde68a;
+  border-color: #dddddd;
 }
 
 .chipIcon { font-size: 16px; flex-shrink: 0; }
@@ -184,11 +184,11 @@
 .chipTag {
   font-size: 11px;
   font-weight: 500;
-  color: #0d9488;
+  color: #444444;
 }
 
-.good { color: #0f766e; }
-.warn { color: #d97706; }
+.good { color: #222222; }
+.warn { color: #444444; }
 
 /* Mini bar */
 .miniBar {
@@ -202,8 +202,8 @@
   border-radius: 0 2px 2px 0;
   transition: width 0.6s ease;
 }
-.fillGood { background: #0d9488; }
-.fillMid  { background: #d97706; }
+.fillGood { background: #444444; }
+.fillMid  { background: #444444; }
 .fillWeak { background: #f43f5e; }
 
 /* Next button */
@@ -212,7 +212,7 @@
   padding: 14px;
   border: none;
   border-radius: 12px;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
@@ -220,10 +220,10 @@
   letter-spacing: 0.01em;
 }
 .nextBtnCorrect {
-  background: #0d9488;
+  background: #444444;
   color: #fff;
 }
-.nextBtnCorrect:hover { background: #0f766e; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(13,148,136,0.3); }
+.nextBtnCorrect:hover { background: #222222; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(13,148,136,0.3); }
 
 .nextBtnWrong {
   background: #1e293b;

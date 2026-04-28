@@ -47,16 +47,16 @@
   color: #64748b;
 }
 
-.correct { color: #16a34a; }
+.correct { color: #333333; }
 
 .reviewingBadge {
   display: inline-block;
   margin-left: 8px;
   font-size: 10px;
   font-weight: 700;
-  color: #d97706;
-  background: #fffbeb;
-  border: 1px solid #ddd6fe;
+  color: #444444;
+  background: #f0f0f0;
+  border: 1px solid #e0e0e0;
   padding: 1px 7px;
   border-radius: 999px;
   vertical-align: middle;
@@ -73,7 +73,7 @@
 
 .fill {
   height: 100%;
-  background: linear-gradient(90deg, #d97706, #fbbf24);
+  background: #0a0a0a;
   border-radius: 4px;
   transition: width 0.4s ease;
 }
@@ -82,15 +82,15 @@
 .endBtn {
   flex-shrink: 0;
   background: none;
-  border: 1.5px solid #fca5a5;
+  border: 1.5px solid #cccccc;
   border-radius: 7px;
   padding: 6px 14px;
   font-size: 12px;
   font-weight: 600;
-  color: #ef4444;
+  color: #444444;
   cursor: pointer;
   font-family: inherit;
   white-space: nowrap;
   transition: background 0.12s, color 0.12s;
 }
-.endBtn:hover { background: #fef2f2; }
+.endBtn:hover { background: #f8f8f8; }

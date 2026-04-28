@@ -2,7 +2,7 @@
   max-width: 860px;
   margin: 0 auto;
   padding: 40px 32px 60px;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }
 
 .header {
@@ -85,21 +85,21 @@
   border-radius: 9999px;
   text-transform: capitalize;
 }
-.statusDone   { background: #dcfce7; color: #15803d; }
-.statusActive { background: #fef9c3; color: #92400e; }
+.statusDone   { background: #f0f0f0; color: #15803d; }
+.statusActive { background: #fef9c3; color: #333333; }
 
 .reviewLink {
   font-size: 12px;
   font-weight: 600;
-  color: #4f46e5;
+  color: #000000;
   text-decoration: none;
   white-space: nowrap;
 }
 .reviewLink:hover { text-decoration: underline; }
 
-.good { color: #16a34a; font-weight: 700; }
-.mid  { color: #d97706; font-weight: 700; }
-.bad  { color: #ef4444; font-weight: 700; }
+.good { color: #333333; font-weight: 700; }
+.mid  { color: #444444; font-weight: 700; }
+.bad  { color: #444444; font-weight: 700; }
 
 @media (max-width: 767px) {
   .page {

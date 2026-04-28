@@ -2,6 +2,10 @@ import { useEffect, useState, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import QuestionCard from '../components/QuestionCard/QuestionCard'
 import FeedbackPanel from '../components/FeedbackPanel/FeedbackPanel'
+import ChoiceExplanations from '../components/ChoiceExplanations/ChoiceExplanations'
+import SessionSidebar from '../components/SessionSidebar/SessionSidebar'
+import ReviewToolbar from '../components/ReviewToolbar/ReviewToolbar'
+import ReviewBottomBar from '../components/ReviewBottomBar/ReviewBottomBar'
 import styles from './SessionReviewPage.module.css'
 
 export default function SessionReviewPage() {
@@ -41,7 +45,7 @@ export default function SessionReviewPage() {
   if (loading) return <div className={styles.centred}>Loading…</div>
   if (error || !answers) return <div className={styles.centred}>Could not load session.</div>
 
-  const a   = answers[index]
+  const a     = answers[index]
   const total = answers.length
   const isLast = index === total - 1
 
@@ -81,41 +85,42 @@ export default function SessionReviewPage() {
     explanationSteps: a.explanationSteps,
   }
 
+  // Friendly domain label for toolbar breadcrumb
+  const domainLabel = {
+    algebra: 'Algebra',
+    advanced_math: 'Advanced Math',
+    problem_solving_data: 'Problem Solving & Data',
+    geometry_trigonometry: 'Geometry & Trig',
+    information_ideas: 'Information & Ideas',
+    craft_structure: 'Craft & Structure',
+    expression_ideas: 'Expression of Ideas',
+    standard_english: 'Standard English',
+  }[a.domain] ?? a.domain ?? 'Math'
+
   return (
     <div className={styles.page}>
-      {/* ── Top bar ──────────────────────────────────────────── */}
-      <div className={styles.topBar}>
-        <button className={styles.backBtn} onClick={() => navigate(`/session/${sessionId}/summary`)}>
-          ← Summary
-        </button>
 
-        <div className={styles.navCenter}>
-          {/* Dot indicators */}
-          <div className={styles.dotRow}>
-            {answers.map((ans, i) => (
-              <button
-                key={i}
-                onClick={() => goTo(i)}
-                className={`${styles.dot} ${i === index ? styles.dotCurrent : ans.isCorrect ? styles.dotCorrect : styles.dotWrong}`}
-                title={`Q${i + 1}: ${ans.isCorrect ? 'Correct' : 'Incorrect'}`}
-              />
-            ))}
-          </div>
-          <span className={styles.navLabel}>Q{index + 1} of {total}</span>
-        </div>
+      {/* ── Left sidebar ─────────────────────────────────────── */}
+      <SessionSidebar answers={answers} />
 
-        <div className={styles.navBtns}>
-          <button className={styles.navBtn} onClick={goPrev} disabled={index === 0}>← Prev</button>
-          <button className={styles.navBtn} onClick={goNext}>
-            {isLast ? 'Summary →' : 'Next →'}
-          </button>
-        </div>
-      </div>
+      {/* ── Right panel ──────────────────────────────────────── */}
+      <div className={styles.rightPanel}>
 
-      {/* ── Two-column layout (mirrors PracticePage) ─────────── */}
-      <div className={styles.content}>
-        <div className={styles.questionWrap}>
-          <div className={styles.leftCol}>
+        {/* Sticky toolbar: progress + breadcrumb */}
+        <ReviewToolbar
+          index={index}
+          total={total}
+          sessionName="Session Review"
+          domain={domainLabel}
+          difficulty={a.difficulty}
+          onClose={() => navigate(-1)}
+        />
+
+        {/* Two-column content */}
+        <div className={styles.contentWrap}>
+
+          {/* Q-col: question card + distractor rationale */}
+          <div className={styles.qCol}>
             <QuestionCard
               question={question}
               feedback={feedback}
@@ -124,8 +129,22 @@ export default function SessionReviewPage() {
               disabled
               reviewMode
             />
+            {/* Collapsible distractor rationale (MCQ only) */}
+            <ChoiceExplanations
+              choiceExplanations={question.choiceExplanations}
+              correctAnswer={feedback.correctAnswer}
+              studentAnswer={a.studentAnswer}
+              options={{
+                A: question.optionA,
+                B: question.optionB,
+                C: question.optionC,
+                D: question.optionD,
+              }}
+            />
           </div>
-          <div className={styles.rightCol}>
+
+          {/* Exp-col: step-by-step solution + alternative approach */}
+          <div className={styles.expCol}>
             <FeedbackPanel
               feedback={feedback}
               question={question}
@@ -133,9 +152,22 @@ export default function SessionReviewPage() {
               onNext={goNext}
               isReviewing
               isLastQuestion={isLast}
+              hideChoiceExpl   /* distractor rationale already shown in q-col */
             />
           </div>
+
         </div>
+
+        {/* Sticky bottom bar */}
+        <ReviewBottomBar
+          index={index}
+          total={total}
+          onPrev={goPrev}
+          onNext={goNext}
+          onResults={() => navigate(`/session/${sessionId}/summary`)}
+          isLast={isLast}
+        />
+
       </div>
     </div>
   )

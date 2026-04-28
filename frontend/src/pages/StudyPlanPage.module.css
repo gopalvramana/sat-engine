@@ -1,0 +1,181 @@
+.page { }
+
+/* ── Resume banner ──────────────────────────────────────────────── */
+.resumeBanner {
+  display: flex; align-items: center; gap: 12px;
+  background: #0a0a0a; color: #fff;
+  border-radius: 12px; padding: 14px 18px;
+  margin-bottom: 20px;
+}
+.resumeIcon { font-size: 20px; flex-shrink: 0; }
+.resumeText {
+  flex: 1; display: flex; flex-direction: column; gap: 2px;
+  font-size: 13px;
+}
+.resumeText strong { font-size: 14px; font-weight: 800; }
+.resumeText span   { color: rgba(255,255,255,0.65); font-weight: 500; }
+.resumeBtn {
+  padding: 8px 18px; background: #fff; color: #0a0a0a;
+  border: none; border-radius: 8px;
+  font-size: 13px; font-weight: 800; cursor: pointer; font-family: inherit;
+  flex-shrink: 0; transition: opacity 0.15s;
+}
+.resumeBtn:hover { opacity: 0.9; }
+.resumeDismiss {
+  background: none; border: none; color: rgba(255,255,255,0.5);
+  font-size: 14px; cursor: pointer; padding: 4px 8px; flex-shrink: 0;
+  transition: color 0.12s;
+}
+.resumeDismiss:hover { color: #fff; }
+
+/* ── Top bar ── */
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.weekRange {
+  font-size: 22px;
+  font-weight: 900;
+  color: #0f172a;
+  margin: 0;
+}
+
+.notice {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #333333;
+  background: #f8f8f8;
+  border: 1px solid #dddddd;
+  border-radius: 9px;
+  padding: 7px 13px;
+}
+
+/* ── 2-column calendar grid ── */
+.calGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* ── Day card ── */
+.dayCard {
+  background: #fff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.dayCardToday {
+  border-color: #111111;
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.dayCardPast { opacity: 0.72; }
+
+.dayHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px 10px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.dayLabel {
+  font-size: 14px;
+  font-weight: 800;
+  color: #374151;
+}
+
+.dayLabelToday { color: #111111; }
+
+.todayPill {
+  font-size: 10px;
+  font-weight: 800;
+  background: #111111;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 999px;
+  letter-spacing: 0.04em;
+}
+
+/* ── Session list ── */
+.sessionList { padding: 4px 0; }
+
+/* ── Session row ── */
+.sessionRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid #f8fafc;
+  transition: background 0.1s;
+}
+.sessionRow:last-child { border-bottom: none; }
+.sessionRow:hover { background: #f8fafc; }
+.sessionRowDone { opacity: 0.6; }
+
+.sessionLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.sessionType {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+.typeStudy  { color: #111111; }
+.typeReview { color: #444444; }
+.typeTest   { color: #222222; }
+
+.sessionTopic {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1.3;
+}
+.topicReview { color: #222222; }
+.topicTest   { color: #222222; }
+
+.sessionRight {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding-top: 2px;
+}
+
+.progressText {
+  font-size: 12px;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+.progressBadge {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #222222;
+  background: #f5f5f5;
+  padding: 2px 7px;
+  border-radius: 7px;
+}
+
+.doneCheck {
+  font-size: 13px;
+  font-weight: 900;
+  color: #333333;
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .calGrid { grid-template-columns: 1fr; }
+}

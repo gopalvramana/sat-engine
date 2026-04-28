@@ -1,97 +1,120 @@
 .page {
   min-height: 100vh;
-  background: #f1f5f9;
-  font-family: 'Inter', system-ui, sans-serif;
+  display: flex; flex-direction: column;
+  background: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }
 
-/* Full-width content area — no max-width cap, matches validate.html */
+/* ── Top strip ───────────────────────────────────────────────────── */
+.topStrip {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 20px;
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+  gap: 16px;
+}
+
+.topLeft {
+  display: flex; align-items: center; gap: 10px; flex: 1;
+}
+
+.progressWrap {
+  flex: 1; max-width: 280px;
+  height: 5px; background: #f1f5f9; border-radius: 999px; overflow: hidden;
+}
+.progressFill {
+  height: 100%; background: #0a0a0a; border-radius: 999px;
+  transition: width 0.4s ease;
+}
+.progressLabel {
+  font-size: 12px; color: #64748b; font-weight: 600; white-space: nowrap;
+}
+.markedBadge { color: #94a3b8; }
+
+.endBtn {
+  padding: 6px 14px;
+  background: none; border: 1.5px solid #e2e8f0; border-radius: 8px;
+  font-size: 12px; font-weight: 700; color: #64748b; cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.12s, color 0.12s;
+}
+.endBtn:hover { border-color: #94a3b8; color: #374151; }
+
+/* ── Question area ───────────────────────────────────────────────── */
 .content {
-  padding: 20px 20px 60px;
+  flex: 1;
+  padding: 20px 20px 0;
+  display: flex;
+  justify-content: center;
+  overflow-y: auto;
 }
 
-.loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 60px;
-  color: #64748b;
-  font-size: 15px;
+.questionWrap {
+  width: 100%;
+  max-width: 720px;
+  padding-bottom: 24px;
+}
+
+/* ── Loading / error ─────────────────────────────────────────────── */
+.centred {
+  flex: 1;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 12px; padding: 60px 20px;
 }
 
 .spinner {
-  width: 22px; height: 22px;
+  width: 24px; height: 24px;
   border: 3px solid #e2e8f0;
-  border-top-color: #d97706;
+  border-top-color: #444;
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* Two-column layout: question left, feedback right */
-.questionWrap {
-  display: flex;
-  gap: 20px;
-  align-items: flex-start;
+.loadingText { font-size: 15px; color: #64748b; }
+
+.errorTitle { font-size: 18px; font-weight: 700; color: #0f172a; }
+.errorSub   { font-size: 14px; color: #64748b; }
+.errorBtn {
+  margin-top: 8px; padding: 9px 24px;
+  background: #0a0a0a; color: #fff;
+  border: none; border-radius: 9px;
+  font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit;
 }
 
-/* Question-only mode (no feedback yet): centre the card at a comfortable reading width */
-.questionOnly {
-  justify-content: center;
+/* ── Confirm dialog ──────────────────────────────────────────────── */
+.dialogBackdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45); z-index: 300;
+  display: flex; align-items: center; justify-content: center;
 }
-.questionOnly .leftCol {
-  width: 100%;
-  max-width: 720px;
-  position: static; /* no sticky needed when filling the page solo */
-  max-height: none;
-  overflow-y: visible;
+.dialog {
+  background: #fff; border-radius: 16px;
+  padding: 28px 32px; width: min(400px, 90vw);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.18);
 }
+.dialogTitle {
+  font-size: 17px; font-weight: 900; color: #0f172a; margin-bottom: 10px;
+}
+.dialogBody {
+  font-size: 14px; color: #374151; line-height: 1.6; margin-bottom: 20px;
+}
+.dialogActions { display: flex; gap: 10px; justify-content: flex-end; }
+.dialogCancel {
+  padding: 9px 20px;
+  background: #fff; border: 1.5px solid #e2e8f0; border-radius: 9px;
+  font-size: 13px; font-weight: 700; color: #374151; cursor: pointer; font-family: inherit;
+}
+.dialogCancel:hover { border-color: #0a0a0a; }
+.dialogConfirm {
+  padding: 9px 20px;
+  background: #0a0a0a; color: #fff; border: none; border-radius: 9px;
+  font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit;
+}
+.dialogConfirm:hover { opacity: 0.88; }
 
-/* Left column — question card, sticky so it stays visible while scrolling feedback */
-.leftCol {
-  width: 44%;
-  flex-shrink: 0;
-  position: sticky;
-  top: 12px;
-  max-height: calc(100vh - 57px - 24px);
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #e2e8f0 transparent;
-}
-.leftCol::-webkit-scrollbar { width: 4px; }
-.leftCol::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 2px; }
-
-/* Right column — feedback panel, scrolls naturally */
-.rightCol {
-  flex: 1;
-  min-width: 0;
-  padding-bottom: 2rem;
-}
-
-/* ── Mobile: stack question on top, feedback below ──────────── */
 @media (max-width: 767px) {
-  .content {
-    padding: 12px 12px 80px;
-  }
-
-  .questionWrap {
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .leftCol {
-    width: 100%;
-    position: static;
-    max-height: none;
-    overflow-y: visible;
-  }
-
-  .questionOnly .leftCol {
-    max-width: 100%;
-  }
-
-  .rightCol {
-    width: 100%;
-    padding-bottom: 1rem;
-  }
+  .content { padding: 12px 12px 0; }
+  .topStrip { padding: 8px 12px; }
 }

@@ -54,9 +54,29 @@ export function getNextQuestion(id) {
   return request('GET', `/api/sessions/${id}/next`)
 }
 
-/** POST /api/sessions/{id}/answers — submit answer, get feedback */
-export function submitAnswer(sessionId, questionId, studentAnswer) {
-  return request('POST', `/api/sessions/${sessionId}/answers`, { questionId, studentAnswer })
+/** POST /api/sessions/{id}/answers — submit (or update) answer, get feedback */
+export function submitAnswer(sessionId, questionId, studentAnswer, timeSpentSeconds) {
+  return request('POST', `/api/sessions/${sessionId}/answers`, { questionId, studentAnswer, timeSpentSeconds })
+}
+
+/** GET /api/sessions/{id}/questions — all pre-queued questions with marks + existing answers */
+export function getSessionQuestions(sessionId) {
+  return request('GET', `/api/sessions/${sessionId}/questions`)
+}
+
+/** PATCH /api/sessions/{id}/questions/{questionId}/mark — toggle mark-for-review */
+export function toggleMarkQuestion(sessionId, questionId) {
+  return request('PATCH', `/api/sessions/${sessionId}/questions/${questionId}/mark`, {})
+}
+
+/** POST /api/sessions/{id}/complete — mark session as completed */
+export function completeSession(sessionId) {
+  return request('POST', `/api/sessions/${sessionId}/complete`)
+}
+
+/** GET /api/sessions/active — active (unfinished) session for the user, or null (204) */
+export function getActiveSession() {
+  return request('GET', '/api/sessions/active')
 }
 
 // ── Gap analysis ─────────────────────────────────────────────────────

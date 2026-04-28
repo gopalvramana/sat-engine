@@ -35,10 +35,10 @@
 .accordion-summary::-webkit-details-marker { display: none; }
 .accordion-summary:hover { background: #f1f5f9; }
 
-/* Open state: blue tint header + divider */
+/* Open state: green tint header + divider */
 .accordion-item[open] > .accordion-summary {
-  background: #eff6ff;
-  border-bottom: 1px solid #dbeafe;
+  background: #f0fdf4;
+  border-bottom: 1px solid #bbf7d0;
 }
 
 /* Icon (emoji) */
@@ -60,7 +60,7 @@
   flex-shrink: 0;
 }
 .accordion-item[open] > .accordion-summary .accordion-label {
-  color: #1d4ed8;
+  color: #15803d;
 }
 
 /* Badge pill (step count or concept title or method name) */
@@ -77,12 +77,12 @@
   white-space: nowrap;
 }
 .accordion-badge-concept {
-  background: #dbeafe;
-  color: #1d4ed8;
+  background: #dcfce7;
+  color: #15803d;
 }
 .accordion-badge-alt {
-  background: #e0f2fe;
-  color: #0369a1;
+  background: #dcfce7;
+  color: #15803d;
 }
 
 /* Chevron arrow (right-aligned, rotates when open) */
@@ -114,7 +114,7 @@
 /* Core concept body text */
 .accordion-concept-text {
   font-size: 0.82rem;
-  color: #1d4ed8;
+  color: #1e293b;
   line-height: 1.6;
   margin-bottom: 0.55rem;
 }
@@ -122,12 +122,12 @@
 /* Core concept formula box */
 .accordion-concept-formula {
   display: inline-block;
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
   border-radius: 0.4rem;
   padding: 0.3rem 0.7rem;
   font-size: 0.82rem;
-  color: #1e40af;
+  color: #14532d;
 }
 
 /* Alt approach steps container inside accordion */
@@ -170,11 +170,11 @@
 .step-card.hidden { display: none; }
 .step-number {
   font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.08em; color: #6366f1; margin-bottom: 0.5rem;
+  letter-spacing: 0.08em; color: #15803d; margin-bottom: 0.5rem;
 }
 .step-title  { font-size: 0.95rem; font-weight: 700; color: #1e293b; margin: 0 0 0.5rem; line-height: 1.4; }
 .step-content { font-size: 0.88rem; color: #374151; line-height: 1.75; margin: 0 0 0.25rem; }
-.step-math { color: #1d4ed8; margin-top: 0.75rem; text-align: center; }
+.step-math { color: #1e293b; margin-top: 0.75rem; text-align: center; }
 .step-nav-footer {
   display: flex; align-items: center; justify-content: space-between;
   margin-top: 0.65rem; padding-top: 0.5rem;
@@ -185,12 +185,12 @@
   background: #e2e8f0; color: #475569; border: none; cursor: pointer;
   transition: background 0.12s, color 0.12s;
 }
-.step-nav-btn:hover:not(:disabled) { background: #6366f1; color: #fff; }
+.step-nav-btn:hover:not(:disabled) { background: #15803d; color: #fff; }
 .step-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 .step-nav-center { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; }
 .step-dots { display: flex; gap: 0.35rem; }
 .step-dot { width: 0.45rem; height: 0.45rem; border-radius: 50%; background: #cbd5e1; transition: background 0.15s, transform 0.15s; }
-.step-dot.active { background: #6366f1; transform: scale(1.35); }
+.step-dot.active { background: #15803d; transform: scale(1.35); }
 .step-counter { font-size: 0.7rem; color: #94a3b8; font-weight: 500; }
 
 /* ── Solution split layout (animation left, steps right) ─── */

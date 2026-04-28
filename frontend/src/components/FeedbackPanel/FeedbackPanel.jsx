@@ -43,91 +43,56 @@ function AccordionItem({ icon, label, badge, badgeVariant, defaultOpen, onOpen, 
   )
 }
 
-/* ── Step Navigator — one step at a time, synced with animation ─ */
-function StepNavigator({ steps, animUid, animFrames }) {
-  const [current, setCurrent] = useState(0)
+/* ── Step List — all steps visible, each individually collapsible ── */
+function StepList({ steps, allOpen }) {
+  // Review mode: all steps open; practice mode: only first step open
+  const [openSet, setOpenSet] = useState(() => allOpen ? new Set(steps.map((_, i) => i)) : new Set([0]))
 
-  // Total = max(steps, animation frames) so Prev/Next covers both
-  const total = Math.max(steps.length, animFrames ? animFrames.length : 0)
-  if (!total) return null
-
-  function goTo(idx) {
-    setCurrent(idx)
-    // Always sync animation to the same index
-    if (animUid && typeof window.animGoTo === 'function') {
-      window.animGoTo(animUid, idx)
-    }
+  function toggle(i) {
+    setOpenSet(prev => {
+      const next = new Set(prev)
+      next.has(i) ? next.delete(i) : next.add(i)
+      return next
+    })
   }
 
-  const step = steps[current]          // may be undefined for anim-only frames
-  const frame = animFrames ? animFrames[current] : null
+  if (!steps.length) return null
 
   return (
-    <div className={styles.stepNavigator}>
-      <div className={styles.stepCard}>
-        {step ? (
-          /* Real calculation step */
-          <>
-            <div className={styles.stepNumber}>Step {current + 1} of {total}</div>
-            <div className={styles.stepTitle}><MathText text={step.title || ''} /></div>
-            {step.math && (
-              <div className={styles.stepMath}>
-                <MathText text={`\\[${step.math}\\]`} as="div" />
+    <div className={styles.stepList}>
+      {steps.map((step, i) => {
+        const isOpen = openSet.has(i)
+        const isLast = i === steps.length - 1
+        return (
+          <div key={i} className={`${styles.stepRow} ${isOpen ? styles.stepRowOpen : ''}`}>
+            <button className={styles.stepRowHdr} onClick={() => toggle(i)}>
+              <span className={`${styles.stepBadge} ${isLast ? styles.stepBadgeDone : ''}`}>
+                {isLast ? '✓' : i + 1}
+              </span>
+              <MathText text={step.title || ''} as="span" className={styles.stepRowTitle} />
+              <span className={styles.stepRowChevron}>{isOpen ? '▾' : '›'}</span>
+            </button>
+            {isOpen && (
+              <div className={styles.stepRowBody}>
+                {step.content && (
+                  <MathText text={step.content} as="p" className={styles.stepRowContent} />
+                )}
+                {step.math && (
+                  <div className={styles.stepRowMath}>
+                    <MathText text={`\\[${step.math}\\]`} as="div" />
+                  </div>
+                )}
               </div>
             )}
-            {step.content && (
-              <MathText text={step.content} as="p" className={styles.stepContent} />
-            )}
-          </>
-        ) : (
-          /* Animation-only frame — no matching calc step */
-          <>
-            <div className={styles.stepNumber}>
-              Figure {current + 1} of {animFrames ? animFrames.length : total}
-            </div>
-            {frame?.caption && (
-              <div className={`${styles.stepTitle} ${styles.stepTitleAnim}`}>
-                {frame.caption}
-              </div>
-            )}
-            <p className={`${styles.stepContent} ${styles.stepContentAnim}`}>
-              See the diagram on the left.
-            </p>
-          </>
-        )}
-      </div>
-      {total > 1 && (
-        <div className={styles.stepNavFooter}>
-          <button
-            className={styles.stepNavBtn}
-            onClick={() => goTo(current - 1)}
-            disabled={current === 0}
-          >← Prev</button>
-          <div className={styles.stepNavCenter}>
-            <div className={styles.stepDots}>
-              {Array.from({ length: total }, (_, i) => (
-                <span
-                  key={i}
-                  className={`${styles.stepDot} ${i === current ? styles.stepDotActive : ''}`}
-                  onClick={() => goTo(i)}
-                />
-              ))}
-            </div>
-            <span className={styles.stepCounter}>{current + 1} of {total}</span>
           </div>
-          <button
-            className={styles.stepNavBtn}
-            onClick={() => goTo(current + 1)}
-            disabled={current === total - 1}
-          >Next →</button>
-        </div>
-      )}
+        )
+      })}
     </div>
   )
 }
 
 /* ── Main component ─────────────────────────────────────────── */
-export default function FeedbackPanel({ feedback, question, studentAnswer, onNext, isReviewing, isLastQuestion }) {
+export default function FeedbackPanel({ feedback, question, studentAnswer, onNext, isReviewing, isLastQuestion, hideChoiceExpl, reviewMode }) {
   const isCorrect = feedback.isCorrect
   const isMath    = MATH_DOMAINS.has(question.domain)
 
@@ -148,8 +113,9 @@ export default function FeedbackPanel({ feedback, question, studentAnswer, onNex
     setBurstKey(burstKeyRef.current)
   }, [feedback])
 
-  // Keyboard shortcut: Enter or Space advances to next question
+  // Keyboard shortcut: Enter or Space advances to next question (practice mode only)
   useEffect(() => {
+    if (reviewMode) return
     function handleKey(e) {
       // Don't fire when user is typing in an input / textarea
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return
@@ -160,12 +126,14 @@ export default function FeedbackPanel({ feedback, question, studentAnswer, onNex
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [onNext])
+  }, [onNext, reviewMode])
 
   // Parse enrichment data
   const steps    = parseJson(feedback.explanationSteps, [])
   const cc       = parseJson(question.coreConceptJson, null)
-  const alt      = parseJson(question.alternativeApproach, null)
+  const altRaw   = question.alternativeApproach
+  const alt      = parseJson(altRaw, null)
+  const altFallback = (!alt && typeof altRaw === 'string' && altRaw.trim()) ? altRaw.trim() : null
   const choiceEx = parseJson(question.choiceExplanations, null)
 
   const hasAnimation = (() => {
@@ -178,16 +146,14 @@ export default function FeedbackPanel({ feedback, question, studentAnswer, onNex
   const hasChoiceEx = choiceEx && typeof choiceEx === 'object' &&
     ['A','B','C','D'].some(l => choiceEx[l])
 
-  const hasAlt = isMath && alt?.title && Array.isArray(alt.steps) && alt.steps.length > 0
+  const hasAlt = isMath && (
+    (alt?.title && Array.isArray(alt.steps) && alt.steps.length > 0) || !!altFallback
+  )
 
-  /* ── Solution body: split layout when animation exists ─────── */
+  /* ── Solution body: animation panel (if any) above step list ── */
   function renderSolutionBody() {
-    // Parse animation frames for step count sync
-    const animCfg = hasAnimation ? parseJson(question.animationJson, null) : null
-    const animFrames = animCfg?.frames || null
-
     const stepsEl = steps.length > 0
-      ? <StepNavigator steps={steps} animUid={animUid} animFrames={animFrames} />
+      ? <StepList steps={steps} allOpen={reviewMode} />
       : <p className={styles.accordionEmpty}>{feedback.explanationShort || 'No solution available.'}</p>
 
     if (hasAnimation) {
@@ -211,21 +177,23 @@ export default function FeedbackPanel({ feedback, question, studentAnswer, onNex
 
   return (
     <div className={styles.wrap}>
-      {/* ── Emoji burst — fires once per answer ──────────────── */}
-      <AnswerBurst key={burstKey} isCorrect={isCorrect} />
+      {/* ── Emoji burst — practice mode only ─────────────────── */}
+      {!reviewMode && <AnswerBurst key={burstKey} isCorrect={isCorrect} />}
 
-      {/* ── Result banner ────────────────────────────────────── */}
-      <div className={`${styles.banner} ${isCorrect ? styles.bannerCorrect : styles.bannerWrong}`}>
-        <div className={`${styles.bannerIcon} ${isCorrect ? styles.bannerIconCorrect : styles.bannerIconWrong}`}>
-          {isCorrect ? '✓' : '✗'}
-        </div>
-        <div>
-          <div className={styles.bannerTitle}>{isCorrect ? 'Correct!' : 'Not quite'}</div>
-          <div className={styles.bannerSub}>
-            {isCorrect ? 'Answer: ' : 'Correct answer: '}<strong>{feedback.correctAnswer}</strong>
+      {/* ── Result banner — practice mode only ───────────────── */}
+      {!reviewMode && (
+        <div className={`${styles.banner} ${isCorrect ? styles.bannerCorrect : styles.bannerWrong}`}>
+          <div className={`${styles.bannerIcon} ${isCorrect ? styles.bannerIconCorrect : styles.bannerIconWrong}`}>
+            {isCorrect ? '✓' : '✗'}
+          </div>
+          <div>
+            <div className={styles.bannerTitle}>{isCorrect ? 'Correct!' : 'Not quite'}</div>
+            <div className={styles.bannerSub}>
+              {isCorrect ? 'Answer: ' : 'Correct answer: '}<strong>{feedback.correctAnswer}</strong>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* ── Short explanation (above accordion) ─────────────── */}
       {feedback.explanationShort && (
@@ -267,22 +235,8 @@ export default function FeedbackPanel({ feedback, question, studentAnswer, onNex
           {renderSolutionBody()}
         </AccordionItem>
 
-        {/* 2 — Find My Gap (wrong answers only, lazy) */}
-        {!isCorrect && (
-          <AccordionItem
-            icon="🔍"
-            label="Find My Gap"
-            onOpen={() => setGapTriggered(true)}
-          >
-            {gapTriggered
-              ? <FindMyGap questionId={question.id} studentAnswer={studentAnswer} />
-              : <p className={styles.accordionEmpty}>Open to identify the gap in your reasoning.</p>
-            }
-          </AccordionItem>
-        )}
-
-        {/* 3 — Why each option (MCQ only) */}
-        {hasChoiceEx && (
+        {/* 3 — Why each option (MCQ only) — hidden in review mode (shown in q-col instead) */}
+        {!hideChoiceExpl && hasChoiceEx && (
           <AccordionItem icon="💬" label="Why each option?">
             <ChoiceWhyBody
               expl={choiceEx}
@@ -295,27 +249,29 @@ export default function FeedbackPanel({ feedback, question, studentAnswer, onNex
 
         {/* 4 — Core Concept (Math only) */}
         {isMath && cc?.title && (
-          <AccordionItem icon="💡" label="Core Concept" badge={cc.title} badgeVariant="concept">
+          <AccordionItem icon="💡" label="Core Concept" badge={cc.title} badgeVariant="concept" defaultOpen={reviewMode}>
             <CoreConceptBody cc={cc} />
           </AccordionItem>
         )}
 
         {/* 5 — Alternative Approach (Math only) */}
         {hasAlt && (
-          <AccordionItem icon="⇄" label="Alternative Approach" badge={alt.title} badgeVariant="alt">
-            <AltApproachBody alt={alt} />
+          <AccordionItem icon="⇄" label="Alternative Approach" badge={alt?.title ?? 'Alternative Method'} badgeVariant="alt" defaultOpen={reviewMode}>
+            {alt?.steps ? <AltApproachBody alt={alt} /> : <AltApproachFallback text={altFallback} />}
           </AccordionItem>
         )}
 
       </div>
 
-      {/* ── Next question button ──────────────────────────────── */}
-      <div className={styles.nextRow}>
-        <span className={styles.keyHint}>Enter ↵</span>
-        <button className={styles.nextBtn} onClick={onNext}>
-          {isReviewing ? 'Next →' : isLastQuestion ? 'See Results →' : 'Next Question →'}
-        </button>
-      </div>
+      {/* ── Next question button — practice mode only ────────── */}
+      {!reviewMode && (
+        <div className={styles.nextRow}>
+          <span className={styles.keyHint}>Enter ↵</span>
+          <button className={styles.nextBtn} onClick={onNext}>
+            {isReviewing ? 'Next →' : isLastQuestion ? 'See Results →' : 'Next Question →'}
+          </button>
+        </div>
+      )}
     </div>
   )
 }
@@ -361,24 +317,37 @@ function CoreConceptBody({ cc }) {
   )
 }
 
-/* ── Alternative Approach body ──────────────────────────────── */
+/* ── Alternative Approach body (structured JSON) ────────────── */
 function AltApproachBody({ alt }) {
   return (
-    <div className={styles.altSteps}>
+    <div className={styles.altBox}>
       {alt.steps.map((s, i) => (
-        <div key={i} className={styles.altStep}>
-          <div className={styles.altStepHeader}>
-            <span className={styles.altStepNum}>{i + 1}</span>
-            <MathText text={s.title || ''} as="span" className={styles.altStepTitle} />
-          </div>
-          {s.content && <MathText text={s.content} as="p" className={styles.altStepContent} />}
+        <div key={i} className={styles.altBoxStep}>
+          {s.title && (
+            <div className={styles.altBoxStepTitle}>
+              <span className={styles.altBoxDot}>{i + 1}</span>
+              <MathText text={s.title} as="span" />
+            </div>
+          )}
+          {s.content && (
+            <MathText text={s.content} as="p" className={styles.altBoxText} />
+          )}
           {s.math && (
-            <div className={styles.altStepMath}>
+            <div className={styles.altBoxMath}>
               <MathText text={`\\[${s.math}\\]`} as="div" />
             </div>
           )}
         </div>
       ))}
+    </div>
+  )
+}
+
+/* ── Alternative Approach fallback (plain string) ────────────── */
+function AltApproachFallback({ text }) {
+  return (
+    <div className={styles.altBox}>
+      <MathText text={text} as="p" className={styles.altBoxText} />
     </div>
   )
 }
