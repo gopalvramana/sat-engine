@@ -2,7 +2,7 @@
 
 **Status:** APPROVED, NOT YET IMPLEMENTED  
 **Skill key:** `nonlinear_functions`  
-**Narration examples:** `src/main/resources/narration/examples/nonlinear_functions.json` — 79 examples · 58 variants · committed `31069dc`
+**Narration examples:** `src/main/resources/narration/examples/nonlinear_functions.json` — 70 examples · 50 variants (9 synthetic examples removed: 3 piecewise, 3 function_composition, 3 inequality_system_nonlinear — no Bluebook backing)
 
 ---
 
@@ -24,10 +24,10 @@ imports
 format helpers   (_poly_str, _exp_str, _lat, _frac_str)
 result helper    (_nlf_result)
 
-31 template functions  (_d1_* × 8, _d2_* × 12, _d3_* × 11)
+28 template functions  (_d1_* × 7, _d2_* × 10, _d3_* × 11)
 
-_D1 = {8 templates}
-_D2 = {12 templates}
+_D1 = {7 templates}
+_D2 = {10 templates}
 _D3 = {11 templates}
 _ROUTING = {1: _D1, 2: _D2, 3: _D3}
 
@@ -37,84 +37,84 @@ gen_nonlinear_fn()    ← main dispatcher
 
 ---
 
-## D1 — 8 templates · 13 variants
+## D1 — 7 templates · 11 variants
 
-| Template | Variants | Key logic | Type |
+| Template | Variants | BB anchor | Type |
 |---|---|---|---|
-| `evaluate_polynomial` | `find_output` | pick a∈[1..4], b∈[0..5], x∈[−3..5]; compute ax²+b or x³+b | MCQ or SPR |
-| `evaluate_exponential` | `find_output` | pick a∈[2..5], b∈[2..3], x∈[0..3]; compute a·bˣ | MCQ or SPR |
-| `evaluate_other_nonlinear` | `find_radical_output` | pick x+c = perfect square; compute √(x+c) | MCQ or SPR |
-| | `find_rational_output` | pick k∈[2..6], x∈[±2..±6]; compute k/x | MCQ |
-| | `find_absolute_value_output` | pick c∈[−5..5], x so \|x+c\| is a positive integer | MCQ or SPR |
-| `interpret_y_intercept_context` | `interpret_initial_value` | f(0)=a in real-world context; 4 MCQ choices describe meaning; exactStem required | MCQ |
-| `y_intercept_from_graph` 📊 | `identify_ordered_pair` | exponential or radical curve shown; read (0, f(0)) | MCQ |
-| `vertex_from_graph` 📊 | `find_minimum` | upward parabola; read vertex min | MCQ or SPR |
-| | `find_maximum` | downward parabola; read vertex max | MCQ or SPR |
-| `graph_translation` 📊 | `identify_shifted_graph` | f(x) shown; which graph shows f(x)+k? | MCQ |
-| | `find_output_after_shift` | given f(p)=v, what is f(p)+k? (no diagram) | MCQ or SPR |
-| `piecewise_read_value` | `find_output_formula` | 2-piece formula; evaluate at x in specified piece; exactStem | MCQ or SPR |
-| | `find_output_graph` 📊 | 2-piece graph shown; read f(a) from graph | MCQ |
+| `evaluate_polynomial` | `find_output` | observed: evaluate f(x)=ax²+c or x³+c at given integer x | MCQ or SPR |
+| `evaluate_exponential` | `find_output` | observed: evaluate a·bˣ at small non-negative x | MCQ or SPR |
+| `evaluate_other_nonlinear` | `find_radical_output` | observed: evaluate √(x+c) at integer x | MCQ or SPR |
+| | `find_rational_output` | observed: evaluate k/x at non-zero integer x | MCQ |
+| | `find_absolute_value_output` | observed: evaluate \|x+c\| at integer x | MCQ or SPR |
+| `interpret_y_intercept_context` | `interpret_initial_value` | observed: exponential model f(0)=v; which statement describes what v represents? | MCQ |
+| `y_intercept_from_graph` 📊 | `identify_ordered_pair` | observed: curve shown; which ordered pair is the y-intercept? | MCQ |
+| `vertex_from_graph` 📊 | `find_minimum` | observed: upward parabola shown; what is the minimum value? | MCQ or SPR |
+| | `find_maximum` | observed: downward parabola shown; what is the maximum? | MCQ or SPR |
+| `graph_translation` 📊 | `identify_shifted_graph` | observed: graph of f shown; which graph represents f(x)+k? | MCQ |
+| | `find_output_after_shift` | observed: f(p)=v given; find f(p)+k | MCQ or SPR |
 
 > `find_output_after_shift` is text-only — only `identify_shifted_graph` uses 📊.
+> `piecewise_read_value` **removed** — zero Bluebook questions observed across 414 screenshots.
 
 ---
 
-## D2 — 12 templates · 23 variants
+## D2 — 10 templates · 19 variants
 
-| Template | Variants | Key logic | Type |
+| Template | Variants | BB anchor | Type |
 |---|---|---|---|
-| `evaluate_exponential_zero` | `find_initial_value` | f(x)=a·bˣ; f(0)=a | MCQ or SPR |
-| | `interpret_initial_value` | same model; what does f(0) mean in context? exactStem | MCQ |
-| `interpret_exponential_statement` | `interpret_output_value` | f(t)=v means "after t units, value is v"; exactStem | MCQ |
-| | `interpret_growth_factor` | f(x)=a(1.r)ˣ; what does base (1.r) represent? | MCQ |
-| `minimum_from_vertex_form` | `find_minimum_value` | g(x)=a(x−h)²+k; min = k | MCQ or SPR |
-| | `find_x_at_minimum` | same; x at min = h | MCQ or SPR |
-| `x_for_min_from_factored` | `find_x_at_minimum` | f(x)=(x−r)(x−s); x at min = (r+s)/2 | MCQ or SPR |
-| `interpret_x_intercept_context` | `interpret_physical_meaning` | quadratic h(t)=0; what does this mean in context? exactStem | MCQ |
-| | `identify_positive_zero` | two zeros given; which is physically meaningful (positive)? | MCQ |
-| `exponential_from_table` | `identify_equation_from_table` | constant-ratio table; 4 equation choices | MCQ |
-| | `find_missing_table_value` | same table, one cell hidden; find missing value | MCQ or SPR |
-| `identify_quadratic_from_table` | `identify_equation_from_table` | constant second-differences table; 4 equation choices | MCQ |
-| | `find_missing_value` | same; use second-difference pattern to extend | MCQ or SPR |
-| `exponential_growth_rate` | `find_growth_percentage` | f(x)=a(1.r)ˣ; growth rate per period as % | MCQ |
-| | `interpret_growth_rate` | which statement about the rate is correct? | MCQ |
-| `function_table_shift` | `identify_transformed_table` | given f table; which table matches g(x)=f(x)−k? | MCQ |
-| | `find_specific_shifted_value` | given f(a)=v; what is f(a)+k? | SPR |
-| `graph_read_intercept_nonlinear` 📊 | `find_y_intercept` | radical/exponential curve shown; identify y-intercept | MCQ |
-| | `find_x_intercept` | same curve; identify x-intercept | MCQ |
-| `function_composition` | `evaluate_f_of_g` | f quadratic or exponential, g linear; compute f(g(a)) at integer a | MCQ or SPR |
-| | `evaluate_g_of_f` | same pair; compute g(f(a)) | MCQ or SPR |
-| `inequality_system_nonlinear` | `identify_satisfying_point` | 4 ordered pairs; check which satisfies linear + quadratic inequality | MCQ |
-| | `identify_satisfying_region` 📊 | parabola + line graph with labeled regions; identify correct region | MCQ |
+| `evaluate_exponential_zero` | `find_initial_value` | observed: f(x)=a·(0.1)ˣ; evaluate at x=0; tests b⁰=1 | MCQ or SPR |
+| | `interpret_initial_value` | observed: exponential model; what does f(0) represent in context? | MCQ |
+| `interpret_exponential_statement` | `interpret_output_value` | observed: f(t)≈v stated; which statement correctly interprets this? | MCQ |
+| | `interpret_growth_factor` | observed: f(x)=a(1.r)ˣ; what does the base represent per period? | MCQ |
+| `minimum_from_vertex_form` | `find_minimum_value` | observed: g(x)=a(x−h)²+k; what is the minimum value? | MCQ or SPR |
+| | `find_x_at_minimum` | observed: vertex form given; at what x does minimum occur? | MCQ or SPR |
+| `x_for_min_from_factored` | `find_x_at_minimum` | observed: f(x)=(x−r)(x−s); x at min = midpoint of roots | MCQ or SPR |
+| `interpret_x_intercept_context` | `interpret_physical_meaning` | observed: quadratic projectile/context; what does the positive zero represent? | MCQ |
+| | `identify_positive_zero` | observed: two zeros given; which is physically meaningful? | MCQ |
+| `exponential_from_table` | `identify_equation_from_table` | observed: constant-ratio (x, f(x)) table; identify the equation | MCQ |
+| | `find_missing_table_value` | observed: same table with one cell hidden; find missing value | MCQ or SPR |
+| `identify_quadratic_from_table` | `identify_equation_from_table` | observed: constant second-differences table; identify quadratic equation | MCQ |
+| | `find_missing_value` | observed: same table; use second-difference pattern to find next value | MCQ or SPR |
+| `exponential_growth_rate` | `find_growth_percentage` | observed: f(x)=a(1.r)ˣ/ᵏ; what is the growth rate per period as %? | MCQ |
+| | `interpret_growth_rate` | observed: which statement correctly describes the % growth? | MCQ |
+| `function_table_shift` | `identify_transformed_table` | observed: f(x) table given; g(x)=f(x)−k; which table represents g? | MCQ |
+| | `find_specific_shifted_value` | observed: f(x) table + g(x)=f(x)±k defined; find g(a) by lookup | SPR |
+| `graph_read_intercept_nonlinear` 📊 | `find_y_intercept` | observed: radical/exponential curve shown; identify y-intercept ordered pair | MCQ |
+| | `find_x_intercept` | observed: same curve; identify x-intercept ordered pair | MCQ |
+| `domain_range_graph` 📊 | `find_range_parabola` | observed: parabola on graph; which inequality represents the range? | MCQ |
+| | `find_domain_radical` | observed: f(x)=√(x−a) given; what is the domain? | MCQ |
+
+> `function_composition` **removed** — one Hard Bluebook example exists (complex abs-value + rational, f(a)=c then find g(c)) but does not match this d2 design. Redesign as d3 when additional examples are available.
+> `inequality_system_nonlinear` **removed** — zero Bluebook questions observed across 414 screenshots.
 
 ---
 
 ## D3 — 11 templates · 22 variants
 
-| Template | Variants | Key logic | Type |
+| Template | Variants | BB anchor | Type |
 |---|---|---|---|
-| `max_in_context` | `find_x_at_max` | f(x)=ax²+bx+c (a<0); x at max = −b/2a | MCQ or SPR |
-| | `find_max_value` | same; evaluate f at x=−b/2a | MCQ or SPR |
-| `compound_function_max` | `find_max_of_compound` | max of g(x)=f(x)+k = max(f)+k | MCQ |
-| | `find_shift_from_max` | given max(f) and max(g), solve for k | MCQ |
-| `vertex_from_zeros` | `find_vertex_x` | f(r₁)=f(r₂)=0; vertex x = (r₁+r₂)/2 | MCQ or SPR |
-| | `find_vertex_y` | f(x)=a(x−r₁)(x−r₂); evaluate f at vertex x | MCQ |
-| `identify_equivalent_form` | `reveal_maximum` | which form shows max/min as explicit constant? → vertex form | MCQ |
-| | `reveal_zeros` | which form reveals zeros directly? → factored form | MCQ |
-| `exponential_two_points` | `find_parameter_value` | h(x)=aˣ+b through 2 points; find a | MCQ or SPR |
-| | `find_product_of_params` | h(x)=c·2ˣ+d through 2 points; find c+d | MCQ |
-| `quadratic_parameter_properties` | `identify_true_statements` | graph constraints → which of I/II/III must be true? | MCQ |
-| | `determine_sign_of_param` | from axis/opening direction, deduce sign of b | MCQ |
-| `exponential_reparameterize` | `convert_time_base` | monthly model → yearly: (b¹²)ᵗ form | MCQ |
-| | `find_percent_change` | compute (1+r)¹²−1 ≈ annual rate; nearest % | MCQ |
-| `count_zeros_graph` | `count_x_intercepts` | a·bˣ+c=0 has exactly one solution | MCQ |
-| | `count_intersections` | exponential vs horizontal line; how many intersections? | MCQ |
-| `minimum_completing_square` | `find_minimum_value` | x²+bx+c (b even); min = c−(b/2)² | MCQ or SPR |
-| | `find_x_at_minimum` | same; x at min = −b/2 | SPR |
-| `projectile_symmetry` | `find_time_to_return` | h(t)=−16t²+vt+c; h(t₁)=h, find t₂=2·axis−t₁ | MCQ |
-| | `find_max_height` | same model; find h at axis of symmetry | MCQ |
-| `model_setup_quadratic` | `identify_equation` | rectangle/fence word problem → identify area equation | MCQ |
-| | `write_equation` | projectile model; set h(t)=target; find first solution | SPR |
+| `max_in_context` | `find_x_at_max` | observed: downward quadratic in context; at what x is the maximum? | MCQ or SPR |
+| | `find_max_value` | observed: same; what is the maximum value? | MCQ or SPR |
+| `compound_function_max` | `find_max_of_compound` | observed: g(t)=f(t)+k; find maximum of g given max of f | MCQ |
+| | `find_shift_from_max` | observed: given max(f) and max(g); find the shift k | MCQ |
+| `vertex_from_zeros` | `find_vertex_x` | observed: f(r₁)=f(r₂)=0; x-coordinate of vertex = (r₁+r₂)/2 | MCQ or SPR |
+| | `find_vertex_y` | observed: factored form given; evaluate f at vertex x | MCQ |
+| `identify_equivalent_form` | `reveal_maximum` | observed: standard form given; which equivalent form shows max/min as a constant? | MCQ |
+| | `reveal_zeros` | observed: which form directly reveals the zeros? | MCQ |
+| `exponential_two_points` | `find_parameter_value` | observed: h(x)=aˣ+b passes through 2 given points; find a | MCQ or SPR |
+| | `find_product_of_params` | observed: same setup; find c+d or product of parameters | MCQ |
+| `quadratic_parameter_properties` | `identify_true_statements` | observed: graph constraints given; which of I/II/III must be true about a,b,c? | MCQ |
+| | `determine_sign_of_param` | observed: axis of symmetry direction given; deduce sign of b | MCQ |
+| `exponential_reparameterize` | `convert_time_base` | observed: monthly rate model → rewrite in yearly base form | MCQ |
+| | `find_percent_change` | observed: growth factor given; find equivalent annual % change | MCQ |
+| `count_zeros_graph` | `count_x_intercepts` | observed: a·bˣ+c=0; how many real solutions / x-intercepts? | MCQ |
+| | `count_intersections` | observed: exponential curve vs horizontal line; how many intersections? | MCQ |
+| `minimum_completing_square` | `find_minimum_value` | observed: x²+bx+c given; find minimum by completing the square | MCQ or SPR |
+| | `find_x_at_minimum` | observed: same; at what x does minimum occur? | SPR |
+| `projectile_symmetry` | `find_time_to_return` | observed: quadratic projectile; find second time at a given height using symmetry | MCQ |
+| | `find_max_height` | observed: same model; find maximum height | MCQ |
+| `model_setup_quadratic` | `identify_equation` | observed: rectangle/area word problem; identify the correct quadratic equation | MCQ |
+| | `write_equation` | observed: projectile context; set h(t)=target; find first positive solution | SPR |
 
 ---
 

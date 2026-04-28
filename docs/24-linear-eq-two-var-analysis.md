@@ -3,7 +3,7 @@
 **Skill key:** `linear_eq_two_var`  
 **Skill code:** `L2V`  
 **SAT domain:** Algebra  
-**Last updated:** 2026-04-17
+**Last updated:** 2026-04-25
 
 ---
 
@@ -163,46 +163,42 @@ Answer: 59/9 (accept 6.555 or 6.556)
 
 ---
 
-## Types 1–8 — Design Pending
+## Implementation Status — All Types
 
-These will be designed and documented here as each phase is implemented. High-level notes:
+All 9 Bluebook cognitive types are now covered. **33 templates · 66 variants** as of 2026-04-25.
 
-### Type 8 — Match Graph ↔ Equation / Table (4%)
-- Easy difficulty, MCQ only
-- Graph shown → student picks correct equation or table
-- Sub-types: (a) read y-intercept from graph, (b) identify equation from graph
+### Coverage by Type
 
-### Type 7 — Find y-intercept or x-intercept (8%)
-- Easy–Hard, MCQ + SPR
-- Sub-types: (a) read directly from y=mx+b [Easy], (b) derive from standard form Ax+By=C [Medium], (c) find from slope + x-intercept given [Hard]
+| Type | % BB | Templates implemented | Status |
+|------|------|-----------------------|--------|
+| T1 Word problems | 34% | `word_problem_setup` d1, `word_problem_rate_model` d2, `word_problem_hard` d3 | ✅ Complete |
+| T2 Slope | 17% | `read_slope` d1, `slope_from_two_points` d2, `slope_from_standard_form` d2, `slope_complex_expr` d3, **`slope_from_table` d2** | ✅ Complete |
+| T3 Table ↔ equation | 9% | `table_to_equation` d1, `table_to_equation_hard` d3, **`match_equation_to_table` d2** | ✅ Complete |
+| T4 Interpret context | 9% | `interpret_slope_in_context` d1, `interpret_intercept_in_context` d1, **`interpret_term_in_context` d2** | ✅ Complete |
+| T5 Parallel/perp | 9% | `parallel_slope` d1/d2, `parallel_from_standard_form` d1/d2/d3, `perpendicular_slope` d2, **`write_parallel_eq_through_point` d2** | ✅ Complete |
+| T6 Write equation | 9% | `write_equation_slope_intercept` d1, `write_equation_slope_point` d2, `write_equation_two_points` d2 | ✅ Complete |
+| T7 Find intercepts | 8% | `read_y_intercept` d1, `find_y_intercept_std` d2, `find_x_intercept_standard_form` d2, **`find_intercept_from_slope_and_x_int` d3** | ✅ Complete |
+| T8 Match graph | 4% | `match_graph_to_equation` d1/d2/d3 | ✅ Complete |
+| T9 Write eq from graph | 3% | `function_shift` d3, `translate_intercept` d3 | ✅ Complete |
 
-### Type 6 — Write Equation — from slope+point, two points (9%)
-- Easy–Medium, MCQ
-- Sub-types: (a) slope + y-intercept → choose equation, (b) slope + non-y-intercept point, (c) two points
+**Bold** = added 2026-04-25 (the 5 previously-missing templates).
 
-### Type 5 — Perpendicular / Parallel Slopes (9%)
-- Easy–Medium, MCQ + SPR
-- Sub-types: (a) parallel from slope-intercept [Easy], (b) perpendicular from slope-intercept [Easy/Medium], (c) parallel/perp from standard form Ax+By=C [Medium]
-- Special case: write full equation of parallel/perpendicular line through a point [Medium]
+### Template details — new additions
 
-### Type 4 — Interpret Coefficient / Intercept in Context (9%)
-- Easy–Medium, MCQ
-- Given ax + by = C in a word problem context
-- Sub-types: (a) what does coefficient `a` represent (unit rate), (b) what does term `ax` represent (total for that category), (c) what does the y-intercept represent
+**`slope_from_table` (d2)** — Two (x, y) rows in a table; compute slope = Δy/Δx.  
+Variants: `integer_slope`, `frac_slope`. Distractors: reciprocal Δx/Δy, negated slope, Δy alone.
 
-### Type 3 — Match Table ↔ Equation (9%)
-- Easy–Hard, MCQ
-- Given equation, which table has correct (x, y) values — OR given table, which equation matches
-- Hard version: fractional coefficients requiring careful substitution
+**`match_equation_to_table` (d2)** — Given y=mx+b, which set of (x,y) pairs satisfies it?  
+Variants: `pos_slope`, `neg_slope`. Choices are ordered-pair lists; wrongs have off-by-1, wrong slope, or wrong intercept.
 
-### Type 2 — Slope — from points, equation, graph, table (17%)
-- Easy–Medium, MCQ + SPR
-- Sub-types: (a) read slope from y=mx+b [Easy], (b) compute from two points [Medium], (c) convert standard form [Medium], (d) read from graph [Easy], (e) compute from table [Medium], (f) simplify complex expression like y=(1/4)(27x+15)+7x [Medium]
+**`interpret_term_in_context` (d2)** — Given y=mx+b in a real-world context, what does the term mx represent (total contribution, not just the rate)?  
+Variants: `revenue_term`, `cost_term`. Distractors target rate-only and intercept confusions.
 
-### Type 1 — Word Problems (SPR) — set up & solve from context (34%)
-- Easy–Medium, mostly SPR (some MCQ)
-- Biggest category — needs the most templates
-- Sub-types: (a) write equation and solve for unknown [Easy], (b) two-variable scenario with one value given [Easy/Medium], (c) interpret what term represents then compute [Medium], (d) multi-step setup [Hard]
+**`write_parallel_eq_through_point` (d2)** — Given reference line and a point not on it, write the equation of the parallel line through that point.  
+Variants: `pos_slope`, `neg_slope`. exactStem gives reference line + point.
+
+**`find_intercept_from_slope_and_x_int` (d3)** — Given slope m and x-intercept r, find the y-intercept (= −mr).  
+Variants: `pos_y_int`, `neg_y_int`. Distractors: sign error (+mr), sum (m+r), x-intercept confusion.
 
 ---
 

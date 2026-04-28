@@ -1,10 +1,10 @@
 # SymPy Pipeline — Coverage Reference
 
-Last updated: 2026-04-22  
-Source of truth: `sat-engine/scripts/math_engine.py`
+Last updated: 2026-04-25  
+Source of truth: `sat-engine/scripts/math_skills/lin_2v.py` (L2V) and `sat-engine/scripts/math_engine.py` (all others)
 
 **Coverage: 29 topics · 22 diagram types (88%)**  
-**Variant-driven: L1V (32 variants), L2V (41 variants), LIN (44 variants), SLE (30 variants), LFN (69 variants) — all fully tested.**
+**Variant-driven: L1V (32 variants), L2V (66 variants), LIN (44 variants), SLE (30 variants), LFN (69 variants) — all fully tested.**
 
 ---
 
@@ -72,7 +72,7 @@ Five skills (L1V, L2V, LIN, SLE, LFN) have been refactored to the full variant-d
 | Skill | Code | d1 | d2 | d3 | Total variants |
 |---|---|---|---|---|---|
 | `linear_eq_one_var` | LEQ | 18 (9 tmpl × 2) | 8 (4 tmpl × 2) | 6 (3 tmpl × 2) | **32** |
-| `linear_eq_two_var` | L2V | 13 (5 tmpl) | 16 (7 tmpl) | 12 (5 tmpl) | **41** |
+| `linear_eq_two_var` | L2V | 20 (10 tmpl × 2) | 30 (15 tmpl × 2) | 16 (8 tmpl × 2) | **66** |
 | `linear_inequalities` | LIN | 13 (4 tmpl) | 15 (7 tmpl) | 16 (7 tmpl) | **44** |
 | `systems_linear_eq` | SLE | 9 (4 tmpl) | 11 (5 tmpl) | 10 (4 tmpl) | **30** |
 | `linear_functions` | LFN | 24 (8 tmpl) | 30 (11 tmpl) | 15 (5 tmpl) | **69** |
