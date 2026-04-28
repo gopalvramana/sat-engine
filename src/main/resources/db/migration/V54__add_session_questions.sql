@@ -1,6 +1,7 @@
 -- Session questions queue: all N questions pre-selected when session starts.
 -- Enables free navigation, mark-for-review, and session resume.
-CREATE TABLE session_questions (
+-- IF NOT EXISTS: safe to re-run if table was created outside Flyway tracking.
+CREATE TABLE IF NOT EXISTS session_questions (
     id          UUID    PRIMARY KEY DEFAULT gen_random_uuid(),
     session_id  UUID    NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
     question_id UUID    NOT NULL REFERENCES sat_questions(id),
@@ -10,4 +11,4 @@ CREATE TABLE session_questions (
     CONSTRAINT uq_session_position UNIQUE (session_id, position)
 );
 
-CREATE INDEX idx_session_questions_session ON session_questions (session_id);
+CREATE INDEX IF NOT EXISTS idx_session_questions_session ON session_questions (session_id);
