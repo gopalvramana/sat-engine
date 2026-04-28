@@ -1,0 +1,32 @@
+# Render production profile
+# All values come from Render environment variables set in the dashboard.
+# Never commit real secrets here.
+
+spring:
+  flyway:
+    validate-on-migrate: false   # consistent with railway profile; safe with IF NOT EXISTS migrations
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    hikari:
+      connection-timeout: 10000
+      keepalive-time: 60000
+      max-lifetime: 300000
+      minimum-idle: 1
+      maximum-pool-size: 3
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id:     ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope:
+              - openid
+              - email
+              - profile
+
+server:
+  port: ${PORT:8080}
+  forward-headers-strategy: framework   # trust Render's X-Forwarded-Proto so OAuth redirect uses https://
