@@ -46,60 +46,71 @@ CREATE UNIQUE INDEX idx_sq_param_hash
     ON sat_questions (skill_key, param_hash)
     WHERE param_hash IS NOT NULL;
 
--- ── Migrate existing data ──────────────────────────────────────────────────
--- Extract template and variant from math_object->params->tpl / variant.
--- LEFT JOIN handles questions with no answer row (SPR without correct_answer).
+-- ── Migrate existing data (conditional) ───────────────────────────────────
+-- Only runs if sympy_questions exists (i.e. prior pipeline was deployed).
+-- On fresh production DBs that never had the SymPy pipeline, this block
+-- is skipped and sat_questions starts empty — questions are synced manually.
 
-INSERT INTO sat_questions (
-    id, external_id, skill_key, template, variant,
-    difficulty, question_type, section, domain, pool, status,
-    correct_answer, param_hash, scenario_tag, review_notes,
-    generated_at, created_at, content
-)
-SELECT
-    sq.id,
-    sq.external_id,
-    COALESCE(sq.skill_key, 'unknown')                               AS skill_key,
-    sq.math_object -> 'params' ->> 'tpl'                           AS template,
-    sq.math_object -> 'params' ->> 'variant'                       AS variant,
-    sq.difficulty,
-    sq.question_type,
-    sq.section,
-    sq.domain,
-    sq.pool,
-    sq.status,
-    sqa.correct_answer,
-    sq.param_hash,
-    sq.scenario_tag,
-    sq.review_notes,
-    sq.generated_at,
-    sq.created_at,
-    jsonb_build_object(
-        'questionStem',        sq.question_stem,
-        'optionA',             sq.option_a,
-        'optionB',             sq.option_b,
-        'optionC',             sq.option_c,
-        'optionD',             sq.option_d,
-        'correctLetter',       sqa.correct_answer,
-        'sprMin',              sq.spr_min,
-        'sprMax',              sq.spr_max,
-        'explanationShort',    sq.explanation_short,
-        'explanationSteps',    sq.explanation_steps,
-        'coreConcept',         sq.core_concept,
-        'distractorRationale', sq.distractor_rationale,
-        'prerequisites',       sq.prerequisites,
-        'alternativeApproach', sq.alternative_approach,
-        'diagram',             sq.diagram,
-        'mathObject',          sq.math_object
-    )                                                               AS content
-FROM sympy_questions sq
-LEFT JOIN sympy_question_answers sqa ON sqa.question_id = sq.id;
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT FROM pg_tables
+        WHERE schemaname = 'public' AND tablename = 'sympy_questions'
+    ) THEN
+        INSERT INTO sat_questions (
+            id, external_id, skill_key, template, variant,
+            difficulty, question_type, section, domain, pool, status,
+            correct_answer, param_hash, scenario_tag, review_notes,
+            generated_at, created_at, content
+        )
+        SELECT
+            sq.id,
+            sq.external_id,
+            COALESCE(sq.skill_key, 'unknown')                               AS skill_key,
+            sq.math_object -> 'params' ->> 'tpl'                           AS template,
+            sq.math_object -> 'params' ->> 'variant'                       AS variant,
+            sq.difficulty,
+            sq.question_type,
+            sq.section,
+            sq.domain,
+            sq.pool,
+            sq.status,
+            sqa.correct_answer,
+            sq.param_hash,
+            sq.scenario_tag,
+            sq.review_notes,
+            sq.generated_at,
+            sq.created_at,
+            jsonb_build_object(
+                'questionStem',        sq.question_stem,
+                'optionA',             sq.option_a,
+                'optionB',             sq.option_b,
+                'optionC',             sq.option_c,
+                'optionD',             sq.option_d,
+                'correctLetter',       sqa.correct_answer,
+                'sprMin',              sq.spr_min,
+                'sprMax',              sq.spr_max,
+                'explanationShort',    sq.explanation_short,
+                'explanationSteps',    sq.explanation_steps,
+                'coreConcept',         sq.core_concept,
+                'distractorRationale', sq.distractor_rationale,
+                'prerequisites',       sq.prerequisites,
+                'alternativeApproach', sq.alternative_approach,
+                'diagram',             sq.diagram,
+                'mathObject',          sq.math_object
+            )                                                               AS content
+        FROM sympy_questions sq
+        LEFT JOIN sympy_question_answers sqa ON sqa.question_id = sq.id;
+
+        RAISE NOTICE 'Migrated % rows from sympy_questions to sat_questions',
+            (SELECT COUNT(*) FROM sat_questions);
+    ELSE
+        RAISE NOTICE 'sympy_questions not found — sat_questions created empty; sync questions manually.';
+    END IF;
+END $$;
 
 -- ── Verification (run manually after migration) ───────────────────────────
--- SELECT COUNT(*) FROM sympy_questions;   -- source count
--- SELECT COUNT(*) FROM sat_questions;     -- must equal source count
---
+-- SELECT COUNT(*) FROM sat_questions;
 -- SELECT id, template, variant, correct_answer,
---        content ->> 'questionStem',
---        content -> 'mathObject' ->> 'skill'
+--        content ->> 'questionStem'
 -- FROM sat_questions LIMIT 5;
