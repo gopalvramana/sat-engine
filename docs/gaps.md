@@ -182,7 +182,7 @@ Templates to delete or review before gap work begins.
 | ---- | ----- | ------------------------------------------ | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
 | R-01 | LFN   | `arithmetic_nth_term` + generator function | Zero Bluebook questions; no anchor                                                     | Delete from `_D2` routing dict + delete function                               |
 | R-02 | LFN   | `_d1_graph_read_context` function          | Defined in lin_fn.py but never wired into `_D1` — dead code                            | Wire into `_D1` if questions are valid; otherwise delete                       |
-| W-01 | LIN   | `two_var_bound_neg`                        | No BB question explicitly tests divide-by-negative sign flip; 5 rejected vs 3 approved | Run d3 test; if output duplicates `table_satisfies_twovar` pattern → deprecate |
+| ~~W-01~~ | ~~LIN~~   | ~~`two_var_bound_neg`~~                        | ~~No BB question explicitly tests divide-by-negative sign flip; 5 rejected vs 3 approved~~ | ✅ Resolved 2026-04-28 — cognitive type confirmed distinct from `table_satisfies_twovar` (substitution vs table-check); template retained |
 
 
 ---

@@ -460,72 +460,6 @@ def _d1_graph_read_intercept(rng_obj, exclude_params, variant=None):
     raise RuntimeError("graph_read_intercept d1: could not generate unique params")
 
 
-def _d1_graph_read_context(rng_obj, exclude_params, variant=None):
-    """Read a specific value or initial value from a real-world-labeled graph.
-    Variants: initial_deposit, specific_time_value, production_cost.
-    """
-    for _ in range(200):
-        m = rng_obj.choice([2, 3, 4, 5, 6, 8, 10])
-        b = rng_obj.choice([20, 30, 40, 50, 60])
-        xv = rng_obj.choice([2, 3, 4, 5, 6, 8, 10])
-        yv = m * xv + b
-
-        if variant == "initial_deposit":
-            sub = "initial_deposit"
-            ans = str(b)
-            distractors = make_distractors(ans, [str(yv), str(m), str(xv)])
-            exact_stem = (
-                f"A bank account was opened with an initial deposit. Over the next several months "
-                f"regular deposits were made and no withdrawals occurred. The graph of the function "
-                f"f, where y = f(x), estimates the account balance in dollars x months after the "
-                f"initial deposit. To the nearest whole dollar, what is the amount of the initial "
-                f"deposit estimated by the graph?"
-            )
-            qt = "spr"
-            sm, sx = spr_bounds(ans)
-        elif variant == "production_cost":
-            sub = "production_cost"
-            ans = str(yv)
-            distractors = make_distractors(ans, [str(b), str(m * xv), str(yv + m)])
-            exact_stem = (
-                f"The graph of the linear function shown estimates the cost y, in dollars, to "
-                f"make x rings in a jewelry workshop. What is the estimated cost, in dollars, "
-                f"to make {xv} rings?"
-            )
-            qt = "spr"
-            sm, sx = spr_bounds(ans)
-        else:
-            sub = "specific_time_value"
-            ans = str(yv)
-            distractors = make_distractors(ans, [str(b), str(m * xv), str(yv + m)])
-            exact_stem = (
-                f"The function f defined by f(x) = {m}x + {b} models the water level, "
-                f"in gallons, of a storage tank x hours after a pump is turned on. "
-                f"What is the water level, in gallons, after {xv} hours?"
-            )
-            qt = "mcq"
-            sm, sx = None, None
-
-        params = {"m": m, "b": b, "xv": xv,
-                  "tpl": "graph_read_context", "variant": sub}
-        ph = param_hash(params)
-        if ph in exclude_params:
-            continue
-
-        # No diagram: b ∈ [20,60] is outside the ±5 coordinate_plane viewport.
-        # The exactStem describes the graph textually; student reads from the equation.
-        ctx = (f"LFN d1 graph_read_context ({sub}). "
-               f"Stem (set verbatim): '{exact_stem}'. "
-               f"Line: f(x) = {m}x + {b}. "
-               f"Correct: {ans}.")
-        result = _lfn(1, params, ph, ans, distractors if qt == "mcq" else [], sm, sx, qt, ctx, None)
-        result["exactStem"] = exact_stem
-        if validate_math_object(result):
-            continue
-        return result
-    raise RuntimeError("graph_read_context d1: could not generate unique params")
-
-
 def _d1_word_equation_simple(rng_obj, exclude_params, variant=None):
     """Translate word problem into linear equation.
     Variants: flat_plus_rate, verbal_description, service_contract.
@@ -1642,41 +1576,6 @@ def _d2_parallel_slope_from_fn(rng_obj, exclude_params, variant=None):
     raise RuntimeError("parallel_slope_from_fn d2: could not generate unique params")
 
 
-def _d2_arithmetic_nth_term(rng_obj, exclude_params, variant=None):
-    """Arithmetic sequence treated as a linear function.
-    Variants: forward.
-    """
-    for _ in range(200):
-        sub = "forward"
-        a1 = rng_obj.choice([3, 4, 5, 6, 7, 8, 10])
-        d = rng_obj.choice([2, 3, 4, 5, 6])
-        n = rng_obj.choice([10, 15, 20, 25, 30])
-        an = a1 + (n - 1) * d
-        params = {"a1": a1, "d": d, "n": n,
-                  "tpl": "arithmetic_nth_term", "variant": sub}
-        ph = param_hash(params)
-        if ph in exclude_params:
-            continue
-        ans = str(an)
-        sm, sx = spr_bounds(ans)
-        t1, t2, t3 = a1, a1 + d, a1 + 2 * d
-        exact_stem = (
-            f"The first three terms of an arithmetic sequence are {t1}, {t2}, and {t3}. "
-            f"What is the value of the {n}th term?"
-        )
-        ctx = (f"LFN d2 arithmetic_nth_term (forward). "
-               f"First 3 terms: {t1}, {t2}, {t3}. Common difference d = {d}. "
-               f"nth term: a_n = {a1} + (n−1)·{d}; a_{n} = {a1} + {n-1}·{d} = {an}. "
-               f"Correct: {ans}. SPR. "
-               f"CRITICAL — show the three terms, do NOT restate as 'first term' + 'common difference'. "
-               f"Stem is locked — do not rewrite it.")
-        result = _lfn(2, params, ph, ans, [], sm, sx, "spr", ctx, None)
-        result["exactStem"] = exact_stem
-        if validate_math_object(result):
-            continue
-        return result
-    raise RuntimeError("arithmetic_nth_term d2: could not generate unique params")
-
 def _d3_parameter_solve_compound(rng_obj, exclude_params, variant=None):
     """Hard parameter-solve then evaluate/interpret.
     Variants: double_param, expr_input, implicit_b, table_derived.
@@ -2272,8 +2171,6 @@ _D2 = {
                                      "variants": ["sum_of_intercepts", "intercept_after_shift"]},
     "parallel_slope_from_fn":       {"fn": _d2_parallel_slope_from_fn,
                                      "variants": ["parallel_to_linear_fn"]},
-    "arithmetic_nth_term":          {"fn": _d2_arithmetic_nth_term,
-                                     "variants": ["forward"]},
 }
 
 _D3 = {
