@@ -546,5 +546,109 @@
       "C": "Student used n + 4 as the fourth integer (the third, not the fourth, consecutive even integer)",
       "D": "Student used n + 4 as the fourth integer and reversed the inequality direction"
     }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "The graph of an inequality is shown in the xy-plane. Which inequality represents all the points in the shaded region?\nA. y > 3\nB. y ≥ 3\nC. y < 3\nD. y ≤ 3",
+    "type": "T11 — graph → inequality, horizontal solid boundary, shade above (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["graph", "shaded region", "which inequality represents"],
+    "why_this_difficulty": "Easy — boundary is horizontal at y = 3; student reads the y-value of the line, identifies it as solid (meaning ≤ or ≥), and uses the shading direction (above) to select ≥",
+    "distractor_rationales": {
+      "A": "Student identified correct direction (above → greater than) but confused solid line with dashed — solid boundary means ≥ not >",
+      "C": "Student read the solid line correctly as ≤ or ≥ but chose the wrong shading direction — region is above the line, so ≥ not ≤",
+      "D": "Student chose both the wrong symbol (≤ instead of ≥) and the wrong direction — a doubly-wrong answer"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "The graph of an inequality is shown in the xy-plane. Which inequality represents all the points in the shaded region?\nA. y ≥ −2\nB. y > −2\nC. y ≤ −2\nD. y < −2",
+    "type": "T11 — graph → inequality, horizontal dashed boundary, shade below (MCQ)",
+    "correct": "D",
+    "sat_key_phrases": ["graph", "shaded region", "which inequality represents"],
+    "why_this_difficulty": "Easy — boundary is horizontal at y = −2 with a dashed line; student reads the y-value, identifies dashed as strict inequality (< or >), and identifies shading below as <",
+    "distractor_rationales": {
+      "A": "Student chose wrong direction (≥) and confused dashed with solid — both errors reversed",
+      "B": "Student identified dashed correctly as strict (>) but chose wrong direction — shaded region is below the line, so < not >",
+      "C": "Student identified correct direction (below → ≤) but confused dashed with solid — dashed means < not ≤"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "The graph of a linear inequality is shown in the xy-plane. Which inequality represents all the points in the shaded region?\nA. y ≥ 2x − 1\nB. y ≤ 2x − 1\nC. y ≥ −2x − 1\nD. y ≤ −2x − 1",
+    "type": "T11 — graph → inequality, sloped solid boundary, positive slope, shade above (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["graph", "shaded region", "which inequality represents"],
+    "why_this_difficulty": "Easy — slope is a small positive integer (2) and y-intercept is −1; student reads slope and intercept from the graph, identifies the solid boundary as ≥ or ≤, then uses shading above the line to select ≥",
+    "distractor_rationales": {
+      "B": "Student read slope and intercept correctly but chose wrong direction — shading above the boundary means ≥ not ≤",
+      "C": "Student correctly identified solid/above as ≥ but negated the slope (read −2 instead of 2)",
+      "D": "Student both negated the slope and chose the wrong direction — two independent errors"
+    }
+  },
+  {
+    "difficulty": "easy",
+    "stem": "The graph of a linear inequality is shown in the xy-plane. Which inequality represents all the points in the shaded region?\nA. y ≥ 3x + 2\nB. y ≤ 3x + 2\nC. y ≥ −3x + 2\nD. y ≤ −3x + 2",
+    "type": "T11 — graph → inequality, sloped solid boundary, positive slope, shade below (MCQ)",
+    "correct": "B",
+    "sat_key_phrases": ["graph", "shaded region", "which inequality represents"],
+    "why_this_difficulty": "Easy — slope is 3, y-intercept is 2, solid line, shading below; student identifies the correct slope and intercept from the graph then picks ≤ for solid boundary with shading below",
+    "distractor_rationales": {
+      "A": "Student read slope and intercept correctly but chose wrong direction — shading below means ≤ not ≥",
+      "C": "Student identified correct direction (below → ≤/≥ with correct symbol ≥) but negated the slope",
+      "D": "Student chose correct direction (below → ≤) but negated the slope (−3 instead of 3)"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "The graph of a linear inequality is shown in the xy-plane. Which inequality represents all the points in the shaded region?\nA. y < −3x + 4\nB. y > −3x + 4\nC. y ≤ −3x + 4\nD. y ≥ −3x + 4",
+    "type": "T11 — graph → inequality, sloped dashed boundary, negative slope, shade below (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["graph", "shaded region", "which inequality represents"],
+    "why_this_difficulty": "Medium — dashed boundary with a negative slope; students commonly misread the slope sign and confuse dashed (strict <) with solid (non-strict ≤); two potential error points",
+    "distractor_rationales": {
+      "B": "Student identified dashed correctly as strict but chose wrong direction — shading is below the boundary, so < not >",
+      "C": "Student identified correct direction (below → ≤) but confused dashed boundary with solid — dashed means < not ≤",
+      "D": "Student chose wrong direction (≥) and confused dashed with solid (≥ instead of >) — both errors"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "The graph of a linear inequality is shown in the xy-plane. Which inequality represents all the points in the shaded region?\nA. y > −x + 5\nB. y < −x + 5\nC. y ≥ −x + 5\nD. y ≤ −x + 5",
+    "type": "T11 — graph → inequality, sloped dashed boundary, negative slope −1, shade above (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["graph", "shaded region", "which inequality represents"],
+    "why_this_difficulty": "Medium — dashed line with slope −1; students may read the slope as +1 (positive direction) or confuse dashed with solid; shading above means > for a dashed line",
+    "distractor_rationales": {
+      "B": "Student identified dashed correctly as strict but chose wrong direction — shading is above the boundary, so > not <",
+      "C": "Student identified correct direction (above → ≥/>) but confused dashed with solid — dashed means > not ≥",
+      "D": "Student chose wrong direction (below → ≤) and confused dashed with solid — both errors"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "The graph of a linear inequality is shown in the xy-plane. Which inequality represents all the points in the shaded region?\nA. y ≤ −2x + 5\nB. y ≥ −2x + 5\nC. y ≤ 2x + 5\nD. y ≥ 2x + 5",
+    "type": "T11 — graph → inequality, negative slope solid boundary, shade below (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["graph", "shaded region", "which inequality represents"],
+    "why_this_difficulty": "Medium — solid boundary with a negative slope; students commonly misread the slope as positive (confusing a downward line with an upward one), or choose ≥ instead of ≤ for shading below",
+    "distractor_rationales": {
+      "B": "Student read slope and intercept correctly but chose wrong direction — shading is below the boundary, so ≤ not ≥",
+      "C": "Student identified correct direction (below → ≤) and solid correctly, but misread the negative slope as positive (2 instead of −2)",
+      "D": "Student misread the negative slope as positive and also chose the wrong direction — two independent errors"
+    }
+  },
+  {
+    "difficulty": "medium",
+    "stem": "The graph of a linear inequality is shown in the xy-plane. Which inequality represents all the points in the shaded region?\nA. y ≥ −4x + 1\nB. y ≤ −4x + 1\nC. y ≥ 4x + 1\nD. y ≤ 4x + 1",
+    "type": "T11 — graph → inequality, steep negative slope solid boundary, shade above (MCQ)",
+    "correct": "A",
+    "sat_key_phrases": ["graph", "shaded region", "which inequality represents"],
+    "why_this_difficulty": "Medium — steep negative slope (−4) with solid boundary and shading above; the steep downward line is the primary error trap — students may mistake the slope sign or interpret 'above a steep falling line' incorrectly",
+    "distractor_rationales": {
+      "B": "Student read slope and intercept correctly but chose wrong direction — shading above a solid line means ≥ not ≤",
+      "C": "Student chose correct direction (above → ≥) but misread the negative slope as positive (4 instead of −4)",
+      "D": "Student misread the negative slope as positive and also chose wrong direction — two errors"
+    }
   }
 ]

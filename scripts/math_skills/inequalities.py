@@ -936,6 +936,147 @@ def _d3_complex_word(rng_obj, exclude_params, variant=None):
     raise RuntimeError("complex_word d3: could not generate unique params")
 
 
+def _fmt_ineq(sym, m, b):
+    """Format 'y SYM mx+b' as a clean answer choice string."""
+    return f"y {sym} {fmt_lin_rhs(m, b)}"
+
+
+def _d1_graph_to_inequality(rng_obj, exclude_params, variant=None):
+    """Read shaded half-plane from graph → select correct inequality.
+    d1 variants:
+      horizontal_boundary — boundary y=c, student reads y-value + shading + solid/dashed
+      sloped_solid        — simple positive slope (m=1,2), solid boundary
+    """
+    sub = variant or rng_obj.choice(["horizontal_boundary", "sloped_solid"])
+    for _ in range(200):
+        if sub == "horizontal_boundary":
+            m = 0
+            b = rng_obj.choice([-4, -3, -2, -1, 1, 2, 3, 4])
+            solid = rng_obj.choice([True, False])
+            shade = rng_obj.choice(["above", "below"])
+            sym_correct = ("≥" if shade == "above" else "≤") if solid else (">" if shade == "above" else "<")
+            # 3 distractors: wrong direction, wrong solid/dashed, both wrong
+            sym_dir     = ("≤" if shade == "above" else "≥") if solid else ("<" if shade == "above" else ">")
+            sym_dash    = (">" if shade == "above" else "<") if solid else ("≥" if shade == "above" else "≤")
+            sym_both    = ("<" if shade == "above" else ">") if solid else ("≤" if shade == "above" else "≥")
+            ans  = _fmt_ineq(sym_correct, m, b)
+            dist = [_fmt_ineq(sym_dir,  m, b),
+                    _fmt_ineq(sym_dash, m, b),
+                    _fmt_ineq(sym_both, m, b)]
+        else:  # sloped_solid
+            m = rng_obj.choice([1, 2])
+            b = rng_obj.choice([-3, -2, -1, 0, 1, 2, 3])
+            solid = True
+            shade = rng_obj.choice(["above", "below"])
+            sym_correct = "≥" if shade == "above" else "≤"
+            sym_wrong   = "≤" if shade == "above" else "≥"
+            ans  = _fmt_ineq(sym_correct,  m, b)
+            dist = [_fmt_ineq(sym_wrong,   m, b),
+                    _fmt_ineq(sym_correct, -m, b),
+                    _fmt_ineq(sym_wrong,  -m, b)]
+
+        params = {"m": m, "b": b, "solid": solid, "shade": shade,
+                  "tpl": "graph_to_inequality", "variant": sub}
+        ph = param_hash(params)
+        if ph in exclude_params:
+            continue
+        if len(set([ans] + dist)) < 4:
+            continue  # choices not all distinct — retry
+
+        diagram = {"type": "shaded_half_plane", "m": m, "b": b,
+                   "solid": solid, "shade": shade}
+        boundary = fmt_lin_rhs(m, b) if m != 0 else str(b)
+        shade_word = "above" if shade == "above" else "below"
+        solid_word = "solid" if solid else "dashed"
+        ctx = (f"LIN d1 graph_to_inequality ({sub}). "
+               f"A coordinate plane is shown with a shaded half-plane. "
+               f"Boundary line: y = {boundary}. "
+               f"Line style: {solid_word} ({'≤ or ≥' if solid else '< or >'}). "
+               f"Shaded region: {shade_word} the boundary line. "
+               f"Correct answer: {ans}. "
+               f"CRITICAL — the question stem MUST say 'The graph of an inequality is shown in the "
+               f"xy-plane. Which inequality represents all the points in the shaded region?' "
+               f"Do NOT describe the graph in words — the diagram is provided. "
+               f"Do NOT include the equation of the boundary line in the stem. "
+               f"Do NOT include the correct answer in the stem.")
+        result = _lin_result(1, params, ph, ans, None,
+                             make_distractors(ans, dist), "mcq", ctx)
+        result["exactStem"] = ("The graph of an inequality is shown in the xy-plane. "
+                               "Which inequality represents all the points in the shaded region?")
+        result["diagramSpec"] = diagram
+        if validate_math_object(result):
+            continue
+        return result
+    raise RuntimeError(f"graph_to_inequality d1 ({sub}): could not generate unique params")
+
+
+def _d2_graph_to_inequality(rng_obj, exclude_params, variant=None):
+    """Read shaded half-plane from graph → select correct inequality.
+    d2 variants:
+      sloped_dashed       — any slope (including negative), dashed boundary (strict)
+      negative_slope_solid — negative slope (−2, −3, −4), solid boundary
+    """
+    sub = variant or rng_obj.choice(["sloped_dashed", "negative_slope_solid"])
+    for _ in range(200):
+        if sub == "sloped_dashed":
+            m = rng_obj.choice([-3, -2, -1, 1, 2, 3])
+            b = rng_obj.choice([-3, -2, -1, 1, 2, 3])
+            solid = False
+            shade = rng_obj.choice(["above", "below"])
+            sym_correct = ">" if shade == "above" else "<"
+            sym_dir     = "<" if shade == "above" else ">"   # wrong direction
+            sym_non_str = "≥" if shade == "above" else "≤"  # solid instead of dashed
+            ans  = _fmt_ineq(sym_correct, m, b)
+            dist = [_fmt_ineq(sym_dir,     m, b),
+                    _fmt_ineq(sym_non_str, m, b),
+                    _fmt_ineq(sym_correct, -m, b)]
+        else:  # negative_slope_solid
+            m = rng_obj.choice([-4, -3, -2])
+            b = rng_obj.choice([1, 2, 3, 4])
+            solid = True
+            shade = rng_obj.choice(["above", "below"])
+            sym_correct = "≥" if shade == "above" else "≤"
+            sym_wrong   = "≤" if shade == "above" else "≥"
+            ans  = _fmt_ineq(sym_correct,  m, b)
+            dist = [_fmt_ineq(sym_wrong,   m, b),
+                    _fmt_ineq(sym_correct, -m, b),
+                    _fmt_ineq(sym_wrong,  -m, b)]
+
+        params = {"m": m, "b": b, "solid": solid, "shade": shade,
+                  "tpl": "graph_to_inequality", "variant": sub}
+        ph = param_hash(params)
+        if ph in exclude_params:
+            continue
+        if len(set([ans] + dist)) < 4:
+            continue
+
+        diagram = {"type": "shaded_half_plane", "m": m, "b": b,
+                   "solid": solid, "shade": shade}
+        boundary = fmt_lin_rhs(m, b)
+        shade_word = "above" if shade == "above" else "below"
+        solid_word = "solid" if solid else "dashed"
+        ctx = (f"LIN d2 graph_to_inequality ({sub}). "
+               f"A coordinate plane is shown with a shaded half-plane. "
+               f"Boundary line: y = {boundary}. "
+               f"Line style: {solid_word} ({'≤ or ≥' if solid else '< or >'}). "
+               f"Shaded region: {shade_word} the boundary line. "
+               f"Correct answer: {ans}. "
+               f"CRITICAL — the question stem MUST say 'The graph of an inequality is shown in the "
+               f"xy-plane. Which inequality represents all the points in the shaded region?' "
+               f"Do NOT describe the graph in words — the diagram is provided. "
+               f"Do NOT include the equation of the boundary line in the stem. "
+               f"Do NOT include the correct answer in the stem.")
+        result = _lin_result(2, params, ph, ans, None,
+                             make_distractors(ans, dist), "mcq", ctx)
+        result["exactStem"] = ("The graph of an inequality is shown in the xy-plane. "
+                               "Which inequality represents all the points in the shaded region?")
+        result["diagramSpec"] = diagram
+        if validate_math_object(result):
+            continue
+        return result
+    raise RuntimeError(f"graph_to_inequality d2 ({sub}): could not generate unique params")
+
+
 # ── Routing dicts ─────────────────────────────────────────────────────────────
 
 _D1 = {
@@ -943,6 +1084,7 @@ _D1 = {
     "compound_range":        {"fn": _d1_compound_range,        "variants": ["direct", "scaled"]},
     "write_inequality_easy": {"fn": _d1_write_inequality_easy, "variants": ["total_cap", "rate_constraint", "budget", "fee_plus_hourly"]},
     "system_quadrant":       {"fn": _d1_system_quadrant,       "variants": ["q1", "q2", "q3", "q4"]},
+    "graph_to_inequality":   {"fn": _d1_graph_to_inequality,   "variants": ["horizontal_boundary", "sloped_solid"]},
 }
 
 _D2 = {
@@ -953,6 +1095,7 @@ _D2 = {
     "two_var_bound":            {"fn": _d2_two_var_bound,            "variants": ["mcq_type", "spr_type"]},
     "system_solve_x":           {"fn": _d2_system_solve_x,           "variants": ["coeff_small", "coeff_large"]},
     "table_satisfies":          {"fn": _d2_table_satisfies,          "variants": ["strict_less", "strict_greater"]},
+    "graph_to_inequality":      {"fn": _d2_graph_to_inequality,      "variants": ["sloped_dashed", "negative_slope_solid"]},
 }
 
 _D3 = {

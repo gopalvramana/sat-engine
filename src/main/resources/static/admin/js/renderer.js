@@ -3308,6 +3308,7 @@ const _SYMPY_DIAGRAM_TYPES = new Set([
   'house_shape','bar_chart','pie_chart','number_line','scatter_plot',
   'box_plot','two_way_table','special_triangle','parabola',
   'nonlinear_curve','piecewise_function','inequality_nonlinear',
+  'shaded_half_plane',
 ]);
 
 /** SVG root with a light background — matches sympy-review.html style. */
@@ -4129,6 +4130,68 @@ function _svgInequalityNonlinear(spec) {
 }
 
 /** Master dispatcher for all shorthand diagram types from the Python pipeline. */
+/**
+ * B-07 — Shaded half-plane diagram.
+ * spec: { m, b, solid, shade }
+ *   m      — slope (default 0)
+ *   b      — y-intercept (default 0)
+ *   solid  — true = solid boundary line (≤/≥); false = dashed (strict </> )
+ *   shade  — "above" | "below" (world coordinates)
+ */
+function _svgShadedHalfPlane(spec) {
+  const W = 300, H = 240, PAD = 40;
+  const m     = (spec.m  !== undefined) ? spec.m  : 0;
+  const b     = (spec.b  !== undefined) ? spec.b  : 0;
+  const solid = (spec.solid !== false);          // default true
+  const shade = (spec.shade === 'below') ? 'below' : 'above';
+
+  const minX = -5, maxX = 5, minY = -5, maxY = 5;
+  const sx = x => PAD + (x - minX) / (maxX - minX) * (W - 2 * PAD);
+  const sy = y => (H - PAD) - (y - minY) / (maxY - minY) * (H - 2 * PAD);
+
+  let s = `<defs>
+    <marker id="shp_ax" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#374151"/>
+    </marker>
+    <clipPath id="shp_vp">
+      <rect x="${PAD}" y="${PAD}" width="${W - 2 * PAD}" height="${H - 2 * PAD}"/>
+    </clipPath>
+  </defs>`;
+
+  // Grid lines
+  for (let x = minX; x <= maxX; x++) {
+    const xp = sx(x);
+    s += `<line x1="${xp}" y1="${PAD}" x2="${xp}" y2="${H-PAD}" stroke="${x===0?'#9ca3af':'#e9ecef'}" stroke-width="${x===0?1:0.6}"/>`;
+    if (x !== 0) s += `<text x="${xp}" y="${sy(0)+12}" text-anchor="middle" font-size="9" fill="#9ca3af">${x}</text>`;
+  }
+  for (let y = minY; y <= maxY; y++) {
+    const yp = sy(y);
+    s += `<line x1="${PAD}" y1="${yp}" x2="${W-PAD}" y2="${yp}" stroke="${y===0?'#9ca3af':'#e9ecef'}" stroke-width="${y===0?1:0.6}"/>`;
+    if (y !== 0) s += `<text x="${sx(0)-5}" y="${yp+3}" text-anchor="end" font-size="9" fill="#9ca3af">${y}</text>`;
+  }
+
+  // Axes with arrows
+  s += `<line x1="${PAD}" y1="${sy(0)}" x2="${W-PAD+2}" y2="${sy(0)}" stroke="#374151" stroke-width="1.5" marker-end="url(#shp_ax)"/>`;
+  s += `<line x1="${sx(0)}" y1="${H-PAD}" x2="${sx(0)}" y2="${PAD-2}" stroke="#374151" stroke-width="1.5" marker-end="url(#shp_ax)"/>`;
+  s += `<text x="${W-PAD+5}" y="${sy(0)+4}" font-size="11" fill="#374151" font-weight="bold">x</text>`;
+  s += `<text x="${sx(0)+4}" y="${PAD-5}" font-size="11" fill="#374151" font-weight="bold">y</text>`;
+
+  // Boundary line endpoints in SVG coords (extending beyond viewport; clipped by shp_vp)
+  const x1s = sx(minX), y1s = sy(m * minX + b);
+  const x2s = sx(maxX), y2s = sy(m * maxX + b);
+  const yFar = (shade === 'above') ? PAD - 10 : H - PAD + 10; // SVG top or bottom
+
+  // Shaded polygon (clipped to viewport)
+  const pts = `${x1s},${y1s} ${x2s},${y2s} ${x2s},${yFar} ${x1s},${yFar}`;
+  s += `<polygon points="${pts}" fill="#3b82f6" fill-opacity="0.15" clip-path="url(#shp_vp)"/>`;
+
+  // Boundary line (solid or dashed, clipped to viewport)
+  const dash = solid ? '' : 'stroke-dasharray="8,4"';
+  s += `<line x1="${x1s}" y1="${y1s}" x2="${x2s}" y2="${y2s}" stroke="#1d4ed8" stroke-width="2.5" ${dash} clip-path="url(#shp_vp)"/>`;
+
+  return _sympyWrap(W, H, s);
+}
+
 function _renderSympyDiagram(spec) {
   if (!spec) return '';
   const dtype = spec.diagramType ?? spec.type ?? '';
@@ -4158,6 +4221,7 @@ function _renderSympyDiagram(spec) {
     case 'nonlinear_curve':      return _svgNonlinearCurve(spec);
     case 'piecewise_function':   return _svgPiecewiseFunction(spec);
     case 'inequality_nonlinear': return _svgInequalityNonlinear(spec);
+    case 'shaded_half_plane':   return _svgShadedHalfPlane(spec);
     default: return '';
   }
 }
